@@ -1,0 +1,118 @@
+name: CI & Deploy
+
+on:
+  push:
+    branches: ["claude/epic-lovelace-la2jtv", "main"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Rust, unit, typecheck, Playwright)
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Rust core tests
+        run: cargo test --manifest-path crates/core/Cargo.toml
+      - name: Unit tests
+        run: pnpm test:unit
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - name: End-to-end (production build, fresh D1)
+        run: pnpm exec playwright test
+        env:
+          CI: "1"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/e2e.json
+          retention-days: 14
+
+  deploy:
+    name: Deploy to Cloudflare
+    needs: test
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref_name == github.event.repository.default_branch)
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ steps.url.outputs.url }}
+    permissions:
+      contents: write # commit void.lock.json after the first deploy
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Optional repository variable, e.g. "Beautifood <receipts@mail.example.com>", turns on Cloudflare Email Sending.
+      MAIL_FROM: ${{ vars.MAIL_FROM }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Workers subdomain
+        id: sub
+        run: |
+          sub=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain')
+          echo "subdomain=$sub" >> "$GITHUB_OUTPUT"
+      - name: Deploy (Worker, D1 + migrations, queue, cron${{ vars.MAIL_FROM && ', email' || '' }})
+        env:
+          CLOUDFLARE_WORKERS_SUBDOMAIN: ${{ steps.sub.outputs.subdomain }}
+        run: |
+          set -o pipefail
+          flags="--platform cloudflare"
+          if [ -n "$MAIL_FROM" ]; then flags="$flags --require-email"; fi
+          pnpm exec void deploy $flags 2>&1 | tee deploy.log
+      - name: Public URL
+        id: url
+        run: |
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | grep -v -- '-[0-9a-f]\{8\}\.' | head -1)
+          if [ -z "$url" ]; then url="https://beautifood.${{ steps.sub.outputs.subdomain }}.workers.dev"; fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
+      - name: Point links at the public URL
+        run: printf '%s' "${{ steps.url.outputs.url }}" | pnpm exec void secret put PUBLIC_URL
+      - name: Smoke test
+        run: |
+          for i in $(seq 1 20); do
+            if curl -fsS "${{ steps.url.outputs.url }}/api/health" | grep -q '"ok":true'; then break; fi
+            sleep 5
+          done
+          curl -fsS "${{ steps.url.outputs.url }}/api/health"
+          # dev tools must be off in production
+          test "$(curl -s -o /dev/null -w '%{http_code}' "${{ steps.url.outputs.url }}/api/dev/inbox")" = "404"
+      - name: Commit lock file
+        run: |
+          if [ -n "$(git status --porcelain void.lock.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+            git add void.lock.json
+            git commit -m "chore: record Cloudflare resources (void.lock.json) [skip ci]"
+            git push
+          fi

@@ -29,6 +29,8 @@ const REACT_DEPS = ["react", "react-dom", "react-dom/client", "react-dom/server"
 
 export default defineConfig({
   plugins: [voidPlugin(), voidReact(), wasmToWorker()],
+  // Sender address for Cloudflare Email Sending (see src/shared/mail.ts); empty = email off.
+  define: { __MAIL_FROM__: JSON.stringify(process.env.MAIL_FROM?.trim() ?? "") },
   resolve: { dedupe: ["react", "react-dom"] },
   optimizeDeps: { include: [...REACT_DEPS, "qrcode"] },
   environments: {

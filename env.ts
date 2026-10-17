@@ -1,9 +1,10 @@
 import { defineEnv, oneOf, string } from "void/env";
 
 export default defineEnv({
-  APP_ENV: oneOf(["development", "test", "production"]).default("development"),
-  /** HMAC key for stateless customer tokens (tickets, dynamic QR, carts, members). */
-  TOKEN_SECRET: string().default("dev-only-token-secret-change-me-in-production"),
+  /** Production unless a local `.env` says otherwise (see .env.example), so a deploy can never expose dev tools. */
+  APP_ENV: oneOf(["development", "test", "production"]).default("production"),
+  /** HMAC key for stateless customer tokens (tickets, dynamic QR, carts, members). Derived from BETTER_AUTH_SECRET when unset. */
+  TOKEN_SECRET: string().optional(),
   PUBLIC_URL: string().default("http://localhost:5173"),
   ANTHROPIC_API_KEY: string().optional(),
   ANTHROPIC_MODEL: string().default("claude-opus-5-5"),

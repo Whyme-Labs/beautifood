@@ -13,7 +13,8 @@
     "test": "pnpm test:rust && pnpm test:unit",
     "test:rust": "cargo test --manifest-path crates/core/Cargo.toml",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "predev": "node -e \"const f=require('fs');f.existsSync('.env')||f.copyFileSync('dev.env.example','.env')\""
   },
   "pnpm": {
     "onlyBuiltDependencies": [

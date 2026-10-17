@@ -24,7 +24,7 @@ export interface MailEnv {
   APP_ENV?: string;
 }
 
-export type EmailStatus = "queued" | "sent" | "logged" | "failed" | "rejected" | "unknown";
+export type EmailStatus = "queued" | "sent" | "logged" | "unconfigured" | "failed" | "rejected" | "unknown";
 
 /** After this many attempts (or a day), a failed email is left for a human to look at. */
 export const MAX_EMAIL_ATTEMPTS = 5;
@@ -72,7 +72,7 @@ export async function retryFailedEmails(db: D1Database, env: MailEnv, limit = 50
 }
 
 /** Characters that would break or spoof a From header display name. */
-const displayName = (n: string) => n.replace(/[\r\n<>"\\]/g, "").trim().slice(0, 60) || MAIL_FROM.name;
+const displayName = (n: string, fallback: string) => n.replace(/[\r\n<>"\\]/g, "").trim().slice(0, 60) || fallback;
 
 async function deliver(db: D1Database, env: MailEnv, r: EmailRow): Promise<EmailStatus> {
   const at = Date.now();
@@ -82,10 +82,16 @@ async function deliver(db: D1Database, env: MailEnv, r: EmailRow): Promise<Email
     .bind(at, r.id, r.attempts)
     .run();
   if (!claim.meta.changes) return "queued";
+  if (!MAIL_FROM) {
+    // No sender configured: keep the record (dev inbox / console outbox), don't retry.
+    const status: EmailStatus = env.APP_ENV === "production" ? "unconfigured" : "logged";
+    await db.prepare("UPDATE emails SET status = ?, sent_at = ? WHERE id = ?").bind(status, Date.now(), r.id).run();
+    return status;
+  }
   let result: SendEmailResult;
   try {
     result = await deliverEmail({
-      from: { email: MAIL_FROM.email, name: displayName(r.from_name ?? MAIL_FROM.name) },
+      from: { email: MAIL_FROM.email, name: displayName(r.from_name ?? "", MAIL_FROM.name) },
       to: r.to_email,
       subject: r.subject,
       html: r.html,

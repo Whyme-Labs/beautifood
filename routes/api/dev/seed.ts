@@ -1,5 +1,6 @@
-// Development only: make the signed-in user the owner of a demo restaurant with
+// "Load the demo restaurant": make the signed-in user the owner of a new demo restaurant with
 // two branches, a full menu (via the onboarding copilot), tables, a promo code and members.
+// Safe in production: it only ever creates a new restaurant owned by the caller.
 import { getUser } from "void/auth";
 import { api } from "../../../src/server/http";
 import { appEnv } from "../../../src/server/appenv";
@@ -13,7 +14,6 @@ import { ensureMember } from "../../../src/server/domain/loyalty";
 import { SAMPLE_ABOUT, SAMPLE_FLOOR, SAMPLE_MENU } from "../../../src/server/dev/sample";
 
 export const POST = api(async (c) => {
-  if (appEnv().APP_ENV === "production") fail(404, "not_found", "Not found");
   const user = getUser();
   if (!user) fail(401, "unauthorized", "Sign in first");
   const q = c.req.query("name") || "Beautifood Demo";

@@ -4,15 +4,38 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "strict": true,
     "jsx": "react-jsx",
-    "types": ["@cloudflare/workers-types", "void/env", "vite/client"],
+    "types": [
+      "@cloudflare/workers-types",
+      "void/env",
+      "vite/client"
+    ],
     "skipLibCheck": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true
   },
-  "include": ["**/*.ts", "**/*.tsx", ".void/*.d.ts"],
-  "exclude": ["node_modules", "dist", "crates", "test-results", "playwright-report", "public"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".void/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "crates",
+    "test-results",
+    "playwright-report",
+    "public",
+    "agent",
+    ".agents",
+    ".claude",
+    "video"
+  ]
 }

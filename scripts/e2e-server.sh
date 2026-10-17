@@ -6,6 +6,7 @@ PORT=${PORT:-5190}
 npx void db reset --yes >/dev/null
 eval "$(node scripts/vapid-keys.mjs | sed 's/^/export /')"
 export APP_ENV=test
+export MAIL_FROM="Beautifood <receipts@mail.example.test>"
 export BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET:-e2e-better-auth-secret-0123456789abcdef}
 export TOKEN_SECRET=${TOKEN_SECRET:-e2e-token-secret-0123456789abcdef}
 export AUTH_TRUSTED_KEY=${AUTH_TRUSTED_KEY:-e2e-trusted}
