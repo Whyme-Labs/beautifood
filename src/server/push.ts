@@ -13,7 +13,7 @@ export interface PushEnv {
 let keyCache: { pub: string; key: Promise<CryptoKey> } | null = null;
 
 function privateKey(env: PushEnv): Promise<CryptoKey> {
-  if (keyCache?.pub === env.VAPID_PUBLIC_KEY) return keyCache.key;
+  if (keyCache && keyCache.pub === env.VAPID_PUBLIC_KEY) return keyCache.key;
   const pub = fromB64url(env.VAPID_PUBLIC_KEY!);
   const jwk: JsonWebKey = { kty: "EC", crv: "P-256", d: env.VAPID_PRIVATE_KEY!, x: b64url(pub.slice(1, 33)), y: b64url(pub.slice(33, 65)), ext: true };
   const key = crypto.subtle.importKey("jwk", jwk, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);

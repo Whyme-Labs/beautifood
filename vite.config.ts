@@ -13,7 +13,7 @@ function wasmToWorker(): Plugin {
     apply: "build",
     buildApp: {
       order: "post",
-      handler() {
+      async handler() {
         const from = join(process.cwd(), "dist/client/assets");
         const to = join(process.cwd(), "dist/ssr/assets");
         if (!existsSync(from) || !existsSync(to)) return;
@@ -23,6 +23,15 @@ function wasmToWorker(): Plugin {
   };
 }
 
+// Pre-bundle React for both the browser and the Worker environment so the dev
+// server never re-optimizes mid-session (which leaves two React copies loaded).
+const REACT_DEPS = ["react", "react-dom", "react-dom/client", "react-dom/server", "react/jsx-runtime", "react/jsx-dev-runtime"];
+
 export default defineConfig({
   plugins: [voidPlugin(), voidReact(), wasmToWorker()],
+  resolve: { dedupe: ["react", "react-dom"] },
+  optimizeDeps: { include: [...REACT_DEPS, "qrcode"] },
+  environments: {
+    void_worker: { optimizeDeps: { include: REACT_DEPS } },
+  },
 });

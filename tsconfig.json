@@ -1,11 +1,18 @@
 {
   "extends": "./.void/tsconfig.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "strict": true,
     "jsx": "react-jsx",
-    "types": ["void/env", "vite/client"],
-    "noEmit": true
+    "types": ["@cloudflare/workers-types", "void/env", "vite/client"],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist", "crates", ".void/dev", "test-results", "playwright-report"]
+  "include": ["**/*.ts", "**/*.tsx", ".void/*.d.ts"],
+  "exclude": ["node_modules", "dist", "crates", "test-results", "playwright-report", "public"]
 }

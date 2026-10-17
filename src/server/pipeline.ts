@@ -117,7 +117,7 @@ async function onOrderPaid(db: D1Database, env: PipelineEnv, ctx: BranchCtx, ord
     total: o.total,
     payments: o.payments.map((p) => ({ method: p.method, amount: p.amount, change: p.change, splitLabel: p.splitLabel })),
     points,
-    url: `${env.PUBLIC_URL.replace(/\/$/, "")}/r/${token}`,
+    url: `${env.PUBLIC_URL.replace(/\/$/, "")}/receipt/${token}`,
   };
   await db
     .prepare("INSERT INTO receipts (token, order_id, tenant_id, branch_id, snapshot, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(order_id) DO UPDATE SET snapshot = excluded.snapshot")

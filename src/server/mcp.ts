@@ -276,7 +276,7 @@ export async function handleMcp(c: Ctx): Promise<Response> {
   }
   const batch = Array.isArray(msg);
   const results = [];
-  for (const m of batch ? msg : [msg]) {
+  for (const m of batch ? (msg as RpcRequest[]) : [msg as RpcRequest]) {
     const r = await handleOne(c, m, staff);
     if (r) results.push(r);
   }

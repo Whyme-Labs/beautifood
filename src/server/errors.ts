@@ -16,7 +16,9 @@ export function fail(status: number, code: string, message: string, data?: unkno
   throw new AppError(status, code, message, data);
 }
 
-export const notFound = (what: string): never => fail(404, "not_found", `${what} not found`);
+export function notFound(what: string): never {
+  return fail(404, "not_found", `${what} not found`);
+}
 
 export function errorResponse(c: Context, e: unknown): Response {
   if (e instanceof AppError) return c.json({ error: { code: e.code, message: e.message, data: e.data } }, e.status as 400);
