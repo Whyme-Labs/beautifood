@@ -28,6 +28,14 @@ export async function sign(secret: string, payload: TokenPayload): Promise<strin
 }
 
 export async function verify<K extends TokenPayload["k"]>(secret: string, token: string | null | undefined, kind: K): Promise<Extract<TokenPayload, { k: K }> | null> {
+  try {
+    return await verifyUnsafe(secret, token, kind);
+  } catch {
+    return null; // malformed input (bad base64 etc.) is simply an invalid token
+  }
+}
+
+async function verifyUnsafe<K extends TokenPayload["k"]>(secret: string, token: string | null | undefined, kind: K): Promise<Extract<TokenPayload, { k: K }> | null> {
   if (!token || token.length > 2048) return null;
   const [body, sig] = token.split(".");
   if (!body || !sig) return null;

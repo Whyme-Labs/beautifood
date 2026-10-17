@@ -4,7 +4,7 @@ import { api, body, deviceId } from "../../../../../src/server/http";
 import { kick } from "../../../../../src/server/routing";
 import { appEnv } from "../../../../../src/server/appenv";
 import { getBranch } from "../../../../../src/server/domain/context";
-import { joinQueue, ticketView } from "../../../../../src/server/domain/floor";
+import { joinQueue, ticketView, toTicket } from "../../../../../src/server/domain/floor";
 import { ensureMember } from "../../../../../src/server/domain/loyalty";
 import { sign } from "../../../../../src/server/sign";
 
@@ -26,5 +26,11 @@ export const POST = api(async (c) => {
   const { ticket, existing } = await joinQueue(c.env.DB, ctx, { ...input, memberId, source: input.source ?? (c.req.header("x-agent") ? "agent" : "web") }, deviceId(c));
   const token = await sign(appEnv().TOKEN_SECRET, { k: "ticket", id: ticket.id, b: ctx.branch.id });
   kick(c);
-  return c.json({ existing, token, url: `/ticket/${ticket.id}?k=${encodeURIComponent(token)}`, ticket: await ticketView(c.env.DB, ctx, ticket.id) }, existing ? 200 : 201);
+  // cheap position count instead of a full board recompute: joins stay fast during a surge
+  const ahead = await c.env.DB.prepare("SELECT COUNT(*) AS n FROM tickets WHERE branch_id = ? AND category = ? AND status = 'waiting' AND created_at < ?")
+    .bind(ctx.branch.id, ticket.category, ticket.created_at)
+    .first<{ n: number }>();
+  const view = { ...toTicket(ticket), phone: undefined, email: undefined, position: (ahead?.n ?? 0) + 1, ahead: ahead?.n ?? 0, etaMinutes: null as number | null };
+  if ((ahead?.n ?? 0) < 25) view.etaMinutes = (await ticketView(c.env.DB, ctx, ticket.id)).etaMinutes;
+  return c.json({ existing, token, url: `/ticket/${ticket.id}?k=${encodeURIComponent(token)}`, ticket: view }, existing ? 200 : 201);
 });

@@ -4,7 +4,7 @@ import { DEFAULT_BRANCH_CONFIG, type BranchConfig, type Role } from "../../share
 import { fail, notFound } from "../errors";
 import { newId, randomToken, shortCode, slugify } from "../ids";
 import { Tx } from "../tx";
-import { branchConfig, streams, type BranchCtx } from "./context";
+import { branchConfig, invalidateBranch, streams, type BranchCtx } from "./context";
 import type { Staff } from "../http";
 
 export interface TenantInput {
@@ -76,6 +76,7 @@ export async function updateTenant(db: D1Database, tenantId: string, actor: stri
     .run(`UPDATE tenants SET ${sets.join(", ")} WHERE id = ?`, ...params, tenantId)
     .event({ stream: streams.tenant(tenantId), type: "tenant.updated", data: { fields: Object.keys(patch) } })
     .commit();
+  invalidateBranch(tenantId);
 }
 
 export async function addBranch(db: D1Database, tenantId: string, actor: string, input: { name: string; address?: string; config?: Partial<BranchConfig> }) {
@@ -118,6 +119,7 @@ export async function updateBranchConfig(db: D1Database, ctx: BranchCtx, actor: 
     )
     .event({ stream: streams.branch(ctx.branch.id), type: "branch.config_updated", data: { fields: Object.keys(patch) } })
     .commit();
+  invalidateBranch(ctx.branch.id);
   return merged;
 }
 

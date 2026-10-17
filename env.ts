@@ -12,4 +12,8 @@ export default defineEnv({
   VAPID_PUBLIC_KEY: string().optional(),
   VAPID_PRIVATE_KEY: string().optional(),
   VAPID_SUBJECT: string().default("mailto:ops@beautifood.app"),
+  /** Better Auth session secret (Void creates it on deploy; set locally for production previews). */
+  BETTER_AUTH_SECRET: string().optional(),
+  /** Lets a trusted caller (e2e runner) bypass auth rate limits. Never expose to browsers. */
+  AUTH_TRUSTED_KEY: string().optional(),
 });

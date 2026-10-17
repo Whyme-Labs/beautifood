@@ -75,8 +75,27 @@ export interface BranchCtx {
   config: BranchConfig;
 }
 
-/** Load a branch by id, or by "tenant-slug/branch-slug". */
-export async function getBranch(db: D1Database, ref: string): Promise<BranchCtx> {
+// Warm-isolate cache: branch config changes rarely, and every request needs it.
+// Writes in this isolate invalidate immediately; other isolates see changes within the TTL.
+const BRANCH_TTL_MS = 3000;
+const branchCache = new Map<string, { at: number; ctx: BranchCtx }>();
+
+export function invalidateBranch(id?: string) {
+  if (!id) return branchCache.clear();
+  for (const [k, v] of branchCache) if (v.ctx.branch.id === id || v.ctx.tenant.id === id) branchCache.delete(k);
+}
+
+/** Load a branch by id, or by "tenant-slug~branch-slug" (cached briefly per isolate). */
+export async function getBranch(db: D1Database, ref: string, fresh = false): Promise<BranchCtx> {
+  const hit = branchCache.get(ref);
+  if (!fresh && hit && Date.now() - hit.at < BRANCH_TTL_MS) return hit.ctx;
+  const ctx = await loadBranch(db, ref);
+  if (branchCache.size > 500) branchCache.clear();
+  branchCache.set(ref, { at: Date.now(), ctx });
+  return ctx;
+}
+
+async function loadBranch(db: D1Database, ref: string): Promise<BranchCtx> {
   let row: (BranchRow & { t_json?: string }) | null;
   if (ref.includes("/") || ref.includes("~")) {
     const [ts, bs] = ref.split(/[/~]/);

@@ -6,7 +6,7 @@ import type { BranchConfig, Suggestion } from "../../shared/types";
 import { fail, notFound } from "../errors";
 import { localParts, newId, randomToken } from "../ids";
 import { Tx } from "../tx";
-import { streams, type BranchCtx } from "./context";
+import { invalidateBranch, streams, type BranchCtx } from "./context";
 
 export interface TableRow {
   id: string;
@@ -239,9 +239,22 @@ export async function queueBoard(db: D1Database, ctx: BranchCtx, now = Date.now(
   };
 }
 
+// Guest-facing reads (ticket pages polling, public status) share a 2-second
+// snapshot per isolate, so hundreds of phones polling don't each re-run the
+// ETA simulation. Staff screens always read fresh.
+const boardCache = new Map<string, { at: number; board: Promise<QueueBoard> }>();
+export function sharedBoard(db: D1Database, ctx: BranchCtx): Promise<QueueBoard> {
+  const hit = boardCache.get(ctx.branch.id);
+  if (hit && Date.now() - hit.at < 2000) return hit.board;
+  const board = queueBoard(db, ctx);
+  boardCache.set(ctx.branch.id, { at: Date.now(), board });
+  board.catch(() => boardCache.delete(ctx.branch.id));
+  return board;
+}
+
 /** Public, cacheable snapshot: per-category waiting counts, now-calling numbers and wait estimates. */
 export async function publicStatus(db: D1Database, ctx: BranchCtx, now = Date.now()) {
-  const board = await queueBoard(db, ctx, now);
+  const board = await sharedBoard(db, ctx);
   const free = board.tables.filter((t) => t.status === "free").length;
   const categories = ctx.config.categories.map((cat) => {
     const inCat = board.tickets.filter((t) => t.category === cat.code && t.status === "waiting");
@@ -600,6 +613,7 @@ export async function closeSeating(db: D1Database, ctx: BranchCtx, actor: string
   const model = core().observeTurn(JSON.parse(ctx.branch.turn_model || "{}"), s.party_size, hour, weekend, minutes);
   tx.run("UPDATE branches SET turn_model = ? WHERE id = ?", JSON.stringify(model), ctx.branch.id);
   await tx.commit();
+  invalidateBranch(ctx.branch.id);
   return { closed: true, minutes: Math.round(minutes) };
 }
 
@@ -772,9 +786,9 @@ export async function seatTicket(db: D1Database, ctx: BranchCtx, actor: string, 
 }
 
 /** Public view of one ticket, including line position, ETA and (once seated) the table cart link. */
-export async function ticketView(db: D1Database, ctx: BranchCtx, ticketId: string) {
-  const board = await queueBoard(db, ctx);
+export async function ticketView(db: D1Database, ctx: BranchCtx, ticketId: string, fresh = false) {
   const t = await getTicket(db, ticketId);
+  const board = fresh || t.status !== "waiting" ? await queueBoard(db, ctx) : await sharedBoard(db, ctx);
   const onBoard = board.tickets.find((x) => x.id === ticketId);
   let seating: ReturnType<typeof toSeating> | null = null;
   let tableLabelsOut: string[] = [];

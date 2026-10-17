@@ -29,7 +29,31 @@ interface EventRow {
 const CONSUMER = "side-effects";
 const TYPES = ["order.paid", "queue.called", "queue.joined", "booking.created", "queue.seated"];
 
-export async function processPending(db: D1Database, env: PipelineEnv, limit = 100): Promise<{ processed: number; errors: number }> {
+// Coalesce runs per isolate: during a surge every command kicks the pipeline, but
+// only one run executes at a time; kicks that arrive meanwhile schedule one re-run.
+let running: Promise<{ processed: number; errors: number }> | null = null;
+let rerun = false;
+
+export function processPending(db: D1Database, env: PipelineEnv, limit = 100): Promise<{ processed: number; errors: number }> {
+  if (running) {
+    rerun = true;
+    return running;
+  }
+  running = (async () => {
+    let total = { processed: 0, errors: 0 };
+    do {
+      rerun = false;
+      const r = await runOnce(db, env, limit);
+      total = { processed: total.processed + r.processed, errors: total.errors + r.errors };
+    } while (rerun);
+    return total;
+  })().finally(() => {
+    running = null;
+  });
+  return running;
+}
+
+async function runOnce(db: D1Database, env: PipelineEnv, limit: number): Promise<{ processed: number; errors: number }> {
   await db.prepare("INSERT OR IGNORE INTO consumer_cursors (name, last_id, updated_at) VALUES (?, 0, ?)").bind(CONSUMER, Date.now()).run();
   const cur = (await db.prepare("SELECT last_id FROM consumer_cursors WHERE name = ?").bind(CONSUMER).first<{ last_id: number }>())!.last_id;
   const rows = (
