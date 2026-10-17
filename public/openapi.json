@@ -1,0 +1,23 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Beautifood public API", "version": "1.0.0", "description": "Guest-facing endpoints for menus, queues, bookings and the menu assistant. `{branch}` is a branch id or `restaurant-slug~branch-slug`. Money is in minor units." },
+  "paths": {
+    "/api/public/directory": { "get": { "summary": "List branches with live queue info", "parameters": [{ "name": "q", "in": "query", "schema": { "type": "string" } }], "responses": { "200": { "description": "Branches" } } } },
+    "/api/public/branches/{branch}": { "get": { "summary": "Branch details, modules, party-size classes", "parameters": [{ "$ref": "#/components/parameters/branch" }], "responses": { "200": { "description": "Branch" } } } },
+    "/api/public/branches/{branch}/menu": { "get": { "summary": "Menu with allergens and stories", "parameters": [{ "$ref": "#/components/parameters/branch" }], "responses": { "200": { "description": "Menu" } } } },
+    "/api/public/branches/{branch}/status": { "get": { "summary": "Live queue status", "parameters": [{ "$ref": "#/components/parameters/branch" }], "responses": { "200": { "description": "Status" } } } },
+    "/api/public/branches/{branch}/queue": {
+      "post": {
+        "summary": "Join the queue",
+        "parameters": [{ "$ref": "#/components/parameters/branch" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["partySize", "name"], "properties": { "partySize": { "type": "integer", "minimum": 1 }, "name": { "type": "string" }, "email": { "type": "string", "format": "email" }, "phone": { "type": "string" }, "joinLoyalty": { "type": "boolean" } } } } } },
+        "responses": { "201": { "description": "Ticket with signed token and tracking url" }, "429": { "description": "Queue full" } }
+      }
+    },
+    "/api/public/tickets/{id}": { "get": { "summary": "Ticket status (needs ?k=token)", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }, { "name": "k", "in": "query", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Ticket" } } }, "delete": { "summary": "Cancel ticket", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }, { "name": "k", "in": "query", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Cancelled" } } } },
+    "/api/public/branches/{branch}/availability": { "get": { "summary": "Booking slots", "parameters": [{ "$ref": "#/components/parameters/branch" }, { "name": "day", "in": "query", "schema": { "type": "string", "format": "date" } }, { "name": "party", "in": "query", "schema": { "type": "integer" } }], "responses": { "200": { "description": "Slots" } } } },
+    "/api/public/branches/{branch}/bookings": { "post": { "summary": "Book a table", "parameters": [{ "$ref": "#/components/parameters/branch" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["name", "partySize", "slotStart"], "properties": { "name": { "type": "string" }, "partySize": { "type": "integer" }, "slotStart": { "type": "integer", "description": "epoch ms" }, "email": { "type": "string" } } } } } }, "responses": { "201": { "description": "Booking" }, "409": { "description": "Slot taken" } } } },
+    "/api/public/branches/{branch}/assistant": { "post": { "summary": "Ask the menu assistant", "parameters": [{ "$ref": "#/components/parameters/branch" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["messages"], "properties": { "messages": { "type": "array", "items": { "type": "object", "properties": { "role": { "enum": ["user", "assistant"] }, "content": { "type": "string" } } } } } } } } }, "responses": { "200": { "description": "Answer with referenced dishes and allergen safety note" } } } }
+  },
+  "components": { "parameters": { "branch": { "name": "branch", "in": "path", "required": true, "schema": { "type": "string" } } } }
+}

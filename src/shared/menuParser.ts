@@ -125,7 +125,7 @@ const num = (s: string) => (/^\d+$/.test(s) ? Number(s) : NUM_WORDS[s.toLowerCas
  */
 export function parseFloorText(text: string): ParsedTable[] {
   const tables: ParsedTable[] = [];
-  let counter = 1;
+  const counters = new Map<string, number>();
   const segments = text.split(/[,;\n]|\band\b(?=\s+(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|a|an)\s)/i);
   for (const seg of segments) {
     const s = seg.trim();
@@ -153,7 +153,7 @@ export function parseFloorText(text: string): ParsedTable[] {
     const group = mergeable ? `${zone}-${seats}` : null;
     for (let i = 0; i < Math.min(count, 200); i++) {
       tables.push({
-        label: `${prefix}${counter++}`,
+        label: `${prefix}${(counters.set(prefix, (counters.get(prefix) ?? 0) + 1), counters.get(prefix))}`,
         seatsMin: Math.max(1, seats >= 6 ? Math.ceil(seats / 2) : seats <= 2 ? 1 : seats - 2),
         seatsMax: seats,
         zone,

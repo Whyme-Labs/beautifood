@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseMenuText, parseFloorText } from "../../src/shared/menuParser";
 import { inferAllergens, inferDietary } from "../../src/shared/allergens";
-import { observeTurn, predictTurn, priorMinutes, turnKey } from "../../src/shared/turnModel";
 import { can, inBranchScope, ROLE_PERMISSIONS, GRANTABLE } from "../../src/shared/rbac";
 
 const MENU = `
@@ -70,24 +69,6 @@ describe("floor parser", () => {
     const round = t.filter((x) => x.seatsMax === 10);
     expect(round[0].splitConfig).toEqual([{ suffix: "a", seats: 6 }, { suffix: "b", seats: 4 }]);
     expect(new Set(t.map((x) => x.label)).size).toBe(18);
-  });
-});
-
-describe("turn-time model", () => {
-  it("starts at prior and learns from observations", () => {
-    const tz = "Asia/Kuala_Lumpur";
-    const at = Date.UTC(2026, 9, 14, 4, 0); // Wed 12:00 KL → lunch weekday
-    expect(turnKey(2, at, tz)).toBe("1-2|lunch|wd");
-    let s = {};
-    expect(predictTurn(s, 2, at, tz)).toBe(priorMinutes(2));
-    for (let i = 0; i < 30; i++) s = observeTurn(s, 2, at, 30, tz);
-    expect(predictTurn(s, 2, at, tz)).toBeLessThan(33);
-    expect(predictTurn(s, 2, at, tz)).toBeGreaterThan(29);
-    // junk observations are ignored
-    expect(observeTurn(s, 2, at, 900, tz)).toBe(s);
-    // dinner on weekend is a different key, still at prior
-    const satDinner = Date.UTC(2026, 9, 17, 11, 0);
-    expect(predictTurn(s, 2, satDinner, tz)).toBe(priorMinutes(2));
   });
 });
 

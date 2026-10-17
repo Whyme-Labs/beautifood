@@ -1,0 +1,11 @@
+{
+  "extends": "./.void/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "types": ["void/env", "vite/client"],
+    "noEmit": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", "crates", ".void/dev", "test-results", "playwright-report"]
+}

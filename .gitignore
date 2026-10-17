@@ -12,3 +12,6 @@ dist/
 test-results/
 playwright-report/
 .dev.vars
+.void/
+.void-wrangler.jsonc
+crates/core/target/

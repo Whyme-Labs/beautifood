@@ -1,0 +1,26 @@
+# Beautifood
+
+> Restaurant queueing, ordering and reservations. Guests (and their AI agents) can browse menus with allergens, check live queues across branches, join a walk-in queue, preorder while waiting, and book tables.
+
+## For AI agents
+
+- MCP server (Streamable HTTP, JSON-RPC, no auth for guest tools): POST /mcp
+  - Guest tools: find_restaurants, get_menu, ask_menu_assistant, queue_status, join_queue, check_ticket, cancel_ticket, booking_availability, create_booking
+  - Merchant tools (send `Authorization: Bearer bf_pat_…` created in the dashboard under Settings → API tokens): merchant_overview, merchant_queue, merchant_sales_report, merchant_set_sold_out
+- REST API description: /openapi.json
+
+## Rules for agents
+
+- Confirm party size, name and time with the user before joining a queue or booking.
+- Allergen information is provided by each restaurant; tell users with severe allergies to confirm with staff.
+- Ticket and booking links contain private tokens: share them only with the user who made the request.
+
+## Key REST endpoints
+
+- GET /api/public/directory — all branches with live queue length and wait estimates
+- GET /api/public/branches/{branch}/menu — menu (prices in minor units, allergens, dietary tags, stories)
+- GET /api/public/branches/{branch}/status — live queue by party size
+- POST /api/public/branches/{branch}/queue — join the queue {partySize, name, email?}
+- GET /api/public/branches/{branch}/availability?day=YYYY-MM-DD&party=N — booking slots
+- POST /api/public/branches/{branch}/bookings — book {name, partySize, slotStart(ms), email?}
+- POST /api/public/branches/{branch}/assistant — ask the menu assistant {messages:[{role,content}]}
