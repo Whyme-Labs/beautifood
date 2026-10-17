@@ -62,7 +62,7 @@ export async function board(api: APIRequestContext, branchId: string) {
 }
 
 export async function tableIds(api: APIRequestContext, branchId: string) {
-  const ts = await json<{ id: string; label: string; status: string; seatsMax: number; mergeGroup: string | null; splitConfig: any }[]>(api.get(`/api/m/branches/${branchId}/tables`));
+  const ts = await json<{ id: string; label: string; status: string; seatsMax: number; mergeGroup: string | null; splitConfig: any; seatingId: string | null }[]>(api.get(`/api/m/branches/${branchId}/tables`));
   return Object.fromEntries(ts.map((t) => [t.label, t]));
 }
 
@@ -91,13 +91,13 @@ export async function inbox(api: APIRequestContext, to?: string, kind?: string) 
 export const participant = (name: string) => ({ id: `p-${name}-${uid()}`, name });
 
 /** Wait until `fn` returns truthy (polling), for asynchronous side effects. */
-export async function eventually<T>(fn: () => Promise<T>, timeout = 10_000): Promise<T> {
+export async function eventually<T>(fn: () => Promise<T>, timeout = 10_000): Promise<NonNullable<T>> {
   const start = Date.now();
   let last: unknown;
   while (Date.now() - start < timeout) {
     try {
       const v = await fn();
-      if (v) return v;
+      if (v) return v as NonNullable<T>;
     } catch (e) {
       last = e;
     }
