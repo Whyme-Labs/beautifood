@@ -21,6 +21,7 @@ export default defineConfig({
   projects: [
     { name: "api", testMatch: /api\/.*\.spec\.ts/ },
     { name: "ui", testMatch: /ui\/.*\.spec\.ts/, use: { ...devices["Desktop Chrome"], launchOptions: chromium ? { executablePath: chromium } : {} } },
+    { name: "load", testMatch: /load\/.*\.spec\.ts/, dependencies: ["api", "ui"] },
   ],
   webServer: {
     command: `PORT=${PORT} ./scripts/e2e-server.sh`,

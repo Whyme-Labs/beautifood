@@ -62,7 +62,7 @@ export async function board(api: APIRequestContext, branchId: string) {
 }
 
 export async function tableIds(api: APIRequestContext, branchId: string) {
-  const ts = await json<{ id: string; label: string; status: string; seatsMax: number; mergeGroup: string | null; splitConfig: any; seatingId: string | null }[]>(api.get(`/api/m/branches/${branchId}/tables`));
+  const ts = await json<{ id: string; label: string; status: string; seatsMax: number; mergeGroup: string | null; splitConfig: any; seatingId: string | null; staticToken: string }[]>(api.get(`/api/m/branches/${branchId}/tables`));
   return Object.fromEntries(ts.map((t) => [t.label, t]));
 }
 
