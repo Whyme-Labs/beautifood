@@ -28,12 +28,15 @@ export default defineQueue<BroadcastMessage>(async (batch, bindings) => {
       const body = c.body.replace(/\{name\}/g, r.name || "there");
       const res = await sendEmail(db, env, {
         tenantId,
+        fromName: t.name,
         to: r.email,
         subject: c.subject,
         html: `<div style="font-family:sans-serif;max-width:520px;margin:auto"><h2>${esc(t.name)}</h2><p>${esc(body).replace(/\n/g, "<br>")}</p>${c.promo_code ? `<p style="font-size:18px">Use code <b>${esc(c.promo_code)}</b></p>` : ""}<p style="color:#999;font-size:12px"><a href="${unsub}">Unsubscribe</a></p></div>`,
         text: `${body}${c.promo_code ? `\nUse code ${c.promo_code}` : ""}\nUnsubscribe: ${unsub}`,
         kind: "campaign",
         ref: campaignId,
+        // RFC 8058 one-click unsubscribe, which bulk senders need for Gmail/Yahoo delivery
+        headers: { "List-Unsubscribe": `<${unsub}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },
       });
       if (!res.duplicate) sent++;
     }

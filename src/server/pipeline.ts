@@ -150,6 +150,7 @@ async function onOrderPaid(db: D1Database, env: PipelineEnv, ctx: BranchCtx, ord
   if (email && ctx.config.modules.eReceipt) {
     await sendEmail(db, env, {
       tenantId: ctx.tenant.id,
+      fromName: ctx.tenant.name,
       to: email,
       subject: `Your receipt from ${ctx.tenant.name} — ${formatMoney(o.total, ctx.config.currency)}`,
       html: receiptHtml(snap),
@@ -165,6 +166,7 @@ async function onTicketJoined(db: D1Database, env: PipelineEnv, ctx: BranchCtx, 
   if (!t?.email) return;
   await sendEmail(db, env, {
     tenantId: ctx.tenant.id,
+    fromName: ctx.tenant.name,
     to: t.email,
     subject: `You're in the queue at ${ctx.branch.name}: ${t.number}`,
     html: `<p>Hi! Your queue number at <b>${ctx.tenant.name} ${ctx.branch.name}</b> is <b style="font-size:20px">${t.number}</b> (party of ${t.party_size}).</p><p>We'll email you when your table is ready.</p>`,
@@ -181,6 +183,7 @@ async function onTicketCalled(db: D1Database, env: PipelineEnv, ctx: BranchCtx, 
   if (!t.email) return;
   await sendEmail(db, env, {
     tenantId: ctx.tenant.id,
+    fromName: ctx.tenant.name,
     to: t.email,
     subject: `Your table is ready — ${t.number}`,
     html: `<p><b style="font-size:20px">${t.number}</b>, your table at <b>${ctx.branch.name}</b> is ready! Please come to the host stand within ${ctx.config.holdCalledMinutes} minutes.</p>`,
@@ -196,6 +199,7 @@ async function onBookingCreated(db: D1Database, env: PipelineEnv, ctx: BranchCtx
   const when = new Intl.DateTimeFormat("en-MY", { timeZone: ctx.config.timezone, dateStyle: "full", timeStyle: "short" }).format(new Date(b.slot_start));
   await sendEmail(db, env, {
     tenantId: ctx.tenant.id,
+    fromName: ctx.tenant.name,
     to: b.email,
     subject: `Booking confirmed at ${ctx.tenant.name} ${ctx.branch.name}`,
     html: `<p>Hi ${b.name}, your table for <b>${b.party_size}</b> on <b>${when}</b> is confirmed. You can preorder from your booking page so food is ready when you arrive.</p>`,

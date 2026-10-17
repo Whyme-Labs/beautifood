@@ -16,6 +16,7 @@ This document records the stack decision and how the hard parts work. The hard p
 | Framework | [Void](https://void.cloud) (Vite + Cloudflare Workers): file routes (Hono), React pages, Drizzle schema for D1, queues and crons as files | One deployable Worker, no servers to run |
 | Database | **Cloudflare D1** (SQLite): an append-only **event log** plus projection tables | Every command is one atomic `db.batch` |
 | Domain core | **Rust → WASM** (`crates/core`): pricing, bill splitting, the table-assignment engine, ETA simulation, the turn-time model | One implementation, loaded in the Worker *and* the browser, so the phone's bill preview and the till agree to the sen |
+| Email | **Cloudflare Email Sending** via Void's `sendEmail` (`SEND_EMAIL` binding), sender domain set up by `void deploy` | No third-party mail provider; recorded-then-delivered, retried with backoff, never double-sent |
 | Async work | Transactional outbox over the event log, drained right after each command (`waitUntil`) and by a 1-minute cron. A Cloudflare **Queue** handles campaign fan-out | At-least-once delivery with idempotent handlers gives exactly-once effects |
 | Auth | Better Auth (staff email/password) with per-tenant RBAC. Guests and members get **HMAC-signed capability tokens** | No guest accounts, no session state |
 | Realtime | Cheap polling with version cursors (`204 Not Modified`), edge-cached public reads, payload-less **Web Push** (VAPID) | Works with phones locked, and costs nothing at idle |

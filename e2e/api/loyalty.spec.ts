@@ -24,6 +24,9 @@ test.describe("loyalty, e-receipts, campaigns, notifications", () => {
       return r.length ? r : null;
     });
     expect(mail).toHaveLength(1);
+    // delivered through the Cloudflare SEND_EMAIL binding, exactly once
+    expect(mail[0]).toMatchObject({ status: "sent", attempts: 1, error: null });
+    expect(mail[0].message_id).toBeTruthy();
     expect(mail[0].subject).toContain("Your receipt from");
     expect(mail[0].html).toContain("Hainanese Chicken Rice");
     const expected = Math.floor(o.total / 100);
@@ -89,6 +92,9 @@ test.describe("loyalty, e-receipts, campaigns, notifications", () => {
     const ali = await eventually(async () => (await inbox(s.owner, "ali@example.com", "campaign")).find((e) => e.subject === subject), 20_000);
     expect(ali.text).toContain("Hi Ali, Musang King cendol is back!");
     expect(ali.text).toContain("Use code WELCOME10");
+    expect(ali.status).toBe("sent");
+    const headers = JSON.parse(ali.headers!);
+    expect(headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
     const camp = await eventually(async () => (await json<any[]>(s.owner.get("/api/m/campaigns"))).find((c) => c.id === id && c.status === "sent"), 20_000);
     expect(camp.sent).toBe(3);
 
@@ -97,11 +103,15 @@ test.describe("loyalty, e-receipts, campaigns, notifications", () => {
     const r = await (await guestClient()).get(link);
     expect(r.status()).toBe(200);
     expect(await r.text()).toContain("unsubscribed");
+    // one-click unsubscribe (what Gmail's button does) works on the header URL too
+    const mei = await eventually(async () => (await inbox(s.owner, "mei@example.com", "campaign")).find((e) => e.subject === subject));
+    const oneClick = JSON.parse(mei.headers!)["List-Unsubscribe"].slice(1, -1).replace(/^https?:\/\/[^/]+/, BASE);
+    expect((await (await guestClient()).post(oneClick, { form: { "List-Unsubscribe": "One-Click" } })).status()).toBe(200);
     const forged = await (await guestClient()).get("/api/public/unsubscribe?t=forged.token");
     expect(forged.status()).toBe(400);
     const again = await json(s.owner.get(`/api/m/campaigns?preview=${encodeURIComponent(JSON.stringify({ type: "all" }))}`));
-    expect(again.count).toBe(2);
-    expect(again.sample).not.toContain("ali@example.com");
+    expect(again.count).toBe(1);
+    expect(again.sample).toEqual(["sam@example.com"]);
   });
 
   test("queue notifications: join email, and calling a ticket sends a VAPID-signed Web Push plus a 'table ready' email", async () => {

@@ -17,6 +17,7 @@ export const POST = api(async (c) => {
     .run();
   await sendEmail(c.env.DB, appEnv(), {
     tenantId: t.id,
+    fromName: t.name,
     to: e,
     subject: `${code} is your ${t.name} sign-in code`,
     html: `<p>Your sign-in code for <b>${t.name}</b> rewards is <b style="font-size:22px;letter-spacing:3px">${code}</b>. It expires in 10 minutes.</p>`,

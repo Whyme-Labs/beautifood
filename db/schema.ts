@@ -471,12 +471,18 @@ export const emails = sqliteTable(
     text: text("text").notNull(),
     kind: text("kind").notNull(),
     ref: text("ref").notNull(),
+    headers: text("headers"),
+    fromName: text("from_name"),
+    // queued → sent | logged (no binding outside production) | failed (retried) | rejected | unknown
     status: text("status").notNull().default("queued"),
     error: text("error"),
+    messageId: text("message_id"),
+    attempts: integer("attempts").notNull().default(0),
+    lastAttemptAt: integer("last_attempt_at"),
     createdAt: integer("created_at").notNull(),
     sentAt: integer("sent_at"),
   },
-  (t) => [uniqueIndex("emails_once").on(t.kind, t.ref, t.toEmail), index("emails_to").on(t.toEmail)],
+  (t) => [index("emails_retry").on(t.status, t.lastAttemptAt), uniqueIndex("emails_once").on(t.kind, t.ref, t.toEmail), index("emails_to").on(t.toEmail)],
 );
 
 export const pushSubscriptions = sqliteTable(

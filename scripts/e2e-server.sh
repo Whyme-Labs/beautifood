@@ -20,5 +20,5 @@ export PUBLIC_URL="http://127.0.0.1:$PORT"
   echo "VAPID_PUBLIC_KEY=$VAPID_PUBLIC_KEY"
   echo "VAPID_PRIVATE_KEY=$VAPID_PRIVATE_KEY"
 } > .env
-npx vite build >/dev/null
+E2E_SEND_EMAIL=1 npx vite build >/dev/null
 exec npx vite preview --port "$PORT" --host 127.0.0.1 --strictPort

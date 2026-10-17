@@ -50,9 +50,18 @@ Put these in `.env`; never commit it.
 |---|---|
 | `ANTHROPIC_API_KEY` | Claude answers the assistant, onboarding and insights. Without it, a deterministic local engine does |
 | `ANTHROPIC_MODEL` | Model to use (default `claude-opus-5-5`) |
-| `RESEND_API_KEY`, `EMAIL_FROM` | Real email delivery. Otherwise emails land in the dev inbox at `/m/inbox` |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Web Push. Generate them with `node scripts/vapid-keys.mjs` |
 | `TOKEN_SECRET`, `BETTER_AUTH_SECRET` | **Set strong values in production** |
+
+## Email
+
+Mail goes out through **Cloudflare Email Sending** (Void's `sendEmail` over the `SEND_EMAIL` binding). The sender is set in `src/shared/mail.ts`; change it to an address on a domain you control in Cloudflare. Each restaurant's name is used as the display name.
+
+- `npx void deploy --platform cloudflare` sets up Email Routing and Email Sending on that domain and binds `SEND_EMAIL`. Run `npx void email status --platform cloudflare` to check readiness.
+- Sending to arbitrary guests needs Workers Paid; on Workers Free, only verified recipients (`npx void email allow <address>`).
+- Locally there is no binding, so emails stay in the dev inbox at `/m/inbox` (status `logged`).
+- Every email is recorded once per (kind, reference, recipient). Failed sends are retried by the cron with backoff (up to 5 attempts within a day). Bad recipients are not retried, and a send whose outcome is unknown is never resent, to avoid duplicates.
+- Campaign emails carry one-click `List-Unsubscribe` headers.
 
 ## Tests
 
@@ -77,4 +86,4 @@ pnpm core   # cargo build --target wasm32-unknown-unknown + wasm-bindgen → src
 npx void deploy
 ```
 
-Void builds the Worker and provisions what the project declares: D1, the `broadcasts` queue and the 1-minute cron. Set `APP_ENV=production`, plus a `TOKEN_SECRET` of 32+ random characters (the app refuses to run in production without one), and the optional keys above.
+Void builds the Worker and provisions what the project declares: D1, the `broadcasts` queue, the 1-minute cron, and **Cloudflare Email Sending**. Set `APP_ENV=production`, plus a `TOKEN_SECRET` of 32+ random characters (the app refuses to run in production without one), and the optional keys above.

@@ -85,7 +85,7 @@ export async function runPipeline(api: APIRequestContext) {
 
 export async function inbox(api: APIRequestContext, to?: string, kind?: string) {
   const qs = new URLSearchParams({ ...(to ? { to } : {}), ...(kind ? { kind } : {}), html: "1" });
-  return json<{ to_email: string; subject: string; kind: string; ref: string; html: string; text: string }[]>(api.get(`/api/dev/inbox?${qs}`));
+  return json<{ to_email: string; subject: string; kind: string; ref: string; html: string; text: string; status: string; error: string | null; message_id: string | null; attempts: number; headers: string | null }[]>(api.get(`/api/dev/inbox?${qs}`));
 }
 
 export const participant = (name: string) => ({ id: `p-${name}-${uid()}`, name });

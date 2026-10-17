@@ -7,8 +7,6 @@ export default defineEnv({
   PUBLIC_URL: string().default("http://localhost:5173"),
   ANTHROPIC_API_KEY: string().optional(),
   ANTHROPIC_MODEL: string().default("claude-opus-5-5"),
-  RESEND_API_KEY: string().optional(),
-  EMAIL_FROM: string().default("Beautifood <receipts@beautifood.app>"),
   VAPID_PUBLIC_KEY: string().optional(),
   VAPID_PRIVATE_KEY: string().optional(),
   VAPID_SUBJECT: string().default("mailto:ops@beautifood.app"),
