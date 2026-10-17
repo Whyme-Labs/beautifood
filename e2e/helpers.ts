@@ -114,3 +114,9 @@ export async function hire(owner: APIRequestContext, role: string, branchIds: st
   await json(s.api.post("/api/m/invites", { data: { code: inv.code } }));
   return { ...s, code: inv.code };
 }
+
+/** Navigate and wait until React has hydrated, so clicks and typing reach the app. */
+export async function open(page: import("@playwright/test").Page, url: string) {
+  await page.goto(url);
+  await page.locator("html[data-hydrated]").waitFor();
+}

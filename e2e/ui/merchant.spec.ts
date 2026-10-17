@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext } from "@playwright/test";
-import { BASE, join, json, uid } from "../helpers";
+import { BASE, join, json, open, uid } from "../helpers";
 
 async function signUp(ctx: BrowserContext, name = "Olivia Owner") {
   const email = `${uid("ui")}@test.co`;
@@ -18,14 +18,15 @@ async function seededOwner(ctx: BrowserContext) {
 
 test.describe("merchant console (browser)", () => {
   test("sign up in the UI, create a restaurant, paste a menu, AI drafts it, apply", async ({ page }) => {
-    await page.goto("/m/login");
+    await open(page, "/m/login");
     await page.getByRole("button", { name: "New here? Create an account" }).click();
     await page.getByLabel("Your name").fill("Faye");
     await page.getByLabel("Email").fill(`${uid("faye")}@test.co`);
     await page.getByLabel("Password").fill("password-123456");
     await page.getByRole("button", { name: "Create account" }).click();
-    await page.waitForURL((u) => !u.pathname.startsWith("/m/login"));
-    await page.goto("/m/setup");
+    // a new account has no restaurant yet, so the console sends it to setup
+    await page.waitForURL(/\/m\/setup/);
+    await page.locator("html[data-hydrated]").waitFor();
     await page.getByLabel("Restaurant name").fill(`Faye's Noodle Bar ${uid("")}`);
     await page.getByLabel("First branch").fill("Damansara");
     await page.getByRole("button", { name: "Create restaurant" }).click();
@@ -37,7 +38,7 @@ test.describe("merchant console (browser)", () => {
     await expect(page.getByTestId("draft-table")).toHaveCount(6);
     await page.getByTestId("apply-draft").click();
     await expect(page.getByTestId("setup-done")).toContainText("Applied 3 dishes and 6 tables");
-    await page.goto("/m");
+    await open(page, "/m");
     await expect(page.getByTestId("onboarding")).toBeVisible();
   });
 
@@ -46,7 +47,7 @@ test.describe("merchant console (browser)", () => {
     await join(s.klcc.ref, 2, "Walk-in Wendy");
     await join(s.bangsar.ref, 4, "Bangsar Bob");
 
-    await page.goto("/m");
+    await open(page, "/m");
     await expect(page.getByTestId("branch-overview").locator("section")).toHaveCount(2);
     await expect(page.getByTestId("totals")).toContainText("2"); // two waiting across branches
 
@@ -64,13 +65,13 @@ test.describe("merchant console (browser)", () => {
     const dish = menu.items.find((i: any) => i.name === "Curry Mee");
     const order = await json(context.request.post(`/api/m/branches/${s.klcc.id}/orders`, { data: { seatingId: seating.id, items: [{ itemId: dish.id, qty: 2 }] } }), 201);
 
-    await page.goto("/m/kitchen");
+    await open(page, "/m/kitchen");
     const ticket = page.getByTestId("kds-ticket").filter({ hasText: "Curry Mee" });
     await expect(ticket).toBeVisible();
     await ticket.getByRole("button", { name: "All ready", exact: true }).click();
     await expect(ticket.getByRole("button", { name: "Served", exact: true })).toBeVisible();
 
-    await page.goto("/m/pos");
+    await open(page, "/m/pos");
     await page.getByTestId("open-bills").getByRole("button").filter({ hasText: order.number }).click();
     await expect(page.getByTestId("bill-item")).toHaveCount(1);
     await page.getByLabel("Cash tendered").fill("100");

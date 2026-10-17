@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { join, json, seed, tableIds } from "../helpers";
+import { join, json, open, seed, tableIds } from "../helpers";
 
 test.describe("guest journey (browser)", () => {
   test("queue from the phone → called → seated → two diners share one cart live → send to kitchen", async ({ browser }) => {
     const s = await seed();
     const ann = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
-    await ann.goto(`/r/${s.klcc.ref}`);
+    await open(ann, `/r/${s.klcc.ref}`);
     await expect(ann.getByTestId("queue-status")).toBeVisible();
     await ann.getByLabel("Party size").fill("1");
     await ann.getByLabel("More people").click();
@@ -31,7 +31,7 @@ test.describe("guest journey (browser)", () => {
 
     // a friend opens the same table link on their own phone
     const ben = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
-    await ben.goto(ann.url());
+    await open(ben, ann.url());
     await ben.getByLabel("Your name").fill("Ben");
     await ben.getByRole("button", { name: "Start ordering" }).click();
     await ben.getByRole("button", { name: "Add Teh Tarik" }).click();
@@ -60,7 +60,7 @@ test.describe("guest journey (browser)", () => {
   test("the customer directory shows every restaurant's live queues", async ({ page }) => {
     const s = await seed();
     await join(s.bangsar.ref, 3, "Queued");
-    await page.goto("/");
+    await open(page, "/");
     await page.getByLabel("Search restaurants").fill(s.slug.split("-").pop()!);
     const cards = page.getByTestId("branch-card");
     await expect(cards).toHaveCount(2);
@@ -72,7 +72,7 @@ test.describe("guest journey (browser)", () => {
 
   test("menu assistant chat answers allergen questions in the browser", async ({ page }) => {
     const s = await seed();
-    await page.goto(`/r/${s.klcc.ref}`);
+    await open(page, `/r/${s.klcc.ref}`);
     await page.getByRole("button", { name: /Ask what to eat/ }).click();
     const input = page.getByLabel("Ask the menu assistant");
     await input.fill("I'm allergic to peanuts, what's safe?");

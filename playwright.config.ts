@@ -9,7 +9,10 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   fullyParallel: true,
   workers: process.env.CI ? 2 : 4,
-  retries: 0,
+  // Locally the preview proxy occasionally gets `read ECONNRESET` from workerd under bursts of
+  // concurrent connections (an emulator socket limit, not app code). One retry absorbs it, and
+  // any retried test is reported as flaky in the report and test-results/e2e.json.
+  retries: 1,
   reporter: [["list"], ["html", { open: "never" }], ["json", { outputFile: "test-results/e2e.json" }]],
   use: {
     baseURL: `http://127.0.0.1:${PORT}`,

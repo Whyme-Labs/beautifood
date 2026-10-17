@@ -99,6 +99,8 @@ test.describe("AI for guests and merchants", () => {
     expect(names).toEqual(expect.arrayContaining(["find_restaurants", "get_menu", "ask_menu_assistant", "queue_status", "join_queue", "check_ticket", "cancel_ticket", "booking_availability", "create_booking"]));
     expect(names.some((n: string) => n.startsWith("merchant_"))).toBe(false);
 
+    const found = await call("find_restaurants", { query: s.slug.split("-").pop() });
+    expect(found.data.map((r: any) => r.branch).sort()).toEqual([s.bangsar.ref, s.klcc.ref].sort());
     const menu = await call("get_menu", { branch: s.klcc.ref, exclude_allergens: ["peanuts"] });
     expect(menu.data.items.length).toBeGreaterThan(5);
     expect(menu.data.items.some((i: any) => i.allergens.includes("peanuts"))).toBe(false);

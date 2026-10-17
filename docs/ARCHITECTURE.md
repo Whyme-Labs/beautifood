@@ -189,3 +189,11 @@ These can be switched on or off per branch:
 | Playwright `load` | 300 simultaneous queue joins (gap-free, duplicate-free); runs alone after the functional projects | 1 |
 
 E2E runs against a **production build** (`vite build` + `vite preview` on workerd) with a fresh D1, real Better Auth sessions, real VAPID-signed pushes to a dev sink, and the real queue consumer.
+
+**Known local-only flakiness.** The emulator is one workerd process over one SQLite file. Under bursts it occasionally drops a connection (`read ECONNRESET` between the preview proxy and workerd) or reports `SQLITE_BUSY`; neither is app code. The suite retries a test once, and Playwright reports any retried test as *flaky* rather than hiding it.
+
+Two real defects surfaced this way and are fixed:
+- **Unread request bodies.** A POST refused before its body was read (for example a `403`) left a poisoned pooled connection for the next request. The `api()` wrapper now always drains the request body.
+- **Directory search.** The query applied its `LIMIT` before the search filter, so a match could be cut off. Filtering now happens in SQL.
+
+The surge test retries like a real phone would; because joins are idempotent per device, a retry never creates a second ticket.

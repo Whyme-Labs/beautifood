@@ -9,6 +9,7 @@ import { availability, createBooking, toBooking } from "./domain/bookings";
 import { getBranch, type BranchCtx } from "./domain/context";
 import { joinQueue, publicStatus, queueBoard, cancelTicket, ticketView } from "./domain/floor";
 import { getMenu, setAvailability } from "./domain/menu";
+import { searchBranches } from "./domain/tenants";
 import { branchReport, tenantOverview } from "./domain/reports";
 import { AppError } from "./errors";
 import { requirePerm, requireStaff, type Ctx, type Staff } from "./http";
@@ -60,22 +61,11 @@ const TOOLS: Tool[] = [
     inputSchema: obj({ query: str("Optional search text") }, []),
     annotations: { readOnlyHint: true },
     run: async (c, a) => {
-      const q = String(a.query ?? "").toLowerCase();
-      const rows = (
-        await c.env.DB.prepare("SELECT b.id, b.slug, b.name, b.address, t.slug AS ts, t.name AS tn, t.cuisine FROM branches b JOIN tenants t ON t.id = b.tenant_id WHERE b.active = 1 LIMIT 100").all<{
-          id: string;
-          slug: string;
-          name: string;
-          address: string;
-          ts: string;
-          tn: string;
-          cuisine: string;
-        }>()
-      ).results.filter((r) => !q || `${r.tn} ${r.name} ${r.cuisine} ${r.address}`.toLowerCase().includes(q));
+      const rows = await searchBranches(c.env.DB, String(a.query ?? ""), 25);
       return Promise.all(
         rows.map(async (r) => {
           const st = await publicStatus(c.env.DB, await getBranch(c.env.DB, r.id));
-          return { branch: `${r.ts}~${r.slug}`, restaurant: r.tn, branchName: r.name, cuisine: r.cuisine, address: r.address, queue: st.categories.map((x) => ({ partySizes: `${x.min}-${x.max}`, waiting: x.waiting, estimatedWaitMinutes: x.estimateMinutes })) };
+          return { branch: `${r.tenant_slug}~${r.slug}`, restaurant: r.tenant_name, branchName: r.name, cuisine: r.cuisine, address: r.address, queue: st.categories.map((x) => ({ partySizes: `${x.min}-${x.max}`, waiting: x.waiting, estimatedWaitMinutes: x.estimateMinutes })) };
         }),
       );
     },

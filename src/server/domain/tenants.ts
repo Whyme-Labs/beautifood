@@ -209,3 +209,18 @@ export async function updateStaff(db: D1Database, by: Staff, userId: string, inp
 }
 
 export const DEFAULTS = DEFAULT_BRANCH_CONFIG;
+
+/** Active branches matching a search (restaurant, branch, cuisine or address), filtered in SQL so the limit never hides matches. */
+export async function searchBranches(db: D1Database, query: string, limit = 50) {
+  const q = `%${query.trim().toLowerCase().replace(/[\\%_]/g, (ch) => `\\${ch}`)}%`;
+  return (
+    await db
+      .prepare(
+        `SELECT b.id, b.slug, b.name, b.address, t.slug AS tenant_slug, t.name AS tenant_name, t.cuisine FROM branches b JOIN tenants t ON t.id = b.tenant_id
+         WHERE b.active = 1 AND lower(t.name || ' ' || b.name || ' ' || COALESCE(t.cuisine, '') || ' ' || COALESCE(b.address, '')) LIKE ? ESCAPE '\\'
+         ORDER BY t.name, b.name LIMIT ?`,
+      )
+      .bind(q, limit)
+      .all<{ id: string; slug: string; name: string; address: string; tenant_slug: string; tenant_name: string; cuisine: string }>()
+  ).results;
+}

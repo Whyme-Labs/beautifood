@@ -18,6 +18,11 @@ export function api(fn: (c: Ctx) => unknown | Promise<unknown>) {
       return out === undefined ? null : (out as never);
     } catch (e) {
       return errorResponse(c as unknown as Context, e);
+    } finally {
+      // Always consume the request body (e.g. a POST refused before it was parsed): replying
+      // with it unread can poison a pooled upstream connection for the next request.
+      const raw = (c as unknown as Ctx).req.raw;
+      if (raw.body && !raw.bodyUsed) await raw.arrayBuffer().catch(() => undefined);
     }
   });
 }
