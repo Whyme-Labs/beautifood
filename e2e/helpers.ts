@@ -105,3 +105,12 @@ export async function eventually<T>(fn: () => Promise<T>, timeout = 10_000): Pro
   }
   throw last ?? new Error("timed out waiting for condition");
 }
+
+/** Invite a new staff member with a role and sign them in. */
+export async function hire(owner: APIRequestContext, role: string, branchIds: string[], name = `${role} person`) {
+  const email = `${uid(role)}@test.co`;
+  const inv = await json<{ code: string }>(owner.post("/api/m/staff", { data: { email, name, role, branchIds } }), 201);
+  const s = await staffClient(email, name);
+  await json(s.api.post("/api/m/invites", { data: { code: inv.code } }));
+  return { ...s, code: inv.code };
+}
