@@ -87,18 +87,30 @@ jobs:
           sub=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain')
           echo "subdomain=$sub" >> "$GITHUB_OUTPUT"
-      - name: D1 status (read-only)
-        continue-on-error: true
+      - name: Guard against touching another app's resources
+        # The account also hosts an older "beautifood" app with live users. Refuse to deploy
+        # if our target Worker or database exists but does not look like ours.
         run: |
-          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database"
-          db=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$api?name=beautifood-db" | jq -c '.result[0] // empty')
-          echo "database: $db"
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          auth=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN")
+          db=$(curl -fsS "${auth[@]}" "$api/d1/database?name=beautifood-app-db" | jq -c '[.result[] | select(.name == "beautifood-app-db")][0] // empty')
           if [ -n "$db" ]; then
             id=$(echo "$db" | jq -r .uuid)
-            for q in "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name" "SELECT * FROM d1_migrations" "SELECT COUNT(*) AS users FROM user"; do
-              echo "== $q"
-              curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" -X POST "$api/$id/query" -d "$(jq -n --arg sql "$q" '{sql:$sql}')" | jq -c '.result[0].results // .errors'
+            applied=$(curl -fsS "${auth[@]}" -H "content-type: application/json" -X POST "$api/d1/database/$id/query" \
+              -d '{"sql":"SELECT name FROM d1_migrations"}' | jq -r '.result[0].results[]?.name' || true)
+            for m in $applied; do
+              if [ ! -f "db/migrations/$m" ]; then echo "::error::beautifood-app-db has migration $m that is not ours; refusing to deploy"; exit 1; fi
             done
+            echo "beautifood-app-db exists and its migration history is ours"
+          else
+            echo "beautifood-app-db does not exist yet; Void will create it"
+          fi
+          if curl -fsS "${auth[@]}" "$api/workers/scripts" | jq -e '.result[] | select(.id == "beautifood-app")' >/dev/null; then
+            if [ ! -f void.lock.json ]; then echo "::error::A Worker named beautifood-app already exists but this repo has no void.lock.json; refusing to overwrite it"; exit 1; fi
+            echo "Worker beautifood-app exists and is recorded in void.lock.json"
+          else
+            echo "Worker beautifood-app does not exist yet"
           fi
       - name: Deploy (Worker, D1 + migrations, queue, cron, email)
         env:
@@ -113,7 +125,7 @@ jobs:
         id: url
         run: |
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | grep -v -- '-[0-9a-f]\{8\}\.' | head -1)
-          if [ -z "$url" ]; then url="https://beautifood.${{ steps.sub.outputs.subdomain }}.workers.dev"; fi
+          if [ -z "$url" ]; then url="https://beautifood-app.${{ steps.sub.outputs.subdomain }}.workers.dev"; fi
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
       - name: Point links at the public URL

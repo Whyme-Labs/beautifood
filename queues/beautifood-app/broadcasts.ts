@@ -1,10 +1,10 @@
 // Campaign fan-out: each message carries up to 50 recipients. Emails are
 // idempotent per (campaign, recipient), so redelivered batches never double-send.
 import { defineQueue } from "void";
-import type { BroadcastMessage } from "../src/server/domain/campaigns";
-import { sendEmail } from "../src/server/domain/messaging";
-import { appEnv } from "../src/server/appenv";
-import { sign } from "../src/server/sign";
+import type { BroadcastMessage } from "../../src/server/domain/campaigns";
+import { sendEmail } from "../../src/server/domain/messaging";
+import { appEnv } from "../../src/server/appenv";
+import { sign } from "../../src/server/sign";
 
 export const maxBatchSize = 10;
 export const maxRetries = 5;
