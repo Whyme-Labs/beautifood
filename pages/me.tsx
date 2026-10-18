@@ -1,8 +1,11 @@
 // Member rewards: passwordless sign-in per restaurant, points, tier progress, history and receipts.
 import { useEffect, useState } from "react";
+import { LogOut, Mail, Receipt } from "lucide-react";
 import { api } from "../src/ui/api";
 import { useLocal, useQuery } from "../src/ui/hooks";
-import { Logo, Money, useAction } from "../src/ui/components";
+import { Money, Stub, useAction } from "../src/ui/components";
+import { GuestBar } from "../src/ui/guest";
+import { useI18n } from "../src/i18n/react";
 
 interface Me {
   restaurant: { name: string; slug: string };
@@ -14,6 +17,7 @@ interface Me {
 }
 
 export default function MePage() {
+  const { t, f } = useI18n();
   const q = useQuery();
   const [tenant, setTenant] = useState("");
   const [email, setEmail] = useState("");
@@ -32,49 +36,50 @@ export default function MePage() {
 
   return (
     <>
-      <header className="topbar">
-        <div className="wrap">
-          <Logo />
-          <span className="muted">Rewards</span>
-        </div>
-      </header>
+      <GuestBar>{t("rewards.tag")}</GuestBar>
       <main className="narrow">
         {me ? (
-          <div className="col" data-testid="member">
-            <section className="hero">
-              <div className="muted">{me.restaurant.name} rewards</div>
-              <div className="big-number">{me.member.points}</div>
-              <div>
-                points · <b>{me.member.tier}</b> · worth <Money v={me.member.points * me.redeem.valuePerPoint} />
+          <div className="col" style={{ gap: 18 }} data-testid="member">
+            <Stub stock="A" tear={70}>
+              <div className="row between">
+                <span className="stub-label">{t("rewards.program", { restaurant: me.restaurant.name })}</span>
+                <span className="badge" style={{ background: "#1a1814", color: "var(--sun)" }}>{me.member.tier}</span>
               </div>
-              {me.nextTier && (
-                <p className="muted" style={{ marginTop: 6 }}>
-                  {me.nextTier.pointsNeeded} more points to {me.nextTier.name}
-                </p>
-              )}
-            </section>
+              <div className="serial mega" style={{ margin: "8px 0 0" }}>
+                {f.number(me.member.points)}
+              </div>
+              <div style={{ fontWeight: 650 }}>
+                {t("rewards.points")} · {t("rewards.worth", { value: f.money(me.member.points * me.redeem.valuePerPoint) })}
+              </div>
+              <div style={{ marginTop: 34, fontWeight: 600 }}>{me.nextTier ? t("rewards.toNext", { count: me.nextTier.pointsNeeded, tier: me.nextTier.name }) : me.member.email}</div>
+            </Stub>
             <section className="card">
-              <h2>Recent visits</h2>
+              <h2>{t("rewards.visits")}</h2>
               <div className="list">
                 {me.orders.map((o) => (
-                  <div key={o.id} className="row between">
-                    <span>
-                      {o.branch} · #{o.number} · {new Date(o.closed_at).toLocaleDateString()}
+                  <div key={o.id} className="row between nowrap">
+                    <span className="grow">
+                      <b>{o.branch}</b> · #{o.number}
+                      <div className="muted" style={{ fontSize: 13 }}>{f.date(o.closed_at)}</div>
                     </span>
-                    <span className="row">
+                    <span className="row nowrap">
                       <Money v={o.total} />
-                      {o.receipt_token && <a href={`/receipt/${o.receipt_token}`}>receipt</a>}
+                      {o.receipt_token && (
+                        <a className="btn small" href={`/receipt/${o.receipt_token}`}>
+                          <Receipt size={14} /> {t("rewards.receipt")}
+                        </a>
+                      )}
                     </span>
                   </div>
                 ))}
-                {!me.orders.length && <div className="muted">No visits yet.</div>}
+                {!me.orders.length && <div className="muted">{t("rewards.noVisits")}</div>}
               </div>
             </section>
             <label className="inline">
-              <input type="checkbox" checked={me.member.optIn} onChange={(e) => run(async () => (await api("/api/public/members/me", { method: "PATCH", body: { optIn: e.target.checked }, headers: { authorization: `Member ${tokens[tenant]}` } }), setMe({ ...me, member: { ...me.member, optIn: e.target.checked } })))} /> Send me offers by email
+              <input type="checkbox" checked={me.member.optIn} onChange={(e) => run(async () => (await api("/api/public/members/me", { method: "PATCH", body: { optIn: e.target.checked }, headers: { authorization: `Member ${tokens[tenant]}` } }), setMe({ ...me, member: { ...me.member, optIn: e.target.checked } })))} /> {t("rewards.offers")}
             </label>
-            <button className="btn ghost" onClick={() => setTokens(Object.fromEntries(Object.entries(tokens).filter(([t]) => t !== tenant)))}>
-              Sign out
+            <button className="btn ghost" onClick={() => setTokens(Object.fromEntries(Object.entries(tokens).filter(([x]) => x !== tenant)))}>
+              <LogOut size={16} /> {t("common.signOut")}
             </button>
           </div>
         ) : (
@@ -82,7 +87,7 @@ export default function MePage() {
             className="card col"
             onSubmit={(e) => {
               e.preventDefault();
-              if (!sent) run(async () => (await api("/api/public/members/otp", { body: { email, tenant } }), setSent(true)), "Check your email for a 6-digit code");
+              if (!sent) run(async () => (await api("/api/public/members/otp", { body: { email, tenant } }), setSent(true)), t("rewards.codeSent"));
               else
                 run(async () => {
                   const r = await api<{ token: string }>("/api/public/members/verify", { body: { email, tenant, code } });
@@ -90,23 +95,24 @@ export default function MePage() {
                 });
             }}
           >
-            <h1>Your rewards</h1>
+            <h1>{t("rewards.title")}</h1>
             <label>
-              Restaurant
-              <input value={tenant} onChange={(e) => setTenant(e.target.value)} placeholder="restaurant name in the link, e.g. beautifood-demo" required />
+              {t("rewards.restaurant")}
+              <input value={tenant} onChange={(e) => setTenant(e.target.value)} placeholder="beautifood-demo" required />
+              <span className="hint">{t("rewards.restaurantHint")}</span>
             </label>
             <label>
-              Email
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              {t("common.email")}
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
             </label>
             {sent && (
               <label>
-                6-digit code
-                <input inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value)} pattern="\d{6}" required />
+                {t("rewards.code")}
+                <input inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} pattern="\d{6}" required className="serial" style={{ fontSize: 26, letterSpacing: "0.2em" }} />
               </label>
             )}
-            <button className="btn primary" disabled={pending}>
-              {sent ? "Sign in" : "Email me a code"}
+            <button className="btn primary big" disabled={pending}>
+              <Mail size={18} /> {sent ? t("common.signIn") : t("rewards.sendCode")}
             </button>
           </form>
         )}

@@ -13,7 +13,7 @@ export const GET = api(async (c) => {
   if (!t) notFound("Table");
   const ctx = await getBranch(c.env.DB, t.branch_id);
   const base = { branch: { id: ctx.branch.id, name: ctx.branch.name, restaurant: ctx.tenant.name }, table: { label: t.label, seatsMax: t.seats_max } };
-  if (!ctx.config.modules.tableQr || ctx.config.qrMode === "dynamic") return { ...base, action: "ask_staff", message: "Please ask our staff for your table's ordering code." };
+  if (!ctx.config.modules.tableQr || ctx.config.qrMode === "dynamic") return { ...base, action: "ask_staff", reason: "dynamic", message: "Please ask our staff for your table's ordering code." };
   if (t.status === "seated" && t.seating_id) {
     const s = await c.env.DB.prepare("SELECT session_id FROM seatings WHERE id = ? AND status = 'open'").bind(t.seating_id).first<{ session_id: string }>();
     if (s) {
@@ -22,5 +22,5 @@ export const GET = api(async (c) => {
     }
   }
   if (t.status === "free" && ctx.config.staticQrSelfSeat) return { ...base, action: "self_seat" };
-  return { ...base, action: "ask_staff", message: t.status === "free" ? "Please check in with our host to be seated." : "This table isn't ready for ordering yet. Please ask our staff." };
+  return { ...base, action: "ask_staff", reason: t.status === "free" ? "free" : "not_ready", message: t.status === "free" ? "Please check in with our host to be seated." : "This table isn't ready for ordering yet. Please ask our staff." };
 });

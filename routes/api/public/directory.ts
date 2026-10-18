@@ -19,7 +19,7 @@ export const GET = api((c) =>
           branch: r.name,
           address: r.address,
           waiting: st.categories.reduce((s, x) => s + x.waiting, 0),
-          categories: st.categories.map((x) => ({ code: x.code, label: x.label, waiting: x.waiting, estimateMinutes: x.estimateMinutes })),
+          categories: st.categories.map((x) => ({ code: x.code, prefix: x.prefix, label: x.label, waiting: x.waiting, estimateMinutes: x.estimateMinutes })),
           freeTables: st.tables.free,
           nowCalling: st.nowCalling.map((n) => n.number),
         };

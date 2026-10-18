@@ -22,6 +22,7 @@ interface ItemRow {
   modifiers: string;
   active: number;
   sort: number;
+  translations?: string | null;
   sold_out?: number | null;
 }
 
@@ -43,12 +44,13 @@ export const toItem = (r: ItemRow): MenuItem => ({
   active: !!r.active,
   sort: r.sort,
   soldOut: !!r.sold_out,
+  translations: JSON.parse(r.translations || "{}"),
 });
 
 /** Full menu for a tenant; with a branch, sold-out flags are applied. */
 export async function getMenu(db: D1Database, tenantId: string, branchId?: string | null, includeInactive = false): Promise<Menu> {
-  const [cats, items, ver] = await db.batch([
-    db.prepare("SELECT id, name, sort FROM menu_categories WHERE tenant_id = ? ORDER BY sort, name").bind(tenantId),
+  const [cats, items, ver, lang] = await db.batch([
+    db.prepare("SELECT id, name, sort, translations FROM menu_categories WHERE tenant_id = ? ORDER BY sort, name").bind(tenantId),
     db
       .prepare(
         `SELECT i.*, a.sold_out FROM menu_items i LEFT JOIN item_availability a ON a.item_id = i.id AND a.branch_id = ?
@@ -56,10 +58,12 @@ export async function getMenu(db: D1Database, tenantId: string, branchId?: strin
       )
       .bind(branchId ?? "", tenantId),
     db.prepare("SELECT COUNT(*) AS v FROM events WHERE stream = ?").bind(streams.menu(tenantId)),
+    db.prepare("SELECT menu_language FROM tenants WHERE id = ?").bind(tenantId),
   ]);
   return {
+    language: (lang.results[0] as { menu_language?: string } | undefined)?.menu_language ?? "en",
     version: (ver.results[0] as { v: number }).v,
-    categories: cats.results as unknown as MenuCategory[],
+    categories: (cats.results as unknown as (MenuCategory & { translations: string })[]).map((c) => ({ ...c, translations: JSON.parse(c.translations || "{}") })),
     items: (items.results as unknown as ItemRow[]).map(toItem),
   };
 }

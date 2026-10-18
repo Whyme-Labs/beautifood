@@ -12,6 +12,8 @@ export interface TenantRow {
   timezone: string;
   loyalty: string;
   onboarding: string;
+  menu_language: string;
+  translations: string;
   created_at: number;
 }
 

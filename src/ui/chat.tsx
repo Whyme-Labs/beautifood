@@ -1,7 +1,9 @@
-// The AI menu assistant chat panel (customer-facing).
+// The AI menu assistant chat panel (customer-facing). Answers come back in the guest's language.
 import { useRef, useState } from "react";
+import { ArrowUp, Plus, ShieldAlert, Sparkles } from "lucide-react";
 import { api } from "./api";
-import { Money } from "./components";
+import { Money, errorText } from "./components";
+import { useI18n } from "../i18n/react";
 
 interface Reply {
   answer: string;
@@ -11,6 +13,7 @@ interface Reply {
 }
 
 export function AssistantChat({ branch, currency, onAdd }: { branch: string; currency: string; onAdd?: (itemId: string) => void }) {
+  const { t, locale } = useI18n();
   const [msgs, setMsgs] = useState<{ role: "user" | "assistant"; content: string; reply?: Reply }[]>([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -25,61 +28,71 @@ export function AssistantChat({ branch, currency, onAdd }: { branch: string; cur
       const r = await api<Reply>(`/api/public/branches/${branch}/assistant`, { body: { messages: next.map(({ role, content }) => ({ role, content })) } });
       setMsgs([...next, { role: "assistant", content: r.answer, reply: r }]);
     } catch (e) {
-      setMsgs([...next, { role: "assistant", content: (e as Error).message }]);
+      setMsgs([...next, { role: "assistant", content: errorText(e, locale) }]);
     } finally {
       setBusy(false);
-      setTimeout(() => end.current?.scrollIntoView({ behavior: "smooth" }), 50);
+      setTimeout(() => end.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 50);
     }
   };
+  const suggestions = [t("assistant.suggest1"), t("assistant.suggest2"), t("assistant.suggest3"), t("assistant.suggest4")];
   return (
     <div className="col" data-testid="assistant">
-      <div className="chat">
-        {!msgs.length && <div className="bubble bot">Hi! I can recommend dishes, check allergens, or tell you the story behind a dish. What are you in the mood for?</div>}
+      <div className="chat" aria-live="polite">
+        {!msgs.length && (
+          <div className="bubble bot">
+            <Sparkles size={15} style={{ verticalAlign: -2, marginRight: 6 }} />
+            {t("assistant.hello")}
+          </div>
+        )}
         {msgs.map((m, i) => (
           <div key={i} className={`bubble ${m.role === "user" ? "user" : "bot"}`} data-testid={m.role === "assistant" ? "assistant-answer" : undefined}>
             {m.content}
             {m.reply?.items.length ? (
-              <div className="col" style={{ marginTop: 8, gap: 6 }}>
+              <div className="col tight" style={{ marginTop: 10 }}>
                 {m.reply.items.map((it) => (
-                  <div key={it.id} className="row between card tight flat">
-                    <span>
-                      <b>{it.name}</b> <Money v={it.price} c={currency} />
-                      {it.reason ? <div className="muted" style={{ fontSize: 12 }}>{it.reason}</div> : null}
+                  <div key={it.id} className="row between nowrap card tight flat" style={{ padding: "8px 10px" }}>
+                    <span className="grow">
+                      <b>{it.name}</b> · <Money v={it.price} c={currency} />
+                      {it.reason ? <div className="muted" style={{ fontSize: 12.5 }}>{it.reason}</div> : null}
                     </span>
                     {onAdd && (
                       <button className="btn small primary" onClick={() => onAdd(it.id)}>
-                        Add
+                        <Plus size={14} /> {t("menu.add")}
                       </button>
                     )}
                   </div>
                 ))}
               </div>
             ) : null}
-            {m.reply?.safetyNote ? <div style={{ marginTop: 8, fontSize: 12 }} data-testid="safety-note">⚠️ {m.reply.safetyNote}</div> : null}
+            {m.reply?.safetyNote ? (
+              <div className="alert sun" style={{ marginTop: 10, fontSize: 12.5, padding: "8px 10px" }} data-testid="safety-note">
+                <ShieldAlert size={15} /> {m.reply.safetyNote}
+              </div>
+            ) : null}
           </div>
         ))}
-        {busy && <div className="bubble bot muted">Thinking…</div>}
+        {busy && <div className="bubble bot muted">{t("assistant.thinking")}</div>}
         <div ref={end} />
       </div>
       {!msgs.length && (
-        <div className="row">
-          {["What are your signatures?", "Anything vegetarian?", "I'm allergic to peanuts", "Not spicy please"].map((s) => (
-            <button key={s} className="btn small" onClick={() => ask(s)}>
+        <div className="chips" style={{ flexWrap: "wrap" }}>
+          {suggestions.map((s) => (
+            <button key={s} className="chip" onClick={() => ask(s)}>
               {s}
             </button>
           ))}
         </div>
       )}
       <form
-        className="row"
+        className="row nowrap"
         onSubmit={(e) => {
           e.preventDefault();
           ask(text);
         }}
       >
-        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Ask about the menu…" aria-label="Ask the menu assistant" style={{ flex: 1 }} />
-        <button className="btn primary" disabled={busy || !text.trim()}>
-          Ask
+        <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t("assistant.placeholder")} aria-label={t("assistant.label")} className="grow" />
+        <button className="btn primary" disabled={busy || !text.trim()} aria-label={t("assistant.send")}>
+          <ArrowUp size={17} /> {t("assistant.send")}
         </button>
       </form>
     </div>

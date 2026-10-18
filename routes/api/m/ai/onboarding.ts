@@ -12,6 +12,7 @@ import { importMenu } from "../../../../src/server/domain/menu";
 import { saveTables } from "../../../../src/server/domain/floor";
 import { updateTenant } from "../../../../src/server/domain/tenants";
 import { ItemInput } from "../../../../src/server/menuSchemas";
+import { translateMenu } from "../../../../src/server/domain/translations";
 import { fail } from "../../../../src/server/errors";
 
 export const GET = api(async (c) => {
@@ -59,6 +60,10 @@ export const PUT = api(async (c) => {
     if (ctx.tenant.id !== s.tenantId) fail(403, "forbidden", "Not your branch");
     requirePerm(s, "table.manage", ctx.branch.id);
     out.tables = (await saveTables(c.env.DB, ctx, actor, input.tables, input.replaceTables)).length;
+  }
+  if (input.items.length) {
+    // Translate the new menu for guests in every language; a failure here never blocks setup.
+    out.translations = await translateMenu(c.env.DB, { ...appEnv(), AI: (c.env as { AI?: never }).AI }, s.tenantId, actor).catch(() => null);
   }
   return { applied: out, status: await onboardingStatus(c.env.DB, s.tenantId) };
 });

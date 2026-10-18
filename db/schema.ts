@@ -48,6 +48,10 @@ export const tenants = sqliteTable("tenants", {
   timezone: text("timezone").notNull().default("Asia/Kuala_Lumpur"),
   loyalty: text("loyalty").notNull().default("{}"),
   onboarding: text("onboarding").notNull().default("{}"),
+  /** Language the menu is written in; other languages live in each item's translations. */
+  menuLanguage: text("menu_language").notNull().default("en"),
+  /** Restaurant story etc. per language: {"zh":{"story":"…","description":"…"}} */
+  translations: text("translations").notNull().default("{}"),
   createdAt: integer("created_at").notNull(),
 });
 
@@ -340,6 +344,8 @@ export const menuCategories = sqliteTable("menu_categories", {
   tenantId: text("tenant_id").notNull(),
   name: text("name").notNull(),
   sort: integer("sort").notNull().default(0),
+  /** {"zh":{"name":"…"}} */
+  translations: text("translations").notNull().default("{}"),
 });
 
 export const menuItems = sqliteTable(
@@ -362,6 +368,8 @@ export const menuItems = sqliteTable(
     modifiers: text("modifiers").notNull().default("[]"),
     active: integer("active").notNull().default(1),
     sort: integer("sort").notNull().default(0),
+    /** {"zh":{"name":"…","description":"…","story":"…","modifiers":{"Temperature":{"name":"温度","options":{"Hot":"热"}}}}} */
+    translations: text("translations").notNull().default("{}"),
   },
   (t) => [index("menu_items_tenant").on(t.tenantId)],
 );

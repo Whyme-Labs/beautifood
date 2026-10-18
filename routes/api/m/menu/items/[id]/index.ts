@@ -1,8 +1,8 @@
-import { api, body } from "../../../../../src/server/http";
-import { actorOf, staffTenant } from "../../../../../src/server/routing";
-import { deleteItem, upsertItem } from "../../../../../src/server/domain/menu";
-import { ItemInput } from "../../../../../src/server/menuSchemas";
-import { notFound } from "../../../../../src/server/errors";
+import { api, body } from "../../../../../../src/server/http";
+import { actorOf, staffTenant } from "../../../../../../src/server/routing";
+import { deleteItem, upsertItem } from "../../../../../../src/server/domain/menu";
+import { ItemInput } from "../../../../../../src/server/menuSchemas";
+import { notFound } from "../../../../../../src/server/errors";
 
 export const PUT = api(async (c) => {
   const s = await staffTenant(c, "menu.manage");

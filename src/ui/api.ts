@@ -22,12 +22,17 @@ export function deviceId(): string {
 }
 
 let tenantHeader: string | null = null;
+let apiLocale = "en";
+/** The UI language, sent as x-lang so emails, the assistant and menus answer in it. */
+export function setApiLocale(l: string) {
+  apiLocale = l;
+}
 export function setTenant(id: string | null) {
   tenantHeader = id;
 }
 
 export async function api<T = any>(path: string, init: { method?: string; body?: unknown; headers?: Record<string, string>; allow204?: boolean } = {}): Promise<T> {
-  const headers: Record<string, string> = { "x-device": deviceId(), ...(init.headers ?? {}) };
+  const headers: Record<string, string> = { "x-device": deviceId(), "x-lang": apiLocale, ...(init.headers ?? {}) };
   if (init.body !== undefined) headers["content-type"] = "application/json";
   if (tenantHeader && path.startsWith("/api/m")) headers["x-tenant"] = tenantHeader;
   const res = await fetch(path, { method: init.method ?? (init.body !== undefined ? "POST" : "GET"), headers, body: init.body !== undefined ? JSON.stringify(init.body) : undefined, credentials: "same-origin" });

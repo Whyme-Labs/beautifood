@@ -174,6 +174,17 @@ export interface ModifierGroup {
   options: ModifierOption[];
 }
 
+/** One language's version of a dish. Missing fields fall back to the original. */
+export interface ItemTranslation {
+  name?: string;
+  description?: string;
+  story?: string;
+  /** Labels only: carts and orders always carry the original group/option names. */
+  modifiers?: Record<string, { name?: string; options?: Record<string, string> }>;
+  /** "ai" when machine-translated and not yet reviewed by the restaurant. */
+  source?: "ai" | "manual" | "glossary";
+}
+
 export interface MenuItem {
   id: string;
   categoryId: string;
@@ -192,15 +203,19 @@ export interface MenuItem {
   active: boolean;
   sort: number;
   soldOut?: boolean;
+  translations?: Record<string, ItemTranslation>;
 }
 
 export interface MenuCategory {
   id: string;
   name: string;
   sort: number;
+  translations?: Record<string, { name?: string }>;
 }
 
 export interface Menu {
+  /** Language the original names are written in. */
+  language?: string;
   version: number;
   categories: MenuCategory[];
   items: MenuItem[];

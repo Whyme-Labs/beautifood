@@ -12,6 +12,7 @@ import { saveTables } from "../../../src/server/domain/floor";
 import { getBranch } from "../../../src/server/domain/context";
 import { ensureMember } from "../../../src/server/domain/loyalty";
 import { SAMPLE_ABOUT, SAMPLE_FLOOR, SAMPLE_MENU } from "../../../src/server/dev/sample";
+import { translateMenu } from "../../../src/server/domain/translations";
 
 export const POST = api(async (c) => {
   const user = getUser();
@@ -29,6 +30,8 @@ export const POST = api(async (c) => {
     .run();
   for (const b of [branchId, second.id]) await saveTables(c.env.DB, await getBranch(c.env.DB, b), actor, draft.tables, true);
   await c.env.DB.prepare("INSERT INTO promo_codes (tenant_id, code, kind, value, min_spend, max_uses, description) VALUES (?, 'WELCOME10', 'percent', 10, 3000, 100, '10% off first visit')").bind(tenantId).run();
+  // Bilingual out of the box (Claude/Workers AI when available, else the built-in glossary).
+  await translateMenu(c.env.DB, { ...appEnv(), AI: (c.env as { AI?: never }).AI }, tenantId, actor);
   for (const [email, name] of [["ali@example.com", "Ali"], ["mei@example.com", "Mei"], ["sam@example.com", "Sam"]]) await ensureMember(c.env.DB, tenantId, email, { name });
   return c.json({ tenantId, slug, branches: [{ id: branchId, ref: `${slug}~klcc` }, { id: second.id, ref: `${slug}~${second.slug}` }], items: draft.items.length, tables: draft.tables.length }, 201);
 });

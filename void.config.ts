@@ -17,6 +17,8 @@ export default defineConfig({
     compatibility_flags: ["nodejs_compat"],
   },
   ...(mailFrom ? { email: { from: mailFrom } } : {}),
+  // Workers AI is bound explicitly below for deploys only (it has no local simulator).
+  inference: { bindings: { ai: false } },
   cloudflare: {
     name: NAME,
     d1_databases: [{ binding: "DB", database_name: `${NAME}-db` }],

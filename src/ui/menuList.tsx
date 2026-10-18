@@ -1,71 +1,89 @@
 import { useMemo, useState } from "react";
+import { ChevronDown, Plus, ShieldAlert, Star } from "lucide-react";
 import type { Menu, MenuItem } from "../shared/types";
-import { ALLERGENS, ALLERGEN_LABELS } from "../shared/allergens";
+import { ALLERGENS } from "../shared/allergens";
+import { localizeCategory, localizeItem } from "../shared/menuI18n";
+import { useI18n } from "../i18n/react";
 import { Allergens, Dietary, Money } from "./components";
 
-/** Menu with category tabs and an allergen filter ("hide dishes containing…"). */
-export function MenuList({ menu, currency, onPick, action = "Add" }: { menu: Menu; currency: string; onPick?: (item: MenuItem) => void; action?: string }) {
+/** Menu with category chips and an allergen filter ("hide dishes containing…"), in the guest's language. */
+export function MenuList({ menu, currency, onPick, action }: { menu: Menu; currency: string; onPick?: (item: MenuItem) => void; action?: string }) {
+  const { t, locale } = useI18n();
+  const lang = menu.language ?? "en";
   const [avoid, setAvoid] = useState<string[]>([]);
   const [cat, setCat] = useState<string>("all");
   const [showStory, setShowStory] = useState<string | null>(null);
   const items = useMemo(() => menu.items.filter((i) => (cat === "all" || i.categoryId === cat) && !avoid.some((a) => i.allergens.includes(a))), [menu, cat, avoid]);
   return (
     <div className="col">
-      <div className="row" role="tablist">
-        <button className={`btn small ${cat === "all" ? "primary" : ""}`} onClick={() => setCat("all")}>
-          All
+      <div className="chips" role="toolbar" aria-label={t("menu.title")}>
+        <button className="chip" aria-pressed={cat === "all"} onClick={() => setCat("all")}>
+          {t("menu.all")}
         </button>
         {menu.categories.map((c) => (
-          <button key={c.id} className={`btn small ${cat === c.id ? "primary" : ""}`} onClick={() => setCat(c.id)}>
-            {c.name}
+          <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(c.id)}>
+            {localizeCategory(c, locale, lang)}
           </button>
         ))}
       </div>
-      <details>
-        <summary className="muted">Allergies? Hide dishes containing… {avoid.length ? `(${avoid.length})` : ""}</summary>
-        <div className="row" style={{ marginTop: 8 }}>
+      <details className="card sunk tight">
+        <summary className="row" style={{ cursor: "pointer", fontWeight: 650, listStyle: "none" }}>
+          <ShieldAlert size={16} /> {t("menu.avoid")}
+          {avoid.length ? <span className="badge brand">{t("menu.avoiding", { count: avoid.length })}</span> : null}
+          <ChevronDown size={16} style={{ marginLeft: "auto" }} />
+        </summary>
+        <div className="row" style={{ marginTop: 10, gap: 6 }}>
           {ALLERGENS.map((a) => (
-            <label key={a} className="inline">
-              <input type="checkbox" checked={avoid.includes(a)} onChange={(e) => setAvoid(e.target.checked ? [...avoid, a] : avoid.filter((x) => x !== a))} />
-              {ALLERGEN_LABELS[a].split(" (")[0]}
-            </label>
+            <button key={a} type="button" className="chip" aria-pressed={avoid.includes(a)} onClick={() => setAvoid(avoid.includes(a) ? avoid.filter((x) => x !== a) : [...avoid, a])}>
+              {t(`allergens.${a}`)}
+            </button>
           ))}
         </div>
       </details>
       <div className="list" data-testid="menu-list">
-        {items.map((i) => (
-          <div key={i.id} className="dish" data-testid="dish">
-            <div className="meta">
-              <div className="row" style={{ gap: 6 }}>
-                <b>{i.name}</b>
-                {i.isSignature && <span className="badge brand">★ signature</span>}
-                {i.soldOut && <span className="badge bad">sold out</span>}
+        {items.map((i) => {
+          const l = localizeItem(i, locale, lang);
+          return (
+            <div key={i.id} className={`dish ${i.soldOut ? "sold" : ""}`} data-testid="dish">
+              <div className="meta">
+                <div className="row" style={{ gap: 6 }}>
+                  <span className="name">{l.name}</span>
+                  {i.isSignature && (
+                    <span className="sig">
+                      <Star size={11} fill="currentColor" /> {t("menu.signature")}
+                    </span>
+                  )}
+                  {i.soldOut && <span className="badge bad">{t("menu.soldOut")}</span>}
+                </div>
+                {l.original && <div className="alt">{l.original}</div>}
+                {l.description && <div className="muted" style={{ fontSize: 13.5, marginTop: 2 }}>{l.description}</div>}
+                <Dietary list={i.dietary} spice={i.spiceLevel} />
+                <Allergens list={i.allergens} />
+                {l.story && (
+                  <button className="btn ghost small" style={{ paddingLeft: 0, marginTop: 2 }} onClick={() => setShowStory(showStory === i.id ? null : i.id)} aria-expanded={showStory === i.id}>
+                    {showStory === i.id ? t("menu.hideStory") : t("menu.story")}
+                  </button>
+                )}
+                {showStory === i.id && <p style={{ fontSize: 14, margin: "4px 0 0" }}>{l.story}</p>}
               </div>
-              {i.description && <div className="muted" style={{ fontSize: 13 }}>{i.description}</div>}
-              <Dietary list={i.dietary} spice={i.spiceLevel} />
-              <Allergens list={i.allergens} />
-              {i.story && (
-                <button className="btn ghost small" style={{ paddingLeft: 0 }} onClick={() => setShowStory(showStory === i.id ? null : i.id)}>
-                  {showStory === i.id ? "Hide story" : "The story"}
-                </button>
-              )}
-              {showStory === i.id && <p style={{ fontSize: 13, fontStyle: "italic" }}>{i.story}</p>}
+              <div className="col tight" style={{ alignItems: "flex-end" }}>
+                <span className="price">
+                  <Money v={i.price} c={currency} />
+                </span>
+                {onPick && (
+                  <button className="btn small primary" disabled={i.soldOut} onClick={() => onPick(i)} aria-label={`${action ?? t("menu.add")} ${l.name}`}>
+                    <Plus size={15} /> {action ?? t("menu.add")}
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="col" style={{ alignItems: "flex-end", gap: 6 }}>
-              <span className="price">
-                <Money v={i.price} c={currency} />
-              </span>
-              {onPick && (
-                <button className="btn small primary" disabled={i.soldOut} onClick={() => onPick(i)} aria-label={`${action} ${i.name}`}>
-                  {action}
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-        {!items.length && <div className="muted">No dishes match.</div>}
+          );
+        })}
+        {!items.length && <div className="muted">{t("menu.noMatch")}</div>}
       </div>
-      <p className="muted" style={{ fontSize: 12 }}>Allergen information is provided by the restaurant. If you have a severe allergy, please confirm with our staff.</p>
+      <p className="muted" style={{ fontSize: 12.5 }}>
+        {t("menu.allergenNote")}
+      </p>
     </div>
   );
 }

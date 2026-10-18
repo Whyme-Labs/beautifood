@@ -10,10 +10,18 @@ export const loader = defineHandler(async (c) => {
   return {
     ref: `${ctx.tenant.slug}~${ctx.branch.slug}`,
     branch: { id: ctx.branch.id, name: ctx.branch.name, address: ctx.branch.address, open: !!ctx.branch.active },
-    restaurant: { name: ctx.tenant.name, slug: ctx.tenant.slug, cuisine: ctx.tenant.cuisine, story: ctx.tenant.story, description: ctx.tenant.description },
+    restaurant: {
+      name: ctx.tenant.name,
+      slug: ctx.tenant.slug,
+      cuisine: ctx.tenant.cuisine,
+      story: ctx.tenant.story,
+      description: ctx.tenant.description,
+      translations: JSON.parse(ctx.tenant.translations || "{}") as Record<string, { story?: string; description?: string }>,
+    },
+    menuLanguage: menu.language ?? "en",
     currency: ctx.config.currency,
     categories: ctx.config.categories,
     modules: ctx.config.modules,
-    signatures: menu.items.filter((i) => i.isSignature).slice(0, 4).map((i) => ({ id: i.id, name: i.name, price: i.price, description: i.description })),
+    signatures: menu.items.filter((i) => i.isSignature).slice(0, 4).map((i) => ({ id: i.id, name: i.name, price: i.price, description: i.description, story: i.story, translations: i.translations })),
   };
 });
