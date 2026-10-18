@@ -116,6 +116,9 @@ jobs:
           else
             echo "Worker beautifood-app does not exist yet"
           fi
+      - name: Keyring tool for the Cloudflare CLI
+        # Void's email checks run Cloudflare's `cf` CLI in keyring mode, which needs secret-tool.
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libsecret-tools
       - name: Deploy (Worker, D1 + migrations, queue, cron, email)
         id: deploy
         env:

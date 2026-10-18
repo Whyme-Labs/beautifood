@@ -31,20 +31,10 @@ jobs:
           check-latest: true
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Cloudflare session as Void sees it (redacted)
-        run: |
-          cat > /tmp/whoami.mjs <<'JS'
-          import { readFileSync, realpathSync, readdirSync } from "node:fs";
-          import { join } from "node:path";
-          const dist = join(realpathSync("node_modules/void"), "dist");
-          const file = readdirSync(dist).find((f) => f.startsWith("deploy-") && readFileSync(join(dist, f), "utf8").includes("createDeployWranglerRunner as o"));
-          const mod = await import(join(dist, file));
-          const run = mod.o(process.cwd(), process.env.CLOUDFLARE_ACCOUNT_ID, "https://api.cloudflare.com/client/v4");
-          const r = await run({ type: "auth.whoami" }, { capture: true });
-          const d = r.data ?? {};
-          console.log(JSON.stringify({ status: r.status, signal: r.signal, error: r.error ? String(r.error.message ?? r.error) : undefined, stderr: String(r.stderr ?? "").slice(0, 800).replace(/[\w.+-]+@[\w.-]+/g, "<email>"), loggedIn: d.loggedIn, authType: d.authType, accounts: Array.isArray(d.accounts) ? d.accounts.length : typeof d.accounts, keys: Object.keys(r) }, null, 2));
-          JS
-          node /tmp/whoami.mjs || true
+      - name: Keyring tool for the Cloudflare CLI
+        # Void runs Cloudflare's `cf` CLI in keyring mode, which needs secret-tool even when an
+        # API token is supplied; without it every session check fails.
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libsecret-tools
       - name: Set up Email Routing + Email Sending
         run: |
           # Answer the single confirmation prompt ("y" + Enter) through a pseudo-terminal.
