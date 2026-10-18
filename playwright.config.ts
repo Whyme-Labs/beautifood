@@ -25,6 +25,26 @@ export default defineConfig({
     { name: "api", testMatch: /api\/.*\.spec\.ts/ },
     { name: "ui", testMatch: /ui\/.*\.spec\.ts/, use: { ...devices["Desktop Chrome"], launchOptions: chromium ? { executablePath: chromium } : {} } },
     { name: "load", testMatch: /load\/.*\.spec\.ts/, dependencies: ["api", "ui"] },
+    // Persona walkthrough videos (docs/evidence). Opt-in: `pnpm test:evidence` sets EVIDENCE=1.
+    // Each spec picks its own viewport (phones 390×844, staff 1366×860) and records its own contexts.
+    ...(process.env.EVIDENCE
+      ? [
+          {
+            name: "evidence",
+            testMatch: /evidence\/.*\.spec\.ts/,
+            workers: 1,
+            retries: 0,
+            timeout: 600_000,
+            expect: { timeout: 20_000 },
+            use: {
+              video: { mode: "on" as const, size: { width: 1366, height: 860 } },
+              viewport: { width: 1366, height: 860 },
+              actionTimeout: 20_000,
+              launchOptions: { slowMo: 250, ...(chromium ? { executablePath: chromium } : {}) },
+            },
+          },
+        ]
+      : []),
   ],
   webServer: {
     command: `PORT=${PORT} ./scripts/e2e-server.sh`,

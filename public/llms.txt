@@ -6,7 +6,7 @@
 
 - MCP server (Streamable HTTP, JSON-RPC, no auth for guest tools): POST /mcp
   - Guest tools: find_restaurants, get_menu, ask_menu_assistant, queue_status, join_queue, check_ticket, cancel_ticket, booking_availability, create_booking
-  - Merchant tools (send `Authorization: Bearer bf_pat_…` created in the dashboard under Settings → API tokens): merchant_overview, merchant_queue, merchant_sales_report, merchant_set_sold_out
+  - Merchant tools (send `Authorization: Bearer bf_pat_…` created in the staff console under Team → AI agent access): merchant_overview, merchant_queue, merchant_sales_report, merchant_set_sold_out
 - REST API description: /openapi.json
 
 ## Rules for agents
