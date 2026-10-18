@@ -4,11 +4,14 @@ import { Demo } from "./Demo";
 import { Close, Feature, Hook, Languages, Problem, Proof, Title } from "./scenes";
 import { FeatureDemo } from "./feature";
 import { Promo30, Teaser15 } from "./promo";
+import { Reel } from "./reel/Reel";
 
 // 110 s of scenes minus 11 transitions of 0.4 s.
 export const RemotionRoot = () => (
   <>
     <Composition id="Demo" component={Demo} durationInFrames={3168} fps={30} width={1920} height={1080} />
+    {/* 42 bars at 112.8 BPM from the 0.892 s downbeat: 90.3 s */}
+    <Composition id="Reel" component={Reel} durationInFrames={2708} fps={30} width={1920} height={1080} />
     <Composition id="Promo30" component={Promo30} durationInFrames={900} fps={30} width={1920} height={1080} />
     <Composition id="Teaser15" component={Teaser15} durationInFrames={450} fps={30} width={1080} height={1920} />
     <Composition
