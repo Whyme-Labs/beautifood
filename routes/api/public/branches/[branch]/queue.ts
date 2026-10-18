@@ -1,5 +1,6 @@
 // Join the queue (web, kiosk or an AI agent). Returns a signed ticket link: no account needed.
 import { z } from "zod";
+import { requestLocale } from "../../../../../src/server/locale";
 import { api, body, deviceId } from "../../../../../src/server/http";
 import { kick } from "../../../../../src/server/routing";
 import { appEnv } from "../../../../../src/server/appenv";
@@ -23,7 +24,7 @@ export const POST = api(async (c) => {
   const ctx = await getBranch(c.env.DB, c.req.param("branch")!);
   let memberId: string | null = null;
   if (input.email && input.joinLoyalty && ctx.config.modules.loyalty) memberId = (await ensureMember(c.env.DB, ctx.tenant.id, input.email, { name: input.name, phone: input.phone })).id;
-  const { ticket, existing } = await joinQueue(c.env.DB, ctx, { ...input, memberId, source: input.source ?? (c.req.header("x-agent") ? "agent" : "web") }, deviceId(c));
+  const { ticket, existing } = await joinQueue(c.env.DB, ctx, { ...input, memberId, locale: requestLocale(c.req), source: input.source ?? (c.req.header("x-agent") ? "agent" : "web") }, deviceId(c));
   const token = await sign(appEnv().TOKEN_SECRET, { k: "ticket", id: ticket.id, b: ctx.branch.id });
   kick(c);
   // cheap position count instead of a full board recompute: joins stay fast during a surge

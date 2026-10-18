@@ -23,6 +23,13 @@ A restaurant platform covering walk-in queues, ordering and the front of house. 
 - A stateless MCP server at `/mcp` with public tools; merchant tools unlock with a personal access token.
 - Discovery docs: `/llms.txt` and `/openapi.json`.
 
+**In your language**
+- English and 简体中文 throughout: guest pages, the staff console, emails and the AI assistant. Each person's choice is remembered.
+- Menus are translated too: one tap machine-translates the menu (Claude, Workers AI, or a built-in hawker glossary), and the owner can correct any dish. Guests see their language with the original name underneath, and staff tickets keep the original.
+- Adding a language means adding one catalog file and one line in `src/i18n/core.ts`. TypeScript fails the build if a string is missing.
+
+Live demo: https://beautifood-app.swmengappdev.workers.dev
+
 The design is described in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): ACID on D1, surge handling, the shared cart and the assignment engine.
 
 ## Run it locally
@@ -36,7 +43,7 @@ pnpm dev                    # http://localhost:5173
 ```
 
 1. Open `/m/login` and create an account.
-2. Then either follow **✨ AI setup**, or load the demo restaurant (two branches, a menu, tables, members and a promo code) from the browser console:
+2. Then either follow **AI setup**, or load the demo restaurant (two branches, a menu, tables, members and a promo code) from the browser console:
    ```js
    await fetch("/api/dev/seed", { method: "POST" }).then((r) => r.json());
    ```
@@ -51,11 +58,13 @@ Put these in `.env`; never commit it.
 | `ANTHROPIC_API_KEY` | Claude answers the assistant, onboarding and insights. Without it, a deterministic local engine does |
 | `ANTHROPIC_MODEL` | Model to use (default `claude-opus-5-5`) |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Web Push. Generate them with `node scripts/vapid-keys.mjs` |
-| `TOKEN_SECRET`, `BETTER_AUTH_SECRET` | **Set strong values in production** |
+| `BETTER_AUTH_SECRET` | Signs sessions. `void deploy` generates one for you |
+| `TOKEN_SECRET` | Signs guest links (tickets, carts, receipts). Optional: derived from `BETTER_AUTH_SECRET` when unset; 32+ characters if you set it |
+| `MAIL_FROM` | Build-time sender, e.g. `Beautifood <noreply@your-domain>` |
 
 ## Email
 
-Mail goes out through **Cloudflare Email Sending** (Void's `sendEmail` over the `SEND_EMAIL` binding). The sender is set in `src/shared/mail.ts`; change it to an address on a domain you control in Cloudflare. Each restaurant's name is used as the display name.
+Mail goes out through **Cloudflare Email Sending** (Void's `sendEmail` over the `SEND_EMAIL` binding). The sender comes from `MAIL_FROM` at build time (see `void.config.ts`); use an address on a domain you control in Cloudflare. Each restaurant's name is used as the display name, and each guest gets their email in the language they used to queue or book.
 
 - `npx void deploy --platform cloudflare` sets up Email Routing and Email Sending on that domain and binds `SEND_EMAIL`. Run `npx void email status --platform cloudflare` to check readiness.
 - Sending to arbitrary guests needs Workers Paid; on Workers Free, only verified recipients (`npx void email allow <address>`).
@@ -82,8 +91,14 @@ pnpm core   # cargo build --target wasm32-unknown-unknown + wasm-bindgen → src
 
 ## Deploy
 
+Pushes to the default branch deploy through GitHub Actions on Blacksmith runners (`.github/workflows/ci.yml`): tests first, then `void deploy --platform cloudflare`, a smoke test, and a commit of `void.lock.json`. The job needs two repository secrets, `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, and optionally a `MAIL_FROM` variable.
+
+Resources use explicit names (Worker `beautifood-app`, D1 `beautifood-app-db`, queue `beautifood-app-broadcasts`), and the workflow refuses to deploy over a database or Worker that isn't this app's. `PUBLIC_URL` is set from the deployed URL.
+
+To deploy by hand:
+
 ```sh
-npx void deploy
+npx void deploy --platform cloudflare
 ```
 
-Void builds the Worker and provisions what the project declares: D1, the `broadcasts` queue, the 1-minute cron, and **Cloudflare Email Sending**. Set `APP_ENV=production`, plus a `TOKEN_SECRET` of 32+ random characters (the app refuses to run in production without one), and the optional keys above.
+Void builds the Worker and provisions what the project declares: D1, the broadcasts queue, the 1-minute cron, Workers AI (with `BEAUTIFOOD_WORKERS_AI=1`) and Cloudflare Email Sending. `APP_ENV` defaults to `production`.

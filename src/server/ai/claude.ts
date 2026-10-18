@@ -7,7 +7,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { ALLERGEN_LABELS, type Allergen } from "../../shared/allergens";
 import { formatMoney } from "../../shared/format";
-import { ALLERGY_NOTE, findItem, type AssistantContext, type AssistantReply } from "./local";
+import { allergyNote, findItem, type AssistantContext, type AssistantReply } from "./local";
+import { localeInfo } from "../../i18n/core";
 
 const FALLBACK_BETA = "server-side-fallback-2026-07-01";
 
@@ -111,7 +112,7 @@ function runTool(ctx: AssistantContext, name: string, input: unknown, referenced
   return JSON.stringify({ error: `Unknown tool ${name}` });
 }
 
-export async function answerWithClaude(env: ClaudeEnv, ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[]): Promise<AssistantReply> {
+export async function answerWithClaude(env: ClaudeEnv, ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply> {
   const c = client(env);
   const system = [
     `You are the friendly menu assistant for ${ctx.restaurant.name}${ctx.restaurant.cuisine ? ` (${ctx.restaurant.cuisine})` : ""}, ${ctx.branchName} branch.`,
@@ -119,6 +120,7 @@ export async function answerWithClaude(env: ClaudeEnv, ctx: AssistantContext, hi
     "Help guests decide what to eat: recommend signatures, respect dietary needs and budgets, and share the stories behind dishes.",
     "Use the tools for every fact about dishes, prices and allergens. Never guess an ingredient or allergen; if the data doesn't say, say you don't know and suggest asking staff.",
     "Keep answers short (2-4 sentences), warm and specific. Mention prices. Only recommend dishes that the tools returned.",
+    `Reply in ${localeInfo(locale).english}, whatever language the menu is in. Name dishes the way the menu data translates them for that language when it has a translation, with the original name in brackets the first time.`,
   ]
     .filter(Boolean)
     .join("\n");
@@ -153,7 +155,7 @@ export async function answerWithClaude(env: ClaudeEnv, ctx: AssistantContext, hi
     // surface dishes the model looked up or named, so the UI can show "add to cart" cards
     for (const it of ctx.items) if (text.includes(it.name)) referenced.add(it.id);
     const lastQ = history[history.length - 1]?.content ?? "";
-    const allergenQuestion = /allerg|contain|gluten|nut|dairy|shellfish|egg|soy|sesame|vegan|halal/i.test(lastQ) || !!findItem(ctx.items, lastQ)?.allergens.length;
+    const allergenQuestion = /allerg|contain|gluten|nut|dairy|shellfish|egg|soy|sesame|vegan|halal|过敏|花生|坚果|海鲜|麸质|含有|清真/i.test(lastQ) || !!findItem(ctx.items, lastQ)?.allergens.length;
     return {
       answer: text || "Sorry, I didn't catch that.",
       items: [...referenced]
@@ -161,7 +163,7 @@ export async function answerWithClaude(env: ClaudeEnv, ctx: AssistantContext, hi
         .filter(Boolean)
         .slice(0, 4)
         .map((i) => ({ id: i.id, name: i.name, price: i.price })),
-      safetyNote: allergenQuestion ? ALLERGY_NOTE : undefined,
+      safetyNote: allergenQuestion ? allergyNote(locale) : undefined,
       engine: "claude",
     };
   }

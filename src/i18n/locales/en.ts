@@ -1,6 +1,9 @@
 // English: the reference catalog. Every other locale must have exactly these keys
 // (TypeScript enforces it via `satisfies Messages`). Use {name} for variables and
 // { one, other } objects for plurals.
+import { staffEn } from "./staff";
+import type { Widen } from "./widen";
+
 const en = {
   common: {
     appName: "Beautifood",
@@ -380,8 +383,64 @@ const en = {
     say: "Number {number}",
     sayTable: "Number {number}, table {tables}",
   },
+  assistantReply: {
+    safety: "Allergen information comes from the restaurant's menu data. Kitchens handle many ingredients, so if you have a severe allergy please confirm with staff before ordering.",
+    contains: "{dish} contains: {list}.",
+    noAllergens: "{dish} has no listed allergens.",
+    notSuitable: " So it is NOT suitable if you avoid {list}.",
+    doesntList: " It doesn't list {list}.",
+    oneOf: "{dish} is one of our {category}.",
+    dishes: "dishes",
+    isSignature: "It's one of {restaurant}'s signatures.",
+    freeOf: "free of {list}",
+    vegan: "vegan",
+    vegetarian: "vegetarian",
+    halal: "halal-friendly",
+    notSpicy: "not spicy",
+    spicy: "spicy",
+    under: "under {price}",
+    noneFound: "I couldn't find dishes that are {filters} on today's menu. Our staff may be able to adapt a dish for you.",
+    suggestFiltered: "Here's what I'd suggest that's {filters}:",
+    knownFor: "{restaurant} is known for {list}. My picks:",
+    signature: "signature",
+    popularToday: "popular today",
+    favourite: "a favourite here",
+    allergensLabel: " Allergens: {list}.",
+    serves: "{restaurant} serves {cuisine} at {branch}.",
+    deliciousFood: "delicious food",
+    help: "I can help you choose! Ask me things like \"what are your signatures?\", \"anything vegetarian under RM20?\", \"is the laksa nut-free?\" or \"tell me the story of a dish\". To start, our favourites are {list}.",
+    and: " and ",
+    listSep: ", ",
+    itemSep: "; ",
+    filterSep: ", ",
+  },
+  email: {
+    otpSubject: "{code} is your {restaurant} sign-in code",
+    otpBody: "Your sign-in code for {restaurant} rewards is",
+    otpExpiry: "It expires in 10 minutes. If you didn't ask for it, you can ignore this email.",
+    joinedSubject: "You're in the queue at {branch}: {number}",
+    joinedHello: "Hi {name}, you're in the queue at {restaurant} {branch}.",
+    joinedParty: { one: "Party of {count}", other: "Party of {count}" },
+    joinedNext: "We'll email you when your table is ready. Keep your ticket page open to watch your place in line.",
+    viewTicket: "Open my ticket",
+    calledSubject: "Your table is ready: {number}",
+    calledBody: "Your table at {branch} is ready.",
+    calledTables: "Table {tables}",
+    calledHold: "Please come to the host stand within {minutes} minutes.",
+    bookingSubject: "Booking confirmed at {restaurant} {branch}",
+    bookingBody: "Hi {name}, your table for {count} on {when} is confirmed.",
+    bookingPreorder: "You can preorder from your booking page so food is ready when you arrive.",
+    viewBooking: "View my booking",
+    receiptSubject: "Your receipt from {restaurant}: {total}",
+    receiptTitle: "Receipt #{number}",
+    receiptTable: "Table {tables}",
+    receiptPoints: "You earned {earned} points · balance {balance} · {tier}",
+    receiptOnline: "View this receipt online",
+    thanks: "Thank you for dining with us.",
+    footer: "Sent by Beautifood for {restaurant}.",
+  },
+  staff: staffEn,
 } as const;
 
-type Widen<T> = T extends string ? string : { -readonly [K in keyof T]: Widen<T[K]> };
 export type Messages = Widen<typeof en>;
 export default en as Messages;

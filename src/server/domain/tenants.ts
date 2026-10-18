@@ -63,7 +63,7 @@ export async function createTenant(db: D1Database, user: { id: string; email: st
   return { tenantId, branchId, slug };
 }
 
-export async function updateTenant(db: D1Database, tenantId: string, actor: string, patch: Partial<{ name: string; description: string; cuisine: string; story: string; currency: string; timezone: string; loyalty: object; onboarding: object }>) {
+export async function updateTenant(db: D1Database, tenantId: string, actor: string, patch: Partial<{ name: string; description: string; cuisine: string; story: string; currency: string; timezone: string; menu_language: string; loyalty: object; onboarding: object }>) {
   const sets: string[] = [];
   const params: unknown[] = [];
   for (const [k, v] of Object.entries(patch)) {

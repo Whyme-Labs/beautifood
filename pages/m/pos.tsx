@@ -1,10 +1,14 @@
 // POS: open bills, add items, voids, discounts & promo codes, split bill
 // (by items or N ways), payments with change, refunds, and the cash drawer shift.
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Banknote, CreditCard, Minus, Plus, ReceiptText, Search, Send, Smartphone, Star, Wallet, X } from "lucide-react";
 import { api, msgId } from "../../src/ui/api";
 import { usePoll, useQuery } from "../../src/ui/hooks";
 import { useBranchApi, useBranchChanges, useStaff } from "../../src/ui/staff";
-import { Empty, ErrorBox, Modal, Money, Status, useAction } from "../../src/ui/components";
+import { Empty, ErrorBox, Money, Status, useAction } from "../../src/ui/components";
+import { localizeCategory, localizeItem } from "../../src/shared/menuI18n";
+import { useI18n } from "../../src/i18n/react";
+import type { MessageKey } from "../../src/i18n/core";
 import type { Menu, MenuItem } from "../../src/shared/types";
 
 interface OrderRow {
@@ -42,11 +46,16 @@ interface Order {
   items: { id: string; round: number; name: string; qty: number; unitPrice: number; modifiers: { option: string; price: number }[]; status: string; addedBy: string; notes: string; voidReason: string | null }[];
   payments: { id: string; method: string; amount: number; change: number; splitLabel: string | null; status: string; refunded: number }[];
 }
+type Line = { item: MenuItem; qty: number; modifiers: { group: string; option: string }[] };
+type Post = (a: string, b: unknown, ok?: string) => Promise<unknown>;
+
+const cents = (s: string) => Math.round(parseFloat(s || "0") * 100);
 
 export default function Pos() {
   const s = useStaff();
   const b = useBranchApi();
   const q = useQuery();
+  const { t, f, locale } = useI18n();
   const cur = s.tenant?.currency ?? "MYR";
   const { run, pending } = useAction();
   const [sel, setSel] = useState<string | null>(null);
@@ -60,7 +69,7 @@ export default function Pos() {
       if (sel) refreshOrder();
     }, [refreshList, refreshOrder, sel]),
   );
-  const [adding, setAdding] = useState(false);
+  const [lines, setLines] = useState<Line[]>([]);
   const [voiding, setVoiding] = useState<string[]>([]);
   const [splitIds, setSplitIds] = useState<string[] | null>(null);
 
@@ -71,8 +80,21 @@ export default function Pos() {
       if (o) setSel(o.id);
     }
   }, [q, orders]);
+  useEffect(() => (setLines([]), setVoiding([]), setSplitIds(null)), [sel]);
 
-  const post = (action: string, body: unknown, ok?: string) =>
+  const lang = menu?.language ?? "en";
+  const byName = useMemo(() => new Map((menu?.items ?? []).map((i) => [i.name, i])), [menu]);
+  const dishName = (name: string) => {
+    const it = byName.get(name);
+    return it ? localizeItem(it, locale, lang).name : name;
+  };
+  const typeLabel = (type: string) => {
+    const k = `orderType.${type}` as MessageKey;
+    const v = t(k);
+    return v === k ? type.replace(/_/g, " ") : v;
+  };
+
+  const post: Post = (action, body, ok) =>
     run(async () => {
       const r = await api<Order | { order: Order }>(b(`orders/${order!.id}/${action}`), { body });
       await refreshOrder();
@@ -80,30 +102,152 @@ export default function Pos() {
       return r;
     }, ok);
 
-  const live = order?.items.filter((i) => i.status !== "void") ?? [];
+  const addLine = (it: MenuItem) => {
+    // default to the first option of required groups; staff can adjust on the bill notes
+    const modifiers = it.modifiers.filter((g) => g.min > 0).map((g) => ({ group: g.name, option: g.options[0].name }));
+    const i = lines.findIndex((l) => l.item.id === it.id && JSON.stringify(l.modifiers) === JSON.stringify(modifiers));
+    if (i >= 0) setLines(lines.map((l, n) => (n === i ? { ...l, qty: l.qty + 1 } : l)));
+    else setLines([...lines, { item: it, qty: 1, modifiers }]);
+  };
+  const lessLine = (n: number) => setLines(lines.flatMap((l, i) => (i !== n ? [l] : l.qty > 1 ? [{ ...l, qty: l.qty - 1 }] : [])));
+  const draftCount = lines.reduce((a, l) => a + l.qty, 0);
+  const draftTotal = lines.reduce((a, l) => a + l.item.price * l.qty, 0);
+  const canEdit = !order || order.status === "open";
+  const send = () =>
+    run(async () => {
+      const items = lines.map((l) => ({ itemId: l.item.id, qty: l.qty, modifiers: l.modifiers }));
+      const r = await api<Order>(b("orders"), { body: order ? { orderId: order.id, items } : { takeaway: true, items } });
+      setLines([]);
+      setSel(r.id);
+      await refreshOrder();
+      await refreshList();
+    }, t("staff.pos.sentToKitchen"));
+
+  const ask = (key: MessageKey, def?: string) => prompt(t(key), def);
+
   return (
-    <div className="split side">
-      <section className="col">
-        <div className="row between">
-          <h1 style={{ margin: 0 }}>POS</h1>
-          <button className="btn primary" onClick={() => (setSel(null), setAdding(true))}>
-            + New takeaway
+    <div className="col">
+      <div className="page-head">
+        <h1>{t("staff.pos.title")}</h1>
+        <div className="row">
+          {s.can("shift.manage") && (
+            <div className="pos-drawer" data-testid="shift">
+              <Wallet size={16} aria-hidden />
+              {shift?.current ? (
+                <>
+                  <span>
+                    {t("staff.pos.drawerOpenSince", { time: f.time(shift.current.opened_at) })} · {t("staff.pos.float", { amount: f.money(shift.current.opening_float, cur) })}
+                  </span>
+                  <button
+                    className="btn small"
+                    onClick={() => {
+                      const counted = ask("staff.pos.countedPrompt");
+                      if (counted)
+                        run(async () => {
+                          const r = await api<{ expected: number; variance: number }>(b(`shifts/${shift.current!.id}/close`), { body: { counted: cents(counted) } });
+                          alert(t("staff.pos.drawerResult", { expected: f.money(r.expected, cur), variance: f.money(r.variance, cur) }));
+                          await refreshShift();
+                        });
+                    }}
+                  >
+                    {t("staff.pos.closeDrawer")}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="muted">{t("staff.pos.noDrawer")}</span>
+                  <button
+                    className="btn small"
+                    onClick={() => {
+                      const fl = ask("staff.pos.openingFloat", "200.00");
+                      if (fl) run(async () => (await api(b("shifts"), { body: { openingFloat: cents(fl) } }), await refreshShift()), t("staff.pos.drawerOpened"));
+                    }}
+                  >
+                    {t("staff.pos.openDrawer")}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+          <button className="btn primary" onClick={() => setSel(null)}>
+            <Plus size={18} aria-hidden /> {t("staff.pos.newTakeaway")}
           </button>
         </div>
-        <ErrorBox error={error} />
-        {order ? (
-          <div className="card col" data-testid="bill">
-            <div className="row between">
-              <h2 style={{ margin: 0 }}>
-                Bill #{order.number} <span className="muted">· {order.type.replace("_", " ")}</span>
-              </h2>
-              <Status s={order.status} />
+      </div>
+
+      <section aria-labelledby="pos-bills-h">
+        <h2 id="pos-bills-h" className="sr-only">
+          {t("staff.pos.openBills")}
+        </h2>
+        <div className="pos-bills" data-testid="open-bills">
+          {orders?.map((o) => (
+            <button key={o.id} className="pos-bill" aria-pressed={sel === o.id} onClick={() => setSel(o.id)}>
+              <span className="serial sm">#{o.number}</span>
+              <span className="pb-meta">{o.tables.length ? o.tables.join("+") : typeLabel(o.type)}</span>
+              <span className="pb-due">
+                <Money v={o.due} c={cur} />
+              </span>
+            </button>
+          ))}
+          {orders && !orders.length && <div className="muted pos-bills-empty">{t("staff.pos.noOpenBills")}</div>}
+        </div>
+      </section>
+
+      <div className="pos">
+        <MenuGrid menu={menu} cur={cur} lines={lines} disabled={!canEdit} onAdd={addLine} />
+
+        <section className="col pos-side">
+          <ErrorBox error={error} />
+          {canEdit && lines.length > 0 && (
+            <div className="card tight pos-round" data-testid="draft-round">
+              <div className="row between nowrap">
+                <h3 style={{ margin: 0 }}>{order ? t("staff.pos.newRound") : t("staff.pos.takeaway")}</h3>
+                <button className="btn small ghost" onClick={() => setLines([])}>
+                  {t("staff.pos.clearRound")}
+                </button>
+              </div>
+              <div className="list">
+                {lines.map((l, n) => {
+                  const loc = localizeItem(l.item, locale, lang);
+                  return (
+                    <div key={n} className="row between nowrap">
+                      <span className="grow">
+                        <b className="tabular">{l.qty}×</b> {loc.name}
+                        {l.modifiers.length ? <span className="muted"> · {l.modifiers.map((m) => loc.option(m.group, m.option)).join(", ")}</span> : null}
+                      </span>
+                      <button className="btn small icon ghost" onClick={() => lessLine(n)} aria-label={t("staff.pos.lessOne", { name: loc.name })}>
+                        {l.qty > 1 ? <Minus size={16} /> : <X size={16} />}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+              <button className="btn primary block" disabled={pending} onClick={send}>
+                <Send size={16} aria-hidden /> {t("staff.pos.sendToKitchen", { count: draftCount })} · <Money v={draftTotal} c={cur} />
+              </button>
             </div>
-            <table>
-              <tbody>
+          )}
+
+          {order ? (
+            <div className="card col pos-billcard" data-testid="bill">
+              <div className="row between nowrap">
+                <div>
+                  <div className="muted pos-cap">{t("staff.pos.bill")}</div>
+                  <div className="serial mid">#{order.number}</div>
+                </div>
+                <div className="col tight" style={{ alignItems: "flex-end" }}>
+                  <Status s={order.status} />
+                  <span className="muted" style={{ fontSize: 13 }}>
+                    {typeLabel(order.type)}
+                  </span>
+                </div>
+              </div>
+
+              {splitIds && <div className="alert info">{t("staff.pos.splitHint")}</div>}
+              <div className="list pos-items">
                 {order.items.map((i) => (
-                  <tr key={i.id} style={{ opacity: i.status === "void" ? 0.45 : 1 }} data-testid="bill-item">
-                    <td style={{ width: 28 }}>
+                  <div key={i.id} className={`pos-line ${i.status === "void" ? "void" : ""}`} data-testid="bill-item">
+                    <span>
                       {order.status === "open" && i.status !== "void" && (
                         <input
                           type="checkbox"
@@ -113,324 +257,336 @@ export default function Pos() {
                             const curSel = splitIds ?? voiding;
                             set(e.target.checked ? [...curSel, i.id] : curSel.filter((x) => x !== i.id));
                           }}
-                          aria-label={`Select ${i.name}`}
+                          aria-label={t("staff.pos.selectItem", { name: dishName(i.name) })}
                         />
                       )}
-                    </td>
-                    <td>
-                      {i.qty}× {i.name}
+                    </span>
+                    <span className="grow">
+                      <b className="tabular">{i.qty}×</b> {dishName(i.name)}
                       {i.modifiers.length ? <span className="muted"> · {i.modifiers.map((m) => m.option).join(", ")}</span> : null}
                       {i.notes ? <span className="muted"> · “{i.notes}”</span> : null}
-                      <div className="muted" style={{ fontSize: 12 }}>
-                        round {i.round} · {i.addedBy} {i.voidReason ? `· void: ${i.voidReason}` : ""}
-                      </div>
-                    </td>
-                    <td>
-                      <Status s={i.status} />
-                    </td>
-                    <td className="num">
-                      <Money v={(i.unitPrice + i.modifiers.reduce((a, m) => a + m.price, 0)) * i.qty} c={cur} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <table>
-              <tbody>
-                <tr><td>Subtotal</td><td className="num"><Money v={order.subtotal} c={cur} /></td></tr>
-                {order.discount ? <tr><td>Discount {order.discountSpec ? `(${order.discountSpec.reason})` : ""}</td><td className="num">-<Money v={order.discount} c={cur} /></td></tr> : null}
-                {order.serviceCharge ? <tr><td>Service charge</td><td className="num"><Money v={order.serviceCharge} c={cur} /></td></tr> : null}
-                {order.tax ? <tr><td>Tax</td><td className="num"><Money v={order.tax} c={cur} /></td></tr> : null}
-                {order.rounding ? <tr><td>Rounding</td><td className="num"><Money v={order.rounding} c={cur} /></td></tr> : null}
-                <tr><td><b>Total</b></td><td className="num"><b data-testid="bill-total"><Money v={order.total} c={cur} /></b></td></tr>
-                <tr><td>Paid</td><td className="num"><Money v={order.paid} c={cur} /></td></tr>
-                <tr><td><b>Due</b></td><td className="num"><b data-testid="bill-due"><Money v={order.due} c={cur} /></b></td></tr>
-              </tbody>
-            </table>
-            {order.status === "open" && (
-              <>
-                <div className="row">
-                  <button className="btn small" onClick={() => setAdding(true)}>
-                    + Add items
-                  </button>
-                  {voiding.length > 0 && !splitIds && s.can("order.void") && (
-                    <button className="btn small danger" onClick={() => { const reason = prompt("Reason for void?"); if (reason) post("void", { itemIds: voiding, reason }, "Voided").then(() => setVoiding([])); }}>
-                      Void {voiding.length}
-                    </button>
-                  )}
-                  {!splitIds ? (
-                    <button className="btn small" onClick={() => (setVoiding([]), setSplitIds([]))} disabled={order.paid > 0}>
-                      Split by items…
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        className="btn small primary"
-                        disabled={!splitIds.length}
-                        onClick={() =>
-                          run(async () => {
-                            const r = await api<{ split: Order }>(b(`orders/${order.id}/split`), { body: { itemIds: splitIds } });
-                            setSplitIds(null);
-                            await refreshList();
-                            setSel(r.split.id);
-                          }, "Split into a separate bill")
-                        }
-                      >
-                        Move {splitIds.length} to new bill
-                      </button>
-                      <button className="btn small ghost" onClick={() => setSplitIds(null)}>
-                        Cancel split
-                      </button>
-                    </>
-                  )}
-                </div>
-                <BillTools order={order} cur={cur} canDiscount={s.can("order.discount")} post={post} />
-                {s.can("payment.take") && <PayPanel order={order} cur={cur} pending={pending} post={post} />}
-              </>
-            )}
-            {order.payments.length > 0 && (
-              <div>
-                <h3>Payments</h3>
-                <div className="list">
-                  {order.payments.map((p) => (
-                    <div key={p.id} className="row between" data-testid="payment-row">
-                      <span>
-                        {p.method}
-                        {p.splitLabel ? ` (${p.splitLabel})` : ""} · <Money v={p.amount} c={cur} />
-                        {p.change ? <span className="muted"> · change <Money v={p.change} c={cur} /></span> : null}
-                        {p.refunded ? <span className="badge bad">refunded <Money v={p.refunded} c={cur} /></span> : null}
+                      <span className="hint pos-sub">
+                        {t("staff.pos.round", { n: i.round })} · {i.addedBy}
+                        {i.voidReason ? ` · ${t("staff.pos.voidNote", { reason: i.voidReason })}` : ""}
                       </span>
-                      {s.can("payment.refund") && p.refunded < p.amount && (
-                        <button
-                          className="btn small danger"
-                          onClick={() => {
-                            const amt = prompt("Refund amount", ((p.amount - p.refunded) / 100).toFixed(2));
-                            const reason = amt ? prompt("Reason?") : null;
-                            if (amt && reason) run(async () => (await api(b(`payments/${p.id}/refund`), { body: { amount: Math.round(parseFloat(amt) * 100), reason, msgId: msgId() } }), await refreshOrder()), "Refunded");
-                          }}
-                        >
-                          Refund
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                    </span>
+                    <Status s={i.status} />
+                    <span className="num pos-amt">
+                      <Money v={(i.unitPrice + i.modifiers.reduce((a, m) => a + m.price, 0)) * i.qty} c={cur} />
+                    </span>
+                  </div>
+                ))}
               </div>
-            )}
-            {order.receiptToken && (
-              <a href={`/receipt/${order.receiptToken}`} target="_blank" rel="noreferrer">
-                View e-receipt
-              </a>
-            )}
-          </div>
-        ) : (
-          <Empty>Pick a bill on the right, or start a takeaway order.</Empty>
-        )}
-      </section>
 
-      <section className="col">
-        {s.can("shift.manage") && (
-          <div className="card tight row between" data-testid="shift">
-            {shift?.current ? (
-              <>
-                <span>
-                  Drawer open since {new Date(shift.current.opened_at).toLocaleTimeString()} · float <Money v={shift.current.opening_float} c={cur} />
-                </span>
-                <button
-                  className="btn small"
-                  onClick={() => {
-                    const counted = prompt("Cash counted in drawer?");
-                    if (counted) run(async () => {
-                      const r = await api<{ expected: number; variance: number }>(b(`shifts/${shift.current!.id}/close`), { body: { counted: Math.round(parseFloat(counted) * 100) } });
-                      alert(`Expected ${(r.expected / 100).toFixed(2)} · variance ${(r.variance / 100).toFixed(2)}`);
-                      await refreshShift();
-                    });
-                  }}
-                >
-                  Close drawer
-                </button>
-              </>
-            ) : (
-              <>
-                <span className="muted">No cash drawer open</span>
-                <button className="btn small" onClick={() => { const f = prompt("Opening float?", "200.00"); if (f) run(async () => (await api(b("shifts"), { body: { openingFloat: Math.round(parseFloat(f) * 100) } }), await refreshShift()), "Drawer opened"); }}>
-                  Open drawer
-                </button>
-              </>
-            )}
-          </div>
-        )}
-        <div className="card">
-          <h2>Open bills</h2>
-          <div className="list" data-testid="open-bills">
-            {orders?.map((o) => (
-              <button key={o.id} className={`btn ${sel === o.id ? "primary" : ""}`} style={{ justifyContent: "space-between" }} onClick={() => setSel(o.id)}>
-                <span>
-                  #{o.number} {o.tables.length ? `· ${o.tables.join("+")}` : `· ${o.type.replace("_", " ")}`}
-                </span>
-                <Money v={o.due} c={cur} />
-              </button>
-            ))}
-            {!orders?.length && <div className="muted">No open bills.</div>}
-          </div>
+              <dl className="kv">
+                <dt>{t("common.subtotal")}</dt>
+                <dd><Money v={order.subtotal} c={cur} /></dd>
+                {order.discount ? (
+                  <>
+                    <dt>{order.discountSpec ? t("staff.pos.discountReason", { reason: order.discountSpec.reason }) : t("common.discount")}</dt>
+                    <dd>-<Money v={order.discount} c={cur} /></dd>
+                  </>
+                ) : null}
+                {order.serviceCharge ? (<><dt>{t("common.serviceCharge")}</dt><dd><Money v={order.serviceCharge} c={cur} /></dd></>) : null}
+                {order.tax ? (<><dt>{t("common.tax")}</dt><dd><Money v={order.tax} c={cur} /></dd></>) : null}
+                {order.rounding ? (<><dt>{t("common.rounding")}</dt><dd><Money v={order.rounding} c={cur} /></dd></>) : null}
+                <dt className="total">{t("common.total")}</dt>
+                <dd className="total" data-testid="bill-total"><Money v={order.total} c={cur} /></dd>
+                <dt>{t("common.paid")}</dt>
+                <dd><Money v={order.paid} c={cur} /></dd>
+                <dt className="total">{t("common.due")}</dt>
+                <dd className="total pos-due" data-testid="bill-due"><Money v={order.due} c={cur} /></dd>
+              </dl>
+
+              {order.status === "open" && (
+                <>
+                  <div className="row">
+                    {voiding.length > 0 && !splitIds && s.can("order.void") && (
+                      <button
+                        className="btn small danger"
+                        onClick={() => {
+                          const reason = ask("staff.pos.voidReason");
+                          if (reason) post("void", { itemIds: voiding, reason }, t("staff.pos.voided")).then(() => setVoiding([]));
+                        }}
+                      >
+                        {t("staff.pos.voidCount", { count: voiding.length })}
+                      </button>
+                    )}
+                    {!splitIds ? (
+                      <button className="btn small" onClick={() => (setVoiding([]), setSplitIds([]))} disabled={order.paid > 0}>
+                        {t("staff.pos.splitByItems")}
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          className="btn small primary"
+                          disabled={!splitIds.length}
+                          onClick={() =>
+                            run(async () => {
+                              const r = await api<{ split: Order }>(b(`orders/${order.id}/split`), { body: { itemIds: splitIds } });
+                              setSplitIds(null);
+                              await refreshList();
+                              setSel(r.split.id);
+                            }, t("staff.pos.splitDone"))
+                          }
+                        >
+                          {t("staff.pos.moveToNewBill", { count: splitIds.length })}
+                        </button>
+                        <button className="btn small ghost" onClick={() => setSplitIds(null)}>
+                          {t("staff.pos.cancelSplit")}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  <BillTools order={order} cur={cur} canDiscount={s.can("order.discount")} post={post} />
+                  {s.can("payment.take") && <PayPanel order={order} cur={cur} pending={pending} post={post} />}
+                </>
+              )}
+
+              {order.payments.length > 0 && (
+                <div>
+                  <h3>{t("staff.pos.payments")}</h3>
+                  <div className="list">
+                    {order.payments.map((p) => (
+                      <div key={p.id} className="row between" data-testid="payment-row">
+                        <span>
+                          <b>{t(`payMethod.${p.method}` as MessageKey)}</b>
+                          {p.splitLabel ? ` (${p.splitLabel})` : ""} · <Money v={p.amount} c={cur} />
+                          {p.change ? <span className="muted"> · {t("staff.pos.paymentChange", { amount: f.money(p.change, cur) })}</span> : null}{" "}
+                          {p.refunded ? <span className="badge bad">{t("staff.pos.refundedAmount", { amount: f.money(p.refunded, cur) })}</span> : null}
+                        </span>
+                        {s.can("payment.refund") && p.refunded < p.amount && (
+                          <button
+                            className="btn small danger"
+                            onClick={() => {
+                              const amt = ask("staff.pos.refundAmount", ((p.amount - p.refunded) / 100).toFixed(2));
+                              const reason = amt ? ask("staff.pos.refundReason") : null;
+                              if (amt && reason) run(async () => (await api(b(`payments/${p.id}/refund`), { body: { amount: cents(amt), reason, msgId: msgId() } }), await refreshOrder()), t("staff.pos.refunded"));
+                            }}
+                          >
+                            {t("staff.pos.refund")}
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {order.receiptToken && (
+                <a className="btn small ghost" style={{ alignSelf: "flex-start" }} href={`/receipt/${order.receiptToken}`} target="_blank" rel="noreferrer">
+                  <ReceiptText size={16} aria-hidden /> {t("staff.pos.viewReceipt")}
+                </a>
+              )}
+            </div>
+          ) : (
+            !lines.length && (
+              <div className="card flat">
+                <Empty icon={<ReceiptText size={28} strokeWidth={1.5} />}>{t("staff.pos.pickBill")}</Empty>
+              </div>
+            )
+          )}
+        </section>
+      </div>
+
+      {canEdit && lines.length > 0 && (
+        <div className="pos-dock">
+          <button className="btn primary block" disabled={pending} onClick={send}>
+            <Send size={16} aria-hidden /> {t("staff.pos.sendToKitchen", { count: draftCount })} · <Money v={draftTotal} c={cur} />
+          </button>
         </div>
-      </section>
-
-      <AddItems
-        open={adding}
-        menu={menu}
-        cur={cur}
-        onClose={() => setAdding(false)}
-        onAdd={(items) =>
-          run(async () => {
-            const r = await api<Order>(b("orders"), { body: order ? { orderId: order.id, items } : { takeaway: true, items } });
-            setAdding(false);
-            setSel(r.id);
-            await refreshOrder();
-            await refreshList();
-          }, "Sent to kitchen")
-        }
-      />
+      )}
     </div>
   );
 }
 
-function BillTools({ order, cur, canDiscount, post }: { order: Order; cur: string; canDiscount: boolean; post: (a: string, b: unknown, ok?: string) => Promise<unknown> }) {
+function MenuGrid({ menu, cur, lines, disabled, onAdd }: { menu: Menu | null; cur: string; lines: Line[]; disabled: boolean; onAdd: (it: MenuItem) => void }) {
+  const { t, locale } = useI18n();
+  const [cat, setCat] = useState("all");
+  const [find, setFind] = useState("");
+  const lang = menu?.language ?? "en";
+  const items = useMemo(() => {
+    const needle = find.trim().toLowerCase();
+    return (menu?.items ?? [])
+      .filter((i) => i.active && (cat === "all" || i.categoryId === cat))
+      .map((i) => ({ it: i, loc: localizeItem(i, locale, lang) }))
+      .filter(({ it, loc }) => !needle || loc.name.toLowerCase().includes(needle) || it.name.toLowerCase().includes(needle));
+  }, [menu, cat, find, locale, lang]);
+  const qty = (id: string) => lines.reduce((a, l) => a + (l.item.id === id ? l.qty : 0), 0);
+  return (
+    <section className="col" aria-labelledby="pos-menu-h">
+      <div className="row between nowrap">
+        <h2 id="pos-menu-h" style={{ margin: 0 }}>
+          {t("staff.pos.menu")}
+        </h2>
+        <label className="pos-find">
+          <Search size={16} aria-hidden />
+          <input type="search" value={find} onChange={(e) => setFind(e.target.value)} placeholder={t("staff.pos.findDish")} aria-label={t("staff.pos.findDish")} />
+        </label>
+      </div>
+      <div className="chips">
+        <button className="chip" aria-pressed={cat === "all"} onClick={() => setCat("all")}>
+          {t("common.all")}
+        </button>
+        {menu?.categories.map((c) => (
+          <button key={c.id} className="chip" aria-pressed={cat === c.id} onClick={() => setCat(c.id)}>
+            {localizeCategory(c, locale, lang)}
+          </button>
+        ))}
+      </div>
+      {!menu ? (
+        <div className="muted">{t("common.loading")}</div>
+      ) : items.length ? (
+        <div className="pos-menu">
+          {items.map(({ it, loc }) => {
+            const n = qty(it.id);
+            return (
+              <button key={it.id} className="pos-item" disabled={disabled || it.soldOut} onClick={() => onAdd(it)} aria-label={t("staff.pos.addItem", { name: loc.name })}>
+                <span className="pi-name">{loc.name}</span>
+                {loc.original && <span className="pi-alt">{loc.original}</span>}
+                <span className="pi-foot">
+                  <span className="pi-price">
+                    <Money v={it.price} c={cur} />
+                  </span>
+                  {it.soldOut && <span className="badge bad">{t("menu.soldOut")}</span>}
+                </span>
+                {n > 0 && (
+                  <span className="pi-qty" aria-label={t("staff.pos.inDraft", { count: n })}>
+                    {n}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <Empty>{t("staff.pos.noDishes")}</Empty>
+      )}
+    </section>
+  );
+}
+
+function BillTools({ order, cur, canDiscount, post }: { order: Order; cur: string; canDiscount: boolean; post: Post }) {
+  const { t } = useI18n();
   const [code, setCode] = useState("");
   const [email, setEmail] = useState(order.email ?? "");
   const [ways, setWays] = useState(2);
   const [plan, setPlan] = useState<number[] | null>(null);
   return (
-    <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-      <form className="row" onSubmit={(e) => (e.preventDefault(), post("promo", { code }, "Promo applied"))}>
-        <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="Promo code" style={{ flex: 1 }} aria-label="Promo code" />
-        <button className="btn small">Apply</button>
+    <div className="pos-tools">
+      <form className="row nowrap" onSubmit={(e) => (e.preventDefault(), post("promo", { code }, t("staff.pos.promoApplied")))}>
+        <input value={code} onChange={(e) => setCode(e.target.value)} placeholder={t("staff.pos.promoCode")} className="grow" aria-label={t("staff.pos.promoCode")} />
+        <button className="btn small">{t("staff.pos.apply")}</button>
       </form>
       {canDiscount && (
         <div className="row">
           {[5, 10, 20].map((p) => (
-            <button key={p} className="btn small" onClick={() => post("discount", { kind: "percent", value: p, reason: `${p}% manager discount` }, "Discount applied")}>
+            <button key={p} className="btn small" onClick={() => post("discount", { kind: "percent", value: p, reason: `${p}% manager discount` }, t("staff.pos.discountApplied"))}>
               -{p}%
             </button>
           ))}
           {order.discountSpec && (
-            <button className="btn small ghost" onClick={() => post("discount", null, "Discount removed")}>
-              Remove
+            <button className="btn small ghost" onClick={() => post("discount", null, t("staff.pos.discountRemoved"))}>
+              {t("staff.pos.removeDiscount")}
             </button>
           )}
         </div>
       )}
-      <form className="row" onSubmit={(e) => (e.preventDefault(), post("contact", { email, joinLoyalty: true }, order.memberId ? "Updated" : "Member attached — they'll earn points and get an e-receipt"))}>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Guest email (receipt + points)" style={{ flex: 1 }} aria-label="Guest email" />
-        <button className="btn small">{order.memberId ? "✓ Member" : "Attach"}</button>
+      <form className="row nowrap" onSubmit={(e) => (e.preventDefault(), post("contact", { email, joinLoyalty: true }, order.memberId ? t("staff.pos.updated") : t("staff.pos.memberAttached")))}>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("staff.pos.guestEmailHint")} className="grow" aria-label={t("staff.pos.guestEmail")} />
+        <button className="btn small">
+          {order.memberId ? (
+            <>
+              <Star size={14} aria-hidden /> {t("staff.pos.member")}
+            </>
+          ) : (
+            t("staff.pos.attach")
+          )}
+        </button>
       </form>
       <div className="row">
-        <span className="muted">Split</span>
-        <input type="number" min={2} max={30} value={ways} onChange={(e) => setWays(Number(e.target.value))} style={{ width: 64 }} aria-label="Split ways" />
+        <span className="muted">{t("staff.pos.splitEvenly")}</span>
+        <input type="number" inputMode="numeric" min={2} max={30} value={ways} onChange={(e) => setWays(Number(e.target.value))} style={{ width: 64 }} aria-label={t("staff.pos.splitWays")} />
         <button className="btn small" onClick={async () => setPlan(((await post("split_plan", { ways })) as { parts: number[] }).parts)}>
-          ways
+          {t("staff.pos.showShares")}
         </button>
-        {plan && <span data-testid="split-plan">{plan.map((p, i) => <span key={i} className="badge"><Money v={p} c={cur} /></span>)}</span>}
+        {plan && (
+          <span className="row" data-testid="split-plan">
+            {plan.map((p, i) => (
+              <span key={i} className="badge">
+                <Money v={p} c={cur} />
+              </span>
+            ))}
+          </span>
+        )}
       </div>
     </div>
   );
 }
 
-function PayPanel({ order, cur, pending, post }: { order: Order; cur: string; pending: boolean; post: (a: string, b: unknown, ok?: string) => Promise<unknown> }) {
+const METHODS = [
+  { m: "cash", key: "staff.pos.payCash", Icon: Banknote },
+  { m: "card", key: "staff.pos.payCard", Icon: CreditCard },
+  { m: "ewallet", key: "staff.pos.payEwallet", Icon: Smartphone },
+] as const;
+
+function PayPanel({ order, cur, pending, post }: { order: Order; cur: string; pending: boolean; post: Post }) {
+  const { t, f } = useI18n();
   const [amount, setAmount] = useState((order.due / 100).toFixed(2));
   const [tendered, setTendered] = useState("");
   const [label, setLabel] = useState("");
   useEffect(() => setAmount((order.due / 100).toFixed(2)), [order.due]);
-  const amt = Math.round(parseFloat(amount || "0") * 100);
+  const amt = cents(amount);
+  const given = tendered ? cents(tendered) : 0;
+  const quick = [...new Set([amt, Math.ceil(amt / 1000) * 1000, Math.ceil(amt / 5000) * 5000, Math.ceil(amt / 10000) * 10000])].filter((v) => v > 0).slice(0, 4);
   const pay = (method: string) =>
-    post("pay", { method, amount: amt, tendered: method === "cash" && tendered ? Math.round(parseFloat(tendered) * 100) : null, splitLabel: label || null, msgId: msgId() }, method === "cash" && tendered ? `Change: ${((Math.round(parseFloat(tendered) * 100) - amt) / 100).toFixed(2)}` : "Payment taken");
+    post(
+      "pay",
+      { method, amount: amt, tendered: method === "cash" && tendered ? given : null, splitLabel: label || null, msgId: msgId() },
+      method === "cash" && tendered ? t("staff.pos.changeToast", { amount: ((given - amt) / 100).toFixed(2) }) : t("staff.pos.paymentTaken"),
+    ).then((r) => r && setTendered(""));
   return (
-    <div className="card flat col" data-testid="pay-panel">
-      <div className="row">
-        <label style={{ flex: 1 }}>
-          Amount
-          <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" aria-label="Payment amount" />
+    <div className="card flat col pos-pay" data-testid="pay-panel">
+      <div className="pos-pay-fields">
+        <label>
+          {t("staff.pos.amount")}
+          <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" aria-label={t("staff.pos.paymentAmount")} />
         </label>
-        <label style={{ flex: 1 }}>
-          Cash tendered
-          <input value={tendered} onChange={(e) => setTendered(e.target.value)} inputMode="decimal" aria-label="Cash tendered" />
+        <label>
+          {t("staff.pos.cashTendered")}
+          <input value={tendered} onChange={(e) => setTendered(e.target.value)} inputMode="decimal" aria-label={t("staff.pos.cashTendered")} className="pos-tender" />
         </label>
-        <label style={{ flex: 1 }}>
-          Split label
-          <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. Alice" />
+        <label>
+          {t("staff.pos.splitLabel")}
+          <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder={t("staff.pos.splitLabelHint")} />
         </label>
       </div>
-      <div className="row">
-        {["cash", "card", "ewallet"].map((m) => (
-          <button key={m} className="btn primary" disabled={pending || amt <= 0} onClick={() => pay(m)}>
-            Pay {m}
+      <div className="row" role="group" aria-label={t("staff.pos.quickCash")}>
+        {quick.map((v, i) => (
+          <button key={v} type="button" className="btn small" onClick={() => setTendered((v / 100).toFixed(2))}>
+            {i === 0 ? t("staff.pos.exact") : f.money(v, cur)}
+          </button>
+        ))}
+      </div>
+      {tendered && amt > 0 && (
+        <div className={`pos-change ${given < amt ? "short" : ""}`} aria-live="polite">
+          <span>{given < amt ? t("staff.pos.short") : t("common.change")}</span>
+          <b>
+            <Money v={Math.abs(given - amt)} c={cur} />
+          </b>
+        </div>
+      )}
+      <div className="pos-pay-btns">
+        {METHODS.map(({ m, key, Icon }) => (
+          <button key={m} className="btn primary big" disabled={pending || amt <= 0} onClick={() => pay(m)}>
+            <Icon size={18} aria-hidden /> {t(key)}
           </button>
         ))}
         {order.memberId && (
-          <button className="btn" disabled={pending || amt <= 0} onClick={() => pay("points")}>
-            Pay with points
+          <button className="btn big" disabled={pending || amt <= 0} onClick={() => pay("points")}>
+            <Star size={18} aria-hidden /> {t("staff.pos.payPoints")}
           </button>
         )}
       </div>
     </div>
-  );
-}
-
-function AddItems({ open, menu, cur, onClose, onAdd }: { open: boolean; menu: Menu | null; cur: string; onClose: () => void; onAdd: (items: { itemId: string; qty: number; modifiers: { group: string; option: string }[] }[]) => void }) {
-  const [lines, setLines] = useState<{ item: MenuItem; qty: number; modifiers: { group: string; option: string }[] }[]>([]);
-  const [cat, setCat] = useState("all");
-  useEffect(() => setLines([]), [open]);
-  const items = useMemo(() => (menu?.items ?? []).filter((i) => i.active && (cat === "all" || i.categoryId === cat)), [menu, cat]);
-  const addLine = (it: MenuItem) => {
-    // default to the first option of required groups; staff can adjust on the bill notes
-    const modifiers = it.modifiers.filter((g) => g.min > 0).map((g) => ({ group: g.name, option: g.options[0].name }));
-    const i = lines.findIndex((l) => l.item.id === it.id && JSON.stringify(l.modifiers) === JSON.stringify(modifiers));
-    if (i >= 0) setLines(lines.map((l, n) => (n === i ? { ...l, qty: l.qty + 1 } : l)));
-    else setLines([...lines, { item: it, qty: 1, modifiers }]);
-  };
-  return (
-    <Modal open={open} onClose={onClose} title="Add items">
-      <div className="col">
-        <div className="row">
-          <button className={`btn small ${cat === "all" ? "primary" : ""}`} onClick={() => setCat("all")}>
-            All
-          </button>
-          {menu?.categories.map((c) => (
-            <button key={c.id} className={`btn small ${cat === c.id ? "primary" : ""}`} onClick={() => setCat(c.id)}>
-              {c.name}
-            </button>
-          ))}
-        </div>
-        <div className="grid tight">
-          {items.map((it) => (
-            <button key={it.id} className="btn" disabled={it.soldOut} onClick={() => addLine(it)} style={{ flexDirection: "column", alignItems: "flex-start" }} aria-label={`Add ${it.name}`}>
-              <span>{it.name}</span>
-              <small className="muted">
-                <Money v={it.price} c={cur} />
-                {it.soldOut ? " · sold out" : ""}
-              </small>
-            </button>
-          ))}
-        </div>
-        {lines.length > 0 && (
-          <div className="card flat tight">
-            {lines.map((l, n) => (
-              <div key={n} className="row between">
-                <span>
-                  {l.qty}× {l.item.name}
-                  {l.modifiers.length ? <span className="muted"> · {l.modifiers.map((m) => m.option).join(", ")}</span> : null}
-                </span>
-                <button className="btn small ghost" onClick={() => setLines(lines.filter((_, i) => i !== n))}>
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-        <button className="btn primary" disabled={!lines.length} onClick={() => onAdd(lines.map((l) => ({ itemId: l.item.id, qty: l.qty, modifiers: l.modifiers })))}>
-          Send {lines.reduce((s, l) => s + l.qty, 0)} to kitchen
-        </button>
-      </div>
-    </Modal>
   );
 }

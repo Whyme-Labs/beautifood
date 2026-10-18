@@ -3,43 +3,49 @@ import type { ReactNode } from "react";
 import { useRouter } from "@void/react";
 import { auth } from "void/client";
 import { StaffProvider, useStaff } from "../../src/ui/staff";
-import { Empty, Logo } from "../../src/ui/components";
+import { BarChart3, BookOpen, CalendarDays, ChefHat, Gift, LayoutDashboard, LogOut, QrCode, Receipt, Settings, Sparkles, UserCog, Users, type LucideIcon } from "lucide-react";
+import { Empty, LangSwitch, Logo } from "../../src/ui/components";
+import { useI18n } from "../../src/i18n/react";
+import type { MessageKey } from "../../src/i18n/core";
+import type { Messages } from "../../src/i18n/locales/en";
 
-const NAV: { href: string; label: string; perm?: string; any?: string[] }[] = [
-  { href: "/m", label: "Dashboard" },
-  { href: "/m/host", label: "Host stand", perm: "queue.operate" },
-  { href: "/m/pos", label: "POS", perm: "order.create" },
-  { href: "/m/kitchen", label: "Kitchen", perm: "kds.operate" },
-  { href: "/m/bookings", label: "Bookings", perm: "booking.manage" },
-  { href: "/m/menu", label: "Menu", any: ["menu.manage", "menu.availability"] },
-  { href: "/m/tables", label: "Tables & QR", perm: "table.manage" },
-  { href: "/m/members", label: "Loyalty & promos", any: ["member.manage", "campaign.manage"] },
-  { href: "/m/reports", label: "Reports", perm: "report.view" },
-  { href: "/m/staff", label: "Team", perm: "staff.manage" },
-  { href: "/m/settings", label: "Settings", perm: "settings.manage" },
-  { href: "/m/setup", label: "✨ AI setup", perm: "menu.manage" },
+const NAV: { href: string; key: keyof Messages["staff"]["shell"]["nav"]; icon: LucideIcon; perm?: string; any?: string[] }[] = [
+  { href: "/m", key: "dashboard", icon: LayoutDashboard },
+  { href: "/m/host", key: "host", icon: Users, perm: "queue.operate" },
+  { href: "/m/pos", key: "pos", icon: Receipt, perm: "order.create" },
+  { href: "/m/kitchen", key: "kitchen", icon: ChefHat, perm: "kds.operate" },
+  { href: "/m/bookings", key: "bookings", icon: CalendarDays, perm: "booking.manage" },
+  { href: "/m/menu", key: "menu", icon: BookOpen, any: ["menu.manage", "menu.availability"] },
+  { href: "/m/tables", key: "tables", icon: QrCode, perm: "table.manage" },
+  { href: "/m/members", key: "members", icon: Gift, any: ["member.manage", "campaign.manage"] },
+  { href: "/m/reports", key: "reports", icon: BarChart3, perm: "report.view" },
+  { href: "/m/staff", key: "team", icon: UserCog, perm: "staff.manage" },
+  { href: "/m/settings", key: "settings", icon: Settings, perm: "settings.manage" },
+  { href: "/m/setup", key: "setup", icon: Sparkles, perm: "menu.manage" },
 ];
 
 function Shell({ children }: { children: ReactNode }) {
   const s = useStaff();
+  const { t } = useI18n();
   const router = useRouter();
   const path = router.path;
-  if (s.loading) return <Empty>Loading…</Empty>;
-  if (!s.user) return <Empty>Redirecting to sign in…</Empty>;
+  if (s.loading) return <Empty>{t("common.loading")}</Empty>;
+  if (!s.user) return <Empty>{t("staff.shell.redirecting")}</Empty>;
   if (!s.tenant && path !== "/m/setup") {
     if (typeof window !== "undefined") window.location.href = "/m/setup";
-    return <Empty>Let's set up your restaurant…</Empty>;
+    return <Empty>{t("staff.shell.settingUp")}</Empty>;
   }
   const visible = NAV.filter((n) => (!n.perm || s.can(n.perm)) && (!n.any || n.any.some((p) => s.can(p))));
+  const role = s.membership?.role;
   return (
     <>
-      <header className="topbar">
+      <header className="topbar staff">
         <div className="wrap">
-          <Logo />
+          <Logo href="/m" />
           {s.tenant && (
-            <>
+            <div className="row nowrap switchers">
               {s.memberships.length > 1 ? (
-                <select value={s.tenant.id} onChange={(e) => s.setTenantId(e.target.value)} style={{ width: "auto" }} aria-label="Restaurant">
+                <select value={s.tenant.id} onChange={(e) => s.setTenantId(e.target.value)} aria-label={t("staff.shell.restaurant")}>
                   {s.memberships.map((m) => (
                     <option key={m.tenantId} value={m.tenantId}>
                       {m.tenantName}
@@ -47,30 +53,33 @@ function Shell({ children }: { children: ReactNode }) {
                   ))}
                 </select>
               ) : (
-                <b>{s.tenant.name}</b>
+                <b className="tenant-name">{s.tenant.name}</b>
               )}
-              <select value={s.branchId ?? ""} onChange={(e) => s.setBranch(e.target.value)} style={{ width: "auto" }} aria-label="Branch" data-testid="branch-select">
+              <select value={s.branchId ?? ""} onChange={(e) => s.setBranch(e.target.value)} aria-label={t("staff.shell.branch")} data-testid="branch-select">
                 {s.tenant.branches.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name}
                   </option>
                 ))}
               </select>
-            </>
+            </div>
           )}
-          <span style={{ flex: 1 }} />
-          <span className="muted" style={{ fontSize: 13 }}>
-            {s.user.name} · {s.membership?.role.replace("_", " ")}
+          <span className="grow" />
+          <span className="who hide-sm">
+            {s.user.name}
+            {role && <span className="role">{t(`staff.shell.roles.${role}` as MessageKey)}</span>}
           </span>
-          <button className="btn small ghost" onClick={async () => (await auth.signOut(), (location.href = "/m/login"))}>
-            Sign out
+          <LangSwitch />
+          <button className="btn small ghost icon" onClick={async () => (await auth.signOut(), (location.href = "/m/login"))} aria-label={t("common.signOut")} title={t("common.signOut")}>
+            <LogOut size={17} />
           </button>
         </div>
-        <div className="wrap" style={{ paddingTop: 0 }}>
-          <nav className="nav" data-testid="staff-nav">
+        <div className="wrap navwrap">
+          <nav className="nav" data-testid="staff-nav" aria-label={t("staff.shell.nav.label")}>
             {visible.map((n) => (
-              <a key={n.href} href={n.href} className={path === n.href ? "active" : ""}>
-                {n.label}
+              <a key={n.href} href={n.href} className={path === n.href ? "active" : ""} aria-current={path === n.href ? "page" : undefined}>
+                <n.icon aria-hidden="true" />
+                {t(`staff.shell.nav.${n.key}`)}
               </a>
             ))}
           </nav>

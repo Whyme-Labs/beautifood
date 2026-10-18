@@ -25,21 +25,22 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
     restaurant: { name: ctx.tenant.name, cuisine: ctx.tenant.cuisine, story: ctx.tenant.story, description: ctx.tenant.description },
     branchName: ctx.branch.name,
     currency: ctx.config.currency,
+    menuLanguage: menu.language,
     items: menu.items.map((i) => ({ ...i, category: catName.get(i.categoryId), popularity: popularity.get(i.id) ?? 0 })),
   };
 }
 
-export async function customerChat(db: D1Database, env: ClaudeEnv, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[]): Promise<AssistantReply> {
+export async function customerChat(db: D1Database, env: ClaudeEnv, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply> {
   const actx = await assistantContext(db, ctx);
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
   if (claudeEnabled(env)) {
     try {
-      return await answerWithClaude(env, actx, history);
+      return await answerWithClaude(env, actx, history, locale);
     } catch (e) {
       console.warn("claude assistant failed, using local engine", e);
     }
   }
-  return answerLocally(actx, question);
+  return answerLocally(actx, question, locale);
 }
 
 export interface OnboardingInput {

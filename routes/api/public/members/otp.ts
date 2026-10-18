@@ -4,6 +4,8 @@ import { api, body } from "../../../../src/server/http";
 import { appEnv } from "../../../../src/server/appenv";
 import { getTenant } from "../../../../src/server/domain/context";
 import { sendEmail } from "../../../../src/server/domain/messaging";
+import { otpMail } from "../../../../src/server/emails";
+import { requestLocale } from "../../../../src/server/locale";
 import { sha256Hex } from "../../../../src/server/sign";
 import { newId } from "../../../../src/server/ids";
 
@@ -19,9 +21,7 @@ export const POST = api(async (c) => {
     tenantId: t.id,
     fromName: t.name,
     to: e,
-    subject: `${code} is your ${t.name} sign-in code`,
-    html: `<p>Your sign-in code for <b>${t.name}</b> rewards is <b style="font-size:22px;letter-spacing:3px">${code}</b>. It expires in 10 minutes.</p>`,
-    text: `Your ${t.name} sign-in code is ${code}. It expires in 10 minutes.`,
+    ...otpMail(requestLocale(c.req), t.name, code),
     kind: "otp",
     ref: newId("otp_"),
   });

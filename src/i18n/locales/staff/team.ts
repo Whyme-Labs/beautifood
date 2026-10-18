@@ -1,0 +1,73 @@
+// Staff console: team. English first; the Chinese must have exactly the same keys.
+// Role names live in staff.shell.roles.
+import type { Widen } from "../widen";
+
+export const en = {
+  title: "Team",
+  people: "People",
+  person: "Person",
+  role: "Role",
+  branches: "Branches",
+  allBranches: "All branches",
+  invited: "invited",
+  you: "you",
+  confirmRemove: "Remove {name}?",
+  removeName: "Remove {name}",
+  removed: "Removed",
+  noPeople: "Just you so far. Invite your team below.",
+  invite: {
+    title: "Invite someone",
+    branchesHint: "Leave all unticked to give access to every branch.",
+    create: "Create invite link",
+    created: "Invitation created",
+    sendLink: "Send this link:",
+  },
+  tokens: {
+    title: "AI agent access",
+    about: "Let your own AI assistant (via MCP at {mcp}) check queues, sales and stock. Tokens act as you.",
+    lastUsed: "last used {when}",
+    never: "never used",
+    revoke: "Revoke",
+    revokeName: "Revoke {name}",
+    revoked: "Token revoked",
+    create: "Create token",
+    defaultName: "Agent {date}",
+    copyNow: "Copy now (shown once):",
+    none: "No tokens yet.",
+  },
+} as const;
+
+export const zh: Widen<typeof en> = {
+  title: "团队",
+  people: "成员",
+  person: "成员",
+  role: "职位",
+  branches: "分店",
+  allBranches: "所有分店",
+  invited: "已邀请",
+  you: "你",
+  confirmRemove: "确定移除 {name}？",
+  removeName: "移除 {name}",
+  removed: "已移除",
+  noPeople: "目前只有你。在下面邀请你的团队吧。",
+  invite: {
+    title: "邀请同事",
+    branchesHint: "全部不勾选即可使用所有分店。",
+    create: "生成邀请链接",
+    created: "邀请已生成",
+    sendLink: "把这个链接发给对方：",
+  },
+  tokens: {
+    title: "AI 助手权限",
+    about: "让你自己的 AI 助手（通过 MCP：{mcp}）查看排队、营业额和库存。令牌拥有与你相同的权限。",
+    lastUsed: "上次使用 {when}",
+    never: "从未使用",
+    revoke: "撤销",
+    revokeName: "撤销 {name}",
+    revoked: "令牌已撤销",
+    create: "生成令牌",
+    defaultName: "AI 助手 {date}",
+    copyNow: "请立即复制（只显示一次）：",
+    none: "还没有令牌。",
+  },
+};

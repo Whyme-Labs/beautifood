@@ -2,14 +2,17 @@
 // as the grounding layer for the LLM path: every fact comes from structured
 // menu data, never invention. Allergen answers always carry a safety note.
 import { ALLERGEN_LABELS, ALLERGENS, type Allergen } from "../../shared/allergens";
-import { formatMoney } from "../../shared/format";
 import type { MenuItem } from "../../shared/types";
+import { localizeItem } from "../../shared/menuI18n";
+import { formatters, translator, type MessageKey } from "../../i18n/core";
 
 export interface AssistantContext {
   restaurant: { name: string; cuisine: string; story: string; description: string };
   branchName: string;
   currency: string;
   items: (MenuItem & { category?: string; popularity?: number })[];
+  /** The menu's own language (dish names as written). */
+  menuLanguage?: string;
 }
 
 export interface AssistantReply {
@@ -19,8 +22,8 @@ export interface AssistantReply {
   engine: "local" | "claude";
 }
 
-export const ALLERGY_NOTE =
-  "Allergen information comes from the restaurant's menu data. Kitchens handle many ingredients, so if you have a severe allergy please confirm with staff before ordering.";
+export const allergyNote = (locale = "en") => translator(locale)("assistantReply.safety");
+export const ALLERGY_NOTE = allergyNote();
 
 const ALLERGEN_WORDS: Record<Allergen, RegExp> = {
   gluten: /gluten|wheat|coeliac|celiac/i,
@@ -39,8 +42,24 @@ const ALLERGEN_WORDS: Record<Allergen, RegExp> = {
   lupin: /lupin/i,
 };
 
+// The same, for questions asked in Chinese (no word boundaries in CJK).
+const ALLERGEN_WORDS_ZH: Partial<Record<Allergen, RegExp>> = {
+  gluten: /麸质|麦/,
+  crustaceans: /虾|蟹|甲壳|海鲜/,
+  molluscs: /鱿鱼|蚝|贝|蛤|软体|海鲜/,
+  fish: /鱼/,
+  egg: /蛋/,
+  milk: /奶|乳/,
+  peanuts: /花生/,
+  tree_nuts: /坚果|果仁|腰果|杏仁|核桃/,
+  soy: /大豆|黄豆|豆腐|酱油/,
+  sesame: /芝麻/,
+  celery: /芹菜/,
+  mustard: /芥末/,
+};
+
 export function mentionedAllergens(q: string): Allergen[] {
-  const found = ALLERGENS.filter((a) => ALLERGEN_WORDS[a].test(q));
+  const found = ALLERGENS.filter((a) => ALLERGEN_WORDS[a].test(q) || ALLERGEN_WORDS_ZH[a]?.test(q));
   // "nuts" alone should cover peanuts too
   if (found.includes("tree_nuts") && /\bnuts?\b/i.test(q) && !found.includes("peanuts")) found.push("peanuts");
   if (/seafood/i.test(q)) for (const a of ["crustaceans", "molluscs"] as Allergen[]) if (!found.includes(a)) found.push(a);
@@ -54,6 +73,8 @@ export function findItem(items: AssistantContext["items"], q: string) {
   const nq = ` ${norm(q)} `;
   let best: { item: AssistantContext["items"][number]; score: number } | null = null;
   for (const it of items) {
+    // a translated name (e.g. 炒粿条) appearing anywhere in the question is a full match
+    if (Object.values(it.translations ?? {}).some((tr) => tr?.name && tr.name.length > 1 && q.includes(tr.name))) return it;
     const words = norm(it.name).split(" ").filter((w) => w.length > 2);
     if (!words.length) continue;
     const hits = words.filter((w) => nq.includes(` ${w} `) || nq.includes(` ${w}s `)).length;
@@ -63,41 +84,62 @@ export function findItem(items: AssistantContext["items"], q: string) {
   return best?.item ?? null;
 }
 
-const money = (ctx: AssistantContext, n: number) => formatMoney(n, ctx.currency);
-const brief = (ctx: AssistantContext, i: MenuItem, reason?: string) => ({ id: i.id, name: i.name, price: i.price, reason });
+const brief = (i: MenuItem, reason?: string) => ({ id: i.id, name: i.name, price: i.price, reason });
 
 function budgetOf(q: string): number | null {
-  const m = q.match(/(?:under|below|less than|max(?:imum)?|budget(?: of)?|within)\s*(?:rm|\$|myr)?\s*(\d+(?:\.\d+)?)/i);
+  const m =
+    q.match(/(?:under|below|less than|max(?:imum)?|budget(?: of)?|within)\s*(?:rm|\$|myr)?\s*(\d+(?:\.\d+)?)/i) ??
+    q.match(/(?:rm|\$|myr)?\s*(\d+(?:\.\d+)?)\s*(?:块|令吉|元|ringgit)?\s*(?:以下|以内|之内)/i);
   return m ? Math.round(parseFloat(m[1]) * 100) : null;
 }
 
-export function answerLocally(ctx: AssistantContext, question: string): AssistantReply {
+/**
+ * Answer from menu data alone, in the guest's language. Dish names are shown in that
+ * language when the menu has a translation; `items` keep the original names for ordering.
+ */
+export function answerLocally(ctx: AssistantContext, question: string, locale = "en"): AssistantReply {
+  const t = translator(locale);
+  const f = formatters(locale);
+  const money = (n: number) => f.money(n, ctx.currency);
+  const dish = (i: MenuItem) => localizeItem(i, locale, ctx.menuLanguage ?? "en");
+  const allergen = (a: string) => {
+    if (locale === "en") return ALLERGEN_LABELS[a as Allergen] ?? a;
+    const key = `allergens.${a}` as MessageKey;
+    return t(key) === key ? a : t(key);
+  };
+  const list = (xs: string[]) => xs.join(t("assistantReply.listSep"));
+  const note = allergyNote(locale);
+
   const q = question.trim();
   const items = ctx.items.filter((i) => i.active && !i.soldOut);
   const allergens = mentionedAllergens(q);
-  const wantsVeg = /vegetarian|veggie|no meat|meatless/i.test(q);
-  const wantsVegan = /vegan|plant[- ]based/i.test(q);
-  const wantsHalal = /halal|no pork/i.test(q);
-  const notSpicy = /(not|non|no|less|mild|without)[- ]?spic|can'?t (take|handle) (spice|chil+i)|kid/i.test(q);
-  const wantsSpicy = !notSpicy && /spicy|hot\b|chil+i|pedas/i.test(q);
+  const wantsVegan = /vegan|plant[- ]based|纯素|全素/i.test(q);
+  const wantsVeg = /vegetarian|veggie|no meat|meatless|素|斋/i.test(q);
+  const wantsHalal = /halal|no pork|清真|无猪|没有猪/i.test(q);
+  const notSpicy = /(not|non|no|less|mild|without)[- ]?spic|can'?t (take|handle) (spice|chil+i)|kid|不辣|不要辣|不吃辣|小孩|孩子/i.test(q);
+  const wantsSpicy = !notSpicy && /spicy|hot\b|chil+i|pedas|辣/i.test(q);
   const budget = budgetOf(q);
   const item = findItem(ctx.items, q);
 
   // 1. allergen question about a specific dish
-  if (item && (allergens.length || /allerg|contain|ingredient|safe for/i.test(q))) {
-    const labels = item.allergens.map((a) => ALLERGEN_LABELS[a as Allergen] ?? a);
+  if (item && (allergens.length || /allerg|contain|ingredient|safe for|过敏|含有|含不含|有没有|成分|可以吃/i.test(q))) {
     const conflict = allergens.filter((a) => item.allergens.includes(a));
-    let answer = labels.length ? `${item.name} contains: ${labels.join(", ")}.` : `${item.name} has no listed allergens.`;
-    if (allergens.length) answer += conflict.length ? ` So it is NOT suitable if you avoid ${conflict.map((a) => ALLERGEN_LABELS[a]).join(", ")}.` : ` It doesn't list ${allergens.map((a) => ALLERGEN_LABELS[a]).join(", ")}.`;
-    return { answer, items: [brief(ctx, item)], safetyNote: ALLERGY_NOTE, engine: "local" };
+    const name = dish(item).name;
+    let answer = item.allergens.length ? t("assistantReply.contains", { dish: name, list: list(item.allergens.map(allergen)) }) : t("assistantReply.noAllergens", { dish: name });
+    if (allergens.length)
+      answer += conflict.length
+        ? t("assistantReply.notSuitable", { list: list(conflict.map(allergen)) })
+        : t("assistantReply.doesntList", { list: list(allergens.map(allergen)) });
+    return { answer, items: [brief(item)], safetyNote: note, engine: "local" };
   }
 
   // 2. story / description of a dish
-  if (item && /story|history|origin|tell me (about|more)|what is|what's|describe|why/i.test(q)) {
-    const parts = [item.story || item.description || `${item.name} is one of our ${item.category ?? "dishes"}.`];
-    if (item.isSignature && !/signature/i.test(parts[0])) parts.push(`It's one of ${ctx.restaurant.name}'s signatures.`);
-    parts.push(`${money(ctx, item.price)}.`);
-    return { answer: parts.join(" "), items: [brief(ctx, item)], engine: "local" };
+  if (item && /story|history|origin|tell me (about|more)|what is|what's|describe|why|故事|历史|来历|是什么|介绍|为什么/i.test(q)) {
+    const d = dish(item);
+    const parts = [d.story || d.description || t("assistantReply.oneOf", { dish: d.name, category: item.category ?? t("assistantReply.dishes") })];
+    if (item.isSignature && !/signature|招牌/i.test(parts[0])) parts.push(t("assistantReply.isSignature", { restaurant: ctx.restaurant.name }));
+    parts.push(`${money(item.price)}.`);
+    return { answer: parts.join(locale === "en" ? " " : ""), items: [brief(item)], engine: "local" };
   }
 
   // 3. filtered recommendations (allergens, diet, spice, budget)
@@ -105,67 +147,77 @@ export function answerLocally(ctx: AssistantContext, question: string): Assistan
   const filters: string[] = [];
   if (allergens.length) {
     pool = pool.filter((i) => !allergens.some((a) => i.allergens.includes(a)));
-    filters.push(`free of ${allergens.map((a) => ALLERGEN_LABELS[a].split(" (")[0].toLowerCase()).join(" and ")}`);
+    const names = allergens.map((a) => (locale === "en" ? ALLERGEN_LABELS[a].split(" (")[0].toLowerCase() : allergen(a)));
+    filters.push(t("assistantReply.freeOf", { list: names.join(t("assistantReply.and")) }));
   }
   if (wantsVegan) {
     pool = pool.filter((i) => i.dietary.includes("vegan"));
-    filters.push("vegan");
+    filters.push(t("assistantReply.vegan"));
   } else if (wantsVeg) {
     pool = pool.filter((i) => i.dietary.includes("vegetarian") || i.dietary.includes("vegan"));
-    filters.push("vegetarian");
+    filters.push(t("assistantReply.vegetarian"));
   }
   if (wantsHalal) {
     pool = pool.filter((i) => i.dietary.includes("halal") || i.dietary.includes("halal_friendly"));
-    filters.push("halal-friendly");
+    filters.push(t("assistantReply.halal"));
   }
   if (notSpicy) {
     pool = pool.filter((i) => i.spiceLevel === 0);
-    filters.push("not spicy");
+    filters.push(t("assistantReply.notSpicy"));
   } else if (wantsSpicy) {
     pool = pool.filter((i) => i.spiceLevel > 0).sort((a, b) => b.spiceLevel - a.spiceLevel);
-    filters.push("spicy");
+    filters.push(t("assistantReply.spicy"));
   }
   if (budget) {
     pool = pool.filter((i) => i.price <= budget);
-    filters.push(`under ${money(ctx, budget)}`);
+    filters.push(t("assistantReply.under", { price: money(budget) }));
   }
 
-  const signatureAsk = /signature|famous|known for|best|must[- ]try|special|recommend|suggest|what should i (eat|order|get|try)|popular|first time/i.test(q);
+  const signatureAsk = /signature|famous|known for|best|must[- ]try|special|recommend|suggest|what should i (eat|order|get|try)|popular|first time|招牌|推荐|好吃|必吃|人气|有名|第一次|吃什么|点什么/i.test(q);
   const rank = (a: (typeof items)[number], b: (typeof items)[number]) =>
     Number(b.isSignature) - Number(a.isSignature) || (b.popularity ?? 0) - (a.popularity ?? 0) || a.sort - b.sort;
+  const filterText = filters.join(t("assistantReply.filterSep"));
 
   if (filters.length || signatureAsk) {
     const picks = [...pool].sort(rank).slice(0, 4);
     if (!picks.length)
       return {
-        answer: `I couldn't find dishes that are ${filters.join(", ")} on today's menu. Our staff may be able to adapt a dish for you.`,
+        answer: t("assistantReply.noneFound", { filters: filterText }),
         items: [],
-        safetyNote: allergens.length ? ALLERGY_NOTE : undefined,
+        safetyNote: allergens.length ? note : undefined,
         engine: "local",
       };
     const intro = filters.length
-      ? `Here's what I'd suggest that's ${filters.join(", ")}:`
-      : `${ctx.restaurant.name} is known for ${picks.filter((p) => p.isSignature).map((p) => p.name).join(", ") || picks[0].name}. My picks:`;
+      ? t("assistantReply.suggestFiltered", { filters: filterText })
+      : t("assistantReply.knownFor", { restaurant: ctx.restaurant.name, list: list(picks.filter((p) => p.isSignature).map((p) => dish(p).name)) || dish(picks[0]).name });
     const reason = (i: (typeof picks)[number]) =>
-      [i.isSignature ? "signature" : (i.popularity ?? 0) > 0 ? "popular today" : "", i.spiceLevel ? "🌶".repeat(i.spiceLevel) : "", i.dietary.includes("vegetarian") ? "vegetarian" : ""].filter(Boolean).join(" · ");
+      [
+        i.isSignature ? t("assistantReply.signature") : (i.popularity ?? 0) > 0 ? t("assistantReply.popularToday") : "",
+        i.spiceLevel ? t("diet.spicy", { count: i.spiceLevel }) : "",
+        i.dietary.includes("vegetarian") ? t("assistantReply.vegetarian") : "",
+      ]
+        .filter(Boolean)
+        .join(" · ");
+    const sep = locale === "en" ? " " : "";
     return {
-      answer: `${intro} ${picks.map((p) => `${p.name} (${money(ctx, p.price)})`).join("; ")}.`,
-      items: picks.map((p) => brief(ctx, p, reason(p) || undefined)),
-      safetyNote: allergens.length ? ALLERGY_NOTE : undefined,
+      answer: `${intro}${sep}${picks.map((p) => `${dish(p).name} (${money(p.price)})`).join(t("assistantReply.itemSep"))}${locale === "en" ? "." : "。"}`,
+      items: picks.map((p) => brief(p, reason(p) || undefined)),
+      safetyNote: allergens.length ? note : undefined,
       engine: "local",
     };
   }
 
   // 4. a dish was named without a clear intent: describe it
   if (item) {
-    const al = item.allergens.length ? ` Allergens: ${item.allergens.map((a) => ALLERGEN_LABELS[a as Allergen] ?? a).join(", ")}.` : "";
-    return { answer: `${item.name} — ${item.description || item.story || "a favourite here"}. ${money(ctx, item.price)}.${al}`, items: [brief(ctx, item)], safetyNote: al ? ALLERGY_NOTE : undefined, engine: "local" };
+    const d = dish(item);
+    const al = item.allergens.length ? t("assistantReply.allergensLabel", { list: list(item.allergens.map(allergen)) }) : "";
+    return { answer: `${d.name} — ${d.description || d.story || t("assistantReply.favourite")}. ${money(item.price)}.${al}`, items: [brief(item)], safetyNote: al ? note : undefined, engine: "local" };
   }
 
   // 5. about the restaurant
-  if (/about|story|who are|restaurant|place|cuisine|history/i.test(q)) {
+  if (/about|story|who are|restaurant|place|cuisine|history|餐厅|关于|故事|历史|你们/i.test(q)) {
     return {
-      answer: ctx.restaurant.story || ctx.restaurant.description || `${ctx.restaurant.name} serves ${ctx.restaurant.cuisine || "delicious food"} at ${ctx.branchName}.`,
+      answer: ctx.restaurant.story || ctx.restaurant.description || t("assistantReply.serves", { restaurant: ctx.restaurant.name, cuisine: ctx.restaurant.cuisine || t("assistantReply.deliciousFood"), branch: ctx.branchName }),
       items: [],
       engine: "local",
     };
@@ -173,8 +225,8 @@ export function answerLocally(ctx: AssistantContext, question: string): Assistan
 
   const sig = [...items].sort(rank).slice(0, 3);
   return {
-    answer: `I can help you choose! Ask me things like "what are your signatures?", "anything vegetarian under RM20?", "is the laksa nut-free?" or "tell me the story of a dish". To start, our favourites are ${sig.map((s) => s.name).join(", ")}.`,
-    items: sig.map((s) => brief(ctx, s)),
+    answer: t("assistantReply.help", { list: list(sig.map((s) => dish(s).name)) }),
+    items: sig.map((s) => brief(s)),
     engine: "local",
   };
 }

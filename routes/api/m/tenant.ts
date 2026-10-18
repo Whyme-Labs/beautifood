@@ -3,6 +3,7 @@ import { api, body } from "../../../src/server/http";
 import { staffTenant, actorOf } from "../../../src/server/routing";
 import { getTenant, loyaltyConfig } from "../../../src/server/domain/context";
 import { listBranches, updateTenant } from "../../../src/server/domain/tenants";
+import { isLocale } from "../../../src/i18n/core";
 
 export const GET = api(async (c) => {
   const s = await staffTenant(c, null);
@@ -16,6 +17,7 @@ export const GET = api(async (c) => {
     story: t.story,
     currency: t.currency,
     timezone: t.timezone,
+    menuLanguage: t.menu_language || "en",
     loyalty: loyaltyConfig(t),
     onboarding: JSON.parse(t.onboarding || "{}"),
     branches: (await listBranches(c.env.DB, t.id)).filter((b) => s.branches.includes("*") || ["owner", "admin", "marketing"].includes(s.role) || s.branches.includes(b.id)),
@@ -31,6 +33,7 @@ const Patch = z
     story: z.string().max(2000),
     currency: z.string().length(3),
     timezone: z.string().max(60),
+    menuLanguage: z.string().refine(isLocale, "Unknown language"),
     loyalty: z.object({
       enabled: z.boolean(),
       earnPerUnit: z.number().min(0).max(100),
@@ -50,6 +53,7 @@ export const PATCH = api(async (c) => {
     const t = await getTenant(c.env.DB, s.tenantId);
     patch.onboarding = { ...JSON.parse(t.onboarding || "{}"), ...patch.onboarding };
   }
-  await updateTenant(c.env.DB, s.tenantId, actorOf(s), patch);
+  const { menuLanguage, ...rest } = patch;
+  await updateTenant(c.env.DB, s.tenantId, actorOf(s), { ...rest, ...(menuLanguage ? { menu_language: menuLanguage } : {}) });
   return { ok: true };
 });

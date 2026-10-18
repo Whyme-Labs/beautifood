@@ -624,6 +624,8 @@ export interface JoinInput {
   name: string;
   phone?: string | null;
   email?: string | null;
+  /** The guest's language, for their emails. */
+  locale?: string | null;
   memberId?: string | null;
   preferences?: string[];
   source?: string;
@@ -666,8 +668,8 @@ export async function joinQueue(db: D1Database, ctx: BranchCtx, input: JoinInput
       "You already have a ticket here",
     );
   tx.run(
-    `INSERT INTO tickets (id, branch_id, day, category, seq, number, party_size, name, phone, email, member_id, status, created_at, priority, preferences, source, device_id)
-     SELECT ?, ?, ?, ?, n, ? || printf('%03d', n), ?, ?, ?, ?, ?, 'waiting', ?, ?, ?, ?, ?
+    `INSERT INTO tickets (id, branch_id, day, category, seq, number, party_size, name, phone, email, locale, member_id, status, created_at, priority, preferences, source, device_id)
+     SELECT ?, ?, ?, ?, n, ? || printf('%03d', n), ?, ?, ?, ?, ?, ?, 'waiting', ?, ?, ?, ?, ?
      FROM (SELECT COALESCE(MAX(seq), 0) + 1 AS n FROM tickets WHERE branch_id = ? AND day = ? AND category = ?)`,
     id,
     ctx.branch.id,
@@ -678,6 +680,7 @@ export async function joinQueue(db: D1Database, ctx: BranchCtx, input: JoinInput
     input.name.slice(0, 60),
     input.phone ?? null,
     input.email?.toLowerCase() ?? null,
+    input.locale ?? null,
     input.memberId ?? null,
     now,
     input.priority ?? 0,

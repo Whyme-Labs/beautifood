@@ -21,6 +21,8 @@ export interface TenantInfo {
   story: string;
   currency: string;
   timezone: string;
+  /** The language the menu is written in. */
+  menuLanguage?: string;
   loyalty: { enabled: boolean; earnPerUnit: number; redeemValue: number; minRedeem: number; tiers: { name: string; minLifetime: number; multiplier: number }[] };
   onboarding: Record<string, boolean>;
   branches: { id: string; slug: string; name: string; address: string; active: boolean; config: BranchConfig }[];

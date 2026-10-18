@@ -2,6 +2,8 @@
 // own AI agents can use Beautifood: find restaurants, read menus & allergens,
 // check queues, join a queue, book a table. Merchants' agents get extra tools
 // with a personal access token (Authorization: Bearer bf_pat_…).
+import { isLocale, LOCALES } from "../i18n/core";
+import { localizeCategory, localizeItem } from "../shared/menuI18n";
 import { z } from "zod";
 import { appEnv } from "./appenv";
 import { customerChat } from "./ai";
@@ -79,6 +81,7 @@ const TOOLS: Tool[] = [
         branch: branchArg,
         exclude_allergens: { type: "array", items: { type: "string", enum: Object.keys(ALLERGEN_LABELS) } },
         dietary: { type: "array", items: { type: "string", enum: ["vegetarian", "vegan", "halal_friendly"] } },
+        lang: { type: "string", enum: LOCALES.map((l) => l.code), description: "Language for dish names and descriptions (translations from the restaurant; original name kept in original_name)" },
       },
       ["branch"],
     ),
@@ -88,13 +91,19 @@ const TOOLS: Tool[] = [
       const menu = await getMenu(c.env.DB, ctx.tenant.id, ctx.branch.id);
       const ex = (a.exclude_allergens as string[] | undefined) ?? [];
       const di = (a.dietary as string[] | undefined) ?? [];
-      const cats = new Map(menu.categories.map((x) => [x.id, x.name]));
+      const base = menu.language ?? "en";
+      const lang = isLocale(a.lang) ? a.lang : base;
+      const cats = new Map(menu.categories.map((x) => [x.id, localizeCategory(x, lang, base)]));
       return {
         restaurant: ctx.tenant.name,
         currency: ctx.config.currency,
         items: menu.items
           .filter((i) => !i.soldOut && !ex.some((x) => i.allergens.includes(x)) && di.every((d) => i.dietary.includes(d)))
-          .map((i) => ({ id: i.id, name: i.name, category: cats.get(i.categoryId), price: formatMoney(i.price, ctx.config.currency), description: i.description, signature: i.isSignature, spiceLevel: i.spiceLevel, dietary: i.dietary, allergens: i.allergens, story: i.story || undefined })),
+          .map((i) => {
+            const l = localizeItem(i, lang, base);
+            return { id: i.id, name: l.name, original_name: l.original ?? undefined, category: cats.get(i.categoryId), price: formatMoney(i.price, ctx.config.currency), description: l.description, signature: i.isSignature, spiceLevel: i.spiceLevel, dietary: i.dietary, allergens: i.allergens, story: l.story || undefined };
+          }),
+        language: lang,
         allergenNote: "Allergen information is provided by the restaurant. Guests with severe allergies should confirm with staff.",
       };
     },
@@ -103,9 +112,9 @@ const TOOLS: Tool[] = [
     name: "ask_menu_assistant",
     title: "Ask the restaurant's menu assistant",
     description: "Ask the restaurant's own assistant what to eat: signatures, dishes for a diet or budget, allergens in a dish, or the story behind a dish.",
-    inputSchema: obj({ branch: branchArg, question: str("The guest's question") }, ["branch", "question"]),
+    inputSchema: obj({ branch: branchArg, question: str("The guest's question"), lang: { type: "string", enum: LOCALES.map((l) => l.code), description: "Language for the answer" } }, ["branch", "question"]),
     annotations: { readOnlyHint: true },
-    run: async (c, a) => customerChat(c.env.DB, appEnv(), await branch(c, a.branch), [{ role: "user", content: String(a.question ?? "").slice(0, 2000) }]),
+    run: async (c, a) => customerChat(c.env.DB, appEnv(), await branch(c, a.branch), [{ role: "user", content: String(a.question ?? "").slice(0, 2000) }], isLocale(a.lang) ? a.lang : "en"),
   },
   {
     name: "queue_status",

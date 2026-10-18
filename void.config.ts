@@ -21,6 +21,11 @@ export default defineConfig({
   inference: { bindings: { ai: false } },
   cloudflare: {
     name: NAME,
+    // Declared so deploys never have to guess the Worker's public surface:
+    // served on <name>.<subdomain>.workers.dev, no per-version preview URLs, no custom routes.
+    workers_dev: true,
+    preview_urls: false,
+    routes: [],
     d1_databases: [{ binding: "DB", database_name: `${NAME}-db` }],
     // Workers AI for menu translation in production (no local simulator, so not in dev/tests).
     ...(process.env.BEAUTIFOOD_WORKERS_AI ? { ai: { binding: "AI" } } : {}),

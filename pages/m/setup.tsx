@@ -1,10 +1,12 @@
 // AI onboarding copilot: create the restaurant, then paste "about us + menu + floor"
 // and review a generated menu (allergens, stories, signatures) and floor plan.
 import { useState } from "react";
+import { ArrowLeft, CheckCircle2, Sparkles, Store, Wand2 } from "lucide-react";
 import { api } from "../../src/ui/api";
 import { useStaff } from "../../src/ui/staff";
 import { Allergens, Money, useAction } from "../../src/ui/components";
-import { ALLERGENS, ALLERGEN_LABELS } from "../../src/shared/allergens";
+import { ALLERGENS } from "../../src/shared/allergens";
+import { useI18n } from "../../src/i18n/react";
 
 interface Draft {
   engine: string;
@@ -24,8 +26,9 @@ const EXAMPLE = {
 
 export default function Setup() {
   const s = useStaff();
+  const { t } = useI18n();
   const { run, pending } = useAction();
-  const [create, setCreate] = useState({ name: "", cuisine: "", branchName: "Main", address: "", currency: "MYR", timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kuala_Lumpur" });
+  const [create, setCreate] = useState(() => ({ name: "", cuisine: "", branchName: t("staff.setup.create.branchDefault"), address: "", currency: "MYR", timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kuala_Lumpur" }));
   const [about, setAbout] = useState("");
   const [menu, setMenu] = useState("");
   const [floor, setFloor] = useState("");
@@ -35,8 +38,7 @@ export default function Setup() {
   if (!s.tenant)
     return (
       <form
-        className="card col"
-        style={{ maxWidth: 560 }}
+        className="card col setup-create"
         onSubmit={(e) => {
           e.preventDefault();
           run(async () => {
@@ -45,23 +47,30 @@ export default function Setup() {
           });
         }}
       >
-        <h1>Set up your restaurant</h1>
-        <p className="muted">Two minutes. Then paste your menu and our AI builds the rest.</p>
+        <div className="row nowrap" style={{ gap: 12, alignItems: "flex-start" }}>
+          <span className="setup-mark" aria-hidden="true">
+            <Store size={22} />
+          </span>
+          <div>
+            <h1 style={{ marginBottom: 4 }}>{t("staff.setup.create.title")}</h1>
+            <p className="muted" style={{ margin: 0 }}>{t("staff.setup.create.lead")}</p>
+          </div>
+        </div>
         <label>
-          Restaurant name
+          {t("staff.setup.create.name")}
           <input value={create.name} onChange={(e) => setCreate({ ...create, name: e.target.value })} required />
         </label>
         <label>
-          Cuisine
-          <input value={create.cuisine} onChange={(e) => setCreate({ ...create, cuisine: e.target.value })} placeholder="Malaysian, Japanese, café…" />
+          {t("staff.setup.create.cuisine")}
+          <input value={create.cuisine} onChange={(e) => setCreate({ ...create, cuisine: e.target.value })} placeholder={t("staff.setup.create.cuisineHint")} />
         </label>
-        <div className="row">
-          <label style={{ flex: 1 }}>
-            First branch
+        <div className="row" style={{ alignItems: "flex-start" }}>
+          <label style={{ flex: 2, minWidth: 180 }}>
+            {t("staff.setup.create.branch")}
             <input value={create.branchName} onChange={(e) => setCreate({ ...create, branchName: e.target.value })} required />
           </label>
-          <label style={{ flex: 1 }}>
-            Currency
+          <label style={{ flex: 1, minWidth: 110 }}>
+            {t("staff.setup.create.currency")}
             <select value={create.currency} onChange={(e) => setCreate({ ...create, currency: e.target.value })}>
               {["MYR", "SGD", "USD", "EUR", "GBP", "AUD", "IDR", "THB"].map((c) => (
                 <option key={c}>{c}</option>
@@ -70,15 +79,15 @@ export default function Setup() {
           </label>
         </div>
         <label>
-          Address
+          {t("staff.setup.create.address")}
           <input value={create.address} onChange={(e) => setCreate({ ...create, address: e.target.value })} />
         </label>
         <label>
-          Timezone
+          {t("staff.setup.create.timezone")}
           <input value={create.timezone} onChange={(e) => setCreate({ ...create, timezone: e.target.value })} />
         </label>
-        <button className="btn primary" disabled={pending}>
-          Create restaurant
+        <button className="btn primary big" disabled={pending}>
+          {t("staff.setup.create.submit")}
         </button>
       </form>
     );
@@ -90,42 +99,51 @@ export default function Setup() {
         method: "PUT",
         body: { branchId: s.branchId, cuisine: draft!.cuisine || undefined, story: draft!.story || undefined, items: draft!.items, tables: draft!.tables, replaceMenu: true, replaceTables: true },
       });
-      setDone(`Applied ${r.applied.menu?.items ?? 0} dishes and ${r.applied.tables ?? 0} tables. Setup is ${r.status.progress}% done.`);
+      setDone(t("staff.setup.applied", { dishes: t("staff.setup.dishes", { count: r.applied.menu?.items ?? 0 }), tables: t("staff.setup.tables", { count: r.applied.tables ?? 0 }), progress: r.status.progress }));
       setDraft(null);
-    }, "Saved!");
+    }, t("staff.setup.saved"));
   const patchItem = (i: number, p: Partial<Draft["items"][number]>) => setDraft({ ...draft!, items: draft!.items.map((x, n) => (n === i ? { ...x, ...p } : x)) });
 
   return (
-    <div className="col">
-      <h1>✨ AI setup</h1>
-      <p className="muted">Paste whatever you have — a menu from your website, a WhatsApp message, a description of your floor. We'll turn it into a menu with allergens, dish stories and signatures, plus a floor plan. You review everything before it goes live.</p>
+    <div className="col setup">
+      <div className="page-head">
+        <div>
+          <h1>
+            <Sparkles size={24} className="setup-spark" aria-hidden="true" /> {t("staff.setup.title")}
+          </h1>
+          <p className="muted" style={{ margin: "6px 0 0", maxWidth: 720 }}>{t("staff.setup.lead")}</p>
+        </div>
+      </div>
       {done && (
-        <div className="card" style={{ borderColor: "var(--ok)" }} data-testid="setup-done">
-          ✅ {done} <a href="/m">Back to dashboard</a>
+        <div className="alert sun" role="status" data-testid="setup-done">
+          <CheckCircle2 size={18} />
+          <span>
+            {done} <a href="/m">{t("staff.setup.backToDashboard")}</a>
+          </span>
         </div>
       )}
       {!draft && (
         <section className="card col">
           <div className="row between">
-            <h2 style={{ margin: 0 }}>Tell us about {s.tenant.name}</h2>
-            <button className="btn small" onClick={() => (setAbout(EXAMPLE.about), setMenu(EXAMPLE.menu), setFloor(EXAMPLE.floor))}>
-              Use an example
+            <h2 style={{ margin: 0 }}>{t("staff.setup.tellUs", { name: s.tenant.name })}</h2>
+            <button className="btn small ghost" onClick={() => (setAbout(EXAMPLE.about), setMenu(EXAMPLE.menu), setFloor(EXAMPLE.floor))}>
+              <Wand2 size={15} /> {t("staff.setup.useExample")}
             </button>
           </div>
           <label>
-            About your restaurant (story, specialities)
+            {t("staff.setup.about")}
             <textarea value={about} onChange={(e) => setAbout(e.target.value)} />
           </label>
           <label>
-            Your menu (any format — one dish per line with a price works best)
+            {t("staff.setup.menu")}
             <textarea value={menu} onChange={(e) => setMenu(e.target.value)} style={{ minHeight: 180 }} data-testid="menu-text" />
           </label>
           <label>
-            Your tables (e.g. "10 two-seaters, 6 tables of 4 that can be pushed together")
+            {t("staff.setup.floor")}
             <textarea value={floor} onChange={(e) => setFloor(e.target.value)} data-testid="floor-text" />
           </label>
           <button className="btn primary big" onClick={generate} disabled={pending || (!menu && !floor && !about)}>
-            {pending ? "Working…" : "Generate my setup"}
+            <Sparkles size={18} /> {pending ? t("staff.setup.working") : t("staff.setup.generate")}
           </button>
         </section>
       )}
@@ -133,39 +151,47 @@ export default function Setup() {
         <>
           <section className="card" data-testid="draft">
             <div className="row between">
-              <h2 style={{ margin: 0 }}>Review your draft</h2>
-              <span className="badge">{draft.engine === "claude" ? "Generated by Claude" : "Generated by the built-in parser"}</span>
+              <h2 style={{ margin: 0 }}>{t("staff.setup.review")}</h2>
+              <span className={`badge ${draft.engine === "claude" ? "brand" : ""}`}>
+                <Sparkles /> {draft.engine === "claude" ? t("staff.setup.byClaude") : t("staff.setup.byParser")}
+              </span>
             </div>
-            <ul>
-              {draft.suggestions.map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-              {draft.warnings.map((x) => (
-                <li key={x} className="muted">
-                  {x}
-                </li>
-              ))}
-            </ul>
-            {draft.cuisine && <p>Cuisine: <b>{draft.cuisine}</b></p>}
+            {(draft.suggestions.length > 0 || draft.warnings.length > 0) && (
+              <ul className="setup-notes">
+                {draft.suggestions.map((x) => (
+                  <li key={x}>{x}</li>
+                ))}
+                {draft.warnings.map((x) => (
+                  <li key={x} className="muted">
+                    {x}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {draft.cuisine && (
+              <p style={{ margin: "10px 0 0" }}>
+                <span className="muted">{t("staff.setup.cuisine")}</span> <b>{draft.cuisine}</b>
+              </p>
+            )}
           </section>
           <section className="card">
-            <h2>Menu ({draft.items.length})</h2>
+            <h2>{t("staff.setup.menuCount", { count: draft.items.length })}</h2>
             <div style={{ overflowX: "auto" }}>
               <table>
                 <thead>
                   <tr>
-                    <th>Dish</th>
-                    <th>Category</th>
-                    <th className="num">Price</th>
-                    <th>Allergens (tap to toggle)</th>
-                    <th>★</th>
+                    <th>{t("staff.setup.colDish")}</th>
+                    <th>{t("staff.setup.colCategory")}</th>
+                    <th className="num">{t("staff.setup.colPrice")}</th>
+                    <th>{t("staff.setup.colAllergens")}</th>
+                    <th>{t("staff.setup.colSignature")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {draft.items.map((it, i) => (
                     <tr key={i} data-testid="draft-item">
-                      <td>
-                        <input value={it.name} onChange={(e) => patchItem(i, { name: e.target.value })} />
+                      <td style={{ minWidth: 180 }}>
+                        <input value={it.name} onChange={(e) => patchItem(i, { name: e.target.value })} aria-label={t("staff.setup.colDish")} />
                         {it.story && <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>{it.story}</div>}
                       </td>
                       <td>{it.category}</td>
@@ -176,20 +202,20 @@ export default function Setup() {
                         <details>
                           <summary>
                             <Allergens list={it.allergens ?? []} />
-                            {!it.allergens?.length && <span className="muted">none</span>}
+                            {!it.allergens?.length && <span className="muted">{t("staff.setup.none")}</span>}
                           </summary>
                           <div className="row" style={{ marginTop: 6 }}>
                             {ALLERGENS.map((a) => (
                               <label key={a} className="inline" style={{ fontSize: 12 }}>
                                 <input type="checkbox" checked={it.allergens?.includes(a) ?? false} onChange={(e) => patchItem(i, { allergens: e.target.checked ? [...(it.allergens ?? []), a] : (it.allergens ?? []).filter((x) => x !== a) })} />
-                                {ALLERGEN_LABELS[a].split(" (")[0]}
+                                {t(`allergens.${a}`)}
                               </label>
                             ))}
                           </div>
                         </details>
                       </td>
                       <td>
-                        <input type="checkbox" checked={!!it.isSignature} onChange={(e) => patchItem(i, { isSignature: e.target.checked })} aria-label={`${it.name} is a signature`} />
+                        <input type="checkbox" checked={!!it.isSignature} onChange={(e) => patchItem(i, { isSignature: e.target.checked })} aria-label={t("staff.setup.isSignature", { name: it.name })} />
                       </td>
                     </tr>
                   ))}
@@ -198,23 +224,25 @@ export default function Setup() {
             </div>
           </section>
           <section className="card">
-            <h2>Tables ({draft.tables.length})</h2>
-            <div className="row">
-              {draft.tables.map((t) => (
-                <span key={t.label} className="badge" data-testid="draft-table">
-                  {t.label} · {t.seatsMax} seats{t.zone && t.zone !== "Main" ? ` · ${t.zone}` : ""}
-                  {t.mergeGroup ? " · joinable" : ""}
-                  {t.splitConfig ? ` · splits ${t.splitConfig.map((p) => p.seats).join("+")}` : ""}
-                </span>
+            <h2>{t("staff.setup.tablesCount", { count: draft.tables.length })}</h2>
+            <div className="floor">
+              {draft.tables.map((tb) => (
+                <div key={tb.label} className="tbl free" data-testid="draft-table">
+                  <b>{tb.label}</b>
+                  <small>{t("staff.setup.seats", { count: tb.seatsMax })}</small>
+                  {tb.zone && tb.zone !== "Main" && <small>{tb.zone}</small>}
+                  {tb.mergeGroup && <small>{t("staff.setup.joinable")}</small>}
+                  {tb.splitConfig && <small>{t("staff.setup.splits", { parts: tb.splitConfig.map((p) => p.seats).join("+") })}</small>}
+                </div>
               ))}
             </div>
           </section>
           <div className="row">
             <button className="btn primary big" onClick={apply} disabled={pending} data-testid="apply-draft">
-              Looks good — apply to {s.branch?.name}
+              {t("staff.setup.apply", { branch: s.branch?.name ?? "" })}
             </button>
-            <button className="btn" onClick={() => setDraft(null)}>
-              Back
+            <button className="btn big ghost" onClick={() => setDraft(null)}>
+              <ArrowLeft size={18} /> {t("common.back")}
             </button>
           </div>
         </>

@@ -89,7 +89,8 @@ test.describe("loyalty, e-receipts, campaigns, notifications", () => {
     const sent = await json(s.owner.post(`/api/m/campaigns/${id}/send`));
     expect(sent.recipients).toBe(3);
     expect((await errorOf(s.owner.post(`/api/m/campaigns/${id}/send`), 409)).code).toBe("already_sent");
-    const ali = await eventually(async () => (await inbox(s.owner, "ali@example.com", "campaign")).find((e) => e.subject === subject), 20_000);
+    // the row appears as "queued" first; wait until the send has been attempted
+    const ali = await eventually(async () => (await inbox(s.owner, "ali@example.com", "campaign")).find((e) => e.subject === subject && e.status !== "queued"), 20_000);
     expect(ali.text).toContain("Hi Ali, Musang King cendol is back!");
     expect(ali.text).toContain("Use code WELCOME10");
     expect(ali.status).toBe("sent");

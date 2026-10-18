@@ -5,10 +5,12 @@
 // notifications. It runs right after a command (waitUntil) and on a cron as a
 // safety net. Every handler is idempotent, so at-least-once delivery yields
 // exactly-once effects.
-import { formatMoney } from "../shared/format";
 import { getBranch, type BranchCtx } from "./domain/context";
 import { earnForOrder } from "./domain/loyalty";
-import { receiptHtml, receiptText, sendEmail, type MailEnv, type ReceiptSnapshot } from "./domain/messaging";
+import { sendEmail, type MailEnv, type ReceiptSnapshot } from "./domain/messaging";
+import { bookingMail, receiptMail, ticketCalledMail, ticketJoinedMail } from "./emails";
+import { appEnv } from "./appenv";
+import { sign, type TokenPayload } from "./sign";
 import { orderView } from "./domain/orders";
 import { sendPushToTopic, type PushEnv } from "./push";
 
@@ -152,9 +154,7 @@ async function onOrderPaid(db: D1Database, env: PipelineEnv, ctx: BranchCtx, ord
       tenantId: ctx.tenant.id,
       fromName: ctx.tenant.name,
       to: email,
-      subject: `Your receipt from ${ctx.tenant.name} — ${formatMoney(o.total, ctx.config.currency)}`,
-      html: receiptHtml(snap),
-      text: receiptText(snap),
+      ...receiptMail(await guestLocale(db, o.id), snap),
       kind: "receipt",
       ref: o.id,
     });
@@ -162,50 +162,64 @@ async function onOrderPaid(db: D1Database, env: PipelineEnv, ctx: BranchCtx, ord
 }
 
 async function onTicketJoined(db: D1Database, env: PipelineEnv, ctx: BranchCtx, ticketId: string) {
-  const t = await db.prepare("SELECT number, email, party_size FROM tickets WHERE id = ?").bind(ticketId).first<{ number: string; email: string | null; party_size: number }>();
+  const t = await db.prepare("SELECT number, name, email, locale, party_size FROM tickets WHERE id = ?").bind(ticketId).first<{ number: string; name: string; email: string | null; locale: string | null; party_size: number }>();
   if (!t?.email) return;
   await sendEmail(db, env, {
     tenantId: ctx.tenant.id,
     fromName: ctx.tenant.name,
     to: t.email,
-    subject: `You're in the queue at ${ctx.branch.name}: ${t.number}`,
-    html: `<p>Hi! Your queue number at <b>${ctx.tenant.name} ${ctx.branch.name}</b> is <b style="font-size:20px">${t.number}</b> (party of ${t.party_size}).</p><p>We'll email you when your table is ready.</p>`,
-    text: `Your queue number at ${ctx.branch.name} is ${t.number}.`,
+    ...ticketJoinedMail(t.locale, { restaurant: ctx.tenant.name, branch: ctx.branch.name, name: t.name, number: t.number, partySize: t.party_size, url: await guestLink(env, { k: "ticket", id: ticketId, b: ctx.branch.id }) }),
     kind: "ticket_joined",
     ref: ticketId,
   });
 }
 
 async function onTicketCalled(db: D1Database, env: PipelineEnv, ctx: BranchCtx, ticketId: string) {
-  const t = await db.prepare("SELECT number, email, held_table_ids FROM tickets WHERE id = ?").bind(ticketId).first<{ number: string; email: string | null; held_table_ids: string | null }>();
+  const t = await db.prepare("SELECT number, email, locale, held_table_ids FROM tickets WHERE id = ?").bind(ticketId).first<{ number: string; email: string | null; locale: string | null; held_table_ids: string | null }>();
   if (!t) return;
   await sendPushToTopic(db, env, `ticket:${ticketId}`);
   if (!t.email) return;
+  const held = t.held_table_ids ? (JSON.parse(t.held_table_ids) as string[]) : [];
+  const tables = held.length ? (await db.prepare(`SELECT label FROM floor_tables WHERE id IN (${held.map(() => "?").join(",")})`).bind(...held).all<{ label: string }>()).results.map((r) => r.label) : [];
   await sendEmail(db, env, {
     tenantId: ctx.tenant.id,
     fromName: ctx.tenant.name,
     to: t.email,
-    subject: `Your table is ready — ${t.number}`,
-    html: `<p><b style="font-size:20px">${t.number}</b>, your table at <b>${ctx.branch.name}</b> is ready! Please come to the host stand within ${ctx.config.holdCalledMinutes} minutes.</p>`,
-    text: `${t.number}: your table at ${ctx.branch.name} is ready. Please come within ${ctx.config.holdCalledMinutes} minutes.`,
+    ...ticketCalledMail(t.locale, { restaurant: ctx.tenant.name, branch: ctx.branch.name, number: t.number, tables, holdMinutes: ctx.config.holdCalledMinutes, url: await guestLink(env, { k: "ticket", id: ticketId, b: ctx.branch.id }) }),
     kind: "ticket_called",
     ref: ticketId,
   });
 }
 
 async function onBookingCreated(db: D1Database, env: PipelineEnv, ctx: BranchCtx, bookingId: string) {
-  const b = await db.prepare("SELECT name, email, party_size, slot_start FROM bookings WHERE id = ?").bind(bookingId).first<{ name: string; email: string | null; party_size: number; slot_start: number }>();
+  const b = await db.prepare("SELECT name, email, locale, party_size, slot_start FROM bookings WHERE id = ?").bind(bookingId).first<{ name: string; email: string | null; locale: string | null; party_size: number; slot_start: number }>();
   if (!b?.email) return;
-  const when = new Intl.DateTimeFormat("en-MY", { timeZone: ctx.config.timezone, dateStyle: "full", timeStyle: "short" }).format(new Date(b.slot_start));
   await sendEmail(db, env, {
     tenantId: ctx.tenant.id,
     fromName: ctx.tenant.name,
     to: b.email,
-    subject: `Booking confirmed at ${ctx.tenant.name} ${ctx.branch.name}`,
-    html: `<p>Hi ${b.name}, your table for <b>${b.party_size}</b> on <b>${when}</b> is confirmed. You can preorder from your booking page so food is ready when you arrive.</p>`,
-    text: `Booking confirmed for ${b.party_size} on ${when}.`,
+    ...bookingMail(b.locale, { restaurant: ctx.tenant.name, branch: ctx.branch.name, name: b.name, partySize: b.party_size, slotStart: b.slot_start, timezone: ctx.config.timezone, url: await guestLink(env, { k: "booking", id: bookingId, b: ctx.branch.id }) }),
     kind: "booking_created",
     ref: bookingId,
   });
+}
+
+/** The language the guest used for the queue ticket or booking behind an order. */
+async function guestLocale(db: D1Database, orderId: string): Promise<string | null> {
+  const r = await db
+    .prepare("SELECT COALESCE(t.locale, b.locale) AS locale FROM orders o LEFT JOIN tickets t ON t.id = o.ticket_id LEFT JOIN bookings b ON b.id = o.booking_id WHERE o.id = ?")
+    .bind(orderId)
+    .first<{ locale: string | null }>();
+  return r?.locale ?? null;
+}
+
+/** A signed link back to the guest's ticket or booking page. */
+async function guestLink(env: PipelineEnv, payload: Extract<TokenPayload, { k: "ticket" | "booking" }>): Promise<string | null> {
+  try {
+    const token = await sign(appEnv().TOKEN_SECRET, payload);
+    return `${env.PUBLIC_URL.replace(/\/$/, "")}/${payload.k}/${payload.id}?k=${encodeURIComponent(token)}`;
+  } catch {
+    return null;
+  }
 }
 

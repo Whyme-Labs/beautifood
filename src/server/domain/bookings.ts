@@ -90,6 +90,7 @@ export interface BookingInput {
   name: string;
   phone?: string | null;
   email?: string | null;
+  locale?: string | null;
   partySize: number;
   slotStart: number;
   notes?: string;
@@ -118,12 +119,13 @@ export async function createBooking(db: D1Database, ctx: BranchCtx, input: Booki
       "Someone just booked that slot. Please pick another time.",
     );
   tx.run(
-    "INSERT INTO bookings (id, branch_id, name, phone, email, party_size, slot_start, duration_minutes, status, table_ids, notes, member_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', ?, ?, ?, ?)",
+    "INSERT INTO bookings (id, branch_id, name, phone, email, locale, party_size, slot_start, duration_minutes, status, table_ids, notes, member_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', ?, ?, ?, ?)",
     id,
     ctx.branch.id,
     input.name.slice(0, 60),
     input.phone ?? null,
     input.email?.toLowerCase() ?? null,
+    input.locale ?? null,
     input.partySize,
     input.slotStart,
     cfg.durationMinutes,
