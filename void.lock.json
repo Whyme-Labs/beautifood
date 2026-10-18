@@ -2,6 +2,9 @@
   "version": 1,
   "source": {
     "name": "beautifood-app",
+    "workers_dev": true,
+    "preview_urls": false,
+    "routes": [],
     "d1_databases": [
       {
         "binding": "DB",
@@ -22,10 +25,13 @@
         "migrations_dir": "./db/migrations"
       }
     ],
-    "account_id": "1e0170aaabc90ecf5f466128d1f0466a",
     "ai": {
       "binding": "AI"
-    }
+    },
+    "account_id": "1e0170aaabc90ecf5f466128d1f0466a",
+    "workers_dev": true,
+    "preview_urls": false,
+    "routes": []
   },
-  "text": "{\n  \"name\": \"beautifood-app\",\n  \"d1_databases\": [\n    {\n      \"binding\": \"DB\",\n      \"database_name\": \"beautifood-app-db\",\n      \"database_id\": \"b28b24d3-a517-4220-b4d5-92808e2d3911\",\n      \"migrations_dir\": \"./db/migrations\"\n    }\n  ],\n  \"account_id\": \"1e0170aaabc90ecf5f466128d1f0466a\",\n  \"ai\": {\n    \"binding\": \"AI\"\n  }\n}\n"
+  "text": "{\n  \"name\": \"beautifood-app\",\n  \"d1_databases\": [\n    {\n      \"binding\": \"DB\",\n      \"database_name\": \"beautifood-app-db\",\n      \"database_id\": \"b28b24d3-a517-4220-b4d5-92808e2d3911\",\n      \"migrations_dir\": \"./db/migrations\"\n    }\n  ],\n  \"ai\": {\n    \"binding\": \"AI\"\n  },\n  \"account_id\": \"1e0170aaabc90ecf5f466128d1f0466a\",\n  \"workers_dev\": true,\n  \"preview_urls\": false,\n  \"routes\": []\n}\n"
 }
