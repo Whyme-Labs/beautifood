@@ -90,8 +90,8 @@ const FeatureInner: React.FC<FeatureProps> = ({ n, kicker, title, points, src, k
         <Points items={points} at={0.7} size={phone ? 38 : 32} />
       </div>
       <div style={{ display: "flex", gap: 36, ...useIn(0.3, 0.7) }}>
-        <Screen src={src} kind={kind} height={phone ? 860 : 700} start={start} />
-        {src2 && <Screen src={src2} kind={kind} height={phone ? 860 : 700} start={start2} />}
+        <Screen src={src} kind={kind} height={phone ? (src2 ? 760 : 860) : 700} start={start} />
+        {src2 && <Screen src={src2} kind={kind} height={phone ? 760 : 700} start={start2} />}
       </div>
     </AbsoluteFill>
   );
@@ -121,7 +121,7 @@ const ProofInner: React.FC = () => {
   const stats: [string, string][] = [
     ["56", "end-to-end tests, every push"],
     ["300", "people joining at once: no duplicate or skipped numbers"],
-    ["11", "persona videos recorded by the tests"],
+    ["11", "persona walkthroughs, filmed by the tests themselves"],
     ["2", "languages, one file each to add more"],
   ];
   return (

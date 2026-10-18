@@ -29,7 +29,8 @@ export const Demo = () => {
           kicker="Guest"
           title="Scan, get a number, walk away."
           points={["Live place in line and ETA", "Preorder while you wait", "Phone buzzes when your table is ready"]}
-          src="shots/zh-ticket.png"
+          src="clips/01-guest-walk-in.mp4"
+          start={9}
           kind="phone"
         />
       </TransitionSeries.Sequence>
@@ -44,7 +45,8 @@ export const Demo = () => {
           kicker="Menu assistant"
           title="Ask what's good, what's safe."
           points={["Signatures, budget and diet picks", "Allergen answers always carry a safety note", "Answers in English or 中文"]}
-          src="shots/en-branch.png"
+          src="clips/03-ai-menu-assistant.mp4"
+          start={4}
           kind="phone"
           bg={C.sunSoft}
         />
@@ -56,7 +58,10 @@ export const Demo = () => {
           kicker="At the table"
           title="One shared cart, everyone's phone."
           points={["Scan the table QR", "Each diner adds their own dishes", "Split the bill any way"]}
-          src="shots/zh-menu.png"
+          src="clips/02-diner-group-a.mp4"
+          start={6}
+          src2="clips/02-diner-group-b.mp4"
+          start2={6}
           kind="phone"
         />
       </TransitionSeries.Sequence>
@@ -67,7 +72,8 @@ export const Demo = () => {
           kicker="Host stand"
           title="Seat the right party at the right table."
           points={["Suggestions with reasons", "Merges and splits tables", "Fair: nobody waits forever"]}
-          src="shots/host.png"
+          src="clips/04-host.mp4"
+          start={12}
           kind="desktop"
           bg={C.sunSoft}
         />
@@ -79,7 +85,8 @@ export const Demo = () => {
           kicker="Kitchen & till"
           title="Tickets fire to the right station."
           points={["Bump to ready and served", "Splits, discounts, multi-tender, refunds", "Cash drawer shifts that balance"]}
-          src="shots/kitchen-zh.png"
+          src="clips/05-kitchen.mp4"
+          start={2}
           kind="desktop"
         />
       </TransitionSeries.Sequence>
@@ -90,7 +97,8 @@ export const Demo = () => {
           kicker="Owner"
           title="Paste the menu. AI sets up the shop."
           points={["Allergens, signatures and tables drafted for review", "Every branch live on one dashboard", "Loyalty, promos and team roles"]}
-          src="shots/boss.png"
+          src="clips/07-owner.mp4"
+          start={2}
           kind="desktop"
           bg={C.sunSoft}
         />
@@ -102,7 +110,8 @@ export const Demo = () => {
           kicker="AI agents"
           title="Assistants can queue and book too."
           points={["MCP server at /mcp", "llms.txt and OpenAPI for discovery", "Merchant tools behind access tokens"]}
-          src="shots/menu-zh.png"
+          src="clips/11-ai-agent.mp4"
+          start={5}
           kind="desktop"
         />
       </TransitionSeries.Sequence>

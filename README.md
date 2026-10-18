@@ -81,6 +81,10 @@ pnpm typecheck
 pnpm test:e2e       # Playwright: builds for production, fresh D1, api + ui + load projects
 ```
 
+**Evidence videos.** `pnpm test:evidence` runs 11 persona walkthroughs (guest, diner group, menu assistant, host, kitchen, cashier, owner, marketing, booking, kiosk and TV board, AI agent) with video recording on. The recordings and what each one proves are in [docs/evidence](docs/evidence/README.md).
+
+**Demo video.** The Remotion project in [`video/`](video/README.md) assembles the demo from those recordings (`npm run render`).
+
 Set `PW_CHROMIUM` to use a preinstalled Chromium. Reports are written to `playwright-report/` and `test-results/e2e.json`.
 
 ## Rebuild the Rust core
