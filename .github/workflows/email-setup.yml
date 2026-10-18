@@ -31,17 +31,20 @@ jobs:
           check-latest: true
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Cloudflare session (redacted)
-        # What Void's preflight sees from `cf auth whoami`: auth state and token scopes only.
+      - name: Cloudflare session as Void sees it (redacted)
         run: |
-          node -e '
-            const { spawnSync } = require("node:child_process");
-            const path = require("node:path");
-            const cf = path.join(path.dirname(require.resolve("cf/package.json", { paths: [require("node:fs").realpathSync("node_modules/void")] })), "bin", "cf");
-            const r = spawnSync(process.execPath, [cf, "auth", "whoami"], { encoding: "utf8", env: { ...process.env, CF_DELEGATION: "1", CF_QUIET: "1", CF_SEND_TELEMETRY: "false" } });
-            let j = {}; try { j = JSON.parse(r.stdout); } catch {}
-            console.log(JSON.stringify({ status: r.status, authenticated: j.authenticated, tokenValid: j.tokenValid, authSource: j.authSource, scopes: j.scopes, accounts: Array.isArray(j.accounts) ? j.accounts.map((x) => Object.fromEntries(Object.entries(x ?? {}).map(([k, v]) => [k, typeof v]))) : typeof j.accounts, keys: Object.keys(j), stderr: (r.stderr || "").slice(0, 600), stdoutStart: j.authenticated === undefined ? (r.stdout || "").slice(0, 300).replace(/[\w.+-]+@[\w.-]+/g, "<email>") : undefined }, null, 2));
-          ' || true
+          cat > /tmp/whoami.mjs <<'JS'
+          import { readFileSync, realpathSync, readdirSync } from "node:fs";
+          import { join } from "node:path";
+          const dist = join(realpathSync("node_modules/void"), "dist");
+          const file = readdirSync(dist).find((f) => f.startsWith("deploy-") && readFileSync(join(dist, f), "utf8").includes("createDeployWranglerRunner as o"));
+          const mod = await import(join(dist, file));
+          const run = mod.o(process.cwd(), process.env.CLOUDFLARE_ACCOUNT_ID, "https://api.cloudflare.com/client/v4");
+          const r = await run({ type: "auth.whoami" }, { capture: true });
+          const d = r.data ?? {};
+          console.log(JSON.stringify({ status: r.status, signal: r.signal, error: r.error ? String(r.error.message ?? r.error) : undefined, stderr: String(r.stderr ?? "").slice(0, 800).replace(/[\w.+-]+@[\w.-]+/g, "<email>"), loggedIn: d.loggedIn, authType: d.authType, accounts: Array.isArray(d.accounts) ? d.accounts.length : typeof d.accounts, keys: Object.keys(r) }, null, 2));
+          JS
+          node /tmp/whoami.mjs || true
       - name: Set up Email Routing + Email Sending
         run: |
           # Answer the single confirmation prompt ("y" + Enter) through a pseudo-terminal.
