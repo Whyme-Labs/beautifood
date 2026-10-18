@@ -19,6 +19,18 @@ export default defineConfig({
   ...(mailFrom ? { email: { from: mailFrom } } : {}),
   // Workers AI is bound explicitly below for deploys only (it has no local simulator).
   inference: { bindings: { ai: false } },
+  head: {
+    title: "Beautifood: queue, order and book with no app",
+    meta: [
+      { charset: "utf-8" },
+      // Without this, phones lay pages out at 980px and shrink everything to fit.
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "description", content: "Walk-in queues, shared table ordering, POS, kitchen display and bookings for hawker stalls and restaurants, in English and 中文. No app to download." },
+      { name: "theme-color", content: "#ffd12e" },
+      { property: "og:title", content: "Beautifood" },
+      { property: "og:description", content: "Queue, order and book at hawker stalls and restaurants with no app." },
+    ],
+  },
   cloudflare: {
     name: NAME,
     // Declared so deploys never have to guess the Worker's public surface:

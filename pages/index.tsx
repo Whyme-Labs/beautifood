@@ -146,9 +146,6 @@ export default function Landing() {
 
   return (
     <div className="landing" lang={zh ? "zh-Hans" : "en"}>
-      <title>{t("landing.metaTitle")}</title>
-      <meta name="description" content={t("landing.metaDescription")} />
-
       <header className="topbar landing-top">
         <div className="wrap">
           <Logo href="/" />
