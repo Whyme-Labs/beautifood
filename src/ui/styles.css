@@ -231,6 +231,7 @@ label.inline input { width: auto; }
 .stub::after { content: ""; position: absolute; left: calc(var(--notch) + 4px); right: calc(var(--notch) + 4px); top: var(--tear); border-top: 2px dashed rgba(26, 24, 20, 0.28); }
 .stub.no-tear::after { display: none; }
 .stub .stub-label { font-size: 13px; font-weight: 700; opacity: 0.72; }
+.stub .badge.brand { background: #1a1814; color: var(--sun); }
 .stub .muted { color: rgba(26, 24, 20, 0.68); }
 .stub[data-stock="A"] { --stock: var(--stock-a); }
 .stub[data-stock="B"] { --stock: var(--stock-b); }

@@ -82,7 +82,7 @@ export default function TicketPage() {
         <ErrorBox error={error} />
         {tk && (
           <div className="col" style={{ gap: 16 }}>
-            <Stub stock={["cancelled", "no_show"].includes(tk.status) ? "X" : stockOf(tk.number)} tear={tk.status === "waiting" ? 76 : 70} issued={firstSeen.current} testId="ticket-stub">
+            <Stub stock={["cancelled", "no_show"].includes(tk.status) ? "X" : stockOf(tk.number)} tear={tk.status === "waiting" ? 60 : 70} issued={firstSeen.current} testId="ticket-stub">
               <div className="row between nowrap">
                 <span className="sr-only">{t("ticket.yourNumber")}</span>
                 <span />
