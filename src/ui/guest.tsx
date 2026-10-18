@@ -6,7 +6,7 @@ export function GuestBar({ children, right, className = "" }: { children?: React
   return (
     <header className={`topbar ${className}`}>
       <div className="wrap" style={{ maxWidth: 760 }}>
-        <Logo />
+        <Logo href="/eat" />
         {children ? <div className="grow" style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 650 }}>{children}</div> : <span className="grow" />}
         {right}
         <LangSwitch />

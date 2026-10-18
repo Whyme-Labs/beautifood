@@ -21,7 +21,7 @@ test("guest walk-in: queue from the phone, preorder, get called, order at the ta
   const { page, say } = g;
 
   await test.step("Directory: every restaurant's live queue", async () => {
-    await go(page, "/");
+    await go(page, "/eat");
     await say("Guest opens Beautifood: every branch's live queue at a glance");
     await page.getByLabel("Search restaurants").fill(s.slug.split("-").pop()!);
     const cards = page.getByTestId("branch-card");

@@ -60,7 +60,7 @@ test.describe("guest journey (browser)", () => {
   test("the customer directory shows every restaurant's live queues", async ({ page }) => {
     const s = await seed();
     await join(s.bangsar.ref, 3, "Queued");
-    await open(page, "/");
+    await open(page, "/eat");
     await page.getByLabel("Search restaurants").fill(s.slug.split("-").pop()!);
     const cards = page.getByTestId("branch-card");
     await expect(cards).toHaveCount(2);

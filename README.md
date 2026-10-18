@@ -47,7 +47,7 @@ pnpm dev                    # http://localhost:5173
    ```js
    await fetch("/api/dev/seed", { method: "POST" }).then((r) => r.json());
    ```
-3. Guests start at `/` (directory) or `/r/<restaurant>~<branch>`.
+3. Guests start at `/eat` (directory; `/` is the product page) or `/r/<restaurant>~<branch>`.
 
 ### Optional settings
 

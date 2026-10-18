@@ -1,5 +1,6 @@
 // 简体中文
 import type { Messages } from "./en";
+import * as landing from "./landing";
 import { staffZh } from "./staff";
 
 const zh = {
@@ -440,6 +441,7 @@ const zh = {
     footer: "由 Beautifood 代 {restaurant} 发送。",
   },
   staff: staffZh,
+  landing: landing.zh,
 } satisfies Messages;
 
 export default zh;

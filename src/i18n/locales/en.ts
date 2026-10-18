@@ -1,6 +1,7 @@
 // English: the reference catalog. Every other locale must have exactly these keys
 // (TypeScript enforces it via `satisfies Messages`). Use {name} for variables and
 // { one, other } objects for plurals.
+import * as landing from "./landing";
 import { staffEn } from "./staff";
 import type { Widen } from "./widen";
 
@@ -442,6 +443,7 @@ const en = {
     footer: "Sent by Beautifood for {restaurant}.",
   },
   staff: staffEn,
+  landing: landing.en,
 } as const;
 
 export type Messages = Widen<typeof en>;
