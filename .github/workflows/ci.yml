@@ -70,6 +70,8 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       # Sender for Cloudflare Email Sending (override with the MAIL_FROM repository variable).
       MAIL_FROM: ${{ vars.MAIL_FROM || 'Beautifood <noreply@beautifood.io>' }}
+      # Bind Workers AI so menus translate without an Anthropic key.
+      BEAUTIFOOD_WORKERS_AI: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -94,6 +96,7 @@ jobs:
           set -euo pipefail
           api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
           auth=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN")
+          ours_db=0
           db=$(curl -fsS "${auth[@]}" "$api/d1/database?name=beautifood-app-db" | jq -c '[.result[] | select(.name == "beautifood-app-db")][0] // empty')
           if [ -n "$db" ]; then
             id=$(echo "$db" | jq -r .uuid)
@@ -103,16 +106,18 @@ jobs:
               if [ ! -f "db/migrations/$m" ]; then echo "::error::beautifood-app-db has migration $m that is not ours; refusing to deploy"; exit 1; fi
             done
             echo "beautifood-app-db exists and its migration history is ours"
+            ours_db=1
           else
             echo "beautifood-app-db does not exist yet; Void will create it"
           fi
           if curl -fsS "${auth[@]}" "$api/workers/scripts" | jq -e '.result[] | select(.id == "beautifood-app")' >/dev/null; then
-            if [ ! -f void.lock.json ]; then echo "::error::A Worker named beautifood-app already exists but this repo has no void.lock.json; refusing to overwrite it"; exit 1; fi
-            echo "Worker beautifood-app exists and is recorded in void.lock.json"
+            if [ ! -f void.lock.json ] && [ "$ours_db" != 1 ]; then echo "::error::A Worker named beautifood-app already exists and nothing shows it is ours; refusing to overwrite it"; exit 1; fi
+            echo "Worker beautifood-app exists and is ours"
           else
             echo "Worker beautifood-app does not exist yet"
           fi
       - name: Deploy (Worker, D1 + migrations, queue, cron, email)
+        id: deploy
         env:
           CLOUDFLARE_WORKERS_SUBDOMAIN: ${{ steps.sub.outputs.subdomain }}
         run: |
@@ -129,7 +134,12 @@ jobs:
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
       - name: Point links at the public URL
-        run: printf '%s' "${{ steps.url.outputs.url }}" | pnpm exec void secret put PUBLIC_URL
+        # PUBLIC_URL is what emails, pushes and QR codes link to. Set it once as a Worker secret
+        # (Void keeps existing remote secrets on later deploys).
+        run: |
+          curl -fsS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/beautifood-app/secrets" \
+            -d "$(jq -n --arg v "${{ steps.url.outputs.url }}" '{name:"PUBLIC_URL", text:$v, type:"secret_text"}')" | jq -c '{success, errors}'
       - name: Smoke test
         run: |
           for i in $(seq 1 20); do
@@ -140,11 +150,12 @@ jobs:
           # dev tools must be off in production
           test "$(curl -s -o /dev/null -w '%{http_code}' "${{ steps.url.outputs.url }}/api/dev/inbox")" = "404"
       - name: Commit lock file
+        if: always() && steps.deploy.outcome == 'success'
         run: |
           if [ -n "$(git status --porcelain void.lock.json)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
             git add void.lock.json
             git commit -m "chore: record Cloudflare resources (void.lock.json) [skip ci]"
-            git push
+            git pull --rebase && git push
           fi

@@ -20,6 +20,8 @@ export default defineConfig({
   cloudflare: {
     name: NAME,
     d1_databases: [{ binding: "DB", database_name: `${NAME}-db` }],
+    // Workers AI for menu translation in production (no local simulator, so not in dev/tests).
+    ...(process.env.BEAUTIFOOD_WORKERS_AI ? { ai: { binding: "AI" } } : {}),
     // End-to-end runs bind a local SEND_EMAIL so delivery goes through the real binding path
     // (miniflare accepts the message and stores the .eml) instead of the dev-inbox fallback.
     ...(process.env.E2E_SEND_EMAIL ? { send_email: [{ name: "SEND_EMAIL" }] } : {}),
