@@ -84,7 +84,8 @@ export default function TicketPage() {
           <div className="col" style={{ gap: 16 }}>
             <Stub stock={["cancelled", "no_show"].includes(tk.status) ? "X" : stockOf(tk.number)} tear={tk.status === "waiting" ? 76 : 70} issued={firstSeen.current} testId="ticket-stub">
               <div className="row between nowrap">
-                <span className="stub-label">{t("ticket.yourNumber")}</span>
+                <span className="sr-only">{t("ticket.yourNumber")}</span>
+                <span />
                 <Status s={tk.status} />
               </div>
               <div className="serial mega" data-testid="ticket-number" style={{ margin: "10px 0 4px" }}>
@@ -100,9 +101,23 @@ export default function TicketPage() {
               )}
               <div style={{ marginTop: 34, fontSize: 17, fontWeight: 650 }}>
                 {tk.status === "waiting" && (
-                  <p style={{ margin: 0 }} data-testid="ticket-wait">
-                    {tk.ahead === 0 ? t("ticket.next") : t("ticket.ahead", { count: tk.ahead })} · {t("ticket.etaLabel")} <b><Mins v={tk.etaMinutes} /></b>
-                  </p>
+                  <>
+                    <div className="ticket-fields">
+                      <div>
+                        <span>{t("ticket.aheadLabel")}</span>
+                        <b className="serial">{tk.ahead}</b>
+                      </div>
+                      <div>
+                        <span>{t("ticket.etaLabel")}</span>
+                        <b className="serial">
+                          <Mins v={tk.etaMinutes} />
+                        </b>
+                      </div>
+                    </div>
+                    <p style={{ margin: "12px 0 0" }} data-testid="ticket-wait">
+                      {tk.ahead === 0 ? t("ticket.next") : t("ticket.ahead", { count: tk.ahead })}
+                    </p>
+                  </>
                 )}
                 {tk.status === "called" && (
                   <p style={{ margin: 0, fontSize: 19 }} data-testid="ticket-called">
@@ -125,6 +140,11 @@ export default function TicketPage() {
                 <button className="btn primary big block" onClick={preorder} disabled={pending} data-testid="preorder">
                   <UtensilsCrossed size={20} /> {tk.preorder ? t("ticket.continuePreorder") : t("ticket.preorder")}
                 </button>
+                {!tk.preorder && (
+                  <p className="muted" style={{ margin: "-6px 0 0", textAlign: "center", fontSize: 14 }}>
+                    {t("ticket.preorderHint")}
+                  </p>
+                )}
                 {pushState !== "on" && (
                   <button className="btn big block" onClick={enablePush} disabled={pending || pushState === "unsupported"}>
                     {pushState === "unsupported" ? <BellOff size={18} /> : <Bell size={18} />}

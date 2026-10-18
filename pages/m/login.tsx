@@ -27,8 +27,7 @@ export default function Login() {
         <LangSwitch />
       </div>
       <Stub stock="A" tear={100} className="auth-stub">
-        <div className="stub-label">{t("staff.shell.login.forTeams")}</div>
-        <p style={{ margin: "6px 0 0", fontWeight: 650 }}>{t("staff.shell.login.pitch")}</p>
+        <p style={{ margin: 0, fontWeight: 750, fontSize: 18 }}>{t("staff.shell.login.pitch")}</p>
       </Stub>
       <form
         className="card col"

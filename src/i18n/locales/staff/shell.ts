@@ -31,7 +31,6 @@ export const en = {
     marketing: "Marketing",
   },
   login: {
-    forTeams: "For restaurant teams",
     signIn: "Sign in",
     signUp: "Create your account",
     yourName: "Your name",
@@ -81,7 +80,6 @@ export const zh: Widen<typeof en> = {
     marketing: "营销",
   },
   login: {
-    forTeams: "餐厅团队专用",
     signIn: "登录",
     signUp: "创建账户",
     yourName: "你的名字",

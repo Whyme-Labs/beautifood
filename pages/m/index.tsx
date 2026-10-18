@@ -86,7 +86,7 @@ export default function Dashboard() {
           <div className="grid wide" data-testid="branch-overview">
             {ov.branches.map((b) => (
               <section key={b.branchId} className="card boss-branch">
-                <div className="row between nowrap">
+                <div className="row between nowrap boss-head">
                   <h3 className="row nowrap" style={{ margin: 0, minWidth: 0 }}>
                     <Store size={18} strokeWidth={1.75} aria-hidden="true" />
                     <span className="boss-name">{b.name}</span>

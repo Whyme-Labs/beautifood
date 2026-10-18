@@ -91,7 +91,7 @@ export default function BranchPage(p: Props) {
             <h2>{t("branch.queueNow")}</h2>
             {st && <span className="muted">{t("branch.tablesFree", { count: st.tables.free })}</span>}
           </div>
-          <div className="grid tight" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))" }} data-testid="queue-status">
+          <div className="grid tight classes" data-testid="queue-status">
             {cats.map((c) => (
               <Stub key={c.code} stock={stockOf(c.prefix)} tear={62} className="no-tear-sm">
                 <div className="stub-label">
