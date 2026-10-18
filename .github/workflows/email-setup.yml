@@ -38,9 +38,10 @@ jobs:
       - name: Set up Email Routing + Email Sending
         run: |
           # Answer the single confirmation prompt ("y" + Enter) through a pseudo-terminal.
-          (sleep 20; printf 'y\r'; sleep 5; printf '\r') | script -qefc "pnpm exec void email setup --platform cloudflare" /dev/null | tee setup.log
+          (sleep 20; printf 'y\r'; sleep 5; printf '\r') | script -qefc "pnpm exec void email setup --platform cloudflare" /dev/null | sed -E 's/[[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]]{2,}/<email>/g' | tee setup.log
       - name: Readiness
-        run: pnpm exec void email status --platform cloudflare | tee -a "$GITHUB_STEP_SUMMARY" || true
+        # account names can contain the owner's email; mask addresses (the public log shows this output)
+        run: pnpm exec void email status --platform cloudflare 2>&1 | sed -E 's/[[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]]{2,}/<email>/g' | tee -a "$GITHUB_STEP_SUMMARY" || true
       - name: Commit lock file
         run: |
           if [ -n "$(git status --porcelain void.lock.json)" ]; then

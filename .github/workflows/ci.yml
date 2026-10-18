@@ -128,7 +128,8 @@ jobs:
           flags="--platform cloudflare"
           # Once the one-time "Email setup" workflow has recorded email in void.lock.json, insist on it.
           if [ -f void.lock.json ] && grep -q '"email"' void.lock.json; then flags="$flags --require-email"; fi
-          pnpm exec void deploy $flags 2>&1 | tee deploy.log
+          # mask email addresses (Cloudflare account names often contain one; this log is public)
+          pnpm exec void deploy $flags 2>&1 | sed -E 's/[[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]]{2,}/<email>/g' | tee deploy.log
       - name: Public URL
         id: url
         run: |
