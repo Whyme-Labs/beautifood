@@ -38,12 +38,12 @@ export const Stub: React.FC<{ serial: string; label: string; stock?: string; wid
 );
 
 /** A clip (mp4 in public/clips) or a still (png in public/shots), inside a phone or browser frame. */
-export const Screen: React.FC<{ src: string; kind: "phone" | "desktop"; height: number; start?: number; style?: React.CSSProperties }> = ({ src, kind, height, start = 0, style }) => {
+export const Screen: React.FC<{ src: string; kind: "phone" | "desktop"; height: number; start?: number; rate?: number; style?: React.CSSProperties }> = ({ src, kind, height, start = 0, rate = 1, style }) => {
   const { fps } = useVideoConfig();
   const ratio = kind === "phone" ? 390 / 844 : 1366 / 860;
   const width = height * ratio;
   const media = src.endsWith(".mp4") ? (
-    <Video src={staticFile(src)} trimBefore={Math.round(start * fps)} muted objectFit="cover" style={{ width: "100%", height: "100%" }} />
+    <Video src={staticFile(src)} trimBefore={Math.round(start * fps)} playbackRate={rate} muted objectFit="cover" style={{ width: "100%", height: "100%" }} />
   ) : (
     <Img src={staticFile(src)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
   );
