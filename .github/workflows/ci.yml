@@ -2,7 +2,7 @@ name: CI & Deploy
 
 on:
   push:
-    branches: ["claude/epic-lovelace-la2jtv", "main"]
+    branches: ["main"]
   pull_request:
   workflow_dispatch:
 
@@ -57,7 +57,7 @@ jobs:
   deploy:
     name: Deploy to Cloudflare
     needs: test
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref_name == github.event.repository.default_branch)
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref_name == 'main')
     runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 20
     environment:
