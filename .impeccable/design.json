@@ -1,0 +1,779 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-18T09:24:11+00:00",
+  "title": "Design System: Beautifood",
+  "extensions": {
+    "colorMeta": {
+      "sun": {
+        "role": "primary",
+        "displayName": "Kopitiam Sign Yellow",
+        "canonical": "#ffd12e",
+        "cssVar": "--sun",
+        "tonalRamp": [
+          "#181100",
+          "#332700",
+          "#574604",
+          "#7f660c",
+          "#a78920",
+          "#d2ad2c",
+          "#fdcf2a",
+          "#feeec0"
+        ]
+      },
+      "sun-deep": {
+        "role": "primary",
+        "displayName": "Sign Shadow Yellow",
+        "canonical": "#e8b400",
+        "cssVar": "--sun-deep",
+        "tonalRamp": [
+          "#181000",
+          "#342702",
+          "#594509",
+          "#816515",
+          "#ad8612",
+          "#d9aa1c",
+          "#fecd4f",
+          "#feedc5"
+        ]
+      },
+      "sun-soft": {
+        "role": "primary",
+        "displayName": "Steamed Milk",
+        "canonical": "#fff5cc",
+        "cssVar": "--sun-soft",
+        "tonalRamp": [
+          "#161101",
+          "#312803",
+          "#504824",
+          "#726945",
+          "#968c67",
+          "#bbb18b",
+          "#dfd5ad",
+          "#f9efc6"
+        ],
+        "darkMode": "#3a3010"
+      },
+      "carbon": {
+        "role": "secondary",
+        "displayName": "Carbon",
+        "canonical": "#1a1814",
+        "tonalRamp": [
+          "#13110d",
+          "#2b2924",
+          "#4a4743",
+          "#6b6964",
+          "#8e8c87",
+          "#b3b1ab",
+          "#d7d4ce",
+          "#f1eee8"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#1a1814",
+        "cssVar": "--ink",
+        "tonalRamp": [
+          "#13110d",
+          "#2b2924",
+          "#4a4743",
+          "#6b6964",
+          "#8e8c87",
+          "#b3b1ab",
+          "#d7d4ce",
+          "#f1eee8"
+        ],
+        "darkMode": "#f4f1e8"
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink 2",
+        "canonical": "#4a453c",
+        "cssVar": "--ink-2",
+        "tonalRamp": [
+          "#151109",
+          "#2d2820",
+          "#4c473e",
+          "#6e685f",
+          "#918b81",
+          "#b6b0a6",
+          "#d9d3c9",
+          "#f4eee3"
+        ],
+        "darkMode": "#d2cbbb"
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink 3",
+        "canonical": "#6f675b",
+        "cssVar": "--ink-3",
+        "tonalRamp": [
+          "#171007",
+          "#2f281d",
+          "#4e463b",
+          "#70685c",
+          "#938b7e",
+          "#b9b0a3",
+          "#dcd3c5",
+          "#f6eddf"
+        ],
+        "darkMode": "#a59d8c"
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Ground",
+        "canonical": "#ffffff",
+        "cssVar": "--ground",
+        "tonalRamp": [
+          "#121212",
+          "#292929",
+          "#484848",
+          "#696969",
+          "#8c8c8c",
+          "#b1b1b1",
+          "#d4d4d4",
+          "#eeeeee"
+        ],
+        "darkMode": "#14120e"
+      },
+      "ground-2": {
+        "role": "neutral",
+        "displayName": "Ground 2",
+        "canonical": "#f5f4f0",
+        "cssVar": "--ground-2",
+        "tonalRamp": [
+          "#12120f",
+          "#2a2926",
+          "#484844",
+          "#6a6965",
+          "#8d8c88",
+          "#b2b1ad",
+          "#d5d4d0",
+          "#efeeea"
+        ],
+        "darkMode": "#1c1a15"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#ffffff",
+        "cssVar": "--surface",
+        "tonalRamp": [
+          "#121212",
+          "#292929",
+          "#484848",
+          "#696969",
+          "#8c8c8c",
+          "#b1b1b1",
+          "#d4d4d4",
+          "#eeeeee"
+        ],
+        "darkMode": "#211e18"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "#e4e1d8",
+        "cssVar": "--line",
+        "tonalRamp": [
+          "#14110b",
+          "#2b2922",
+          "#4a4840",
+          "#6b6961",
+          "#8f8c84",
+          "#b4b1a8",
+          "#d7d4cb",
+          "#f1eee5"
+        ],
+        "darkMode": "#36322a"
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Line Strong",
+        "canonical": "#cfcabe",
+        "cssVar": "--line-strong",
+        "tonalRamp": [
+          "#151109",
+          "#2c291f",
+          "#4c473d",
+          "#6d695e",
+          "#908c81",
+          "#b6b1a5",
+          "#d9d4c8",
+          "#f3eee2"
+        ],
+        "darkMode": "#4a453a"
+      },
+      "stock-a": {
+        "role": "tertiary",
+        "displayName": "Stock A, Sign Yellow",
+        "canonical": "#ffd12e",
+        "cssVar": "--stock-a",
+        "tonalRamp": [
+          "#181100",
+          "#332700",
+          "#574604",
+          "#7f660c",
+          "#a78920",
+          "#d2ad2c",
+          "#fdcf2a",
+          "#feeec0"
+        ]
+      },
+      "stock-b": {
+        "role": "tertiary",
+        "displayName": "Stock B, Rose Ticket",
+        "canonical": "#ff8fa8",
+        "cssVar": "--stock-b",
+        "tonalRamp": [
+          "#28010c",
+          "#500420",
+          "#7f1a3c",
+          "#a7405c",
+          "#d0657f",
+          "#f98aa3",
+          "#fec2cd",
+          "#fee8ec"
+        ]
+      },
+      "stock-c": {
+        "role": "tertiary",
+        "displayName": "Stock C, Mint Ticket",
+        "canonical": "#7fddbf",
+        "cssVar": "--stock-c",
+        "tonalRamp": [
+          "#011610",
+          "#043125",
+          "#005542",
+          "#067b61",
+          "#3fa084",
+          "#68c6a9",
+          "#8ceacc",
+          "#beffe8"
+        ]
+      },
+      "stock-d": {
+        "role": "tertiary",
+        "displayName": "Stock D, Lilac Ticket",
+        "canonical": "#bba8ff",
+        "cssVar": "--stock-d",
+        "tonalRamp": [
+          "#160136",
+          "#2e135e",
+          "#4c3683",
+          "#6d59a8",
+          "#907cd0",
+          "#b5a2f8",
+          "#d6ccfe",
+          "#efecfe"
+        ]
+      },
+      "stock-x": {
+        "role": "tertiary",
+        "displayName": "Stock X, Void Grey",
+        "canonical": "#e9e6dd",
+        "cssVar": "--stock-x",
+        "tonalRamp": [
+          "#14110b",
+          "#2b2922",
+          "#4a4840",
+          "#6b6961",
+          "#8f8c84",
+          "#b4b1a8",
+          "#d7d4cb",
+          "#f1eee5"
+        ],
+        "darkMode": "#3a362d"
+      },
+      "ok": {
+        "role": "state",
+        "displayName": "OK",
+        "canonical": "#12753a",
+        "cssVar": "--ok",
+        "tonalRamp": [
+          "#011707",
+          "#053216",
+          "#025727",
+          "#1e7d41",
+          "#49a164",
+          "#70c887",
+          "#93ecaa",
+          "#cafed5"
+        ],
+        "darkMode": "#5fd28c"
+      },
+      "ok-soft": {
+        "role": "state",
+        "displayName": "OK Wash",
+        "canonical": "#dcf4e4",
+        "cssVar": "--ok-soft",
+        "tonalRamp": [
+          "#04160b",
+          "#1b2e22",
+          "#394d40",
+          "#5a6f61",
+          "#7d9384",
+          "#a1b8a9",
+          "#c4dbcb",
+          "#def6e6"
+        ],
+        "darkMode": "#12301e"
+      },
+      "warn": {
+        "role": "state",
+        "displayName": "Warn",
+        "canonical": "#8f5200",
+        "cssVar": "--warn",
+        "tonalRamp": [
+          "#1e0d00",
+          "#3e2100",
+          "#683b04",
+          "#96580d",
+          "#bc7c3b",
+          "#e4a161",
+          "#fec897",
+          "#ffead9"
+        ],
+        "darkMode": "#f4b54a"
+      },
+      "warn-soft": {
+        "role": "state",
+        "displayName": "Warn Wash",
+        "canonical": "#fdefd0",
+        "cssVar": "--warn-soft",
+        "tonalRamp": [
+          "#191000",
+          "#32270d",
+          "#52462c",
+          "#74684c",
+          "#988b6e",
+          "#bdb092",
+          "#e1d3b5",
+          "#fbedce"
+        ],
+        "darkMode": "#36280c"
+      },
+      "bad": {
+        "role": "state",
+        "displayName": "Bad",
+        "canonical": "#b8232b",
+        "cssVar": "--bad",
+        "tonalRamp": [
+          "#2a0002",
+          "#530109",
+          "#880a17",
+          "#bc272e",
+          "#e65351",
+          "#fa8e87",
+          "#fec4be",
+          "#ffe9e6"
+        ],
+        "darkMode": "#ff7a7f"
+      },
+      "bad-soft": {
+        "role": "state",
+        "displayName": "Bad Wash",
+        "canonical": "#fde2e2",
+        "cssVar": "--bad-soft",
+        "tonalRamp": [
+          "#1d0c0d",
+          "#362323",
+          "#574142",
+          "#796262",
+          "#9e8585",
+          "#c3aaaa",
+          "#e7cdcd",
+          "#fee9e9"
+        ],
+        "darkMode": "#3d1517"
+      },
+      "info": {
+        "role": "state",
+        "displayName": "Info",
+        "canonical": "#1d55c4",
+        "cssVar": "--info",
+        "tonalRamp": [
+          "#000d34",
+          "#032263",
+          "#013aa8",
+          "#2860d0",
+          "#4b86fa",
+          "#87b1fe",
+          "#bed5fe",
+          "#e6effe"
+        ],
+        "darkMode": "#8fb4ff"
+      },
+      "info-soft": {
+        "role": "state",
+        "displayName": "Info Wash",
+        "canonical": "#e1eafc",
+        "cssVar": "--info-soft",
+        "tonalRamp": [
+          "#0c111d",
+          "#222936",
+          "#414856",
+          "#616979",
+          "#848c9d",
+          "#a9b1c2",
+          "#ccd4e6",
+          "#e7effe"
+        ],
+        "darkMode": "#172443"
+      },
+      "board": {
+        "role": "neutral",
+        "displayName": "Calling Board",
+        "canonical": "#14120e",
+        "tonalRamp": [
+          "#13110d",
+          "#2b2924",
+          "#4a4743",
+          "#6b6963",
+          "#8e8c86",
+          "#b3b1ab",
+          "#d7d4ce",
+          "#f1eee8"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "serial-mega": {
+        "displayName": "Serial Mega",
+        "purpose": "The guest's own queue number on the ticket stub."
+      },
+      "serial": {
+        "displayName": "Serial",
+        "purpose": "Numbers, codes, prices, table labels and short names on stubs; sizes 56/34/30/26/22px."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles (h1)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section and card titles (h2)."
+      },
+      "title-sm": {
+        "displayName": "Title Small",
+        "purpose": "Card subtitles (h3)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text; 1.65 line-height in Chinese."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Form labels, chips, segmented controls, stub field labels; sentence case."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Badges, table headers, legends, meta lines."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 1px 2px rgba(26,24,20,0.06), 0 6px 18px -6px rgba(26,24,20,0.12)",
+        "dark": "0 1px 2px rgba(0,0,0,0.4), 0 8px 22px -8px rgba(0,0,0,0.6)",
+        "purpose": "Resting cards and the selected segmented pill."
+      },
+      {
+        "name": "lift",
+        "value": "0 2px 4px rgba(26,24,20,0.06), 0 14px 32px -10px rgba(26,24,20,0.22)",
+        "dark": "0 2px 4px rgba(0,0,0,0.4), 0 16px 36px -10px rgba(0,0,0,0.7)",
+        "purpose": "Toasts and chart tooltips."
+      },
+      {
+        "name": "stub-float",
+        "value": "filter: drop-shadow(0 6px 14px rgba(26,24,20,0.14))",
+        "purpose": "Full stubs only, so perforation notches cast correctly."
+      },
+      {
+        "name": "primary-hover",
+        "value": "0 6px 16px -8px rgba(26,24,20,0.6)",
+        "purpose": "Fine-pointer hover on the ink button."
+      },
+      {
+        "name": "lit-ring",
+        "value": "0 0 0 2px #ffd12e",
+        "purpose": "Just-called queue row, until acknowledged."
+      },
+      {
+        "name": "focus",
+        "value": "outline: 2px solid ink; box-shadow: 0 0 0 5px #ffd12e",
+        "purpose": "Focus-visible on every interactive element."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Default curve for presses, entrances, tear-in, FLIP."
+      },
+      {
+        "name": "ease-in-out",
+        "value": "cubic-bezier(0.77, 0, 0.175, 1)",
+        "purpose": "Declared token for on-screen movement."
+      },
+      {
+        "name": "ease-drawer",
+        "value": "cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "Phone bottom sheet slide-up only (320ms)."
+      },
+      {
+        "name": "press",
+        "value": "scale(0.97), 120-160ms ease-out",
+        "purpose": "Buttons, tables, POS items and bills."
+      },
+      {
+        "name": "tear-in",
+        "value": "clip-path inset reveal + translateY(-6px), 280ms ease-out",
+        "purpose": "A newly issued stub."
+      },
+      {
+        "name": "flip-reorder",
+        "value": "translateY FLIP, 220ms ease-out",
+        "purpose": "Queue rows re-ranking in place."
+      },
+      {
+        "name": "toast",
+        "value": "translateY(16px) + opacity, 260ms ease-out",
+        "purpose": "Toast entrance via @starting-style."
+      },
+      {
+        "name": "dialog",
+        "value": "scale(0.96) + opacity, 220ms ease-out",
+        "purpose": "Centred dialog from 640px."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animations 1ms; transform transitions removed",
+        "purpose": "prefers-reduced-motion keeps colour and opacity only."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "pos-dialog-sm",
+        "value": "420px"
+      },
+      {
+        "name": "classes-4up",
+        "value": "520px"
+      },
+      {
+        "name": "phone",
+        "value": "640px"
+      },
+      {
+        "name": "staff-bar",
+        "value": "720px"
+      },
+      {
+        "name": "table-editor",
+        "value": "760px"
+      },
+      {
+        "name": "split-collapse",
+        "value": "900px"
+      }
+    ],
+    "containers": [
+      {
+        "name": "wrap",
+        "value": "1240px"
+      },
+      {
+        "name": "guest-bar",
+        "value": "760px"
+      },
+      {
+        "name": "narrow",
+        "value": "560px"
+      },
+      {
+        "name": "dialog",
+        "value": "540px"
+      }
+    ],
+    "i18n": {
+      "locales": [
+        "en",
+        "zh (Simplified Chinese)"
+      ],
+      "cjkFonts": [
+        "PingFang SC",
+        "Hiragino Sans GB",
+        "Noto Sans SC",
+        "Microsoft YaHei"
+      ],
+      "cjkLineHeight": 1.65,
+      "cjkHeadingTracking": "0"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink button for the main action on a screen; inverts to yellow in dark mode.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Get my number</button>",
+      "css": ".ds-btn{appearance:none;font:650 15px/1.2 var(--font-ui);border-radius:10px;padding:9px 14px;min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;transition:transform 160ms cubic-bezier(0.23,1,0.32,1),box-shadow 160ms ease,border-color 160ms ease}.ds-btn:active{transform:scale(0.97)}.ds-btn:focus-visible{outline:2px solid #1a1814;outline-offset:2px;box-shadow:0 0 0 5px #ffd12e}.ds-btn-primary{background:#1a1814;border:1px solid #1a1814;color:#ffd12e}.ds-btn-primary:hover{box-shadow:0 6px 16px -8px rgba(26,24,20,0.6)}@media (prefers-color-scheme:dark){.ds-btn-primary{background:#ffd12e;border-color:#ffd12e;color:#1a1814}}"
+    },
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "Secondary actions: surface fill with a strong hairline border.",
+      "html": "<button class=\"ds-btn ds-btn-default\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\"/><path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\"/></svg>Notify me</button>",
+      "css": ".ds-btn{appearance:none;font:650 15px/1.2 var(--font-ui);border-radius:10px;padding:9px 14px;min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;transition:transform 160ms cubic-bezier(0.23,1,0.32,1),border-color 160ms ease}.ds-btn:active{transform:scale(0.97)}.ds-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;box-shadow:0 0 0 5px var(--sun)}.ds-btn-default{background:var(--surface);border:1px solid var(--line-strong);color:var(--ink)}.ds-btn-default:hover{border-color:var(--ink-3)}"
+    },
+    {
+      "name": "Sun Button",
+      "kind": "button",
+      "refersTo": "button-sun",
+      "description": "Yellow fill with carbon label for brand-forward actions.",
+      "html": "<button class=\"ds-btn ds-btn-sun\">Seat walk-in</button>",
+      "css": ".ds-btn{appearance:none;font:650 15px/1.2 var(--font-ui);border-radius:10px;padding:9px 14px;min-height:42px;display:inline-flex;align-items:center;gap:7px;cursor:pointer;transition:transform 160ms cubic-bezier(0.23,1,0.32,1)}.ds-btn:active{transform:scale(0.97)}.ds-btn:focus-visible{outline:2px solid #1a1814;outline-offset:2px;box-shadow:0 0 0 5px #ffd12e}.ds-btn-sun{background:var(--sun);border:1px solid var(--sun-deep);color:#1a1814}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Stacked label, 42px field, ink border plus yellow ring on focus.",
+      "html": "<label class=\"ds-label\">Name<input class=\"ds-input\" placeholder=\"Mei\"></label>",
+      "css": ".ds-label{display:flex;flex-direction:column;gap:5px;font:650 13px/1.4 var(--font-ui);color:var(--ink-2)}.ds-input{font:400 15px/1.5 var(--font-ui);color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;padding:9px 12px;min-height:42px;transition:border-color 140ms ease,box-shadow 140ms ease}.ds-input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb,var(--sun) 70%,transparent)}"
+    },
+    {
+      "name": "Staff Nav",
+      "kind": "nav",
+      "refersTo": "topbar",
+      "description": "Yellow shell bar with icon tabs; active tab inverts to carbon and yellow.",
+      "html": "<nav class=\"ds-bar\"><a class=\"ds-tab ds-on\" href=\"#\">Host stand</a><a class=\"ds-tab\" href=\"#\">POS</a><a class=\"ds-tab\" href=\"#\">Kitchen</a><span class=\"ds-lang\"><button aria-pressed=\"true\">EN</button><button aria-pressed=\"false\" lang=\"zh\">中</button></span></nav>",
+      "css": ".ds-bar{display:flex;gap:2px;align-items:center;background:#ffd12e;border-bottom:1px solid #e8b400;padding:10px 16px;font-family:var(--font-ui)}.ds-tab{padding:7px 9px;border-radius:9px;color:rgba(26,24,20,0.78);font-weight:650;font-size:14px;text-decoration:none;transition:background-color 140ms ease}.ds-tab:hover{background:rgba(26,24,20,0.08);color:#1a1814}.ds-tab:focus-visible{outline:2px solid #1a1814;outline-offset:2px}.ds-tab.ds-on{background:#1a1814;color:#ffd12e}.ds-lang{margin-left:auto;display:inline-flex;border:1px solid rgba(26,24,20,0.25);border-radius:9px;overflow:hidden}.ds-lang button{border:0;background:transparent;font:700 13px var(--font-ui);padding:5px 10px;min-height:32px;color:#1a1814;cursor:pointer}.ds-lang button[aria-pressed=true]{background:#1a1814;color:#ffd12e}"
+    },
+    {
+      "name": "Category Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Menu filter pill; pressed inverts to carbon and yellow.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"true\">Noodles</button><button class=\"ds-chip\" aria-pressed=\"false\">Rice</button>",
+      "css": ".ds-chip{appearance:none;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-2);font:650 13px var(--font-ui);border-radius:999px;padding:6px 13px;min-height:34px;margin-right:6px;cursor:pointer;transition:background-color 140ms ease}.ds-chip:focus-visible{outline:2px solid var(--ink);outline-offset:2px}.ds-chip[aria-pressed=true]{background:#1a1814;color:#ffd12e;border-color:#1a1814}"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Standard working surface: hairline border, soft ambient shadow, 18px padding.",
+      "html": "<div class=\"ds-card\"><h3>Suggested seatings</h3><p>Rows re-rank in place.</p></div>",
+      "css": ".ds-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:0 1px 2px rgba(26,24,20,0.06),0 6px 18px -6px rgba(26,24,20,0.12);font-family:var(--font-ui);color:var(--ink)}.ds-card h3{margin:0 0 6px;font-size:1.02rem;font-weight:700}.ds-card p{margin:0;color:var(--ink-3)}"
+    },
+    {
+      "name": "Ticket Stub",
+      "kind": "custom",
+      "refersTo": "stub",
+      "description": "The signature: stock-coloured stub with perforation notches, dashed tear, mega serial and punch row.",
+      "html": "<div class=\"ds-stub\" style=\"--stock:#ff8fa8\"><div class=\"ds-stub-label\">Mei · Party of 4</div><div class=\"ds-serial\">B012</div><div class=\"ds-punches\"><i></i><i class=\"d\"></i><i class=\"y\"></i></div><div class=\"ds-stub-foot\">2 parties ahead</div></div>",
+      "css": ".ds-stub{--tear:62%;--notch:11px;position:relative;background:var(--stock,#ffd12e);color:#1a1814;border-radius:6px;padding:18px 20px;max-width:340px;font-family:var(--font-ui);-webkit-mask:radial-gradient(circle var(--notch) at 0 var(--tear),transparent 98%,#000 100%),radial-gradient(circle var(--notch) at 100% var(--tear),transparent 98%,#000 100%);-webkit-mask-composite:source-in;mask:radial-gradient(circle var(--notch) at 0 var(--tear),transparent 98%,#000 100%) intersect,radial-gradient(circle var(--notch) at 100% var(--tear),transparent 98%,#000 100%);filter:drop-shadow(0 6px 14px rgba(26,24,20,0.14));animation:ds-tear 280ms cubic-bezier(0.23,1,0.32,1) both}.ds-stub::after{content:'';position:absolute;left:15px;right:15px;top:var(--tear);border-top:2px dashed rgba(26,24,20,0.28)}.ds-stub-label{font-size:13px;font-weight:700;opacity:0.72}.ds-serial{font:800 88px/0.9 var(--font-num);letter-spacing:0.01em;font-variant-numeric:tabular-nums;margin:8px 0 14px}.ds-punches{display:flex;gap:7px;align-items:center;margin-bottom:28px}.ds-punches i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(26,24,20,0.55)}.ds-punches i.d{background:#1a1814;border-color:#1a1814}.ds-punches i.y{width:18px;height:18px;border:3px solid #1a1814;box-shadow:0 0 0 3px rgba(255,255,255,0.6)}.ds-stub-foot{font-weight:650}@keyframes ds-tear{from{clip-path:inset(0 0 100% 0);transform:translateY(-6px)}to{clip-path:inset(0);transform:none}}@media (prefers-reduced-motion:reduce){.ds-stub{animation-duration:1ms}}"
+    },
+    {
+      "name": "Row Stub",
+      "kind": "custom",
+      "refersTo": "rowstub",
+      "description": "Staff queue row: stock-coloured serial cell, vertical dashed tear, body, actions; lit when called.",
+      "html": "<div class=\"ds-rowstub ds-lit\" style=\"--stock:#7fddbf\"><div class=\"ds-rs-num\"><b>C001</b><small>6 pax</small></div><div class=\"ds-rs-body\"><b>Tan</b><div>waiting 4 min</div></div><div class=\"ds-rs-act\"><button>Seat</button></div></div>",
+      "css": ".ds-rowstub{display:grid;grid-template-columns:76px minmax(0,1fr) auto;align-items:center;border-radius:6px;background:var(--surface);border:1px solid var(--line);overflow:hidden;font-family:var(--font-ui);color:var(--ink);transition:background-color 600ms ease,box-shadow 200ms ease}.ds-rowstub.ds-lit{box-shadow:0 0 0 2px var(--sun);background:var(--sun-soft)}.ds-rs-num{align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--stock);color:#1a1814;border-right:2px dashed rgba(26,24,20,0.25);padding:8px 4px}.ds-rs-num b{font:800 26px/0.9 var(--font-num)}.ds-rs-num small{font-size:11px;font-weight:700;opacity:0.75;margin-top:3px}.ds-rs-body{padding:10px 14px}.ds-rs-body div{font-size:12.5px;color:var(--ink-3)}.ds-rs-act{padding:8px 12px 8px 0}.ds-rs-act button{background:#1a1814;color:#ffd12e;border:0;border-radius:8px;font:650 13px var(--font-ui);padding:4px 10px;min-height:32px;cursor:pointer}.ds-rs-act button:active{transform:scale(0.97)}.ds-rs-act button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}"
+    },
+    {
+      "name": "KDS Ticket",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Kitchen ticket: yellow header band over a dashed tear; red when late.",
+      "html": "<div class=\"ds-kds\"><header><b>T4</b><span>6m</span></header><ul><li><b>2</b> Char kway teow</li><li><b>1</b> Teh tarik</li></ul></div>",
+      "css": ".ds-kds{max-width:280px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-family:var(--font-ui);color:var(--ink);box-shadow:0 1px 2px rgba(26,24,20,0.06),0 6px 18px -6px rgba(26,24,20,0.12)}.ds-kds header{background:#ffd12e;color:#1a1814;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px dashed rgba(26,24,20,0.3);font-family:var(--font-num)}.ds-kds header b{font-size:30px;line-height:1}.ds-kds header span{font-size:24px;font-weight:800}.ds-kds ul{list-style:none;margin:0;padding:6px 14px 14px}.ds-kds li{padding:10px 0;border-bottom:1px solid var(--line);font-size:19px;font-weight:750}.ds-kds li:last-child{border-bottom:0}.ds-kds li b{font:800 26px/1 var(--font-num);margin-right:10px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Kopitiam Ticket Stub",
+    "overview": "Every promise Beautifood makes is a ticket you can hold. Queue numbers, preorders, open bills, kitchen tickets, bookings and branch summaries are drawn as stubs: a block of ticket stock, a stamped serial numeral in a tall condensed face, a dashed tear line, and on the full stub, half-moon perforation notches and a row of punched holes. The shell around them is a kopitiam-sign yellow bar with carbon ink, loud and local like good hawker-centre signage.\n\nThe stub is the one signature move. Everything else is a calm, standard working screen: white ground (warm charcoal in dark mode), hairline warm-grey rules, soft-shadowed cards, ink-filled primary buttons. Guest screens are one-handed and glanceable (the number always wins the viewport). Staff screens are dense but calm, with big tablet targets and state carried by a small, fixed set of tones. The system is fully bilingual (English and Simplified Chinese) and every layout holds for CJK text.\n\nIt rejects two things, both named in the direction contract: the category default (grey cards with one accent colour) and the gimmick (a fake paper-ticket skin over everything).",
+    "keyCharacteristics": [
+      "Yellow shell bar, carbon ink, white or charcoal ground.",
+      "Ticket stock colour per party-size class: A yellow, B rose, C mint, D lilac, X neutral.",
+      "Serial numerals in Big Shoulders Display, tabular, stamped; everything else in Figtree with system CJK fallback.",
+      "Dashed tear lines separate a stub's serial from its body, at every scale.",
+      "Lucide icons at their default 2px stroke inline (15 to 19px), 1.75 beside section titles, 1.5 for large empty-state icons.",
+      "Short, decisive motion on a custom ease-out; reduced motion keeps only colour and opacity changes."
+    ],
+    "rules": [
+      {
+        "name": "The Ink-On-Yellow Rule",
+        "body": "Yellow is a fill, never a text colour on white. Text on yellow or on any stock is carbon (#1a1814), and stays carbon in dark mode.",
+        "section": "colors"
+      },
+      {
+        "name": "The Stock Means Class Rule",
+        "body": "Stock colours carry exactly one meaning: the party-size class letter of a ticket (A, B, C, D, else X). Never use rose, mint or lilac for decoration, charts or state.",
+        "section": "colors"
+      },
+      {
+        "name": "The Inverted Selection Rule",
+        "body": "Selected, pressed and active controls (nav tab, chip, language toggle, segmented POS bill, aria-pressed buttons) invert to a carbon fill with yellow text in light mode, and to a yellow fill with carbon text in dark mode.",
+        "section": "colors"
+      },
+      {
+        "name": "The Serial Face Rule",
+        "body": "Big Shoulders Display sets numbers, codes and short proper names on stubs (ticket numbers, table labels, prices, totals, branch names, the wordmark). It never sets sentences or headings.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Wherever figures sit (serials, money, stats, table cells, bill lines, chart labels) they are tabular, so columns and live-updating counts do not jitter.",
+        "section": "typography"
+      },
+      {
+        "name": "The CJK Breathing Rule",
+        "body": "For Chinese, heading tracking returns to 0 and body line-height opens to 1.65. Never apply negative or positive tracking to CJK text, and never rely on uppercase for emphasis: Chinese has none.",
+        "section": "typography"
+      },
+      {
+        "name": "The Number First Rule",
+        "body": "On guest screens the stub with the number and \"what happens next\" is the first thing in the viewport; actions stack below it as full-width big buttons.",
+        "section": "layout"
+      },
+      {
+        "name": "The Only Stubs Float Rule",
+        "body": "Drop-shadow filters belong to stubs. Every other surface uses the card ambient shadow or none.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Tear Line Rule",
+        "body": "A dashed carbon rule always separates the stock-coloured serial area of a stub from its content. Dashed borders elsewhere mean \"not solid\": blocked or split tables, QR cut sheets, the promo form divider.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Short Hands Rule",
+        "body": "Interaction motion stays under 300ms and moves only transform and opacity. The phone sheet (320ms), the lit-row wash fade (600ms) and meter fills (400ms) are the only longer transitions.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** draw any new numbered promise (ticket, bill, booking, order) as a stub: stock fill, serial face, dashed tear (The Tear Line Rule).",
+      "**Do** pick stub stock from the class letter of the number (A, B, C, D) and fall back to X for anything else or for a cancelled ticket.",
+      "**Do** put carbon (#1a1814) text on yellow and on every stock, in both colour schemes (The Ink-On-Yellow Rule).",
+      "**Do** set every figure tabular and set serials, prices and table labels in Big Shoulders Display.",
+      "**Do** write labels in sentence case and translate every string; check each new layout in Simplified Chinese at 1.65 line-height with zero tracking.",
+      "**Do** use Lucide icons: default stroke at 15 to 19px inline, 1.75 stroke beside section titles, 28 to 32px at 1.5 stroke in empty states.",
+      "**Do** keep tap targets at 42px or more (48px for kitchen bumps, 54px for guest primaries) and gate hover styles behind fine pointers.",
+      "**Do** honour prefers-reduced-motion and prefers-color-scheme for every new component."
+    ],
+    "donts": [
+      "**Don't** use yellow as text on white or light surfaces.",
+      "**Don't** use rose, mint or lilac for anything except party-size class (The Stock Means Class Rule).",
+      "**Don't** add uppercase, letter-spaced kicker or eyebrow labels above headings or numbers; the stub's field labels are sentence case, and Chinese has no case to fall back on.",
+      "**Don't** turn whole screens into paper tickets; working screens stay standard and the stub is the one signature move.",
+      "**Don't** put a drop shadow on anything that is not a stub, or animate layout properties for interaction feedback.",
+      "**Don't** set sentences or headings in Big Shoulders Display, or apply negative tracking to CJK text.",
+      "**Don't** use emoji or text glyphs as icons; icons are Lucide or the stub wordmark."
+    ]
+  }
+}
