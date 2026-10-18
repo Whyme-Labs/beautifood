@@ -31,7 +31,7 @@
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
     "render": "remotion render Demo out/beautifood-demo.mp4 --codec h264 --crf 20",
-    "clips": "mkdir -p public/clips && cp ../docs/evidence/videos/*.mp4 public/clips/",
+    "clips": "./clips.sh",
     "predev": "npm run clips",
     "prerender": "npm run clips"
   },

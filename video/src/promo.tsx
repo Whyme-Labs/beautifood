@@ -1,8 +1,16 @@
 // Promo cuts: fast, mostly type and real footage. Promo30 is 16:9, Teaser15 is 9:16 for social.
 import type React from "react";
-import { AbsoluteFill, Easing, interpolate, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
+import { Audio } from "@remotion/media";
+import { AbsoluteFill, Easing, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, NUM, SANS } from "./theme";
 import { Screen, Stub, useIn } from "./parts";
+
+/** The soundtrack, faded in and out to fit the cut. */
+const Music: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps, durationInFrames } = useVideoConfig();
+  return <Audio src={staticFile("audio/bgm.m4a")} trimBefore={Math.round(18.0 * fps)} volume={interpolate(frame, [0, 6, durationInFrames - 1.5 * fps, durationInFrames - 1], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />;
+};
 
 const Slam: React.FC<{ children: React.ReactNode; size: number; color?: string; at?: number }> = ({ children, size, color = C.ink, at = 0 }) => {
   const frame = useCurrentFrame();
@@ -45,6 +53,7 @@ export const Promo30: React.FC = () => {
   const { fps } = useVideoConfig();
   return (
     <AbsoluteFill style={{ background: C.ink }}>
+      <Music />
       <Sequence name="Hook" durationInFrames={3 * fps}>
         <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", gap: 24 }}>
           <Slam size={150} color={C.sun}>Still shouting</Slam>
@@ -74,6 +83,7 @@ export const Teaser15: React.FC = () => {
   const shots = [SHOTS[0], SHOTS[1], { ...SHOTS[2], label: "AI seats every party." }];
   return (
     <AbsoluteFill style={{ background: C.ink }}>
+      <Music />
       <Sequence name="Hook" durationInFrames={2.5 * fps}>
         <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", gap: 24, padding: 60 }}>
           <Slam size={150} color={C.sun}>No more</Slam>

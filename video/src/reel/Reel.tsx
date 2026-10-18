@@ -89,18 +89,18 @@ export const Reel: React.FC = () => {
       <Cut name="Montage" from={38} to={40}>
         <MontageScene
           clips={[
-            { src: "clips/01-guest-walk-in.mp4", kind: "phone" },
-            { src: "clips/04-host.mp4", kind: "desktop" },
-            { src: "clips/02-diner-group-a.mp4", kind: "phone" },
-            { src: "clips/05-kitchen.mp4", kind: "desktop" },
-            { src: "clips/03-ai-menu-assistant.mp4", kind: "phone" },
-            { src: "clips/06-cashier.mp4", kind: "desktop" },
-            { src: "clips/02-diner-group-b.mp4", kind: "phone" },
-            { src: "clips/07-owner.mp4", kind: "desktop" },
-            { src: "clips/09-booking-guest.mp4", kind: "phone" },
-            { src: "clips/08-marketing.mp4", kind: "desktop" },
-            { src: "clips/10-display-tv.mp4", kind: "desktop" },
-            { src: "clips/11-ai-agent.mp4", kind: "desktop" },
+            { src: "clips/small/01-guest-walk-in.mp4", kind: "phone" },
+            { src: "clips/small/04-host.mp4", kind: "desktop" },
+            { src: "clips/small/02-diner-group-a.mp4", kind: "phone" },
+            { src: "clips/small/05-kitchen.mp4", kind: "desktop" },
+            { src: "clips/small/03-ai-menu-assistant.mp4", kind: "phone" },
+            { src: "clips/small/06-cashier.mp4", kind: "desktop" },
+            { src: "clips/small/02-diner-group-b.mp4", kind: "phone" },
+            { src: "clips/small/07-owner.mp4", kind: "desktop" },
+            { src: "clips/small/09-booking-guest.mp4", kind: "phone" },
+            { src: "clips/small/08-marketing.mp4", kind: "desktop" },
+            { src: "clips/small/10-display-tv.mp4", kind: "desktop" },
+            { src: "clips/small/11-ai-agent.mp4", kind: "desktop" },
           ]}
         />
       </Cut>
