@@ -87,6 +87,19 @@ jobs:
           sub=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain')
           echo "subdomain=$sub" >> "$GITHUB_OUTPUT"
+      - name: D1 status (read-only)
+        continue-on-error: true
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database"
+          db=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$api?name=beautifood-db" | jq -c '.result[0] // empty')
+          echo "database: $db"
+          if [ -n "$db" ]; then
+            id=$(echo "$db" | jq -r .uuid)
+            for q in "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name" "SELECT * FROM d1_migrations" "SELECT COUNT(*) AS users FROM user"; do
+              echo "== $q"
+              curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" -X POST "$api/$id/query" -d "$(jq -n --arg sql "$q" '{sql:$sql}')" | jq -c '.result[0].results // .errors'
+            done
+          fi
       - name: Deploy (Worker, D1 + migrations, queue, cron, email)
         env:
           CLOUDFLARE_WORKERS_SUBDOMAIN: ${{ steps.sub.outputs.subdomain }}
