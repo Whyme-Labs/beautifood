@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "source": {
+    "name": "beautifood-app",
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "beautifood-app-db"
+      }
+    ],
+    "ai": {
+      "binding": "AI"
+    }
+  },
+  "resolved": {
+    "name": "beautifood-app",
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "beautifood-app-db",
+        "database_id": "b28b24d3-a517-4220-b4d5-92808e2d3911",
+        "migrations_dir": "./db/migrations"
+      }
+    ],
+    "ai": {
+      "binding": "AI"
+    },
+    "account_id": "1e0170aaabc90ecf5f466128d1f0466a"
+  },
+  "text": "{\n  \"name\": \"beautifood-app\",\n  \"d1_databases\": [\n    {\n      \"binding\": \"DB\",\n      \"database_name\": \"beautifood-app-db\",\n      \"database_id\": \"b28b24d3-a517-4220-b4d5-92808e2d3911\",\n      \"migrations_dir\": \"./db/migrations\"\n    }\n  ],\n  \"ai\": {\n    \"binding\": \"AI\"\n  },\n  \"account_id\": \"1e0170aaabc90ecf5f466128d1f0466a\"\n}\n"
+}
