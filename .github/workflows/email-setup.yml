@@ -1,0 +1,46 @@
+name: Email setup (one-time)
+
+# `void email setup` turns on Cloudflare Email Routing + Email Sending for the MAIL_FROM
+# domain and records it in void.lock.json. It insists on an interactive terminal and asks
+# once before changing the account; dispatching this workflow is that approval, so we run
+# it under a pseudo-terminal and confirm. Deploys then use --require-email.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  setup:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      MAIL_FROM: ${{ vars.MAIL_FROM || 'Beautifood <noreply@beautifood.io>' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 24
+          check-latest: true
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Set up Email Routing + Email Sending
+        run: |
+          # Answer the single confirmation prompt ("y" + Enter) through a pseudo-terminal.
+          (sleep 20; printf 'y\r'; sleep 5; printf '\r') | script -qefc "pnpm exec void email setup --platform cloudflare" /dev/null | tee setup.log
+      - name: Readiness
+        run: pnpm exec void email status --platform cloudflare | tee -a "$GITHUB_STEP_SUMMARY" || true
+      - name: Commit lock file
+        run: |
+          if [ -n "$(git status --porcelain void.lock.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+            git add void.lock.json
+            git commit -m "chore: record Cloudflare email setup (void.lock.json)"
+            git pull --rebase && git push
+          fi

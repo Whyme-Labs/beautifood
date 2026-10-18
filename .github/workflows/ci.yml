@@ -26,8 +26,11 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: 24
+          check-latest: true
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Generate Void types
+        run: pnpm exec void prepare
       - name: Rust core tests
         run: cargo test --manifest-path crates/core/Cargo.toml
       - name: Unit tests
@@ -63,8 +66,8 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      # Optional repository variable, e.g. "Beautifood <receipts@mail.example.com>", turns on Cloudflare Email Sending.
-      MAIL_FROM: ${{ vars.MAIL_FROM }}
+      # Sender for Cloudflare Email Sending (override with the MAIL_FROM repository variable).
+      MAIL_FROM: ${{ vars.MAIL_FROM || 'Beautifood <noreply@beautifood.io>' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -73,6 +76,7 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: 24
+          check-latest: true
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Workers subdomain
@@ -81,13 +85,14 @@ jobs:
           sub=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain')
           echo "subdomain=$sub" >> "$GITHUB_OUTPUT"
-      - name: Deploy (Worker, D1 + migrations, queue, cron${{ vars.MAIL_FROM && ', email' || '' }})
+      - name: Deploy (Worker, D1 + migrations, queue, cron, email)
         env:
           CLOUDFLARE_WORKERS_SUBDOMAIN: ${{ steps.sub.outputs.subdomain }}
         run: |
           set -o pipefail
           flags="--platform cloudflare"
-          if [ -n "$MAIL_FROM" ]; then flags="$flags --require-email"; fi
+          # Once the one-time "Email setup" workflow has recorded email in void.lock.json, insist on it.
+          if [ -f void.lock.json ] && grep -q '"email"' void.lock.json; then flags="$flags --require-email"; fi
           pnpm exec void deploy $flags 2>&1 | tee deploy.log
       - name: Public URL
         id: url
