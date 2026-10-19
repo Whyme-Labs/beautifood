@@ -4,7 +4,7 @@ import type React from "react";
 import { Audio, Video } from "@remotion/media";
 import { AbsoluteFill, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, NUM, SANS } from "../theme";
-import { barF, barsF, clamp, ease } from "./beat";
+import { barF, barsF, clamp, ease, useAt, useBeat } from "./beat";
 import { COPY, LangProvider, useCopy, useLang, type Lang } from "./copy";
 import { Device, type TakeId } from "./takes";
 import { AgentScene, CloseScene, CrowdScene, DropScene, PaperScene, Tag, WallScene } from "./scenes";
@@ -67,16 +67,22 @@ export const CartStage: React.FC<{ rate?: number }> = ({ rate }) => {
   );
 };
 
-/** Beat-timed labels from a list: [text, beat] pairs, alternating light and dark. */
-export const Tags: React.FC<{ items: string[]; at: number[]; size?: number; first?: "light" | "dark" }> = ({ items, at, size, first = "light" }) => (
-  <>
-    {items.map((x, i) => (
-      <Tag key={x} at={at[i] ?? i * 2} size={size} dark={(i % 2 === 1) === (first === "light")}>
-        {x}
-      </Tag>
-    ))}
-  </>
-);
+/** Beat-timed labels, alternating light and dark; `one` shows each in turn instead of stacking them. */
+export const Tags: React.FC<{ items: string[]; at: number[]; size?: number; first?: "light" | "dark"; one?: boolean }> = ({ items, at, size, first = "light", one }) => {
+  const { beat, phase } = useBeat();
+  const now = beat + phase;
+  return (
+    <>
+      {items.map((x, i) =>
+        one && ((at[i] ?? 0) > now || (i + 1 < items.length && (at[i + 1] ?? Infinity) <= now)) ? null : (
+          <Tag key={x} at={at[i] ?? i * 2} size={size} dark={(i % 2 === 1) === (first === "light")}>
+            {x}
+          </Tag>
+        ),
+      )}
+    </>
+  );
+};
 
 const MONTAGE = ["p-join", "d-host", "p-cart-a", "d-kitchen", "p-assistant", "d-pos", "p-cart-b", "d-setup", "p-menu", "d-boss", "p-preorder", "d-translate"];
 
@@ -97,10 +103,77 @@ const Montage: React.FC = () => {
       </div>
       <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
         <div style={{ background: C.sun, color: C.ink, padding: "26px 48px", borderRadius: 26, textAlign: "center", boxShadow: "0 30px 80px rgba(0,0,0,.5)" }}>
-          <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: 130, lineHeight: 1 }}>56 + 11</div>
-          <div style={{ fontSize: 40, fontWeight: 850 }}>{COPY[lang].montage}</div>
+          <div style={{ fontSize: 40, fontWeight: 850 }}>{COPY[lang].montage[0]}</div>
+          <div style={{ fontSize: 34, fontWeight: 750 }}>{COPY[lang].montage[1]}</div>
         </div>
       </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+/** Whose screen this is (and when), pinned top-left so every switch of perspective is signposted. */
+const Who: React.FC<{ who: string; time?: string; style?: React.CSSProperties }> = ({ who, time, style }) => {
+  const p = useAt(0, 0.4);
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 14, fontFamily: SANS, opacity: p, translate: `0 ${(1 - p) * -10}px`, ...style }}>
+      <span style={{ background: C.ink, color: C.sun, fontWeight: 900, fontSize: 30, letterSpacing: ".06em", padding: "10px 18px", borderRadius: 12 }}>{who}</span>
+      {time && <span style={{ background: "rgba(255,255,255,.85)", color: C.ink, fontFamily: NUM, fontWeight: 800, fontSize: 30, padding: "8px 14px", borderRadius: 12 }}>{time}</span>}
+    </div>
+  );
+};
+
+const Corner: React.FC<{ who: string; time?: string }> = (p) => (
+  <div style={{ position: "absolute", left: 48, top: 40 }}>
+    <Who {...p} />
+  </div>
+);
+
+/** The host's Call and the guest's phone, side by side: one tap, two screens. */
+export const CallStage: React.FC<{ tags: React.ReactNode; rate?: number }> = ({ tags, rate }) => {
+  const copy = useCopy();
+  return (
+    <AbsoluteFill style={{ background: C.sunSoft, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 56, paddingBottom: 60 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        <Who who={copy.who.host} time={copy.times.call} />
+        <Device id="hostCall" w={1180} h={780} rate={rate} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        <Who who={`${copy.who.guest} · ${copy.hero}`} />
+        <Device id="phoneCall" w={560} h={900} rate={rate} />
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 34, display: "flex", justifyContent: "center", gap: 18 }}>{tags}</div>
+    </AbsoluteFill>
+  );
+};
+
+/** A chapter card: a time, then what happens. */
+const Chapter: React.FC<{ lines: string[] }> = ({ lines: [a, b] }) => {
+  const p = useAt(0, 0.6);
+  const q = useAt(1, 0.6);
+  return (
+    <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", gap: 10, fontFamily: SANS }}>
+      <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: 120, color: C.sun, opacity: p, scale: String(0.94 + 0.06 * p) }}>{a}</div>
+      <div style={{ fontWeight: 900, fontSize: 96, color: C.paper, letterSpacing: "-.02em", opacity: q, translate: `0 ${(1 - q) * 20}px` }}>{b}</div>
+    </AbsoluteFill>
+  );
+};
+
+/** The opening rush, again: nobody walked away. */
+const Reprise: React.FC = () => {
+  const copy = useCopy();
+  const p = useAt(0.5, 0.6);
+  return (
+    <AbsoluteFill style={{ background: C.ink, fontFamily: SANS, alignItems: "center", justifyContent: "center" }}>
+      <div style={{ position: "absolute", left: 120, right: 120, top: 70, height: 120, display: "flex", borderRadius: "0 0 30px 30px", overflow: "hidden" }}>
+        {Array.from({ length: 14 }, (_, i) => (
+          <div key={i} style={{ flex: 1, background: i % 2 ? C.paper : C.sun }} />
+        ))}
+      </div>
+      <div style={{ position: "absolute", top: 215, left: 0, right: 0, textAlign: "center", color: C.sun, fontFamily: NUM, fontWeight: 800, fontSize: 64, letterSpacing: ".04em" }}>{copy.crowd.sign}</div>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 30, marginTop: 120, opacity: p, scale: String(0.9 + 0.1 * p) }}>
+        <span style={{ fontFamily: NUM, fontWeight: 800, fontSize: 300, color: C.sun, lineHeight: 1 }}>0</span>
+        <span style={{ fontSize: 80, fontWeight: 900, color: C.paper }}>{copy.reprise}</span>
+      </div>
     </AbsoluteFill>
   );
 };
@@ -109,46 +182,46 @@ export const Reel: React.FC<{ lang: Lang }> = ({ lang }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const volume = interpolate(frame, [0, 0.4 * fps, durationInFrames - 3 * fps, durationInFrames - 2], [0, 1, 1, 0], clamp);
-  const T = COPY[lang].tags;
+  const { tags: T, who: W, times: at, hero } = COPY[lang];
+  const guest = `${W.guest} · ${hero}`;
   return (
     <LangProvider value={lang}>
       <AbsoluteFill style={{ background: C.ink }}>
         <Audio src={staticFile("audio/bgm.m4a")} volume={volume} />
 
-        {/* the problem */}
+        {/* 7:42 PM: the rush, and what it costs */}
         <Cut name="Crowd" from={0} to={2}><CrowdScene /></Cut>
         <Cut name="Paper" from={2} to={4}><PaperScene /></Cut>
+        <Cut name="Drop" from={4} to={5}><DropScene /></Cut>
 
-        {/* a guest joins from their phone */}
-        <Cut name="Join" from={4} to={6}><PhoneStage bg={C.sunSoft} id="join" tags={<Tags items={T.join} at={[0, 3, 6]} />} /></Cut>
-        <Cut name="Called" from={6} to={8}><PhoneStage bg={C.sun} id="called" side="right" tilt={2} tags={<Tags items={T.called} at={[2, 4]} first="dark" />} /></Cut>
+        {/* one guest's evening: join, browse, preorder */}
+        <Cut name="Join" from={5} to={6}><PhoneStage bg={C.sunSoft} id="join" tags={<Tags items={T.join} at={[0, 2]} />} /><Corner who={guest} time={at.join} /></Cut>
+        <Cut name="Ticket" from={6} to={7}><PhoneStage bg={C.sunSoft} id="ticket" tags={<Tags items={T.ticket} at={[0, 2]} />} /><Corner who={guest} time={at.join} /></Cut>
+        <Cut name="Menu" from={7} to={8}><PhoneStage bg={C.sunSoft} id="menu" tags={<Tags items={T.menu} at={[0, 2]} />} /><Corner who={guest} time={at.menu} /></Cut>
+        <Cut name="Assistant" from={8} to={10}><PhoneStage bg={C.sunSoft} id="assistant" tags={<Tags items={T.assistant} at={[0, 3, 5]} first="dark" />} /><Corner who={guest} time={at.menu} /></Cut>
+        <Cut name="Preorder" from={10} to={12}><PhoneStage bg={C.sunSoft} id="preorder" tags={<Tags items={T.preorder} at={[0, 4]} />} /><Corner who={guest} time={at.preorder} /></Cut>
 
-        <Cut name="Drop" from={8} to={9}><DropScene /></Cut>
+        {/* the host calls them: cause and effect on one screen */}
+        <Cut name="Call" from={12} to={16}><CallStage tags={<Tags items={T.call} at={[0, 4, 7, 12.5]} size={52} one />} /></Cut>
+        <Cut name="Door TV" from={16} to={17}><DeskStage id="board" tags={<Tags items={T.board} at={[0.5]} first="dark" />} /><Corner who={W.tv} time={at.call} /></Cut>
 
-        {/* order before you sit, then together at the table */}
-        <Cut name="Preorder" from={9} to={11}><PhoneStage bg={C.paper} id="preorder" tags={<Tags items={T.preorder} at={[0, 5]} />} /></Cut>
-        <Cut name="Shared cart" from={11} to={13}><CartStage /></Cut>
+        {/* at the table, then the kitchen and the till work on that same table */}
+        <Cut name="Table" from={17} to={19}><CartStage rate={1.75} /><Corner who={`${W.guest} · ${hero} + ${COPY[lang].friend}`} time={at.table} /></Cut>
+        <Cut name="Kitchen" from={19} to={21}><DeskStage id="kitchen" tags={<Tags items={T.kitchen} at={[0, 4]} />} /><Corner who={W.kitchen} time={at.kitchen} /></Cut>
+        <Cut name="Till" from={21} to={23}><DeskStage id="till" tags={<Tags items={T.till} at={[0, 4]} />} /><Corner who={W.till} time={at.till} /></Cut>
 
-        {/* the menu assistant, and the menu itself */}
-        <Cut name="Assistant" from={13} to={15}><PhoneStage bg={C.sun} id="assistant" tags={<Tags items={T.assistant} at={[1, 5]} first="dark" />} /></Cut>
-        <Cut name="Signatures" from={15} to={16}><PhoneStage bg={C.paper} id="signatures" side="right" tilt={-2} tags={<Tags items={T.signatures} at={[0.5]} first="dark" />} /></Cut>
-        <Cut name="Menu" from={16} to={17}><PhoneStage bg={C.sunSoft} id="menu" tags={<Tags items={T.menu} at={[0, 2]} />} /></Cut>
+        {/* closing time: the owner */}
+        <Cut name="Closing" from={23} to={24}><Chapter lines={COPY[lang].chapter.closing} /></Cut>
+        <Cut name="Dashboard" from={24} to={26}><DeskStage id="boss" tags={<Tags items={T.boss} at={[0, 4]} first="dark" />} /><Corner who={W.owner} /></Cut>
+        <Cut name="Translate" from={26} to={28}><DeskStage id="translate" tags={<Tags items={T.translate} at={[0, 4]} />} /><Corner who={W.owner} /></Cut>
+        <Cut name="AI setup" from={28} to={30}><DeskStage id="setup" rate={1.4} tags={<Tags items={T.setup} at={[0, 2, 4, 6]} first="dark" />} /><Corner who={W.owner} /></Cut>
 
-        {/* front of house */}
-        <Cut name="Host" from={17} to={20}><DeskStage id="host" tags={<Tags items={T.host} at={[0, 8]} />} /></Cut>
-        <Cut name="Kitchen" from={20} to={22}><DeskStage id="kitchen" tags={<Tags items={T.kitchen} at={[0]} first="dark" />} /></Cut>
-        <Cut name="Till" from={22} to={24}><DeskStage id="till" tags={<Tags items={T.till} at={[0, 5]} />} /></Cut>
-
-        {/* the owner */}
-        <Cut name="AI setup" from={24} to={27}><DeskStage id="setup" tags={<Tags items={T.setup} at={[0, 5, 9]} />} /></Cut>
-        <Cut name="Translate" from={27} to={29}><DeskStage id="translate" tags={<Tags items={T.translate} at={[0, 4]} />} /></Cut>
-        <Cut name="Dashboard" from={29} to={31}><DeskStage id="boss" tags={<Tags items={T.boss} at={[0]} first="dark" />} /></Cut>
-        <Cut name="TV board" from={31} to={32}><DeskStage id="board" /></Cut>
-
-        {/* agents, proof, close */}
-        <Cut name="Agents" from={32} to={33}><AgentScene /></Cut>
-        <Cut name="Wall" from={33} to={35}><WallScene /></Cut>
-        <Cut name="Montage" from={35} to={37}><Montage /></Cut>
+        {/* why it holds up at 7:42 PM */}
+        <Cut name="Proof" from={30} to={31}><Chapter lines={COPY[lang].chapter.proof} /></Cut>
+        <Cut name="Wall" from={31} to={33}><WallScene /></Cut>
+        <Cut name="Agents" from={33} to={34}><AgentScene /></Cut>
+        <Cut name="Montage" from={34} to={36}><Montage /></Cut>
+        <Cut name="Reprise" from={36} to={37}><Reprise /></Cut>
         <Cut name="Close" from={37} to={REEL_END_BAR}><CloseScene /></Cut>
       </AbsoluteFill>
     </LangProvider>

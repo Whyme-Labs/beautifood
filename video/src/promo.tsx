@@ -4,7 +4,7 @@ import { Audio } from "@remotion/media";
 import { AbsoluteFill, Easing, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, NUM, SANS } from "./theme";
 import { Stub, useIn } from "./parts";
-import { CartStage, Cut, DeskStage, PhoneStage, Tags } from "./reel/Reel";
+import { CallStage, CartStage, Cut, DeskStage, PhoneStage, Tags } from "./reel/Reel";
 import { COPY, LangProvider, useCopy, type Lang } from "./reel/copy";
 import { Tag } from "./reel/scenes";
 
@@ -54,14 +54,15 @@ export const Promo30: React.FC<{ lang: Lang }> = ({ lang }) => {
             <Slam size={150} color={C.sun} at={0.4}>{P.hook[1]}</Slam>
           </AbsoluteFill>
         </Cut>
-        <Cut name="Join" from={1} to={3}><PhoneStage bg={C.sunSoft} id="join" tags={<Tags items={T.join} at={[0, 3, 6]} />} /></Cut>
-        <Cut name="Called" from={3} to={4}><PhoneStage bg={C.sun} id="called" side="right" tilt={2} rate={1.6} tags={<Tags items={T.called.slice(0, 1)} at={[0]} first="dark" />} /></Cut>
-        <Cut name="Shared cart" from={4} to={6}><CartStage /></Cut>
-        <Cut name="Assistant" from={6} to={7}><PhoneStage bg={C.sun} id="assistant" rate={2} tags={<Tags items={P.assistant} at={[0, 2]} first="dark" />} /></Cut>
-        <Cut name="Host" from={7} to={9}><DeskStage id="host" tags={<Tags items={P.host} at={[0, 4]} />} /></Cut>
-        <Cut name="Kitchen" from={9} to={10}><DeskStage id="kitchen" rate={2} tags={<Tags items={T.kitchen} at={[0]} first="dark" />} /></Cut>
-        <Cut name="AI setup" from={10} to={11}><DeskStage id="setup" rate={2.6} tags={<Tags items={P.setup} at={[0, 2]} />} /></Cut>
-        <Cut name="Dashboard" from={11} to={12}><DeskStage id="boss" rate={3} tags={<Tags items={T.boss} at={[0]} first="dark" />} /></Cut>
+        <Cut name="Join" from={1} to={2}><PhoneStage bg={C.sunSoft} id="join" tags={<Tags items={T.join} at={[0, 2]} />} /></Cut>
+        <Cut name="Call" from={2} to={4}><CallStage rate={2.2} tags={<Tags items={P.host} at={[0, 3]} size={52} one />} /></Cut>
+        <Cut name="Shared cart" from={4} to={6}><CartStage rate={1.75} /></Cut>
+        <Cut name="Assistant" from={6} to={7}><PhoneStage bg={C.sun} id="assistant" rate={2.4} tags={<Tags items={P.assistant} at={[0, 2]} first="dark" />} /></Cut>
+        <Cut name="Kitchen" from={7} to={8}><DeskStage id="kitchen" rate={2.4} tags={<Tags items={T.kitchen.slice(0, 1)} at={[0]} first="dark" />} /></Cut>
+        <Cut name="Till" from={8} to={9}><DeskStage id="till" rate={2.8} tags={<Tags items={T.till.slice(1)} at={[0]} />} /></Cut>
+        <Cut name="Dashboard" from={9} to={10}><DeskStage id="boss" rate={3} tags={<Tags items={T.boss.slice(0, 1)} at={[0]} first="dark" />} /></Cut>
+        <Cut name="AI setup" from={10} to={11}><DeskStage id="setup" rate={2.8} tags={<Tags items={P.setup} at={[0, 2]} />} /></Cut>
+        <Cut name="Translate" from={11} to={12}><DeskStage id="translate" rate={2.4} tags={<Tags items={T.translate.slice(0, 1)} at={[0]} first="dark" />} /></Cut>
         <Cut name="End" from={12} to={PROMO_BARS}><EndCard /></Cut>
       </AbsoluteFill>
     </LangProvider>
@@ -82,9 +83,9 @@ export const Teaser15: React.FC<{ lang: Lang }> = ({ lang }) => {
           </AbsoluteFill>
         </Cut>
         <Cut name="Join" from={1} to={2}><PhoneStage vertical bg={C.sunSoft} id="join" rate={1.8} tags={<Tag at={0} size={72}>{Q.join}</Tag>} /></Cut>
-        <Cut name="Called" from={2} to={3}><PhoneStage vertical bg={C.sun} id="called" rate={1.6} tags={<Tag at={0} size={72} dark>{Q.called}</Tag>} /></Cut>
+        <Cut name="Called" from={2} to={3}><PhoneStage vertical bg={C.sun} id="phoneCall" rate={2.4} tags={<Tag at={0} size={72} dark>{Q.called}</Tag>} /></Cut>
         <Cut name="Shared cart" from={3} to={4}><PhoneStage vertical bg={C.paper} id="cartB" rate={2.4} tags={<Tag at={0} size={72}>{Q.cart}</Tag>} /></Cut>
-        <Cut name="Host" from={4} to={5}><DeskStage vertical bg={C.sunSoft} id="host" rate={1.8} tags={<Tag at={0} size={72} dark>{Q.host}</Tag>} /></Cut>
+        <Cut name="Host" from={4} to={5}><DeskStage vertical bg={C.sunSoft} id="hostCall" rate={2.2} tags={<Tag at={0} size={72} dark>{Q.host}</Tag>} /></Cut>
         <Cut name="End" from={5} to={TEASER_BARS}><EndCard vertical /></Cut>
       </AbsoluteFill>
     </LangProvider>

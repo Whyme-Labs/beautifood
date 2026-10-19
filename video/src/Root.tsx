@@ -12,10 +12,10 @@ import type { TakeId } from "./reel/takes";
 
 /** Each feature demo: its takes in order, with the copy's notes alongside. */
 const FEATURES: { id: string; key: FeatureKey; n: string; stock: string; takes: ({ take: TakeId; take2?: TakeId; rate?: number } | { clip: string; kind: "desktop"; start: number; len: number })[] }[] = [
-  { id: "queue", key: "queue", n: "1", stock: "#ffd12e", takes: [{ take: "join", rate: 1 }, { take: "called", rate: 1 }, { take: "preorder", rate: 1.2 }] },
+  { id: "queue", key: "queue", n: "1", stock: "#ffd12e", takes: [{ take: "join", rate: 1 }, { take: "ticket", rate: 1 }, { take: "preorder", rate: 1.2 }, { take: "phoneCall", rate: 1 }] },
   { id: "table", key: "table", n: "2", stock: "#ff8fa8", takes: [{ take: "cartA", take2: "cartB", rate: 1 }] },
-  { id: "assistant", key: "assistant", n: "3", stock: "#7fddbf", takes: [{ take: "assistant", rate: 1 }, { take: "signatures", rate: 1 }] },
-  { id: "host", key: "host", n: "4", stock: "#bba8ff", takes: [{ take: "host", rate: 1 }, { take: "board", rate: 1 }] },
+  { id: "assistant", key: "assistant", n: "3", stock: "#7fddbf", takes: [{ take: "assistant", rate: 1 }, { take: "menu", rate: 1 }] },
+  { id: "host", key: "host", n: "4", stock: "#bba8ff", takes: [{ take: "hostCall", rate: 1 }, { take: "board", rate: 1 }] },
   { id: "kitchen-pos", key: "kitchenPos", n: "5", stock: "#ffd12e", takes: [{ take: "kitchen", rate: 1 }, { take: "till", rate: 1.2 }] },
   { id: "owner", key: "owner", n: "6", stock: "#ff8fa8", takes: [{ take: "setup", rate: 1 }, { take: "boss", rate: 1.3 }] },
   { id: "languages", key: "languages", n: "7", stock: "#7fddbf", takes: [{ take: "translate", rate: 1 }, { take: "menu", rate: 1 }] },

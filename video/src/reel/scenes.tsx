@@ -4,7 +4,8 @@ import { AbsoluteFill, interpolate, random, useCurrentFrame, useVideoConfig } fr
 import { Video } from "@remotion/media";
 import { staticFile } from "remotion";
 import { C, NUM, SANS } from "../theme";
-import { useCopy } from "./copy";
+import { useCopy, useLang } from "./copy";
+import { story } from "./takes";
 import { BEAT, clamp, ease, useAt, useBeat, usePulse } from "./beat";
 
 const STOCK = { A: C.sun, B: "#ff8fa8", C: "#7fddbf", D: "#bba8ff" } as const;
@@ -160,7 +161,7 @@ export const PaperScene: React.FC = () => {
   const { t, fps, frame, beat } = useBeat();
   const copy = useCopy();
   const slips = Array.from({ length: 22 }, (_, i) => i);
-  const gone = Math.min(9, Math.max(0, beat - 2));
+  const gone = Math.min(9, Math.max(1, beat - 1));
   return (
     <AbsoluteFill style={{ background: "#2a2620", fontFamily: SANS, overflow: "hidden" }}>
       {slips.map((i) => {
@@ -185,6 +186,7 @@ export const PaperScene: React.FC = () => {
       </div>
       <div style={{ position: "absolute", left: 140, top: 140, color: C.sun, fontFamily: NUM, fontWeight: 800, fontSize: 170, lineHeight: 1 }}>−{gone}</div>
       <div style={{ position: "absolute", left: 146, top: 320, color: C.paper, fontSize: 44, fontWeight: 800 }}>{copy.paper.walkedAway}</div>
+      <div style={{ position: "absolute", right: 140, top: 150, maxWidth: 760, textAlign: "right", color: C.sun, fontSize: 72, fontWeight: 900, lineHeight: 1.05 }}>{copy.paper.caption}</div>
     </AbsoluteFill>
   );
 };
@@ -665,11 +667,12 @@ export const MontageScene: React.FC<{ clips: { src: string; kind: "phone" | "des
 export const CloseScene: React.FC = () => {
   const { t } = useBeat();
   const copy = useCopy();
+  const lang = useLang();
   const tear = useAt(0, 0.8);
   return (
     <AbsoluteFill style={{ background: C.sun, fontFamily: SANS, alignItems: "center", justifyContent: "center", gap: 36 }}>
       <div style={{ rotate: `${interpolate(t, [0, 1], [-10, -4], { ...clamp, easing: ease })}deg`, opacity: tear, scale: String(0.9 + 0.1 * tear) }}>
-        <Ticket serial="A013" label={copy.ticket.next} foot={copy.ticket.ready} stock={C.paper} width={560} />
+        <Ticket serial={story(lang).hero} label={copy.ticket.next} foot={copy.ticket.ready} stock={C.paper} width={560} />
       </div>
       <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: 150, lineHeight: 1 }}>beautifood</div>
       <Tag at={2} dark size={44}>

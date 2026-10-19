@@ -12,6 +12,9 @@ import zh from "./cues/zh.json";
 type Recording = { width: number; height: number; duration: number; cues: { label: string; t: number; box: Box | null }[] };
 const CUES: Record<Lang, Record<string, Recording>> = { en: en.clips, zh: zh.clips };
 
+/** The hero's ticket number and table in that language's recording, so graphics can quote them. */
+export const story = (lang: Lang): { hero: string; table: string } => ({ en: en.story, zh: zh.story })[lang] as { hero: string; table: string };
+
 /** A camera keyframe at a cue: frame the cue's element ("cue"), a fixed region, or the whole screen. */
 type ShotSpec = { at: string; dt?: number; box?: "cue" | Box | null; pad?: number };
 type TakeSpec = { clip: string; kind: "phone" | "desk"; rate: number; shots: ShotSpec[]; maxZoom?: number; lead?: number };
@@ -20,21 +23,22 @@ const phone = (clip: string, rate: number, shots: ShotSpec[]): TakeSpec => ({ cl
 const desk = (clip: string, rate: number, shots: ShotSpec[], maxZoom = 2): TakeSpec => ({ clip, kind: "desk", rate, shots, maxZoom });
 
 const SPECS = {
-  join: phone("p-join", 1.25, [{ at: "tap +" }, { at: "type name" }, { at: "ticket number appears" }, { at: "ahead + wait" }]),
-  called: phone("p-ticket-called", 1.15, [{ at: "waiting ticket" }, { at: "ticket stub (called)" }]),
-  preorder: phone("p-preorder", 1.6, [{ at: "tap preorder" }, { at: "add Char Kway Teow" }, { at: "add Cendol" }, { at: "cart lines" }, { at: "preorder saved" }]),
-  cartA: phone("p-cart-a", 1.5, [{ at: "A types name" }, { at: "A adds Char Kway Teow" }, { at: "A adds Nasi Lemak" }, { at: "cart view (grouped by person)" }]),
-  cartB: phone("p-cart-b", 1.5, [{ at: "B types name" }, { at: "B adds Cendol" }, { at: "B adds Satay" }, { at: "cart view (grouped by person)" }]),
+  join: phone("p-join", 1.6, [{ at: "tap +" }, { at: "type name" }, { at: "ticket number appears" }]),
+  ticket: { ...phone("p-ticket-called", 1, [{ at: "waiting ticket" }]), lead: 0.3 } as TakeSpec,
+  menu: phone("p-menu", 1.2, [{ at: "allergen filter chips" }, { at: "first dish" }, { at: "dish" }]),
   assistant: phone("p-assistant", 1.6, [{ at: "tap Ask what to eat" }, { at: "type question" }, { at: "answer appears" }, { at: "safety note" }]),
-  signatures: phone("p-signatures", 1.5, [{ at: "type question" }, { at: "answer appears" }, { at: "recommended dishes" }]),
-  menu: phone("p-menu", 1.2, [{ at: "allergen filter chips" }, { at: "first dish" }, { at: "dish" }, { at: "dish card" }]),
-  host: desk("d-host", 1, [{ at: "suggestions", box: { x: 230, y: 380, w: 1500, h: 900 } }, { at: "Call", pad: 5 }, { at: "called: table held on the floor", box: { x: 1900, y: 650, w: 900, h: 600 } }, { at: "Seat", pad: 5 }, { at: "floor: seated", box: { x: 1900, y: 650, w: 900, h: 700 } }]),
-  kitchen: desk("d-kitchen", 1.5, [{ at: "tickets", box: { x: 232, y: 400, w: 1600, h: 1000 } }, { at: "bump → cooking", pad: 2.4 }, { at: "all ready", pad: 3.5 }, { at: "ticket cleared", box: { x: 232, y: 400, w: 2416, h: 1038 } }], 1.8),
-  till: desk("d-pos", 1.7, [{ at: "select bill", box: { x: 588, y: 300, w: 2000, h: 1300 } }, { at: "promo applied (discount line)", pad: 3 }, { at: "change preview", pad: 2 }, { at: "change toast", pad: 3 }], 2.2),
-  setup: desk("d-setup", 1.2, [{ at: "paste menu", pad: 1.3 }, { at: "describe floor", pad: 1.5 }, { at: "draft items appear", pad: 2.5 }, { at: "applied", pad: 2 }], 1.6),
+  preorder: phone("p-preorder", 1.9, [{ at: "tap preorder" }, { at: "add Char Kway Teow" }, { at: "add Cendol" }, { at: "cart lines" }, { at: "preorder saved" }]),
+  // the call, filmed on three screens at once: keep their rates and leads equal so they stay in sync
+  hostCall: desk("d-host", 1.25, [{ at: "suggestions", pad: 1.6 }, { at: "Call", pad: 5 }, { at: "called: table held on the floor", pad: 3 }, { at: "Seat here", pad: 2 }, { at: "floor: seated", pad: 3 }], 2.2),
+  phoneCall: phone("p-ticket-called", 1.25, [{ at: "waiting ticket" }, { at: "table ready" }, { at: "seated" }]),
+  board: { clip: "d-display", kind: "desk", rate: 1, shots: [{ at: "first called", box: null }], maxZoom: 1, lead: 0.8 } as TakeSpec,
+  cartA: phone("p-cart-a", 1.3, [{ at: "A types name" }, { at: "A adds Char Kway Teow" }, { at: "cart view (grouped by person)" }, { at: "sent to kitchen" }]),
+  cartB: phone("p-cart-b", 1.3, [{ at: "B types name" }, { at: "B adds Cendol" }, { at: "B adds Satay" }, { at: "cart view (grouped by person)" }]),
+  kitchen: desk("d-kitchen", 1.4, [{ at: "tickets", pad: 1.1 }, { at: "bump → cooking", pad: 2.4 }, { at: "all ready", pad: 3.5 }, { at: "ticket cleared", box: null }], 1.8),
+  till: desk("d-pos", 1.6, [{ at: "select bill", pad: 4 }, { at: "bill open", pad: 1.2 }, { at: "promo applied (discount line)", pad: 3 }, { at: "change preview", pad: 2 }, { at: "change toast", pad: 3 }], 2.2),
+  setup: desk("d-setup", 1.3, [{ at: "paste menu", pad: 1.3 }, { at: "describe floor", pad: 1.5 }, { at: "draft items appear", pad: 2.5 }, { at: "applied", pad: 2 }], 1.6),
   translate: desk("d-translate", 1.3, [{ at: "Translate menu", pad: 3 }, { at: "translation result", pad: 1.4 }, { at: "dishes", box: null }]),
   boss: desk("d-boss", 1.8, [{ at: "today across both branches (totals)", pad: 1.2 }, { at: "AI insights", pad: 1.3 }, { at: "report KPIs", pad: 1.2 }, { at: "best sellers & menu engineering", pad: 1.2 }], 1.8),
-  board: { clip: "d-display", kind: "desk", rate: 1.6, shots: [{ at: "board: nobody called yet", box: null }], maxZoom: 1, lead: 0.4 } as TakeSpec,
 } satisfies Record<string, TakeSpec>;
 
 export type TakeId = keyof typeof SPECS;

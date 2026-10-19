@@ -42,18 +42,18 @@ const log = (...a) => console.log(`[${new Date().toISOString().slice(11, 19)}]`,
 const L = {
   en: {
     restaurant: "Auntie Lim's Kitchen",
-    queue: [["Aisha", 2], ["Ravi", 1], ["Siew Ling", 2], ["Daniel Tan", 4], ["Priya", 3], ["Kumar family", 6], ["Hafiz", 2]],
+    queue: [["Aisha", 2], ["Ravi", 1], ["Daniel Tan", 4], ["Priya", 3], ["Kumar family", 6]],
     queue2: [["Jia Hui", 2], ["Marcus", 4], ["Farah", 2]],
     board: [["Lim family", 4], ["Nurul", 2], ["Jason", 2], ["Mei Ling", 1], ["Arjun", 3], ["Tan family", 6], ["Wei", 2]],
-    joiner: "Mei", waiter: "Ben", diners: ["Ann", "Ben"],
+    hero: "Ben", friend: "Ann", late: [["Siew Ling", 2], ["Hafiz", 2]],
     more: "More people", namePh: "What should we call you?", getNumber: "Get my number",
     yourName: "Your name", start: "Start ordering", add: /^Add/,
     askOpen: /Ask what to eat/, askLabel: "Ask the menu assistant",
     allergy: "I'm allergic to peanuts, what can I eat?", signatures: "What are your signatures?",
-    call: "Call", seat: "Seat", called: "Called", pax: "pax",
+    call: "Call", seat: "Seat", seatMore: "Seat…", seatHere: "Seat here", called: "Called", pax: "pax",
     openDrawer: "Open drawer", openSince: "Open since", promoCode: "Promo code", apply: "Apply", promoApplied: "Promo applied",
     discount: /^Discount/, cashTendered: "Cash tendered", payCash: "Pay cash", change: "Change",
-    owner: "Faye Wong", setupName: "Faye's Noodle Bar", cuisine: "Hong Kong noodles", branch: "Damansara", create: "Create restaurant",
+    owner: "Olivia Tan", setupName: "Auntie Lim's Kitchen", cuisine: "Hong Kong noodles", branch: "Damansara", create: "Create restaurant",
     menuText: "NOODLES\n★ Wonton Mee - RM12.90 - egg noodles, char siu, prawn wontons\nPan Mee 11.50\nDRINKS\nLime Juice - 5.00",
     floorText: "4 two-seaters and 2 tables of 4", generate: "Generate my setup",
     refresh: /Refresh machine translations/, translate: "Translate menu",
@@ -61,18 +61,18 @@ const L = {
   },
   zh: {
     restaurant: "林阿姨小厨",
-    queue: [["李明", 2], ["王芳", 1], ["林秀玲", 2], ["陈大伟", 4], ["黄美华", 3], ["张家", 6], ["刘洋", 2]],
+    queue: [["李明", 2], ["王芳", 1], ["陈大伟", 4], ["黄美华", 3], ["张家", 6]],
     queue2: [["吴佳慧", 2], ["郑浩", 4], ["何婷", 2]],
     board: [["林家", 4], ["周敏", 2], ["杨杰", 2], ["许美玲", 1], ["马超", 3], ["陈家", 6], ["孙伟", 2]],
-    joiner: "小美", waiter: "小明", diners: ["美美", "小明"],
+    hero: "小明", friend: "美美", late: [["林秀玲", 2], ["刘洋", 2]],
     more: "增加人数", namePh: "我们该怎么称呼你？", getNumber: "取号",
     yourName: "你的名字", start: "开始点餐", add: /^加入/,
     askOpen: /问问吃什么/, askLabel: "向菜单助手提问",
     allergy: "我对花生过敏，可以吃什么？", signatures: "招牌菜是什么？",
-    call: "叫号", seat: "入座", called: "已叫号", pax: "位",
+    call: "叫号", seat: "入座", seatMore: "入座…", seatHere: "坐这里", called: "已叫号", pax: "位",
     openDrawer: "开钱箱", openSince: "开箱", promoCode: "优惠码", apply: "使用", promoApplied: "优惠码已使用",
     discount: /^折扣/, cashTendered: "收现金", payCash: "现金付款", change: "找零",
-    owner: "王芳", setupName: "阿芳云吞面", cuisine: "港式面食", branch: "白沙罗", create: "创建餐厅",
+    owner: "林美玲", setupName: "林阿姨小厨", cuisine: "港式面食", branch: "白沙罗", create: "创建餐厅",
     menuText: "面食\n★ 云吞面 - RM12.90 - 蛋面、叉烧、鲜虾云吞\n板面 11.50\n饮料\n酸柑水 - 5.00",
     floorText: "4张两人桌，2张四人桌", generate: "生成我的设置",
     refresh: /重新机器翻译/, translate: "翻译菜单",
@@ -101,9 +101,9 @@ async function guest(device = uid("dev-")) {
 
 /** Fresh two-branch demo restaurant (KLCC + Bangsar) owned by a new user. */
 async function seedRestaurant(name) {
-  const { api, email } = await staffClient("Olivia Tan");
-  let r = await api.post(`/api/dev/seed?name=${encodeURIComponent(name)}`);
-  if (r.status() !== 201) r = await api.post(`/api/dev/seed?name=${encodeURIComponent(`${name} ${uid("").slice(-3).toUpperCase()}`)}`);
+  const { api, email } = await staffClient(L.owner);
+  let r = await api.post(`/api/dev/seed?name=${encodeURIComponent(name)}&lang=${LANG}`);
+  if (r.status() !== 201) r = await api.post(`/api/dev/seed?name=${encodeURIComponent(`${name} ${uid("").slice(-3).toUpperCase()}`)}&lang=${LANG}`);
   const s = await ok(r, 201);
   const m = await ok(api.get("/api/m/menu"));
   const item = (n) => {
@@ -375,24 +375,24 @@ async function smoothScroll(page, dy, ms) {
 
 // ───────────────────────────── clips ─────────────────────────────
 
-const tablesOf = (text) => (text.match(/(?:pax|位)\s*(?:to|→)?\s*([TP]\d+[ab]?(?:\s*\+\s*[TP]\d+[ab]?)*)/)?.[1] ?? "").split("+").map((x) => x.trim()).filter(Boolean);
+// "A003 2 pax → T4 …" / "A003 2 位 → T4 …" → ["T4"]; "C001 → T9a + T9b" → ["T9a", "T9b"]
+const tablesOf = (text) => (text.match(/→\s*([TP]\d+[ab]?(?:\s*\+\s*[TP]\d+[ab]?)*)/)?.[1] ?? "").split("+").map((x) => x.trim()).filter(Boolean);
 
 const CLIPS = {
-  // Phone: branch page → + → name → Get my number → ticket
+  // Phone: the hero joins the queue (party of 2) → their ticket. Everyone else in line joins around them.
   async "p-join"(w) {
-    const d = await device(PHONE);
+    const d = await device(PHONE, { participant: w.heroP });
     const { page } = d;
     await go(page, `/r/${w.klcc.ref}`);
     await page.getByPlaceholder(L.namePh).evaluate((el) => el.closest("section").scrollIntoView({ block: "center" }));
     await settle(page, 400);
-    return record(["p-join"], [d], async (r) => {
-      const plus = page.getByRole("button", { name: L.more });
-      await r.cue("tap +", plus.first());
-      await tap(plus.first(), 500);
+    const out = await record(["p-join"], [d], async (r) => {
+      await r.cue("tap +", page.getByRole("button", { name: L.more }).first());
+      await sleep(500);
       const name = page.getByPlaceholder(L.namePh);
       await tap(name, 150);
       await r.cue("type name", name);
-      await type(name, L.joiner, 140);
+      await type(name, L.hero, 140);
       await sleep(400);
       const btn = page.getByRole("button", { name: L.getNumber });
       await r.cue("tap Get my number", btn);
@@ -401,45 +401,22 @@ const CLIPS = {
       await page.getByTestId("ticket-number").waitFor();
       await settle(page, 0);
       await r.cue("ticket number appears", page.getByTestId("ticket-number"));
-      // the first view can come from the 2 s shared board cache; the next poll has the place in line
+      w.hero = { url: new URL(page.url()).pathname + new URL(page.url()).search, id: new URL(page.url()).pathname.split("/").pop(), number: (await page.getByTestId("ticket-number").textContent()).trim() };
       await page.waitForFunction(() => document.querySelector(".ticket-fields b.serial")?.textContent?.trim() !== "0", null, { timeout: 8000 }).catch(() => undefined);
       await sleep(300);
       await r.cue("ahead + wait", page.locator(".ticket-fields").or(page.getByTestId("ticket-wait")).first());
       await sleep(1500);
     });
+    for (const [n, p] of L.late) await join(w.klcc.ref, p, n, { lang: LANG });
+    log("  hero", JSON.stringify(w.hero));
+    return out;
   },
 
-  // Phone: ticket → the host calls it → "table ready"
-  async "p-ticket-called"(w) {
-    const tk = await join(w.klcc.ref, 2, L.waiter, { lang: LANG });
-    const d = await device(PHONE);
-    const { page } = d;
-    await go(page, tk.url);
-    await page.getByTestId("ticket-number").waitFor();
-    // time the call so it lands just before the page's next 4 s poll
-    const polled = () => page.waitForResponse((res) => res.url().includes(`/api/public/tickets/${tk.ticket.id}`), { timeout: 15_000 });
-    await polled();
-    await polled();
-    await sleep(1200);
-    return record(["p-ticket-called"], [d], async (r) => {
-      await r.cue("waiting ticket", page.getByTestId("ticket-stub"));
-      await sleep(1100);
-      await call(w, w.klcc.id, tk.ticket.id, ["T4"]);
-      await r.cue("host calls (API)");
-      await page.getByTestId("ticket-called").waitFor({ timeout: 15_000 });
-      await sleep(150);
-      await r.cue("table ready", page.getByTestId("ticket-called"));
-      await r.cue("ticket stub (called)", page.getByTestId("ticket-stub"));
-      await sleep(2600);
-    });
-  },
-
-  // Phone: ticket → preorder → add 2 dishes → save
+  // Phone: the hero's ticket → preorder → add 2 dishes → save (they fire when the table is ready)
   async "p-preorder"(w) {
-    const tk = await join(w.klcc.ref, 2, L.waiter, { lang: LANG });
-    const d = await device(PHONE, { participant: { id: `p-${uid()}`, name: L.waiter } });
+    const d = await device(PHONE, { participant: w.heroP });
     const { page } = d;
-    await go(page, tk.url);
+    await go(page, w.hero.url);
     return record(["p-preorder"], [d], async (r) => {
       await r.cue("tap preorder", page.getByTestId("preorder"));
       await tap(page.getByTestId("preorder"), 0);
@@ -448,7 +425,7 @@ const CLIPS = {
       const nameInput = page.getByLabel(L.yourName);
       await Promise.race([page.getByTestId("menu-list").waitFor(), nameInput.waitFor()]);
       if (await nameInput.isVisible().catch(() => false)) {
-        await type(nameInput, L.waiter, 120);
+        await type(nameInput, L.hero, 120);
         await tap(page.getByRole("button", { name: L.start }), 200);
       }
       await page.getByTestId("menu-list").waitFor();
@@ -474,50 +451,120 @@ const CLIPS = {
     });
   },
 
-  // Two phones at one table: the shared cart updates live on both
+  // Three screens at once: the host calls the hero from the host stand, the hero's phone flips to
+  // "table ready" and the door TV calls the number; then the host seats them and the floor updates.
+  async "x-call"(w) {
+    const host = await device(DESKTOP, { auth: w.owner });
+    const ph = await device(PHONE, { participant: w.heroP });
+    const tv = await device(TV);
+    await go(host.page, "/m/host");
+    await go(ph.page, w.hero.url);
+    await go(tv.page, `/r/${w.klcc.ref}/display`);
+    const H = host.page;
+    const row = () => H.getByTestId("suggestion").filter({ hasText: w.hero.number }).first();
+    await row().waitFor({ timeout: 20_000 });
+    await row().evaluate((el) => el.scrollIntoView({ block: "center" }));
+    let table = tablesOf(await row().textContent())[0];
+    await settle(H, 400);
+    const polled = () => ph.page.waitForResponse((res) => res.url().includes(`/api/public/tickets/${w.hero.id}`), { timeout: 15_000 });
+    return record(["d-host", "p-ticket-called", "d-display"], [host, ph, tv], async (rh, rp, rt) => {
+      await rh.cue("suggestions", row());
+      await rp.cue("waiting ticket", ph.page.getByTestId("ticket-stub"));
+      await rt.cue("board: nobody called yet", tv.page.getByTestId("now-calling"));
+      // press Call just before the phone's next poll, so its flip follows the tap
+      await polled();
+      await sleep(2400);
+      const callBtn = row().getByRole("button", { name: L.call, exact: true });
+      await rh.cue("Call", callBtn);
+      await tap(callBtn, 0);
+      await rp.cue("host calls");
+      await ph.page.getByTestId("ticket-called").waitFor({ timeout: 15_000 });
+      await sleep(150);
+      await rp.cue("table ready", ph.page.getByTestId("ticket-called"));
+      await rp.cue("ticket stub (called)", ph.page.getByTestId("ticket-stub"));
+      // the called guest's queue row names the table held for them ("holding T4" / "保留 T4")
+      const heroRow = H.getByTestId("ticket-row").filter({ hasText: w.hero.number });
+      await heroRow.filter({ hasText: /[TP]\d+/ }).waitFor({ timeout: 10_000 }).catch(() => undefined);
+      table = (await heroRow.textContent()).match(/\b[TP]\d+[ab]?\b/)?.[0] ?? table;
+      await rh.cue("called: table held on the floor", H.getByTestId(`table-${table}`));
+      const card = tv.page.getByTestId("now-calling").locator(".calling", { hasText: w.hero.number }).locator("xpath=..");
+      await card.waitFor({ timeout: 15_000 }).catch(() => undefined);
+      await rt.cue("first called", card);
+      await sleep(1800);
+      // called guests wait in the queue list; "Seat…" opens the seat dialog on their held table
+      const seatBtn = H.getByTestId("ticket-row").filter({ hasText: w.hero.number }).getByRole("button", { name: L.seatMore });
+      await seatBtn.scrollIntoViewIfNeeded();
+      await rh.cue("Seat", seatBtn);
+      await tap(seatBtn, 500);
+      const here = H.getByRole("button", { name: L.seatHere });
+      const held = H.locator(".modal button.tbl").filter({ hasText: table }).first();
+      if ((await held.getAttribute("aria-pressed").catch(() => "true")) !== "true") await tap(held, 200);
+      await rh.cue("Seat here", here);
+      await tap(here, 0);
+      await H.getByTestId("ticket-row").filter({ hasText: w.hero.number }).waitFor({ state: "detached", timeout: 15_000 }).catch(async (e) => {
+        if (process.env.REEL_DEBUG) await H.screenshot({ path: path.join(os.tmpdir(), `x-call-${LANG}.png`) });
+        log("  table", table, "rows:", (await H.getByTestId("ticket-row").filter({ hasText: w.hero.number }).textContent().catch(() => "")).slice(0, 200));
+        throw e;
+      });
+      await rh.cue("floor: seated", H.getByTestId(`table-${table}`));
+      await rp.cue("seated", ph.page.getByTestId("ticket-stub").or(ph.page.locator("main")).first());
+      await sleep(2000);
+      w.heroTable = table;
+      log("  hero seated at", table);
+    });
+  },
+
+  // Two phones at the hero's table (the table QR): the hero's preorder is on the bill, their friend
+  // joins, both add dishes and the shared cart updates live; the hero sends it to the kitchen.
   async "p-cart"(w) {
     const t = await tables(w.owner, w.klcc.id);
-    const st = await seat(w.owner, w.klcc.id, [t.T5.id], 2);
-    const a = await device(PHONE);
+    const qr = `/t/${t[w.heroTable].staticToken}`;
+    const a = await device(PHONE, { participant: w.heroP });
     const b = await device(PHONE);
-    await go(a.page, st.sessionUrl);
-    await go(b.page, st.sessionUrl);
+    await go(a.page, qr);
+    await go(b.page, qr);
     const A = a.page;
     const B = b.page;
-    const an = A.getByLabel(L.yourName);
-    const bn = B.getByLabel(L.yourName);
-    await an.waitFor();
-    await bn.waitFor();
-    const [nameA, nameB] = L.diners;
+    const aName = A.getByLabel(L.yourName);
+    const bName = B.getByLabel(L.yourName);
+    await Promise.race([A.getByTestId("menu-list").waitFor(), aName.waitFor()]);
+    if (await aName.isVisible().catch(() => false)) {
+      await type(aName, L.hero, 0);
+      await tap(A.getByRole("button", { name: L.start }), 300);
+    }
+    await bName.waitFor();
+    await A.getByTestId("menu-list").waitFor();
     return record(["p-cart-a", "p-cart-b"], [a, b], async (ra, rb) => {
-      await ra.cue("A types name", an);
-      await rb.cue("B types name", bn);
-      await Promise.all([type(an, nameA, 140), type(bn, nameB, 160)]);
-      await Promise.all([tap(A.getByRole("button", { name: L.start }), 0), tap(B.getByRole("button", { name: L.start }), 0)]);
-      await A.getByTestId("menu-list").waitFor();
+      await ra.cue("A types name", A.getByTestId("menu-list"));
+      await rb.cue("B types name", bName);
+      await type(bName, L.friend, 160);
+      await tap(B.getByRole("button", { name: L.start }), 0);
       await B.getByTestId("menu-list").waitFor();
       await sleep(400);
       const adish = (n) => A.getByTestId("dish").filter({ hasText: n });
       const bdish = (n) => B.getByTestId("dish").filter({ hasText: n });
       await Promise.all([
-        cueTap(ra, "A adds Char Kway Teow", adish("Char Kway Teow").getByRole("button", { name: L.add }), 350, adish("Char Kway Teow")),
-        cueTap(rb, "B adds Cendol", bdish("Cendol").getByRole("button", { name: L.add }), 350, bdish("Cendol")),
+        cueTap(ra, "A adds Char Kway Teow", adish("Satay").getByRole("button", { name: L.add }), 350, adish("Satay")),
+        cueTap(rb, "B adds Cendol", bdish("Nasi Lemak Ayam Rempah").getByRole("button", { name: L.add }), 350, bdish("Nasi Lemak Ayam Rempah")),
       ]);
+      await cueTap(rb, "B adds Satay", bdish("Penang Assam Laksa").getByRole("button", { name: L.add }), 200, bdish("Penang Assam Laksa"));
+      await ra.cue("A adds Nasi Lemak", A.getByTestId("tab-cart"));
       await Promise.all([
-        cueTap(ra, "A adds Nasi Lemak", adish("Nasi Lemak Ayam Rempah").getByRole("button", { name: L.add }), 200, adish("Nasi Lemak Ayam Rempah")),
-        cueTap(rb, "B adds Satay", bdish("Satay").getByRole("button", { name: L.add }), 200, bdish("Satay")),
-      ]);
-      // live: each phone's cart count reaches 4 (two of the dishes were added on the other phone)
-      await Promise.all([
-        A.getByTestId("tab-cart").filter({ hasText: "4" }).waitFor({ timeout: 20_000 }).then(() => ra.cue("cart picks up the other phone's dishes (4)", A.getByTestId("send-order"))),
-        B.getByTestId("tab-cart").filter({ hasText: "4" }).waitFor({ timeout: 20_000 }).then(() => rb.cue("cart picks up the other phone's dishes (4)", B.getByTestId("send-order"))),
+        A.getByTestId("tab-cart").filter({ hasText: "3" }).waitFor({ timeout: 20_000 }).then(() => ra.cue("cart picks up the other phone's dishes (4)", A.getByTestId("send-order"))),
+        B.getByTestId("tab-cart").filter({ hasText: "3" }).waitFor({ timeout: 20_000 }).then(() => rb.cue("cart picks up the other phone's dishes (4)", B.getByTestId("send-order"))),
       ]);
       await sleep(400);
       await Promise.all([tap(A.getByTestId("tab-cart"), 0), tap(B.getByTestId("tab-cart"), 0)]);
       await sleep(300);
       await ra.cue("cart view (grouped by person)", A.getByTestId("cart"));
       await rb.cue("cart view (grouped by person)", B.getByTestId("cart"));
-      await sleep(1800);
+      await sleep(1200);
+      await tap(A.getByTestId("send-order"), 0);
+      await A.getByTestId("sent-item").first().waitFor({ timeout: 15_000 });
+      await sleep(300);
+      await ra.cue("sent to kitchen", A.getByTestId("bill").or(A.getByTestId("sent-item").first()).first());
+      await rb.cue("sent to kitchen", B.getByTestId("bill").or(B.getByTestId("cart")).first());
+      await sleep(1600);
     });
   },
 
@@ -555,39 +602,6 @@ const CLIPS = {
     });
   },
 
-  // Desktop: host stand → Call one suggestion → Seat another → floor updates
-  async "d-host"(w) {
-    const d = await device(DESKTOP, { auth: w.owner });
-    const { page } = d;
-    await go(page, "/m/host");
-    await page.getByTestId("suggestion").first().waitFor();
-    await settle(page, 400);
-    return record(["d-host"], [d], async (r) => {
-      const sugg = page.getByTestId("suggestion");
-      await r.cue("suggestions", sugg.first());
-      await sleep(900);
-      const callBtn = (row) => row.getByRole("button", { name: L.call, exact: true });
-      const toCall = sugg.filter({ has: page.getByRole("button", { name: L.call, exact: true }) }).first();
-      const callNum = (await toCall.textContent()).match(/[A-Z]\d{3}/)?.[0];
-      const callTables = tablesOf(await toCall.textContent());
-      await r.cue("Call", callBtn(toCall));
-      await tap(callBtn(toCall), 0);
-      await page.getByTestId("ticket-row").filter({ hasText: callNum }).filter({ hasText: L.called }).waitFor();
-      await r.cue("called: table held on the floor", page.getByTestId(`table-${callTables[0]}`));
-      await sleep(1000);
-      const toSeat = sugg.filter({ hasNotText: callNum }).first();
-      const seatNum = (await toSeat.textContent()).match(/[A-Z]\d{3}/)?.[0];
-      const seatTables = tablesOf(await toSeat.textContent());
-      const seatBtn = toSeat.getByRole("button", { name: L.seat, exact: true });
-      await r.cue("Seat", seatBtn);
-      await tap(seatBtn, 0);
-      await page.getByTestId("ticket-row").filter({ hasText: seatNum }).waitFor({ state: "detached" });
-      const tile = seatTables.length ? page.getByTestId(`table-${seatTables[0]}`) : page.locator(".tbl.seated").first();
-      await r.cue("floor: seated", tile);
-      await sleep(2200);
-    });
-  },
-
   // Desktop: kitchen display → bump an item → All ready → Served
   async "d-kitchen"(w) {
     const d = await device(DESKTOP, { auth: w.owner });
@@ -596,7 +610,7 @@ const CLIPS = {
     await page.getByTestId("kds-ticket").first().waitFor();
     await settle(page, 400);
     return record(["d-kitchen"], [d], async (r) => {
-      const tk = page.getByTestId("kds-ticket").filter({ hasText: "T1" }).first();
+      const tk = page.getByTestId("kds-ticket").filter({ hasText: w.heroTable }).filter({ hasText: "Char Kway Teow" }).first();
       // hold on to this exact ticket: another one can match the same text once it is gone
       const el = await tk.elementHandle();
       await r.cue("tickets", page.getByTestId("kds"));
@@ -625,7 +639,7 @@ const CLIPS = {
     const d = await device(DESKTOP, { auth: w.owner });
     const { page } = d;
     await go(page, "/m/pos");
-    const o = w.open.P2;
+    const o = { number: w.heroTable };
     // a cash drawer must be open for cash payments
     if (await page.getByRole("button", { name: L.openDrawer }).isVisible().catch(() => false)) {
       page.removeAllListeners("dialog");
@@ -763,34 +777,6 @@ const CLIPS = {
     });
   },
 
-  // TV board 1920×1080: two tickets get called (via the host API)
-  async "d-display"() {
-    // its own restaurant, so the board starts with nobody called
-    const v = await seedRestaurant(L.restaurant);
-    const [[n1, p1], [n2, p2], ...rest] = L.board;
-    const first = await join(v.klcc.ref, p1, n1, { lang: LANG });
-    const second = await join(v.klcc.ref, p2, n2, { lang: LANG });
-    for (const [n, p] of rest) await join(v.klcc.ref, p, n, { lang: LANG });
-    const d = await device(TV);
-    const { page } = d;
-    await go(page, `/r/${v.klcc.ref}/display`);
-    const now = page.getByTestId("now-calling");
-    const card = (num) => now.locator(".calling", { hasText: num }).locator("xpath=..");
-    return record(["d-display"], [d], async (r) => {
-      await r.cue("board: nobody called yet", now);
-      await sleep(900);
-      await call(v, v.klcc.id, first.ticket.id, ["P1"]);
-      await card(first.ticket.number).waitFor({ timeout: 15_000 });
-      await sleep(150);
-      await r.cue("first called", card(first.ticket.number));
-      await sleep(1800);
-      await call(v, v.klcc.id, second.ticket.id, ["T2"]);
-      await card(second.ticket.number).waitFor({ timeout: 15_000 });
-      await sleep(150);
-      await r.cue("second called", card(second.ticket.number));
-      await sleep(2200);
-    });
-  },
 };
 
 async function assistantClip(w, name, question, safety) {
@@ -829,9 +815,11 @@ async function assistantClip(w, name, question, safety) {
 
 // ───────────────────────────── main ─────────────────────────────
 
-const ORDER = ["p-join", "p-ticket-called", "p-preorder", "p-cart", "p-assistant", "p-signatures", "p-menu", "d-kitchen", "d-pos", "d-host", "d-display", "d-translate", "d-boss", "d-setup"];
-const wanted = process.argv.slice(2).map((n) => (n.startsWith("p-cart") ? "p-cart" : n));
-const run = wanted.length ? ORDER.filter((n) => wanted.includes(n)) : ORDER;
+// One evening, in order: the hero joins, browses and preorders, gets called and seated, orders with a
+// friend; the kitchen cooks it and the till takes payment; then the owner's screens.
+const ORDER = ["p-join", "p-menu", "p-assistant", "p-preorder", "x-call", "p-cart", "d-kitchen", "d-pos", "d-boss", "d-translate", "d-setup"];
+// the story clips depend on each other (the hero's ticket, then their table), so they always run in order
+const run = ORDER;
 
 fs.mkdirSync(OUT, { recursive: true });
 fs.mkdirSync(path.dirname(CUES), { recursive: true });
@@ -839,7 +827,8 @@ const cuesFile = CUES;
 const cues = fs.existsSync(cuesFile) ? JSON.parse(fs.readFileSync(cuesFile, "utf8")) : { clips: {} };
 let world;
 try {
-  if (run.some((n) => n !== "d-setup")) world = await busyRestaurant();
+  world = await busyRestaurant();
+  world.heroP = { id: `p-hero-${uid()}`, name: L.hero };
   for (const name of run) {
     log(`● ${name}`);
     let res;
@@ -850,13 +839,13 @@ try {
       } catch (e) {
         log(`  ${name} attempt ${attempt} failed: ${e.message.split("\n")[0]}`);
         if (attempt === 2) throw e;
-        world = await busyRestaurant();
       }
     }
     for (const c of res) {
       cues.clips[c.file.replace(/\.mp4$/, "")] = { file: c.file, width: c.width, height: c.height, fps: 30, duration: c.duration, cues: c.cues };
     }
     cues.lang = LANG;
+    cues.story = { hero: world.hero?.number ?? null, table: world.heroTable ?? null };
     cues.note = "t = seconds from the start of the clip; box = {x,y,w,h} of the key element in video pixels at that moment (CSS box × deviceScaleFactor).";
     fs.writeFileSync(cuesFile, JSON.stringify(cues, null, 2) + "\n");
   }
