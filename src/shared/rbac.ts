@@ -22,6 +22,7 @@ export const PERMISSIONS = [
   "campaign.manage",
   "settings.manage",
   "ai.merchant",
+  "integrations.manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

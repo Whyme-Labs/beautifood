@@ -13,9 +13,11 @@ import { appEnv } from "./appenv";
 import { sign, type TokenPayload } from "./sign";
 import { orderView } from "./domain/orders";
 import { sendPushToTopic, type PushEnv } from "./push";
+import { pumpWebhooks } from "./domain/webhooks";
 
 export interface PipelineEnv extends MailEnv, PushEnv {
   PUBLIC_URL: string;
+  TOKEN_SECRET?: string;
 }
 
 interface EventRow {
@@ -47,6 +49,8 @@ export function processPending(db: D1Database, env: PipelineEnv, limit = 100): P
       rerun = false;
       const r = await runOnce(db, env, limit);
       total = { processed: total.processed + r.processed, errors: total.errors + r.errors };
+      // then the restaurants' webhooks (their own cursor; a failing receiver never holds up receipts)
+      if (env.TOKEN_SECRET) await pumpWebhooks(db, { TOKEN_SECRET: env.TOKEN_SECRET }).catch((e) => console.error("webhooks", e));
     } while (rerun);
     return total;
   })().finally(() => {

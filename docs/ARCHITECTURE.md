@@ -89,6 +89,8 @@ Each guard maps to a clear error, for example `409 table_taken` or `409 insuffic
   - Cart polling sends `since=version` and gets an empty `204` when nothing changed.
 - **Coalesced side effects:** during a surge every command kicks the pipeline. Only one run executes per isolate, and kicks that arrive meanwhile schedule a single re-run.
 
+- **Webhooks** read the same log with their own cursor (`webhooks`), after the side effects: each subscribed event becomes one `webhook_deliveries` row per endpoint (unique on endpoint and event, so a re-run never double-queues), POSTed with a Stripe-style HMAC signature and retried after 1, 5, 30 min, 2, 6, 12 h by the minute cron. An endpoint's secret is derived from the app secret and the endpoint's secret version, so none is stored. A new endpoint starts after the latest event; it never receives a backlog. See `src/server/domain/webhooks.ts` and the integration brief (`/api/m/integrations/brief`).
+
 ## 4. Simultaneous orders and the shared table cart
 
 A seated table gets a **session**. Everyone who scans the table QR or follows the ticket's table link joins it under a self-chosen name.

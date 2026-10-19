@@ -24,3 +24,9 @@
 - GET /api/public/branches/{branch}/availability?day=YYYY-MM-DD&party=N — booking slots
 - POST /api/public/branches/{branch}/bookings — book {name, partySize, slotStart(ms), email?}
 - POST /api/public/branches/{branch}/assistant — ask the menu assistant {messages:[{role,content}]}
+
+## Webhooks and integrations (for connectors)
+
+- A restaurant can subscribe HTTPS endpoints to events (queue.joined/called/seated/cancelled/no_show, booking.*, order.round_added, kitchen.ready, order.paid, payment.captured/refunded, shift.closed, menu.sold_out/back_in_stock/item_saved). Each delivery is a signed POST: `x-beautifood-signature: t=<unix>,v1=<hex HMAC-SHA256 of "<t>.<raw body>">`, deduped by `x-beautifood-delivery`, retried after 1, 5, 30 min, 2, 6, 12 h.
+- Manage them with a staff token (Authorization: Bearer bf_pat_…): GET/POST /api/m/webhooks, PATCH/DELETE /api/m/webhooks/{id}, POST /api/m/webhooks/{id}/test, GET /api/m/webhooks/{id}/deliveries.
+- GET /api/m/integrations/brief returns a Markdown brief for a coding agent: the restaurant's ids, every event with an example payload, signature verification code and connector rules. Schemas: /openapi.json (see `webhooks`).

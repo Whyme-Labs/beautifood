@@ -1,23 +1,1490 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "Beautifood public API", "version": "1.0.0", "description": "Guest-facing endpoints for menus, queues, bookings and the menu assistant. `{branch}` is a branch id or `restaurant-slug~branch-slug`. Money is in minor units." },
+  "info": {
+    "title": "Beautifood public API",
+    "version": "1.0.0",
+    "description": "Guest-facing endpoints for menus, queues, bookings and the menu assistant. `{branch}` is a branch id or `restaurant-slug~branch-slug`. Money is in minor units."
+  },
   "paths": {
-    "/api/public/directory": { "get": { "summary": "List branches with live queue info", "parameters": [{ "name": "q", "in": "query", "schema": { "type": "string" } }], "responses": { "200": { "description": "Branches" } } } },
-    "/api/public/branches/{branch}": { "get": { "summary": "Branch details, modules, party-size classes", "parameters": [{ "$ref": "#/components/parameters/branch" }], "responses": { "200": { "description": "Branch" } } } },
-    "/api/public/branches/{branch}/menu": { "get": { "summary": "Menu with allergens and stories", "parameters": [{ "$ref": "#/components/parameters/branch" }], "responses": { "200": { "description": "Menu" } } } },
-    "/api/public/branches/{branch}/status": { "get": { "summary": "Live queue status", "parameters": [{ "$ref": "#/components/parameters/branch" }], "responses": { "200": { "description": "Status" } } } },
+    "/api/public/directory": {
+      "get": {
+        "summary": "List branches with live queue info",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Branches"
+          }
+        }
+      }
+    },
+    "/api/public/branches/{branch}": {
+      "get": {
+        "summary": "Branch details, modules, party-size classes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/branch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Branch"
+          }
+        }
+      }
+    },
+    "/api/public/branches/{branch}/menu": {
+      "get": {
+        "summary": "Menu with allergens and stories",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/branch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu"
+          }
+        }
+      }
+    },
+    "/api/public/branches/{branch}/status": {
+      "get": {
+        "summary": "Live queue status",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/branch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status"
+          }
+        }
+      }
+    },
     "/api/public/branches/{branch}/queue": {
       "post": {
         "summary": "Join the queue",
-        "parameters": [{ "$ref": "#/components/parameters/branch" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["partySize", "name"], "properties": { "partySize": { "type": "integer", "minimum": 1 }, "name": { "type": "string" }, "email": { "type": "string", "format": "email" }, "phone": { "type": "string" }, "joinLoyalty": { "type": "boolean" } } } } } },
-        "responses": { "201": { "description": "Ticket with signed token and tracking url" }, "429": { "description": "Queue full" } }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/branch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "partySize",
+                  "name"
+                ],
+                "properties": {
+                  "partySize": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "joinLoyalty": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ticket with signed token and tracking url"
+          },
+          "429": {
+            "description": "Queue full"
+          }
+        }
       }
     },
-    "/api/public/tickets/{id}": { "get": { "summary": "Ticket status (needs ?k=token)", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }, { "name": "k", "in": "query", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Ticket" } } }, "delete": { "summary": "Cancel ticket", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }, { "name": "k", "in": "query", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "Cancelled" } } } },
-    "/api/public/branches/{branch}/availability": { "get": { "summary": "Booking slots", "parameters": [{ "$ref": "#/components/parameters/branch" }, { "name": "day", "in": "query", "schema": { "type": "string", "format": "date" } }, { "name": "party", "in": "query", "schema": { "type": "integer" } }], "responses": { "200": { "description": "Slots" } } } },
-    "/api/public/branches/{branch}/bookings": { "post": { "summary": "Book a table", "parameters": [{ "$ref": "#/components/parameters/branch" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["name", "partySize", "slotStart"], "properties": { "name": { "type": "string" }, "partySize": { "type": "integer" }, "slotStart": { "type": "integer", "description": "epoch ms" }, "email": { "type": "string" } } } } } }, "responses": { "201": { "description": "Booking" }, "409": { "description": "Slot taken" } } } },
-    "/api/public/branches/{branch}/assistant": { "post": { "summary": "Ask the menu assistant", "parameters": [{ "$ref": "#/components/parameters/branch" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["messages"], "properties": { "messages": { "type": "array", "items": { "type": "object", "properties": { "role": { "enum": ["user", "assistant"] }, "content": { "type": "string" } } } } } } } } }, "responses": { "200": { "description": "Answer with referenced dishes and allergen safety note" } } } }
+    "/api/public/tickets/{id}": {
+      "get": {
+        "summary": "Ticket status (needs ?k=token)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "k",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Cancel ticket",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "k",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cancelled"
+          }
+        }
+      }
+    },
+    "/api/public/branches/{branch}/availability": {
+      "get": {
+        "summary": "Booking slots",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/branch"
+          },
+          {
+            "name": "day",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "party",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Slots"
+          }
+        }
+      }
+    },
+    "/api/public/branches/{branch}/bookings": {
+      "post": {
+        "summary": "Book a table",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/branch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "partySize",
+                  "slotStart"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "partySize": {
+                    "type": "integer"
+                  },
+                  "slotStart": {
+                    "type": "integer",
+                    "description": "epoch ms"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking"
+          },
+          "409": {
+            "description": "Slot taken"
+          }
+        }
+      }
+    },
+    "/api/public/branches/{branch}/assistant": {
+      "post": {
+        "summary": "Ask the menu assistant",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/branch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "messages"
+                ],
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": {
+                          "enum": [
+                            "user",
+                            "assistant"
+                          ]
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Answer with referenced dishes and allergen safety note"
+          }
+        }
+      }
+    },
+    "/api/m/webhooks": {
+      "get": {
+        "summary": "List the restaurant's webhooks with 7-day delivery counts",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Endpoints"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a webhook (the response includes its signing secret)",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEndpointInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Endpoint with secret"
+          }
+        }
+      }
+    },
+    "/api/m/webhooks/{id}": {
+      "patch": {
+        "summary": "Change a webhook",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEndpointInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Endpoint"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a webhook and its log",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/m/webhooks/{id}/secret": {
+      "get": {
+        "summary": "Show the signing secret",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "{ secret }"
+          }
+        }
+      }
+    },
+    "/api/m/webhooks/{id}/test": {
+      "post": {
+        "summary": "Send webhook.ping now",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery outcome"
+          }
+        }
+      }
+    },
+    "/api/m/webhooks/{id}/deliveries": {
+      "get": {
+        "summary": "Delivery log: payloads, responses, attempts",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deliveries"
+          }
+        }
+      }
+    },
+    "/api/m/webhooks/deliveries/{id}/resend": {
+      "post": {
+        "summary": "Send a delivery again now",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Outcome"
+          }
+        }
+      }
+    },
+    "/api/m/integrations/brief": {
+      "get": {
+        "summary": "The integration brief for a coding agent (Markdown; ?format=json for { markdown })",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "text/markdown"
+          }
+        }
+      }
+    }
   },
-  "components": { "parameters": { "branch": { "name": "branch", "in": "path", "required": true, "schema": { "type": "string" } } } }
+  "components": {
+    "parameters": {
+      "branch": {
+        "name": "branch",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "A personal access token (bf_pat_…) from Integrations → API keys. Acts as its creator, with their role, in one restaurant."
+      }
+    },
+    "schemas": {
+      "WebhookEndpointInput": {
+        "type": "object",
+        "required": [
+          "url",
+          "events"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Event types, or [\"*\"] for all"
+          },
+          "branches": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Branch ids, or [\"*\"]"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "WebhookEvent": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "created_at",
+          "restaurant",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "queue.joined",
+              "queue.called",
+              "queue.seated",
+              "queue.cancelled",
+              "queue.no_show",
+              "booking.created",
+              "booking.checked_in",
+              "booking.cancelled",
+              "booking.no_show",
+              "order.round_added",
+              "kitchen.ready",
+              "order.paid",
+              "payment.captured",
+              "payment.refunded",
+              "shift.closed",
+              "menu.sold_out",
+              "menu.back_in_stock",
+              "menu.item_saved",
+              "webhook.ping"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "restaurant": {
+            "type": "object"
+          },
+          "branch": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "data": {
+            "type": "object",
+            "description": "The event's fields plus the record it is about: order, ticket, booking, item or shift"
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {
+    "queue.joined": {
+      "post": {
+        "summary": "queue.joined",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "queue.called": {
+      "post": {
+        "summary": "queue.called",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "queue.seated": {
+      "post": {
+        "summary": "queue.seated",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "queue.cancelled": {
+      "post": {
+        "summary": "queue.cancelled",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "queue.no_show": {
+      "post": {
+        "summary": "queue.no_show",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "booking.created": {
+      "post": {
+        "summary": "booking.created",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "booking.checked_in": {
+      "post": {
+        "summary": "booking.checked_in",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "booking.cancelled": {
+      "post": {
+        "summary": "booking.cancelled",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "booking.no_show": {
+      "post": {
+        "summary": "booking.no_show",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "order.round_added": {
+      "post": {
+        "summary": "order.round_added",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "kitchen.ready": {
+      "post": {
+        "summary": "kitchen.ready",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "order.paid": {
+      "post": {
+        "summary": "order.paid",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "payment.captured": {
+      "post": {
+        "summary": "payment.captured",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "payment.refunded": {
+      "post": {
+        "summary": "payment.refunded",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "shift.closed": {
+      "post": {
+        "summary": "shift.closed",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "menu.sold_out": {
+      "post": {
+        "summary": "menu.sold_out",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "menu.back_in_stock": {
+      "post": {
+        "summary": "menu.back_in_stock",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "menu.item_saved": {
+      "post": {
+        "summary": "menu.item_saved",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    }
+  }
 }

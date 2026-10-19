@@ -566,6 +566,54 @@ export const receipts = sqliteTable("receipts", {
 });
 
 /** Cursor of each event consumer (side-effect pipeline). Handlers are idempotent, so re-processing is safe. */
+/** A restaurant's webhook: where to POST which events. The signing secret is derived (see webhooks.ts), never stored. */
+export const webhookEndpoints = sqliteTable(
+  "webhook_endpoints",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id").notNull(),
+    url: text("url").notNull(),
+    description: text("description").notNull().default(""),
+    /** ["*"] or event types */
+    events: text("events").notNull().default('["*"]'),
+    /** ["*"] or branch ids */
+    branches: text("branches").notNull().default('["*"]'),
+    active: integer("active").notNull().default(1),
+    /** Bumped to rotate the signing secret. */
+    secretVersion: integer("secret_version").notNull().default(1),
+    /** Event-log id it starts after: an endpoint only gets what happens after it was added. */
+    fromEventId: integer("from_event_id").notNull().default(0),
+    createdBy: text("created_by").notNull().default(""),
+    createdAt: integer("created_at").notNull(),
+  },
+  (t) => [index("webhook_endpoints_tenant").on(t.tenantId)],
+);
+
+/** One event to one endpoint: its payload and every attempt's outcome, retried with backoff. */
+export const webhookDeliveries = sqliteTable(
+  "webhook_deliveries",
+  {
+    id: text("id").primaryKey(),
+    endpointId: text("endpoint_id").notNull(),
+    tenantId: text("tenant_id").notNull(),
+    /** events.id, or null for a test ping */
+    eventId: integer("event_id"),
+    type: text("type").notNull(),
+    payload: text("payload").notNull(),
+    /** pending | delivered | failed */
+    status: text("status").notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    nextAt: integer("next_at").notNull(),
+    responseStatus: integer("response_status"),
+    responseBody: text("response_body"),
+    error: text("error"),
+    durationMs: integer("duration_ms"),
+    createdAt: integer("created_at").notNull(),
+    deliveredAt: integer("delivered_at"),
+  },
+  (t) => [uniqueIndex("webhook_deliveries_event").on(t.endpointId, t.eventId), index("webhook_deliveries_due").on(t.status, t.nextAt), index("webhook_deliveries_endpoint").on(t.endpointId, t.createdAt)],
+);
+
 export const consumerCursors = sqliteTable("consumer_cursors", {
   name: text("name").primaryKey(),
   lastId: integer("last_id").notNull().default(0),
