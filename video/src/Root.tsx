@@ -34,7 +34,7 @@ export const RemotionRoot = () => (
     {/* One of each video per language: Reel-en, Reel-zh, Promo30-en, …, feature-queue-zh. */}
     {LANGS.map((lang) => (
       <Fragment key={lang}>
-        {/* 39 bars at 112.8 BPM from the 0.892 s downbeat: 83.9 s */}
+        {/* 59 bars at 112.8 BPM from the 0.892 s downbeat: 126.4 s */}
         <Composition id={`Reel-${lang}`} component={Reel} durationInFrames={barF(REEL_END_BAR)} fps={30} width={1920} height={1080} defaultProps={{ lang }} />
         <Composition id={`Promo30-${lang}`} component={Promo30} durationInFrames={barF(PROMO_BARS)} fps={30} width={1920} height={1080} defaultProps={{ lang }} />
         <Composition id={`Teaser15-${lang}`} component={Teaser15} durationInFrames={barF(TEASER_BARS)} fps={30} width={1080} height={1920} defaultProps={{ lang }} />

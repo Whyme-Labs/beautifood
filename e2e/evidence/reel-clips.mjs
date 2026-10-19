@@ -48,6 +48,7 @@ const L = {
     queue2: [["Jia Hui", 2], ["Marcus", 4], ["Farah", 2]],
     board: [["Lim family", 4], ["Nurul", 2], ["Jason", 2], ["Mei Ling", 1], ["Arjun", 3], ["Tan family", 6], ["Wei", 2]],
     hero: "Ben", friend: "Ann", late: [["Grace", 2], ["Amir", 2]],
+    rush: [["Lim family", 4], ["Tan", 2], ["Sofia", 2]],
     more: "More people", namePh: "What should we call you?", getNumber: "Get my number",
     yourName: "Your name", start: "Start ordering", add: /^Add/,
     askOpen: /Ask what to eat/, askLabel: "Ask the menu assistant",
@@ -68,6 +69,7 @@ const L = {
     queue2: [["吴佳慧", 2], ["郑浩", 4], ["何婷", 2]],
     board: [["林家", 4], ["周敏", 2], ["杨杰", 2], ["许美玲", 1], ["马超", 3], ["陈家", 6], ["孙伟", 2]],
     hero: "小明", friend: "美美", late: [["许美玲", 2], ["马超", 2]],
+    rush: [["林家", 4], ["陈先生", 2], ["苏菲", 2]],
     more: "增加人数", namePh: "我们该怎么称呼你？", getNumber: "取号",
     yourName: "你的名字", start: "开始点餐", add: /^加入/,
     askOpen: /问问吃什么/, askLabel: "向菜单助手提问",
@@ -484,7 +486,8 @@ const CLIPS = {
       await r.cue("ahead + wait", page.locator(".ticket-fields").or(page.getByTestId("ticket-wait")).first());
       await sleep(1500);
     });
-    for (const [n, p] of L.late) await join(w.klcc.ref, p, n, { lang: LANG });
+    w.lateTk = [];
+    for (const [n, p] of L.late) w.lateTk.push(await join(w.klcc.ref, p, n, { lang: LANG }));
     log("  hero", JSON.stringify(w.hero));
     return out;
   },
@@ -713,6 +716,63 @@ const CLIPS = {
     });
   },
 
+  // Four screens at once, mid-rush: guests join (host queue and door TV update), a table turns and
+  // the new party's order lands on the kitchen display, the host calls a waiting guest (their phone
+  // and the TV react) and the kitchen bumps a dish. Nothing is staged in the UI: every screen polls.
+  async "x-rush"(w) {
+    const host = await device(DESKTOP, { auth: w.hostApi });
+    const cook = await device(DESKTOP, { auth: w.cookApi });
+    const tv = await device(TV);
+    const ph = await device(PHONE);
+    const guest = w.lateTk[0];
+    await go(host.page, "/m/host");
+    await go(cook.page, "/m/kitchen");
+    await go(tv.page, `/r/${w.klcc.ref}/display`);
+    await go(ph.page, guest.url);
+    await settle(host.page, 400);
+    const all = (rs, label, boxes = []) => Promise.all(rs.map((r, i) => r.cue(label, boxes[i])));
+    return record(["x-host", "x-kitchen", "x-tv", "x-phone"], [host, cook, tv, ph], async (rh, rk, rt, rp) => {
+      const rs = [rh, rk, rt, rp];
+      await all(rs, "start", [host.page.getByTestId("ticket-row").first(), cook.page.getByTestId("kds"), tv.page.getByTestId("now-calling"), ph.page.getByTestId("ticket-stub")]);
+      await sleep(1200);
+      // walk-ins scan the QR at the door
+      await all(rs, "guests join");
+      for (const [n, p] of L.rush) {
+        await join(w.klcc.ref, p, n, { lang: LANG });
+        await sleep(700);
+      }
+      await sleep(2500);
+      // a table turns: P5 pays and leaves, a party of 4 sits down and orders
+      await finish(w, w.klcc.id, "P5");
+      const o = await order(w, w.klcc.id, "P5", [["Char Kway Teow", 2], ["Nasi Lemak Ayam Rempah", 1], ["Satay (6 sticks)", 1], ["Teh Tarik", 4]], 4);
+      w.open.P5 = o;
+      await all(rs, "order arrives");
+      const ticket = cook.page.getByTestId("kds-ticket").filter({ hasText: "P5" }).first();
+      await ticket.waitFor({ timeout: 15_000 });
+      await rk.cue("new ticket", ticket);
+      await sleep(1500);
+      // the host calls the next guest from the queue; their phone and the TV react
+      const row = host.page.getByTestId("ticket-row").filter({ hasText: guest.ticket.number });
+      const callBtn = row.getByRole("button", { name: L.call, exact: true });
+      await callBtn.scrollIntoViewIfNeeded();
+      await rh.cue("call", callBtn);
+      await tap(callBtn, 0);
+      await all(rs, "called");
+      await ph.page.getByTestId("ticket-called").waitFor({ timeout: 15_000 });
+      await rp.cue("phone flips", ph.page.getByTestId("ticket-stub"));
+      await tv.page.getByTestId("now-calling").locator(".calling", { hasText: guest.ticket.number }).waitFor({ timeout: 15_000 }).catch(() => undefined);
+      await rt.cue("tv calls", tv.page.getByTestId("now-calling"));
+      await sleep(1200);
+      // the kitchen starts the new order
+      const first = ticket.locator(".kds-bump").first();
+      await rk.cue("bump", ticket);
+      await tap(first, 400);
+      await tap(ticket.locator(".kds-bump").nth(1), 400);
+      await all(rs, "end");
+      await sleep(2500);
+    });
+  },
+
   // Desktop: POS → open bill → promo WELCOME10 → cash with tendered → change toast
   async "d-pos"(w) {
     const d = await device(DESKTOP, { auth: w.cashierApi });
@@ -896,7 +956,7 @@ async function assistantClip(w, name, question, safety) {
 
 // One evening, in order: the hero joins, browses and preorders, gets called and seated, orders with a
 // friend; the kitchen cooks it and the till takes payment; then the owner's screens.
-const ORDER = ["p-join", "p-menu", "p-assistant", "p-preorder", "x-call", "p-cart", "d-kitchen", "d-pos", "d-boss", "d-translate", "d-setup"];
+const ORDER = ["p-join", "p-menu", "p-assistant", "p-preorder", "x-call", "p-cart", "d-kitchen", "x-rush", "d-pos", "d-boss", "d-translate", "d-setup"];
 // the story clips depend on each other (the hero's ticket, then their table), so they run together;
 // the owner's screens (d-boss, d-translate, d-setup) can be re-recorded on their own
 const OWNER = ["d-boss", "d-translate", "d-setup"];

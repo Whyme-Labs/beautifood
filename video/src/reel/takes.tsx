@@ -29,10 +29,17 @@ const SPECS = {
   menu: phone("p-menu", 1.2, [{ at: "allergen filter chips" }, { at: "first dish" }, { at: "dish" }]),
   assistant: phone("p-assistant", 1.6, [{ at: "tap Ask what to eat" }, { at: "type question" }, { at: "answer appears" }, { at: "safety note" }]),
   preorder: phone("p-preorder", 1.9, [{ at: "tap preorder" }, { at: "add Char Kway Teow" }, { at: "add Cendol" }, { at: "cart lines" }, { at: "preorder saved" }]),
+  // the host's queue before the call: every party, how long they've waited, the AI suggestion
+  hostQueue: { ...desk("d-host", 0.6, [{ at: "suggestions", box: { x: 110, y: 300, w: 1220, h: 900 } }], 1.6), lead: 0.3 } as TakeSpec,
   // the call, filmed on three screens at once: keep their rates and leads equal so they stay in sync
   hostCall: desk("d-host", 1.25, [{ at: "suggestions", pad: 1.6 }, { at: "Call", pad: 5 }, { at: "called: table held on the floor", pad: 3 }, { at: "Seat here", pad: 2 }, { at: "floor: seated", pad: 3 }], 2.2),
   phoneCall: phone("p-ticket-called", 1.25, [{ at: "waiting ticket" }, { at: "table ready" }, { at: "seated" }]),
   board: { clip: "d-display", kind: "desk", rate: 1, shots: [{ at: "first called", box: null }], maxZoom: 1, lead: 0.8 } as TakeSpec,
+  // mid-rush, four screens filmed together: same rate and lead keeps them in sync
+  rushHost: desk("x-host", 1.5, [{ at: "start", box: { x: 110, y: 300, w: 1220, h: 900 } }, { at: "call", pad: 6 }, { at: "called", box: { x: 110, y: 300, w: 1220, h: 900 } }], 1.6),
+  rushKitchen: desk("x-kitchen", 1.5, [{ at: "start", box: null }, { at: "new ticket", pad: 1.5 }, { at: "bump", pad: 1.5 }], 2),
+  rushTv: { clip: "x-tv", kind: "desk", rate: 1.5, shots: [{ at: "start", box: null }], maxZoom: 1 } as TakeSpec,
+  rushPhone: phone("x-phone", 1.5, [{ at: "start" }, { at: "phone flips" }]),
   cartA: phone("p-cart-a", 1.3, [{ at: "A types name" }, { at: "A adds Char Kway Teow" }, { at: "cart view (grouped by person)" }, { at: "sent to kitchen" }]),
   cartB: phone("p-cart-b", 1.3, [{ at: "B types name" }, { at: "B adds Cendol" }, { at: "B adds Satay" }, { at: "cart view (grouped by person)" }]),
   kitchen: desk("d-kitchen", 1.4, [{ at: "tickets", pad: 1.1 }, { at: "bump → cooking", pad: 2.4 }, { at: "all ready", pad: 3.5 }, { at: "ticket cleared", box: null }], 1.8),
@@ -66,6 +73,13 @@ export function take(id: TakeId, lang: Lang): Take {
   const from = Math.max(0, shots[0].t - (spec.lead ?? 0.25));
   return { src: `reel-clips/${lang}/${spec.clip}.mp4`, kind: spec.kind, vw: rec.width, vh: rec.height, dur: rec.duration, from, rate: spec.rate, shots, maxZoom: spec.maxZoom };
 }
+
+/** Where a cue falls in a take, in seconds of the take as played (from its start, at its speed). */
+export const cueIn = (id: TakeId, lang: Lang, label: string, rate?: number) => {
+  const t = take(id, lang);
+  const c = CUES[lang][SPECS[id].clip].cues.find((x) => x.label === label);
+  return c ? Math.max(0, (c.t - t.from) / (rate ?? t.rate)) : 0;
+};
 
 /** Seconds a take plays before its recording runs out, at a given speed. */
 export const takeLen = (id: TakeId, lang: Lang, rate?: number) => {

@@ -12,7 +12,7 @@ const STOCK = { A: C.sun, B: "#ff8fa8", C: "#7fddbf", D: "#bba8ff" } as const;
 
 // ── small parts ────────────────────────────────────────────────────────────
 
-const Person: React.FC<{ color?: string; size?: number; style?: React.CSSProperties }> = ({ color = C.ink, size = 46, style }) => (
+export const Person: React.FC<{ color?: string; size?: number; style?: React.CSSProperties }> = ({ color = C.ink, size = 46, style }) => (
   <div style={{ width: size, height: size * 1.55, position: "relative", ...style }}>
     <div style={{ position: "absolute", left: size * 0.28, top: 0, width: size * 0.44, height: size * 0.44, borderRadius: "50%", background: color }} />
     <div style={{ position: "absolute", left: 0, bottom: 0, width: size, height: size * 0.95, borderRadius: `${size * 0.5}px ${size * 0.5}px ${size * 0.14}px ${size * 0.14}px`, background: color }} />
@@ -596,7 +596,7 @@ export const AgentScene: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: "#14120e", fontFamily: "ui-monospace, Menlo, monospace", padding: "140px 180px", gap: 26 }}>
       {lines.map(([dir, a, b], i) => {
-        const p = interpolate(t, [i * BEAT * 0.75, (i * 0.75 + 0.4) * BEAT], [0, 1], { ...clamp, easing: ease });
+        const p = interpolate(t, [(0.5 + i * 1.25) * BEAT, (0.5 + i * 1.25 + 0.5) * BEAT], [0, 1], { ...clamp, easing: ease });
         const out = dir === "→";
         return (
           <div key={i} style={{ display: "flex", gap: 26, alignItems: "baseline", fontSize: 46, opacity: p, translate: `${(1 - p) * 40}px 0` }}>
