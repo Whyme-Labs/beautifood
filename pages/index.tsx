@@ -73,7 +73,8 @@ function Reel({ src, poster, label, mode, fallback }: { src: string; poster: str
           src={src}
           poster={poster}
           aria-label={label}
-          muted
+          // Loops autoplay, so they must be muted; a clicked video plays its soundtrack.
+          muted={mode === "loop"}
           playsInline
           {...(mode === "loop" ? { autoPlay: true, loop: true, preload: "auto" } : { controls: true, preload: "none" })}
           onError={() => setFailed(true)}
