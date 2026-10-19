@@ -70,6 +70,16 @@ describe("floor parser", () => {
     expect(round[0].splitConfig).toEqual([{ suffix: "a", seats: 6 }, { suffix: "b", seats: 4 }]);
     expect(new Set(t.map((x) => x.label)).size).toBe(18);
   });
+
+  it("reads Chinese floor descriptions", () => {
+    const t = parseFloorText("4张两人桌，2张四人桌可以拼桌和2张十人圆桌可以分成6和4");
+    expect(t).toHaveLength(8);
+    expect(t.filter((x) => x.seatsMax === 2)).toHaveLength(4);
+    const fours = t.filter((x) => x.seatsMax === 4);
+    expect(fours).toHaveLength(2);
+    expect(fours[0].mergeGroup).not.toBeNull();
+    expect(t.filter((x) => x.seatsMax === 10)[0].splitConfig).toEqual([{ suffix: "a", seats: 6 }, { suffix: "b", seats: 4 }]);
+  });
 });
 
 describe("RBAC", () => {

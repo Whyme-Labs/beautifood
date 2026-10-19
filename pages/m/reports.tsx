@@ -8,6 +8,8 @@ import { BarChart } from "../../src/ui/charts";
 import { Empty, ErrorBox, Money, Stat } from "../../src/ui/components";
 import { useI18n } from "../../src/i18n/react";
 import type { MessageKey } from "../../src/i18n/core";
+import { localName } from "../../src/shared/menuI18n";
+import type { Menu } from "../../src/shared/types";
 
 interface Report {
   day: string;
@@ -25,7 +27,9 @@ const CLASS_TONE: Record<string, string> = { star: "brand", plowhorse: "info", p
 export default function Reports() {
   const s = useStaff();
   const b = useBranchApi();
-  const { t, f } = useI18n();
+  const { t, f, locale } = useI18n();
+  // dish names in the reader's language (the kitchen does the same)
+  const { data: menu } = usePoll(() => api<Menu>("/api/m/menu"), { interval: 0, deps: [s.tenant?.id] });
   const tz = s.branch?.config.timezone ?? "Asia/Kuala_Lumpur";
   const [day, setDay] = useState(new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date()));
   const { data: r, error } = usePoll(() => (s.branchId ? api<Report>(b(`report?day=${day}`)) : Promise.resolve(null)), { interval: 30_000, deps: [s.branchId, day] });
@@ -125,7 +129,7 @@ export default function Reports() {
                   <tbody>
                     {r.items.slice(0, 10).map((i) => (
                       <tr key={i.item_id}>
-                        <td>{i.name}</td>
+                        <td>{localName(menu, i.item_id, i.name, locale)}</td>
                         <td className="num">{f.number(i.qty)}</td>
                         <td className="num"><Money v={i.revenue} c={cur} /></td>
                         <td>

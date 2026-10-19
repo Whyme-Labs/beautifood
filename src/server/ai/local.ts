@@ -17,7 +17,7 @@ export interface AssistantContext {
 
 export interface AssistantReply {
   answer: string;
-  items: { id: string; name: string; price: number; reason?: string }[];
+  items: { id: string; name: string; price: number; reason?: string; /** The dish name in the guest's language. */ label?: string }[];
   safetyNote?: string;
   engine: "local" | "claude";
 }

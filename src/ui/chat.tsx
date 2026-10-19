@@ -7,7 +7,7 @@ import { useI18n } from "../i18n/react";
 
 interface Reply {
   answer: string;
-  items: { id: string; name: string; price: number; reason?: string }[];
+  items: { id: string; name: string; price: number; reason?: string; /** The dish name in the guest's language. */ label?: string }[];
   safetyNote?: string;
   engine: string;
 }
@@ -52,7 +52,7 @@ export function AssistantChat({ branch, currency, onAdd }: { branch: string; cur
                 {m.reply.items.map((it) => (
                   <div key={it.id} className="row between nowrap card tight flat" style={{ padding: "8px 10px" }}>
                     <span className="grow">
-                      <b>{it.name}</b> · <Money v={it.price} c={currency} />
+                      <b>{it.label ?? it.name}</b> · <Money v={it.price} c={currency} />
                       {it.reason ? <div className="muted" style={{ fontSize: 12.5 }}>{it.reason}</div> : null}
                     </span>
                     {onAdd && (

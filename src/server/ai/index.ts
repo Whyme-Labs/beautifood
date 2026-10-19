@@ -1,6 +1,7 @@
 // AI entry points used by routes and the MCP server. Each picks Claude when
 // configured and falls back to the deterministic local engine otherwise (or on error).
 import { inferAllergens, inferDietary } from "../../shared/allergens";
+import { localizeItem } from "../../shared/menuI18n";
 import { formatMoney } from "../../shared/format";
 import { parseFloorText, parseMenuText, stationFor } from "../../shared/menuParser";
 import type { BranchCtx } from "../domain/context";
@@ -33,14 +34,22 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
 export async function customerChat(db: D1Database, env: ClaudeEnv, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply> {
   const actx = await assistantContext(db, ctx);
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
+  // Dish cards read in the guest's language; `name` stays the original for matching and ordering.
+  const label = (r: AssistantReply): AssistantReply => ({
+    ...r,
+    items: r.items.map((it) => {
+      const item = actx.items.find((i) => i.id === it.id);
+      return item ? { ...it, label: localizeItem(item, locale, actx.menuLanguage ?? "en").name } : it;
+    }),
+  });
   if (claudeEnabled(env)) {
     try {
-      return await answerWithClaude(env, actx, history, locale);
+      return label(await answerWithClaude(env, actx, history, locale));
     } catch (e) {
       console.warn("claude assistant failed, using local engine", e);
     }
   }
-  return answerLocally(actx, question, locale);
+  return label(answerLocally(actx, question, locale));
 }
 
 export interface OnboardingInput {

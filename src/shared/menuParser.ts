@@ -117,16 +117,24 @@ export interface ParsedTable {
 }
 
 const NUM_WORDS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, a: 1, an: 1 };
-const num = (s: string) => (/^\d+$/.test(s) ? Number(s) : NUM_WORDS[s.toLowerCase()] ?? NaN);
+const ZH_DIGITS: Record<string, number> = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+/** 一 … 九十九 ("十二" = 12, "二十" = 20). */
+const zhNum = (s: string) => {
+  const [tens, ones] = s.includes("十") ? s.split("十") : ["", s];
+  const n = (s.includes("十") ? (tens ? ZH_DIGITS[tens] : 1) * 10 : 0) + (ones ? ZH_DIGITS[ones] : 0);
+  return n > 0 ? n : NaN;
+};
+const num = (s: string) => (/^\d+$/.test(s) ? Number(s) : NUM_WORDS[s.toLowerCase()] ?? zhNum(s));
 
 /**
  * Parse a floor description such as
- * "10 two-seaters, 6 tables of 4 in the patio that can be pushed together, 2 round tables of 10 that can split into 6 and 4"
+ * "10 two-seaters, 6 tables of 4 in the patio that can be pushed together, 2 round tables of 10 that can split into 6 and 4",
+ * or in Chinese: "4张两人桌，2张四人桌可以拼桌".
  */
 export function parseFloorText(text: string): ParsedTable[] {
   const tables: ParsedTable[] = [];
   const counters = new Map<string, number>();
-  const segments = text.split(/[,;\n]|\band\b(?=\s+(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|a|an)\s)/i);
+  const segments = text.split(/[,;\n，、；]|和(?=\s*[\d一二两三四五六七八九十]+\s*张)|\band\b(?=\s+(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|a|an)\s)/i);
   for (const seg of segments) {
     const s = seg.trim();
     if (!s) continue;
@@ -142,13 +150,20 @@ export function parseFloorText(text: string): ParsedTable[] {
       if (m) {
         count = num(m[1]);
         seats = num(m[2]);
+      } else {
+        // 4张两人桌 · 2张4人座 · 2张十人圆桌
+        m = s.match(/^([\d一二两三四五六七八九十]+)\s*张\s*([\d一二两三四五六七八九十]+)\s*人/);
+        if (m) {
+          count = num(m[1]);
+          seats = num(m[2]);
+        }
       }
     }
     if (!Number.isFinite(count) || !Number.isFinite(seats) || count < 1 || seats < 1) continue;
     const zoneM = s.match(/\b(?:in|at|on)\s+(?:the\s+)?([a-z][a-z ]{1,20}?)(?:\s+(?:that|which|can|area)\b|$)/i);
     const zone = zoneM ? zoneM[1].trim().replace(/\b\w/g, (c) => c.toUpperCase()) : "Main";
-    const mergeable = /(push(ed)? together|join|combin|merge)/i.test(s);
-    const splitM = s.match(/split\s+(?:in)?to\s+(\d+)\s*(?:and|&|\+)\s*(\d+)/i);
+    const mergeable = /(push(ed)? together|join|combin|merge|拼|合并)/i.test(s);
+    const splitM = s.match(/split\s+(?:in)?to\s+(\d+)\s*(?:and|&|\+)\s*(\d+)/i) ?? s.match(/分成\s*(\d+)\s*(?:和|与|\+)\s*(\d+)/);
     const prefix = zone === "Main" ? "T" : zone[0].toUpperCase();
     const group = mergeable ? `${zone}-${seats}` : null;
     for (let i = 0; i < Math.min(count, 200); i++) {
