@@ -10,17 +10,22 @@ A restaurant platform covering walk-in queues, ordering and the front of house. 
 - Order with friends from a shared cart: scan the table QR (static or dynamic) and each diner adds from their own phone.
 - Book a table with a preorder, collect and redeem loyalty points, and receive e-receipts.
 - Ask an AI menu assistant about signatures, allergens, a dish's story, budget or diet.
+- See what's served now (breakfast, lunch, a branch's supper menu) and happy-hour prices, on the restaurant's own storefront page at `/at/<restaurant>`.
 
 **For merchants**
 - Host stand that suggests seatings with reasons, including merge and split, with a fairness bound.
 - Floor plan with merge, split and transfer.
-- Full POS: voids, discounts, promo codes, item or N-way splits, multi-tender payments, refunds and cash-drawer shifts.
+- Full POS: voids, discounts, promo codes, item or N-way splits, multi-tender payments, refunds and cash-drawer shifts. Receipt printers over USB, serial or Bluetooth with image-rendered receipt templates; each branch prints its own address.
+- Timed menus (served in weekly windows of branch-local time) and happy hours (timed prices), enforced by the server.
 - Kitchen display, bookings and reports with menu engineering.
-- Multi-branch RBAC with a boss dashboard across all branches.
+- Multi-branch RBAC with a boss dashboard across all branches, plus custom roles: describe the role and the AI suggests the permissions. Nobody can hand out more than they hold.
+- A storefront designed by describing it ("a 1960s kopitiam feel, story first"), with a live preview and publish.
 - Loyalty tiers, promo broadcasts, and an AI onboarding copilot (paste your menu, describe your floor).
 
-**For AI agents**
+**For AI agents and integrations**
 - A stateless MCP server at `/mcp` with public tools; merchant tools unlock with a personal access token.
+- Signed webhooks for 18 events (queue, bookings, orders, payments, menu) with retries and a delivery log, and an integration brief a restaurant hands its coding agent to build connectors.
+- Starter kits to deploy on your own Cloudflare account: [a storefront template](templates/storefront-worker) and [a connectors kit](templates/connectors-worker) (Slack, WhatsApp, Xero, delivery orders).
 - Discovery docs: `/llms.txt` and `/openapi.json`.
 
 **In your language**
