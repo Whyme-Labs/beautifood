@@ -13,7 +13,7 @@ type Recording = { width: number; height: number; duration: number; cues: { labe
 const CUES: Record<Lang, Record<string, Recording>> = { en: en.clips, zh: zh.clips };
 
 /** The hero's ticket number and table in that language's recording, so graphics can quote them. */
-export const story = (lang: Lang): { hero: string; table: string } => ({ en: en.story, zh: zh.story })[lang] as { hero: string; table: string };
+export const story = (lang: Lang): { hero: string; table: string } => ({ en: en.story, zh: zh.story })[lang] as unknown as { hero: string; table: string };
 
 /** A camera keyframe at a cue: frame the cue's element ("cue"), a fixed region, or the whole screen. */
 type ShotSpec = { at: string; dt?: number; box?: "cue" | Box | null; pad?: number };

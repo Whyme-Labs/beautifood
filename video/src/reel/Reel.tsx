@@ -201,7 +201,7 @@ export const Reel: React.FC<{ lang: Lang }> = ({ lang }) => {
         {/* the host's side of the same queue, then the call: cause and effect on one screen */}
         <Cut name="Host queue" from={16} to={18}><DeskStage id="hostQueue" title={H.hostQueue} tags={<Tags items={T.hostQueue} at={[1.5, 4]} />} /><Corner who={W.host} time={at.call} /></Cut>
         <Cut name="Call" from={18} to={23}><CallStage rate={1} title={H.call} tags={<Tags items={T.call} at={[0, 5, 9, 15]} size={52} one />} /></Cut>
-        <Cut name="Door TV" from={23} to={25}><DeskStage id="board" rate={0.7} title={H.board} tags={<Tags items={T.board} at={[1.5]} first="dark" />} /><Corner who={W.tv} time={at.call} /></Cut>
+        <Cut name="Door TV" from={23} to={25}><DeskStage id="board" rate={0.7} title={H.board} /><Corner who={W.tv} time={at.call} /></Cut>
 
         {/* at the table, then the kitchen; mid-rush every screen in sync; then the till */}
         <Cut name="Table" from={25} to={28}><CartStage rate={1.15} title={H.cart} /><Corner who={`${W.guest} · ${hero} + ${COPY[lang].friend}`} time={at.table} /></Cut>
@@ -222,7 +222,7 @@ export const Reel: React.FC<{ lang: Lang }> = ({ lang }) => {
 
         {/* appendix, labelled: why it holds up at 7:42 PM */}
         <Cut name="Under the hood" from={49} to={50}><Chapter lines={COPY[lang].chapter.proof} /></Cut>
-        <Cut name="Queue zoom" from={50} to={53}><QueueZoom /><Corner who={W.tech} /></Cut>
+        <Cut name="Queue zoom" from={50} to={53}><QueueZoom /></Cut>
         <Cut name="Agents" from={53} to={55}><AgentScene /><Corner who={W.tech} /><div style={{ position: "absolute", right: 90, bottom: 60, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 16 }}><Title size={56} style={{ color: C.sun }}>{H.agents}</Title><Tags items={T.agents} at={[2]} /></div></Cut>
         <Cut name="Montage" from={55} to={57}><Montage /><Corner who={W.tech} /></Cut>
         <Cut name="Close" from={57} to={REEL_END_BAR}><CloseScene /></Cut>

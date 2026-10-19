@@ -33,7 +33,7 @@ export const RushStage: React.FC = () => {
   const { beat, phase } = useBeat();
   const now = (beat + phase) * BEAT;
   // captions follow the recording's own cues
-  const steps = (["guests join", "order arrives", "called", "bump"] as const).map((label, i) => ({ at: cueIn("rushHost", lang, label), text: copy.rush[i] }));
+  const steps = ([["rushHost", "guests join"], ["rushHost", "order arrives"], ["rushHost", "call"], ["rushKitchen", "bump"]] as const).map(([id, label], i) => ({ at: cueIn(id, lang, label), text: copy.rush[i] }));
   const current = [...steps].reverse().find((s) => now >= s.at - 0.15);
   return (
     <AbsoluteFill style={{ background: C.ink, padding: "28px 40px 34px", flexDirection: "column", gap: 18 }}>
