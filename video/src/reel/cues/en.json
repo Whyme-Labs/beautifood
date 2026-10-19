@@ -688,7 +688,7 @@
       "width": 2880,
       "height": 1800,
       "fps": 30,
-      "duration": 8.31,
+      "duration": 8.11,
       "cues": [
         {
           "label": "today across both branches (totals)",
@@ -702,7 +702,7 @@
         },
         {
           "label": "branch cards",
-          "t": 1.03,
+          "t": 1.02,
           "box": {
             "x": 232,
             "y": 892,
@@ -712,7 +712,7 @@
         },
         {
           "label": "AI insights",
-          "t": 2.36,
+          "t": 2.34,
           "box": {
             "x": 232,
             "y": 1254,
@@ -722,7 +722,7 @@
         },
         {
           "label": "click Reports",
-          "t": 3.29,
+          "t": 3.25,
           "box": {
             "x": 1900,
             "y": 112,
@@ -732,7 +732,7 @@
         },
         {
           "label": "report KPIs",
-          "t": 4.63,
+          "t": 4.45,
           "box": {
             "x": 232,
             "y": 405,
@@ -742,7 +742,7 @@
         },
         {
           "label": "sales by hour chart",
-          "t": 4.66,
+          "t": 4.47,
           "box": {
             "x": 232,
             "y": 600,
@@ -752,7 +752,7 @@
         },
         {
           "label": "best sellers & menu engineering",
-          "t": 6.89,
+          "t": 6.7,
           "box": {
             "x": 1460,
             "y": 721,

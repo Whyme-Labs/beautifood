@@ -199,7 +199,7 @@ async function browserFor(dsf) {
 }
 
 /** A browser context + page for one device; `lang` sets the remembered language (bf_lang cookie). */
-async function device(kind, { lang = LANG, auth, participant } = {}) {
+async function device(kind, { lang = LANG, auth, participant, clock } = {}) {
   const b = await browserFor(kind.dsf);
   const ctx = await b.newContext({
     baseURL: BASE,
@@ -221,6 +221,8 @@ async function device(kind, { lang = LANG, auth, participant } = {}) {
   }, [lang, participant ?? null]);
   if (auth) await ctx.addCookies((await auth.storageState()).cookies);
   const page = await ctx.newPage();
+  // pin the wall clock (e.g. "22:30" for closing time) on today's date in Kuala Lumpur
+  if (clock) await page.clock.setFixedTime(new Date(`${new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur" }).format(new Date())}T${clock}:00+08:00`));
   page.on("dialog", (d) => void d.accept());
   return { ctx, page, kind };
 }
@@ -750,7 +752,7 @@ const CLIPS = {
 
   // Desktop: boss dashboard (2 branches, sales, insights) → Reports
   async "d-boss"(w) {
-    const d = await device(DESKTOP, { auth: w.owner });
+    const d = await device(DESKTOP, { auth: w.owner, clock: "22:30" });
     const { page } = d;
     await go(page, "/m");
     await page.getByTestId("branch-overview").waitFor();
@@ -818,8 +820,12 @@ async function assistantClip(w, name, question, safety) {
 // One evening, in order: the hero joins, browses and preorders, gets called and seated, orders with a
 // friend; the kitchen cooks it and the till takes payment; then the owner's screens.
 const ORDER = ["p-join", "p-menu", "p-assistant", "p-preorder", "x-call", "p-cart", "d-kitchen", "d-pos", "d-boss", "d-translate", "d-setup"];
-// the story clips depend on each other (the hero's ticket, then their table), so they always run in order
-const run = ORDER;
+// the story clips depend on each other (the hero's ticket, then their table), so they run together;
+// the owner's screens (d-boss, d-translate, d-setup) can be re-recorded on their own
+const OWNER = ["d-boss", "d-translate", "d-setup"];
+const wanted = process.argv.slice(2);
+if (wanted.some((n) => !OWNER.includes(n))) throw new Error(`only ${OWNER.join(", ")} can be recorded on their own`);
+const run = wanted.length ? ORDER.filter((n) => wanted.includes(n)) : ORDER;
 
 fs.mkdirSync(OUT, { recursive: true });
 fs.mkdirSync(path.dirname(CUES), { recursive: true });
@@ -845,7 +851,7 @@ try {
       cues.clips[c.file.replace(/\.mp4$/, "")] = { file: c.file, width: c.width, height: c.height, fps: 30, duration: c.duration, cues: c.cues };
     }
     cues.lang = LANG;
-    cues.story = { hero: world.hero?.number ?? null, table: world.heroTable ?? null };
+    if (world.hero) cues.story = { hero: world.hero.number, table: world.heroTable ?? null };
     cues.note = "t = seconds from the start of the clip; box = {x,y,w,h} of the key element in video pixels at that moment (CSS box × deviceScaleFactor).";
     fs.writeFileSync(cuesFile, JSON.stringify(cues, null, 2) + "\n");
   }

@@ -693,7 +693,7 @@
       "width": 2880,
       "height": 1800,
       "fps": 30,
-      "duration": 8.3,
+      "duration": 8.24,
       "cues": [
         {
           "label": "today across both branches (totals)",
@@ -717,7 +717,7 @@
         },
         {
           "label": "AI insights",
-          "t": 2.35,
+          "t": 2.34,
           "box": {
             "x": 232,
             "y": 1223,
@@ -737,7 +737,7 @@
         },
         {
           "label": "report KPIs",
-          "t": 4.63,
+          "t": 4.58,
           "box": {
             "x": 232,
             "y": 414,
@@ -747,7 +747,7 @@
         },
         {
           "label": "sales by hour chart",
-          "t": 4.65,
+          "t": 4.6,
           "box": {
             "x": 232,
             "y": 613,
@@ -757,7 +757,7 @@
         },
         {
           "label": "best sellers & menu engineering",
-          "t": 6.88,
+          "t": 6.82,
           "box": {
             "x": 1460,
             "y": 697,

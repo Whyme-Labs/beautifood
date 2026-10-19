@@ -122,8 +122,8 @@ const Who: React.FC<{ who: string; time?: string; style?: React.CSSProperties }>
   );
 };
 
-const Corner: React.FC<{ who: string; time?: string }> = (p) => (
-  <div style={{ position: "absolute", left: 48, top: 40 }}>
+const Corner: React.FC<{ who: string; time?: string; bottom?: boolean }> = ({ bottom, ...p }) => (
+  <div style={{ position: "absolute", left: 48, ...(bottom ? { bottom: 56 } : { top: 40 }) }}>
     <Who {...p} />
   </div>
 );
@@ -216,12 +216,14 @@ export const Reel: React.FC<{ lang: Lang }> = ({ lang }) => {
         <Cut name="Translate" from={26} to={28}><DeskStage id="translate" tags={<Tags items={T.translate} at={[0, 4]} />} /><Corner who={W.owner} /></Cut>
         <Cut name="AI setup" from={28} to={30}><DeskStage id="setup" rate={1.4} tags={<Tags items={T.setup} at={[0, 2, 4, 6]} first="dark" />} /><Corner who={W.owner} /></Cut>
 
-        {/* why it holds up at 7:42 PM */}
-        <Cut name="Proof" from={30} to={31}><Chapter lines={COPY[lang].chapter.proof} /></Cut>
-        <Cut name="Wall" from={31} to={33}><WallScene /></Cut>
-        <Cut name="Agents" from={33} to={34}><AgentScene /></Cut>
-        <Cut name="Montage" from={34} to={36}><Montage /></Cut>
-        <Cut name="Reprise" from={36} to={37}><Reprise /></Cut>
+        {/* the payoff: back at 7:42 PM, nobody walked away */}
+        <Cut name="Reprise" from={30} to={31}><Reprise /></Cut>
+
+        {/* appendix, labelled: why it holds up at 7:42 PM */}
+        <Cut name="Under the hood" from={31} to={32}><Chapter lines={COPY[lang].chapter.proof} /></Cut>
+        <Cut name="Wall" from={32} to={34}><WallScene /><Corner who={W.tech} bottom /><div style={{ position: "absolute", right: 90, bottom: 60, display: "flex", gap: 16 }}><Tags items={T.wall} at={[0, 2]} /></div></Cut>
+        <Cut name="Agents" from={34} to={35}><AgentScene /><Corner who={W.tech} /><div style={{ position: "absolute", right: 90, bottom: 60 }}><Tags items={T.agents} at={[0.5]} /></div></Cut>
+        <Cut name="Montage" from={35} to={37}><Montage /><Corner who={W.tech} /></Cut>
         <Cut name="Close" from={37} to={REEL_END_BAR}><CloseScene /></Cut>
       </AbsoluteFill>
     </LangProvider>
