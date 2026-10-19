@@ -91,15 +91,19 @@ function Reel({ src, poster, label, mode, fallback }: { src: string; poster: str
   );
 }
 
+/** Videos come in one language each (public/media/<lang>); unknown locales get English. */
+const mediaLang = (locale: string) => (locale.startsWith("zh") ? "zh" : "en");
+
 function Feature({ id, wide }: { id: FeatureId; wide?: boolean }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const m = `/media/${mediaLang(locale)}`;
   const k = featureKey(id);
   const title = t(`landing.features.${k}.title` as MessageKey);
   return (
     <article className={`landing-feature ${wide ? "wide" : ""}`} id={`feature-${id}`}>
       <Reel
-        src={`/media/features/${id}.mp4`}
-        poster={`/media/features/${id}.jpg`}
+        src={`${m}/features/${id}.mp4`}
+        poster={`${m}/features/${id}.jpg`}
         label={title}
         mode="click"
         fallback={
@@ -188,7 +192,7 @@ export default function Landing() {
 
             <div className="landing-hero-visual">
               <div className="landing-board">
-                <Reel src="/media/promo-30.mp4" poster="/media/promo-30.jpg" label={t("landing.hero.videoLabel")} mode="loop" />
+                <Reel key={locale} src={`/media/${mediaLang(locale)}/promo-30.mp4`} poster={`/media/${mediaLang(locale)}/promo-30.jpg`} label={t("landing.hero.videoLabel")} mode="loop" />
                 <div className="landing-calling" aria-hidden="true">
                   <span>{t("landing.hero.nowCalling")}</span>
                   <b className="serial">A042</b>
@@ -354,7 +358,7 @@ export default function Landing() {
                 <h3>{t("landing.proof.demoTitle")}</h3>
                 <p>{t("landing.proof.demoBody")}</p>
               </div>
-              <Reel src="/media/demo.mp4" poster="/media/demo.jpg" label={t("landing.proof.demoLabel")} mode="click" />
+              <Reel key={locale} src={`/media/${mediaLang(locale)}/demo.mp4`} poster={`/media/${mediaLang(locale)}/demo.jpg`} label={t("landing.proof.demoLabel")} mode="click" />
             </div>
           </div>
         </section>
