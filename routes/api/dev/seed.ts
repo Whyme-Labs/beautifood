@@ -11,16 +11,17 @@ import { importMenu } from "../../../src/server/domain/menu";
 import { saveTables } from "../../../src/server/domain/floor";
 import { getBranch } from "../../../src/server/domain/context";
 import { ensureMember } from "../../../src/server/domain/loyalty";
-import { SAMPLE_ABOUT, SAMPLE_FLOOR, SAMPLE_MENU } from "../../../src/server/dev/sample";
+import { SAMPLE_ABOUT, SAMPLE_FLOOR, SAMPLE_MENU, sampleProfile } from "../../../src/server/dev/sample";
 import { translateMenu } from "../../../src/server/domain/translations";
 
 export const POST = api(async (c) => {
   const user = getUser();
   if (!user) fail(401, "unauthorized", "Sign in first");
   const q = c.req.query("name") || "Beautifood Demo";
-  const { tenantId, branchId, slug } = await createTenant(c.env.DB, user, { name: q, cuisine: "Malaysian", branchName: "KLCC", address: "Level 2, Suria KLCC, Kuala Lumpur" });
+  const profile = sampleProfile(q, c.req.query("lang") ?? "en");
+  const { tenantId, branchId, slug } = await createTenant(c.env.DB, user, { name: q, cuisine: profile.cuisine, branchName: "KLCC", address: "Level 2, Suria KLCC, Kuala Lumpur" });
   const actor = `staff:${user.id}`;
-  await updateTenant(c.env.DB, tenantId, actor, { story: SAMPLE_ABOUT, description: "Penang hawker classics, charcoal wok-hei." });
+  await updateTenant(c.env.DB, tenantId, actor, { story: profile.story, description: profile.description });
   const second = await addBranch(c.env.DB, tenantId, actor, { name: "Bangsar", address: "Jalan Telawi, Bangsar" });
   const draft = await onboardingDraft(appEnv(), { restaurantName: q, about: SAMPLE_ABOUT, menuText: SAMPLE_MENU, floorText: SAMPLE_FLOOR, currency: "MYR" });
   await importMenu(c.env.DB, tenantId, actor, draft.items, true);

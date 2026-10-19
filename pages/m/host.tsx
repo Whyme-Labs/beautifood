@@ -498,7 +498,8 @@ export default function Host() {
 function SeatModal({ ticket, tables, suggestion, onClose, onSeat }: { ticket: Ticket | null; tables: Table[]; suggestion: Suggestion | null; onClose: () => void; onSeat: (tableIds: string[]) => void }) {
   const { t } = useI18n();
   const [pick, setPick] = useState<string[]>([]);
-  useEffect(() => setPick(suggestion && suggestion.action !== "split_seat" ? suggestion.tableIds : []), [ticket?.id, suggestion]);
+  // a called guest already has a table held for them: start from that
+  useEffect(() => setPick(suggestion && suggestion.action !== "split_seat" ? suggestion.tableIds : (ticket?.heldTableIds ?? [])), [ticket?.id, suggestion]);
   if (!ticket) return null;
   const free = tables.filter((x) => x.status === "free" || (x.status === "reserved" && ticket.heldTableIds.includes(x.id)));
   const seats = free.filter((x) => pick.includes(x.id)).reduce((n, x) => n + x.seatsMax, 0);
