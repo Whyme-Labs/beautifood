@@ -5,7 +5,7 @@
       "width": 1170,
       "height": 2532,
       "fps": 30,
-      "duration": 5.16,
+      "duration": 5.14,
       "cues": [
         {
           "label": "tap +",
@@ -19,7 +19,7 @@
         },
         {
           "label": "type name",
-          "t": 1.28,
+          "t": 1.31,
           "box": {
             "x": 105,
             "y": 1199,
@@ -29,7 +29,7 @@
         },
         {
           "label": "tap Get my number",
-          "t": 2.27,
+          "t": 2.19,
           "box": {
             "x": 105,
             "y": 1608,
@@ -39,7 +39,7 @@
         },
         {
           "label": "ticket number appears",
-          "t": 3.31,
+          "t": 3.29,
           "box": {
             "x": 108,
             "y": 379,
@@ -49,7 +49,7 @@
         },
         {
           "label": "ahead + wait",
-          "t": 3.64,
+          "t": 3.62,
           "box": {
             "x": 108,
             "y": 951,
@@ -64,7 +64,7 @@
       "width": 1170,
       "height": 2532,
       "fps": 30,
-      "duration": 11.15,
+      "duration": 10.88,
       "cues": [
         {
           "label": "waiting ticket",
@@ -78,12 +78,12 @@
         },
         {
           "label": "host calls",
-          "t": 3.65,
+          "t": 3.93,
           "box": null
         },
         {
           "label": "table ready",
-          "t": 5.09,
+          "t": 5.41,
           "box": {
             "x": 108,
             "y": 855,
@@ -93,7 +93,7 @@
         },
         {
           "label": "ticket stub (called)",
-          "t": 5.1,
+          "t": 5.42,
           "box": {
             "x": 48,
             "y": 225,
@@ -103,12 +103,12 @@
         },
         {
           "label": "seated",
-          "t": 9.13,
+          "t": 8.87,
           "box": {
             "x": 0,
             "y": 165,
             "w": 1170,
-            "h": 1705
+            "h": 1226
           }
         }
       ]
@@ -118,7 +118,7 @@
       "width": 1170,
       "height": 2532,
       "fps": 30,
-      "duration": 9.04,
+      "duration": 8.98,
       "cues": [
         {
           "label": "tap preorder",
@@ -132,7 +132,7 @@
         },
         {
           "label": "preorder menu",
-          "t": 1.79,
+          "t": 1.76,
           "box": {
             "x": 48,
             "y": 839,
@@ -142,7 +142,7 @@
         },
         {
           "label": "add Char Kway Teow",
-          "t": 1.82,
+          "t": 1.8,
           "box": {
             "x": 48,
             "y": 839,
@@ -152,7 +152,7 @@
         },
         {
           "label": "add Cendol",
-          "t": 2.58,
+          "t": 2.56,
           "box": {
             "x": 48,
             "y": 999,
@@ -162,7 +162,7 @@
         },
         {
           "label": "cart (2)",
-          "t": 3.26,
+          "t": 3.21,
           "box": {
             "x": 48,
             "y": 2334,
@@ -172,7 +172,7 @@
         },
         {
           "label": "cart lines",
-          "t": 4.09,
+          "t": 4.04,
           "box": {
             "x": 48,
             "y": 593,
@@ -182,7 +182,7 @@
         },
         {
           "label": "preorder saved",
-          "t": 6.98,
+          "t": 6.96,
           "box": {
             "x": 48,
             "y": 508,
@@ -197,7 +197,7 @@
       "width": 1170,
       "height": 2532,
       "fps": 30,
-      "duration": 8.99,
+      "duration": 9.18,
       "cues": [
         {
           "label": "A types name",
@@ -211,7 +211,7 @@
         },
         {
           "label": "A adds Char Kway Teow",
-          "t": 1.64,
+          "t": 1.67,
           "box": {
             "x": 48,
             "y": 1107,
@@ -221,12 +221,12 @@
         },
         {
           "label": "A adds Nasi Lemak",
-          "t": 2.83,
+          "t": 2.89,
           "box": null
         },
         {
           "label": "cart picks up the other phone's dishes (4)",
-          "t": 4.63,
+          "t": 4.74,
           "box": {
             "x": 48,
             "y": 2334,
@@ -236,7 +236,7 @@
         },
         {
           "label": "cart view (grouped by person)",
-          "t": 5.56,
+          "t": 5.71,
           "box": {
             "x": 48,
             "y": 593,
@@ -246,7 +246,7 @@
         },
         {
           "label": "sent to kitchen",
-          "t": 7.37,
+          "t": 7.56,
           "box": {
             "x": 48,
             "y": 508,
@@ -261,7 +261,7 @@
       "width": 1170,
       "height": 2532,
       "fps": 30,
-      "duration": 8.99,
+      "duration": 9.18,
       "cues": [
         {
           "label": "B types name",
@@ -275,7 +275,7 @@
         },
         {
           "label": "B adds Cendol",
-          "t": 1.64,
+          "t": 1.67,
           "box": {
             "x": 48,
             "y": 1107,
@@ -285,7 +285,7 @@
         },
         {
           "label": "B adds Satay",
-          "t": 2.35,
+          "t": 2.42,
           "box": {
             "x": 48,
             "y": 1107,
@@ -295,7 +295,7 @@
         },
         {
           "label": "cart picks up the other phone's dishes (4)",
-          "t": 2.84,
+          "t": 2.92,
           "box": {
             "x": 48,
             "y": 2334,
@@ -305,7 +305,7 @@
         },
         {
           "label": "cart view (grouped by person)",
-          "t": 5.57,
+          "t": 5.73,
           "box": {
             "x": 48,
             "y": 593,
@@ -315,7 +315,7 @@
         },
         {
           "label": "sent to kitchen",
-          "t": 7.39,
+          "t": 7.57,
           "box": {
             "x": 48,
             "y": 593,
@@ -330,7 +330,7 @@
       "width": 1170,
       "height": 2532,
       "fps": 30,
-      "duration": 7.41,
+      "duration": 7.3,
       "cues": [
         {
           "label": "tap Ask what to eat",
@@ -344,7 +344,7 @@
         },
         {
           "label": "type question",
-          "t": 1.48,
+          "t": 1.51,
           "box": {
             "x": 54,
             "y": 2346,
@@ -354,22 +354,22 @@
         },
         {
           "label": "answer appears",
-          "t": 4.18,
+          "t": 4.05,
           "box": {
             "x": 66,
-            "y": 1006,
+            "y": 949,
             "w": 913,
-            "h": 1490
+            "h": 1558
           }
         },
         {
           "label": "safety note",
-          "t": 5.2,
+          "t": 5.09,
           "box": {
             "x": 105,
-            "y": 1920,
+            "y": 1919,
             "w": 835,
-            "h": 335
+            "h": 336
           }
         }
       ]
@@ -379,7 +379,7 @@
       "width": 1170,
       "height": 2532,
       "fps": 30,
-      "duration": 6.53,
+      "duration": 6.55,
       "cues": [
         {
           "label": "allergen filter chips",
@@ -393,7 +393,7 @@
         },
         {
           "label": "first dish",
-          "t": 1.13,
+          "t": 1.12,
           "box": {
             "x": 48,
             "y": 1259,
@@ -403,7 +403,7 @@
         },
         {
           "label": "dish",
-          "t": 3.16,
+          "t": 3.19,
           "box": {
             "x": 48,
             "y": 874,
@@ -413,7 +413,7 @@
         },
         {
           "label": "dish card",
-          "t": 5.8,
+          "t": 5.84,
           "box": {
             "x": 48,
             "y": 1001,
@@ -428,7 +428,7 @@
       "width": 2880,
       "height": 1800,
       "fps": 30,
-      "duration": 6.61,
+      "duration": 6.17,
       "cues": [
         {
           "label": "tickets",
@@ -437,52 +437,57 @@
             "x": 232,
             "y": 396,
             "w": 2416,
-            "h": 1404
+            "h": 1068
           }
         },
         {
           "label": "bump → cooking",
-          "t": 1.24,
+          "t": 1.23,
           "box": {
-            "x": 262,
-            "y": 1526,
+            "x": 2095,
+            "y": 568,
             "w": 523,
             "h": 138
           }
         },
         {
           "label": "bump → ready",
-          "t": 2.36,
+          "t": 2.19,
           "box": {
-            "x": 262,
-            "y": 1664,
+            "x": 2095,
+            "y": 706,
             "w": 523,
-            "h": 136
+            "h": 138
           }
         },
         {
           "label": "all ready",
-          "t": 3.41,
-          "box": null
+          "t": 3.2,
+          "box": {
+            "x": 2095,
+            "y": 1326,
+            "w": 523,
+            "h": 108
+          }
         },
         {
           "label": "served button",
-          "t": 4.37,
+          "t": 4.08,
           "box": {
-            "x": 262,
-            "y": 1669,
+            "x": 2095,
+            "y": 1373,
             "w": 523,
             "h": 108
           }
         },
         {
           "label": "ticket cleared",
-          "t": 4.8,
+          "t": 4.36,
           "box": {
             "x": 232,
             "y": 396,
             "w": 2416,
-            "h": 930
+            "h": 884
           }
         }
       ]
@@ -492,21 +497,21 @@
       "width": 2880,
       "height": 1800,
       "fps": 30,
-      "duration": 7.06,
+      "duration": 7.08,
       "cues": [
         {
           "label": "select bill",
           "t": 0.4,
           "box": {
-            "x": 236,
+            "x": 232,
             "y": 389,
-            "w": 330,
+            "w": 339,
             "h": 118
           }
         },
         {
           "label": "bill open",
-          "t": 1.19,
+          "t": 1.24,
           "box": {
             "x": 1808,
             "y": 543,
@@ -516,7 +521,7 @@
         },
         {
           "label": "promo applied (discount line)",
-          "t": 2.92,
+          "t": 2.94,
           "box": {
             "x": 1846,
             "y": 372,
@@ -526,17 +531,17 @@
         },
         {
           "label": "change preview",
-          "t": 4.65,
+          "t": 4.66,
           "box": {
             "x": 1884,
-            "y": 1597,
+            "y": 1513,
             "w": 688,
             "h": 105
           }
         },
         {
           "label": "change toast",
-          "t": 5.44,
+          "t": 5.48,
           "box": {
             "x": 1283,
             "y": 1703,
@@ -551,64 +556,64 @@
       "width": 2880,
       "height": 1800,
       "fps": 30,
-      "duration": 11.15,
+      "duration": 10.88,
       "cues": [
         {
           "label": "suggestions",
           "t": 0.4,
           "box": {
             "x": 270,
-            "y": 831,
+            "y": 693,
             "w": 1386,
             "h": 139
           }
         },
         {
           "label": "Call",
-          "t": 3.09,
+          "t": 3.1,
           "box": {
             "x": 1393,
-            "y": 868,
+            "y": 731,
             "w": 129,
             "h": 64
           }
         },
         {
           "label": "called: table held on the floor",
-          "t": 5.11,
+          "t": 5.43,
           "box": {
             "x": 1772,
-            "y": 833,
+            "y": 1006,
             "w": 266,
             "h": 168
           }
         },
         {
           "label": "Seat",
-          "t": 7.05,
+          "t": 7.28,
           "box": {
             "x": 1180,
-            "y": 1736,
+            "y": 936,
             "w": 116,
             "h": 64
           }
         },
         {
           "label": "Seat here",
-          "t": 8.69,
+          "t": 8.11,
           "box": {
             "x": 936,
-            "y": 1209,
+            "y": 1021,
             "w": 1008,
             "h": 108
           }
         },
         {
           "label": "floor: seated",
-          "t": 9.11,
+          "t": 8.85,
           "box": {
             "x": 1772,
-            "y": 778,
+            "y": 1006,
             "w": 266,
             "h": 168
           }
@@ -620,7 +625,7 @@
       "width": 1920,
       "height": 1080,
       "fps": 30,
-      "duration": 11.15,
+      "duration": 10.88,
       "cues": [
         {
           "label": "board: nobody called yet",
@@ -634,11 +639,11 @@
         },
         {
           "label": "first called",
-          "t": 5.12,
+          "t": 5.44,
           "box": {
             "x": 48,
             "y": 252,
-            "w": 597,
+            "w": 472,
             "h": 400
           }
         }
@@ -649,7 +654,7 @@
       "width": 2880,
       "height": 1800,
       "fps": 30,
-      "duration": 5.82,
+      "duration": 5.79,
       "cues": [
         {
           "label": "Translate menu",
@@ -673,7 +678,7 @@
         },
         {
           "label": "dishes",
-          "t": 4.19,
+          "t": 4.17,
           "box": {
             "x": 200,
             "y": 0,
@@ -688,14 +693,14 @@
       "width": 2880,
       "height": 1800,
       "fps": 30,
-      "duration": 8.11,
+      "duration": 8.27,
       "cues": [
         {
           "label": "today across both branches (totals)",
           "t": 0.4,
           "box": {
             "x": 232,
-            "y": 697,
+            "y": 360,
             "w": 2416,
             "h": 171
           }
@@ -705,14 +710,14 @@
           "t": 1.02,
           "box": {
             "x": 232,
-            "y": 892,
+            "y": 555,
             "w": 2416,
             "h": 559
           }
         },
         {
           "label": "AI insights",
-          "t": 2.34,
+          "t": 2.35,
           "box": {
             "x": 232,
             "y": 1254,
@@ -722,7 +727,7 @@
         },
         {
           "label": "click Reports",
-          "t": 3.25,
+          "t": 3.26,
           "box": {
             "x": 1900,
             "y": 112,
@@ -732,7 +737,7 @@
         },
         {
           "label": "report KPIs",
-          "t": 4.45,
+          "t": 4.62,
           "box": {
             "x": 232,
             "y": 405,
@@ -742,7 +747,7 @@
         },
         {
           "label": "sales by hour chart",
-          "t": 4.47,
+          "t": 4.64,
           "box": {
             "x": 232,
             "y": 600,
@@ -752,7 +757,7 @@
         },
         {
           "label": "best sellers & menu engineering",
-          "t": 6.7,
+          "t": 6.86,
           "box": {
             "x": 1460,
             "y": 721,
@@ -767,7 +772,7 @@
       "width": 2880,
       "height": 1800,
       "fps": 30,
-      "duration": 7.42,
+      "duration": 7.35,
       "cues": [
         {
           "label": "paste menu",
@@ -791,7 +796,7 @@
         },
         {
           "label": "Generate my setup",
-          "t": 3.39,
+          "t": 3.34,
           "box": {
             "x": 270,
             "y": 1612,
@@ -801,7 +806,7 @@
         },
         {
           "label": "draft items appear",
-          "t": 3.94,
+          "t": 3.92,
           "box": {
             "x": 270,
             "y": 1011,
@@ -811,7 +816,7 @@
         },
         {
           "label": "draft tables",
-          "t": 4.6,
+          "t": 4.56,
           "box": {
             "x": 270,
             "y": 1422,
@@ -821,7 +826,7 @@
         },
         {
           "label": "Apply",
-          "t": 5.13,
+          "t": 5.1,
           "box": {
             "x": 232,
             "y": 1652,
@@ -831,7 +836,7 @@
         },
         {
           "label": "applied",
-          "t": 5.59,
+          "t": 5.54,
           "box": {
             "x": 232,
             "y": 388,
@@ -845,7 +850,7 @@
   "lang": "en",
   "note": "t = seconds from the start of the clip; box = {x,y,w,h} of the key element in video pixels at that moment (CSS box × deviceScaleFactor).",
   "story": {
-    "hero": "A003",
+    "hero": "A011",
     "table": "T4"
   }
 }

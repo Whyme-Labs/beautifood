@@ -42,10 +42,12 @@ const log = (...a) => console.log(`[${new Date().toISOString().slice(11, 19)}]`,
 const L = {
   en: {
     restaurant: "Auntie Lim's Kitchen",
-    queue: [["Aisha", 2], ["Ravi", 1], ["Daniel Tan", 4], ["Priya", 3], ["Kumar family", 6]],
+    // waiting when the hero arrives: [name, party, minutes already waiting]
+    queue: [["Aisha", 2, 22], ["Ravi", 1, 17], ["Siew Ling", 2, 12], ["Hafiz", 2, 6], ["Daniel Tan", 4, 20], ["Priya", 3, 14], ["Wong family", 4, 5], ["Kumar family", 6, 9]],
+    staff: { host: "Jason Yap", cook: "Ah Keong", cashier: "Siti Aminah" },
     queue2: [["Jia Hui", 2], ["Marcus", 4], ["Farah", 2]],
     board: [["Lim family", 4], ["Nurul", 2], ["Jason", 2], ["Mei Ling", 1], ["Arjun", 3], ["Tan family", 6], ["Wei", 2]],
-    hero: "Ben", friend: "Ann", late: [["Siew Ling", 2], ["Hafiz", 2]],
+    hero: "Ben", friend: "Ann", late: [["Grace", 2], ["Amir", 2]],
     more: "More people", namePh: "What should we call you?", getNumber: "Get my number",
     yourName: "Your name", start: "Start ordering", add: /^Add/,
     askOpen: /Ask what to eat/, askLabel: "Ask the menu assistant",
@@ -61,10 +63,11 @@ const L = {
   },
   zh: {
     restaurant: "林阿姨小厨",
-    queue: [["李明", 2], ["王芳", 1], ["陈大伟", 4], ["黄美华", 3], ["张家", 6]],
+    queue: [["李明", 2, 22], ["王芳", 1, 17], ["林秀玲", 2, 12], ["刘洋", 2, 6], ["陈大伟", 4, 20], ["黄美华", 3, 14], ["黄家", 4, 5], ["张家", 6, 9]],
+    staff: { host: "杨杰", cook: "黄师傅", cashier: "陈丽华" },
     queue2: [["吴佳慧", 2], ["郑浩", 4], ["何婷", 2]],
     board: [["林家", 4], ["周敏", 2], ["杨杰", 2], ["许美玲", 1], ["马超", 3], ["陈家", 6], ["孙伟", 2]],
-    hero: "小明", friend: "美美", late: [["林秀玲", 2], ["刘洋", 2]],
+    hero: "小明", friend: "美美", late: [["许美玲", 2], ["马超", 2]],
     more: "增加人数", namePh: "我们该怎么称呼你？", getNumber: "取号",
     yourName: "你的名字", start: "开始点餐", add: /^加入/,
     askOpen: /问问吃什么/, askLabel: "向菜单助手提问",
@@ -102,8 +105,8 @@ async function guest(device = uid("dev-")) {
 /** Fresh two-branch demo restaurant (KLCC + Bangsar) owned by a new user. */
 async function seedRestaurant(name) {
   const { api, email } = await staffClient(L.owner);
-  let r = await api.post(`/api/dev/seed?name=${encodeURIComponent(name)}&lang=${LANG}`);
-  if (r.status() !== 201) r = await api.post(`/api/dev/seed?name=${encodeURIComponent(`${name} ${uid("").slice(-3).toUpperCase()}`)}&lang=${LANG}`);
+  let r = await api.post(`/api/dev/seed?name=${encodeURIComponent(name)}&lang=${LANG}&history=1`);
+  if (r.status() !== 201) r = await api.post(`/api/dev/seed?name=${encodeURIComponent(`${name} ${uid("").slice(-3).toUpperCase()}`)}&lang=${LANG}&history=1`);
   const s = await ok(r, 201);
   const m = await ok(api.get("/api/m/menu"));
   const item = (n) => {
@@ -163,31 +166,103 @@ async function call(s, branchId, ticketId, holdLabels = []) {
 }
 
 /** A busy lunch: queues in every line, tables eating, bills paid at both branches. */
+/** Invite a staff member with a role and sign them in (same flow as e2e/helpers.ts hire). */
+async function hire(s, role, name, branchIds) {
+  const email = `${uid(role)}@test.co`;
+  const inv = await ok(s.owner.post("/api/m/staff", { data: { email, name, role, branchIds } }), 201);
+  const { api } = await staffClient(name, email);
+  await ok(api.post("/api/m/invites", { data: { code: inv.code } }));
+  return api;
+}
+
+/** Make tonight look like it has been going for a while (see routes/api/dev/age.ts). */
+const age = (s, body) => ok(s.owner.post("/api/dev/age", { data: body }));
+
+/** A table finishes: everything served, paid by card, table closed and cleaned. */
+async function finish(s, branchId, label) {
+  const o = s.open[label];
+  const full = await ok(s.owner.get(`/api/m/branches/${branchId}/orders/${o.id}`));
+  await ok(s.owner.post(`/api/m/branches/${branchId}/kitchen/status`, { data: { itemIds: full.items.map((i) => i.id), status: "served" } })).catch(() => undefined);
+  await ok(s.owner.post(`/api/m/branches/${branchId}/orders/${o.id}/pay`, { data: { method: "card", amount: full.due ?? full.total, msgId: uid() } }));
+  await ok(s.owner.post(`/api/m/branches/${branchId}/seatings/${o.seatingId}/close`, { data: {} })).catch(() => undefined);
+  const t = await tables(s.owner, branchId);
+  await ok(s.owner.post(`/api/m/branches/${branchId}/tables/${t[label].id}/clean`, { data: {} })).catch(() => undefined);
+  delete s.open[label];
+}
+
+/**
+ * Friday, the dinner rush at the flagship: two weeks of trading behind it (the seed's history),
+ * a few early tables already paid, every table now taken, and a queue that has been building.
+ */
 async function busyRestaurant() {
   const s = await seedRestaurant(L.restaurant);
-  log("seeded", s.slug);
-  // Paid bills (today's sales) at both branches
-  await sale(s, s.klcc.id, "T6", [["Char Kway Teow", 2], ["Teh Tarik", 2]]);
-  await sale(s, s.klcc.id, "T7", [["Nasi Lemak Ayam Rempah", 2], ["Kopi O", 2], ["Cendol", 1]], "cash");
-  await sale(s, s.klcc.id, "T8", [["Char Kway Teow", 1], ["Satay (6 sticks)", 1], ["Iced Barley", 2]]);
-  await sale(s, s.klcc.id, "P5", [["Hainanese Chicken Rice", 3], ["Fresh Lime Juice", 3], ["Ais Kacang", 2]]);
-  await sale(s, s.klcc.id, "P6", [["Penang Assam Laksa", 2], ["Curry Mee", 2], ["Teh Tarik", 4]]);
-  await sale(s, s.bangsar.id, "T1", [["Hainanese Chicken Rice", 2], ["Ais Kacang", 1]]);
-  await sale(s, s.bangsar.id, "T2", [["Penang Assam Laksa", 1], ["Char Kway Teow", 2], ["Kopi O", 2]], "cash");
-  await sale(s, s.bangsar.id, "P1", [["Nasi Kerabu", 2], ["Curry Mee", 1], ["Cendol", 3]]);
-  // Tables eating at KLCC (open bills, tickets on the kitchen display)
+  log("seeded", s.slug, "with history");
+  // tonight's shift: each screen is run by the person who would run it
+  s.hostApi = await hire(s, "waiter", L.staff.host, [s.klcc.id]);
+  s.cookApi = await hire(s, "kitchen", L.staff.cook, [s.klcc.id]);
+  s.cashierApi = await hire(s, "cashier", L.staff.cashier, [s.klcc.id]);
+  // early diners, already paid and gone
+  await sale(s, s.klcc.id, "T1", [["Char Kway Teow", 2], ["Teh Tarik", 2]]);
+  await sale(s, s.klcc.id, "P1", [["Hainanese Chicken Rice", 3], ["Fresh Lime Juice", 3], ["Ais Kacang", 2]], "cash");
+  await sale(s, s.klcc.id, "T5", [["Penang Assam Laksa", 1], ["Kopi O", 1]]);
+  await sale(s, s.bangsar.id, "T1", [["Nasi Kerabu", 2], ["Curry Mee", 1], ["Cendol", 3]]);
+  // the floor now: every table taken; [table, party, dishes, seated minutes ago, still cooking?]
+  const floor = [
+    ["T1", 2, [["Char Kway Teow", 1], ["Teh Tarik", 2]], 48],
+    ["T2", 2, [["Nasi Lemak Ayam Rempah", 1], ["Kopi O", 1], ["Cendol", 1]], 12, true],
+    ["T3", 2, [["Penang Assam Laksa", 2], ["Fresh Lime Juice", 2]], 41],
+    ["T4", 2, [["Hainanese Chicken Rice", 2], ["Iced Barley", 2]], 52],
+    ["T5", 1, [["Curry Mee", 1], ["Teh Tarik", 1]], 37],
+    ["T6", 2, [["Char Kway Teow", 2], ["Satay (6 sticks)", 1]], 44],
+    ["T7", 2, [["Nasi Kerabu", 1], ["Rojak", 1], ["Fresh Lime Juice", 1]], 19],
+    ["T8", 2, [["Vegetarian Mee Goreng", 1], ["Char Kway Teow", 1], ["Teh Tarik", 2]], 8, true],
+    ["P1", 4, [["Nasi Lemak Ayam Rempah", 2], ["Curry Mee", 2], ["Satay (6 sticks)", 1], ["Teh Tarik", 4]], 30],
+    ["P2", 4, [["Hainanese Chicken Rice", 2], ["Char Kway Teow", 2], ["Rojak", 1], ["Kopi O", 2]], 10, true],
+    ["P3", 3, [["Penang Assam Laksa", 2], ["Nasi Kerabu", 1], ["Cendol", 3]], 45],
+    ["P4", 4, [["Char Kway Teow", 2], ["Nasi Lemak Ayam Rempah", 2], ["Iced Barley", 4]], 50],
+    ["P5", 4, [["Curry Mee", 2], ["Hainanese Chicken Rice", 2], ["Fresh Lime Juice", 2]], 23],
+    ["P6", 3, [["Char Kway Teow", 1], ["Penang Assam Laksa", 2], ["Teh Tarik", 3]], 15],
+    ["T9", 8, [["Char Kway Teow", 3], ["Nasi Lemak Ayam Rempah", 3], ["Satay (6 sticks)", 2], ["Teh Tarik", 6], ["Cendol", 4]], 35],
+    ["T10", 6, [["Hainanese Chicken Rice", 3], ["Curry Mee", 2], ["Rojak", 1], ["Kopi O", 4]], 27],
+  ];
   s.open = {};
-  s.open.T1 = await order(s, s.klcc.id, "T1", [["Char Kway Teow", 2], ["Teh Tarik", 1], ["Cendol", 1]]);
-  s.open.T2 = await order(s, s.klcc.id, "T2", [["Nasi Kerabu", 1], ["Kopi O", 2], ["Ais Kacang", 1]]);
-  s.open.P2 = await order(s, s.klcc.id, "P2", [["Nasi Lemak Ayam Rempah", 2], ["Satay (6 sticks)", 1], ["Rojak", 1], ["Teh Tarik", 2]], 4);
-  s.open.P3 = await order(s, s.klcc.id, "P3", [["Hainanese Chicken Rice", 2], ["Curry Mee", 1], ["Fresh Lime Juice", 3]], 3);
-  // Bangsar has a couple of tables eating too
+  const aged = [];
+  for (const [label, party, list, ago, cooking] of floor) {
+    const o = await order(s, s.klcc.id, label, list, party);
+    s.open[label] = o;
+    aged.push({ id: o.seatingId, minutes: ago });
+    if (!cooking) {
+      const full = await ok(s.owner.get(`/api/m/branches/${s.klcc.id}/orders/${o.id}`));
+      await ok(s.owner.post(`/api/m/branches/${s.klcc.id}/kitchen/status`, { data: { itemIds: full.items.map((i) => i.id), status: "served" } })).catch(() => undefined);
+    }
+  }
+  // Bangsar: a quieter room
   await order(s, s.bangsar.id, "T3", [["Char Kway Teow", 1], ["Teh Tarik", 1]]);
-  // Queues: KLCC A (1–2), B (3–4), C (5–8); Bangsar
-  s.q = {};
-  for (const [n, p] of L.queue) s.q[n] = await join(s.klcc.ref, p, n, { lang: LANG });
+  await order(s, s.bangsar.id, "P2", [["Nasi Lemak Ayam Rempah", 2], ["Teh Tarik", 2]], 3);
+  // the queue: parties who joined before the hero, oldest first
+  s.q = [];
+  const agedTickets = [];
+  for (const [n, p, waited] of L.queue) {
+    const tk = await join(s.klcc.ref, p, n, { lang: LANG });
+    s.q.push({ ...tk.ticket, party: p });
+    agedTickets.push({ id: tk.ticket.id, minutes: waited });
+  }
   for (const [n, p] of L.queue2) await join(s.bangsar.ref, p, n, { lang: LANG });
+  await age(s, { seatings: aged, tickets: agedTickets });
   return s;
+}
+
+/** Twenty minutes pass: four small tables finish, the small parties ahead of the hero are seated
+ *  on them in turn, and the hero's table (T4) clears. */
+async function timePasses(s) {
+  const small = s.q.filter((t) => t.party <= 2);
+  for (const [i, label] of ["T1", "T6", "T3", "T5"].entries()) {
+    await finish(s, s.klcc.id, label);
+    const t = await tables(s.owner, s.klcc.id);
+    if (small[i]) await ok(s.owner.post(`/api/m/branches/${s.klcc.id}/tickets/${small[i].id}/seat`, { data: { tableIds: [t[label].id] } }));
+  }
+  await finish(s, s.klcc.id, "T4");
+  await age(s, { tickets: [{ id: s.hero.id, minutes: 15 }] });
 }
 
 // ───────────────────────────── recording ─────────────────────────────
@@ -456,7 +531,8 @@ const CLIPS = {
   // Three screens at once: the host calls the hero from the host stand, the hero's phone flips to
   // "table ready" and the door TV calls the number; then the host seats them and the floor updates.
   async "x-call"(w) {
-    const host = await device(DESKTOP, { auth: w.owner });
+    await timePasses(w);
+    const host = await device(DESKTOP, { auth: w.hostApi });
     const ph = await device(PHONE, { participant: w.heroP });
     const tv = await device(TV);
     await go(host.page, "/m/host");
@@ -487,7 +563,8 @@ const CLIPS = {
       // the called guest's queue row names the table held for them ("holding T4" / "保留 T4")
       const heroRow = H.getByTestId("ticket-row").filter({ hasText: w.hero.number });
       await heroRow.filter({ hasText: /[TP]\d+/ }).waitFor({ timeout: 10_000 }).catch(() => undefined);
-      table = (await heroRow.textContent()).match(/\b[TP]\d+[ab]?\b/)?.[0] ?? table;
+      // row text runs together ("…holding T4Seat…"), so no word boundaries; the hero's table is T4 by design
+      table = (await heroRow.textContent()).match(/[TP]\d{1,2}[ab]?(?!\d)/)?.[0] ?? table ?? "T4";
       await rh.cue("called: table held on the floor", H.getByTestId(`table-${table}`));
       const card = tv.page.getByTestId("now-calling").locator(".calling", { hasText: w.hero.number }).locator("xpath=..");
       await card.waitFor({ timeout: 15_000 }).catch(() => undefined);
@@ -606,7 +683,7 @@ const CLIPS = {
 
   // Desktop: kitchen display → bump an item → All ready → Served
   async "d-kitchen"(w) {
-    const d = await device(DESKTOP, { auth: w.owner });
+    const d = await device(DESKTOP, { auth: w.cookApi });
     const { page } = d;
     await go(page, "/m/kitchen");
     await page.getByTestId("kds-ticket").first().waitFor();
@@ -638,7 +715,7 @@ const CLIPS = {
 
   // Desktop: POS → open bill → promo WELCOME10 → cash with tendered → change toast
   async "d-pos"(w) {
-    const d = await device(DESKTOP, { auth: w.owner });
+    const d = await device(DESKTOP, { auth: w.cashierApi });
     const { page } = d;
     await go(page, "/m/pos");
     const o = { number: w.heroTable };
