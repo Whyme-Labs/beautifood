@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { AlertTriangle, CheckCircle2, Flame, Inbox, Leaf, X } from "lucide-react";
+import { MARK_PATH, MARK_VIEWBOX } from "./brand";
 import { LOCALES, translate, type MessageKey } from "../i18n/core";
 import { useI18n } from "../i18n/react";
 import { ApiError } from "./api";
@@ -204,13 +205,12 @@ export function Stat({ label, value, testId }: { label: string; value: ReactNode
   );
 }
 
-/** The wordmark: a punched ticket and the name, set like a stamped stub. */
+/** The wordmark: the spoon-b mark and the name. */
 export function Logo({ href = "/" }: { href?: string }) {
   return (
     <a href={href} className="logo" aria-label="Beautifood">
-      <svg viewBox="0 0 32 32" aria-hidden="true">
-        <path d="M4 7a3 3 0 0 1 3-3h18a3 3 0 0 1 3 3v5a4 4 0 0 0 0 8v5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-5a4 4 0 0 0 0-8z" fill="#1a1814" />
-        <path d="M11 9.5v13M11 9.5h5.5a3.25 3.25 0 0 1 0 6.5H11m0 0h6a3.25 3.25 0 0 1 0 6.5h-6" fill="none" stroke="#ffd12e" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      <svg viewBox={MARK_VIEWBOX} aria-hidden="true">
+        <path d={MARK_PATH} fill="currentColor" fillRule="evenodd" />
       </svg>
       beautifood
     </a>

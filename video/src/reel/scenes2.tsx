@@ -5,7 +5,8 @@ import type React from "react";
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, NUM, SANS } from "../theme";
 import { BEAT, clamp, ease, useAt, useBeat } from "./beat";
-import { useCopy, useLang } from "./copy";
+import { useCopy, useLang, type Lang } from "./copy";
+import { landAt, useFocus } from "./focus";
 import { Person, Tag } from "./scenes";
 import { cueIn, Device } from "./takes";
 
@@ -27,21 +28,26 @@ const Pane: React.FC<{ label: string; children: React.ReactNode; style?: React.C
 );
 
 /** Mid-rush, four screens filmed at the same moment: one thing happens, every screen reacts. */
+const RUSH_STEPS = [["rushHost", "guests join"], ["rushHost", "order arrives"], ["rushHost", "call"], ["rushKitchen", "bump"]] as const;
+
+/** Play-time beats of the rush captions: each just before the moment it names, from the recording's own cues. */
+export const rushCaptions = (lang: Lang) => RUSH_STEPS.map(([id, label]) => Math.max(0.01, cueIn(id, lang, label) - 0.4) / BEAT);
+
 export const RushStage: React.FC = () => {
   const copy = useCopy();
-  const lang = useLang();
   const { beat, phase } = useBeat();
-  const now = (beat + phase) * BEAT;
-  // captions follow the recording's own cues
-  const steps = ([["rushHost", "guests join"], ["rushHost", "order arrives"], ["rushHost", "call"], ["rushKitchen", "bump"]] as const).map(([id, label], i) => ({ at: cueIn(id, lang, label), text: copy.rush[i] }));
-  const current = [...steps].reverse().find((s) => now >= s.at - 0.15);
+  const now = beat + phase;
+  // each caption lands while the four screens pause for it (see FocusScene in the reel)
+  const focus = useFocus();
+  const steps = RUSH_STEPS.map((_, i) => ({ at: focus ? landAt(focus, i) / BEAT : i * 4, text: copy.rush[i] }));
+  const current = [...steps].reverse().find((s) => now >= s.at);
   return (
     <AbsoluteFill style={{ background: C.ink, padding: "28px 40px 34px", flexDirection: "column", gap: 18 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 26, height: 80 }}>
         <Title size={60} style={{ color: C.sun }}>{copy.titles.rush}</Title>
         {current && (
           <span key={current.text} style={{ marginLeft: "auto" }}>
-            <Tag at={current.at / BEAT} size={40}>{current.text}</Tag>
+            <Tag at={current.at} size={40}>{current.text}</Tag>
           </span>
         )}
       </div>
@@ -93,8 +99,8 @@ export const Diners: React.FC<{ names: [string, string] }> = ({ names }) => {
 export const Countdown: React.FC = () => {
   const copy = useCopy();
   const { beat, phase } = useBeat();
-  const n = Math.max(0, 10 - Math.floor((beat + phase) * 1.5)); // one step every ⅔ beat
-  const done = useAt(7, 0.6);
+  const n = Math.max(0, 10 - Math.floor(Math.max(0, beat + phase - 1))); // one step a beat, after a beat to read the sign
+  const done = useAt(11, 0.6);
   return (
     <AbsoluteFill style={{ background: C.ink, fontFamily: SANS, alignItems: "center", justifyContent: "center" }}>
       <div style={{ position: "absolute", left: 120, right: 120, top: 70, height: 120, display: "flex", borderRadius: "0 0 30px 30px", overflow: "hidden" }}>
@@ -155,8 +161,9 @@ export const PosDevices: React.FC = () => {
   const copy = useCopy();
   const lang = useLang();
   const shot = staticFile(`reel-stills/pos-${lang}.png`);
-  const a = useAt(0, 0.6), b = useAt(1, 0.6), c = useAt(2, 0.6);
-  const receipt = useAt(4, 2.2);
+  // the title, then the three devices, then the two claims, then the printer: one thing at a time
+  const a = useAt(1, 0.6), b = useAt(1.6, 0.6), c = useAt(2.2, 0.6);
+  const receipt = useAt(8.6, 2.2);
   const label = (s: string) => <div style={{ marginTop: 14, textAlign: "center", fontFamily: SANS, fontWeight: 850, fontSize: 30, color: C.ink }}>{s}</div>;
   const screen = (w: number, h: number) => <Img src={shot} style={{ width: w, height: h, objectFit: "cover", objectPosition: "left top", display: "block" }} />;
   return (
@@ -199,9 +206,9 @@ export const PosDevices: React.FC = () => {
       </div>
       <div style={{ display: "flex", gap: 16 }}>
         {copy.tags.pos.map((x, i) => (
-          <Tag key={x} at={3 + i * 2} size={44} dark={i % 2 === 1}>{x}</Tag>
+          <Tag key={x} at={4 + i * 2} size={44} dark={i % 2 === 1}>{x}</Tag>
         ))}
-        <Tag at={7} size={44}>{copy.pos.printer}</Tag>
+        <Tag at={8} size={44}>{copy.pos.printer}</Tag>
       </div>
     </AbsoluteFill>
   );

@@ -2,9 +2,10 @@
 // pixels) and glides between cues, so text is read at real size instead of shrunk to fit.
 import type React from "react";
 import { Video } from "@remotion/media";
-import { interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { Freeze, interpolate, staticFile, useVideoConfig } from "remotion";
 import { C } from "../theme";
 import { clamp, ease } from "./beat";
+import { useFocus, usePlay } from "./focus";
 
 export type Box = { x: number; y: number; w: number; h: number };
 /** A camera keyframe at clip time `t` (seconds into the recording) framing `box` (null = whole screen). */
@@ -30,9 +31,11 @@ type Props = {
 };
 
 export const Camera: React.FC<Props> = ({ src, vw, vh, w, h, from = 0, rate = 1, shots, maxZoom = 2.6, snapTop = 0, style }) => {
-  const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const clipT = from + (frame / fps) * rate;
+  // inside a focused scene the recording waits for the title and pauses under each caption
+  const focused = useFocus() !== null;
+  const playT = usePlay().t;
+  const clipT = from + playT * rate;
   const fit = Math.max(w / vw, h / vh); // cover the viewport
   const frameFor = (s: Shot) => {
     if (!s.box) return { scale: fit, cx: vw / 2, cy: vh / 2 };
@@ -68,7 +71,13 @@ export const Camera: React.FC<Props> = ({ src, vw, vh, w, h, from = 0, rate = 1,
   return (
     <div style={{ width: w, height: h, overflow: "hidden", position: "relative", background: "#fff", ...style }}>
       <div style={{ position: "absolute", left: 0, top: 0, width: vw, height: vh, transformOrigin: "0 0", transform: `translate(${w / 2 - cx * scale}px, ${h / 2 - cy * scale}px) scale(${scale})` }}>
-        <Video src={staticFile(src)} trimBefore={Math.round(from * fps)} playbackRate={rate} muted style={{ width: vw, height: vh }} />
+        {focused ? (
+          <Freeze frame={Math.round(playT * fps)}>
+            <Video src={staticFile(src)} trimBefore={Math.round(from * fps)} playbackRate={rate} muted style={{ width: vw, height: vh }} />
+          </Freeze>
+        ) : (
+          <Video src={staticFile(src)} trimBefore={Math.round(from * fps)} playbackRate={rate} muted style={{ width: vw, height: vh }} />
+        )}
       </div>
     </div>
   );

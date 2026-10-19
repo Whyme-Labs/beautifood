@@ -1,4 +1,5 @@
 // Feature demo: a title stub, then real recordings of the app with the points they show, then the sign-off.
+import { Wordmark } from "./Mark";
 import type React from "react";
 import { AbsoluteFill, Easing, interpolate, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, NUM, SANS } from "./theme";
@@ -122,7 +123,7 @@ const SignOff: React.FC = () => {
   const copy = useCopy();
   return (
     <AbsoluteFill style={{ background: C.ink, color: C.paper, alignItems: "center", justifyContent: "center", gap: 18 }}>
-      <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: 120, color: C.sun, ...useIn(0) }}>beautifood</div>
+      <Wordmark size={120} color={C.sun} style={useIn(0)} />
       <div style={{ fontSize: 38, fontWeight: 650, ...useIn(0.3) }}>{copy.feature.signOff}</div>
       <div style={{ fontSize: 32, fontWeight: 700, color: C.sun, ...useIn(0.6) }}>{copy.url}</div>
     </AbsoluteFill>

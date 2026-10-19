@@ -29,6 +29,12 @@ export default defineConfig({
       { name: "theme-color", content: "#ffd12e" },
       { property: "og:title", content: "Beautifood" },
       { property: "og:description", content: "Queue, order and book at hawker stalls and restaurants with no app." },
+      { property: "og:image", content: "/icon-512.png" },
+    ],
+    link: [
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   },
   cloudflare: {

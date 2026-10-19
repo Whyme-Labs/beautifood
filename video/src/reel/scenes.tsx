@@ -4,6 +4,7 @@ import { AbsoluteFill, interpolate, random, useCurrentFrame, useVideoConfig } fr
 import { Video } from "@remotion/media";
 import { staticFile } from "remotion";
 import { C, NUM, SANS } from "../theme";
+import { Mark, Wordmark } from "../Mark";
 import { useCopy, useLang } from "./copy";
 import { story } from "./takes";
 import { BEAT, clamp, ease, useAt, useBeat, usePulse } from "./beat";
@@ -253,17 +254,14 @@ export const DropScene: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: C.sun, alignItems: "center", justifyContent: "center", fontFamily: SANS }}>
       <div style={{ display: "flex", alignItems: "center", gap: 36, scale: String(s) }}>
-        <svg viewBox="0 0 32 32" width={190} height={190}>
-          <path d="M4 7a3 3 0 0 1 3-3h18a3 3 0 0 1 3 3v5a4 4 0 0 0 0 8v5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-5a4 4 0 0 0 0-8z" fill={C.ink} />
-          <path d="M11 9.5v13M11 9.5h5.5a3.25 3.25 0 0 1 0 6.5H11m0 0h6a3.25 3.25 0 0 1 0 6.5h-6" fill="none" stroke={C.sun} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <Mark height={300} color={C.ink} style={{ marginTop: -30 }} />
         <span style={{ fontFamily: NUM, fontWeight: 800, fontSize: 240, color: C.ink }}>beautifood</span>
       </div>
       <div style={{ display: "flex", gap: 22, marginTop: 34 }}>
-        <Tag at={1} dark>{queue}</Tag>
-        <Tag at={1.5} dark>{order}</Tag>
-        <Tag at={2} dark>{book}</Tag>
-        <Tag at={3} style={{ background: C.paper }}>{noApp}</Tag>
+        <Tag at={2} dark>{queue}</Tag>
+        <Tag at={3} dark>{order}</Tag>
+        <Tag at={4} dark>{book}</Tag>
+        <Tag at={5.5} style={{ background: C.paper }}>{noApp}</Tag>
       </div>
       <AbsoluteFill style={{ background: "#fff", opacity: flash }} />
     </AbsoluteFill>
@@ -596,7 +594,7 @@ export const AgentScene: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: "#14120e", fontFamily: "ui-monospace, Menlo, monospace", padding: "140px 180px", gap: 26 }}>
       {lines.map(([dir, a, b], i) => {
-        const p = interpolate(t, [(0.5 + i * 1.25) * BEAT, (0.5 + i * 1.25 + 0.5) * BEAT], [0, 1], { ...clamp, easing: ease });
+        const p = interpolate(t, [(2 + i * 1.25) * BEAT, (2 + i * 1.25 + 0.5) * BEAT], [0, 1], { ...clamp, easing: ease });
         const out = dir === "→";
         return (
           <div key={i} style={{ display: "flex", gap: 26, alignItems: "baseline", fontSize: 46, opacity: p, translate: `${(1 - p) * 40}px 0` }}>
@@ -607,7 +605,7 @@ export const AgentScene: React.FC = () => {
         );
       })}
       <div style={{ marginTop: 30, fontFamily: SANS }}>
-        <Tag at={5}>POST /mcp</Tag>
+        <Tag at={9}>POST /mcp</Tag>
       </div>
     </AbsoluteFill>
   );
@@ -674,7 +672,7 @@ export const CloseScene: React.FC = () => {
       <div style={{ rotate: `${interpolate(t, [0, 1], [-10, -4], { ...clamp, easing: ease })}deg`, opacity: tear, scale: String(0.9 + 0.1 * tear) }}>
         <Ticket serial={story(lang).hero} label={copy.ticket.next} foot={copy.ticket.ready} stock={C.paper} width={560} />
       </div>
-      <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: 150, lineHeight: 1 }}>beautifood</div>
+      <Wordmark size={150} color={C.ink} />
       <Tag at={2} dark size={44}>
         {copy.url}
       </Tag>

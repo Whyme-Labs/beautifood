@@ -1,8 +1,9 @@
 // Promo cuts: fast, mostly real footage cut on the beat. Promo30 is 16:9, Teaser15 is 9:16 for social.
+import { Wordmark } from "./Mark";
 import type React from "react";
 import { Audio } from "@remotion/media";
 import { AbsoluteFill, Easing, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
-import { C, NUM, SANS } from "./theme";
+import { C, SANS } from "./theme";
 import { Stub, useIn } from "./parts";
 import { CallStage, CartStage, Cut, DeskStage, PhoneStage, Tags } from "./reel/Reel";
 import { COPY, LangProvider, useCopy, type Lang } from "./reel/copy";
@@ -31,7 +32,7 @@ const EndCard: React.FC<{ vertical?: boolean }> = ({ vertical }) => {
           {copy.ticket.ready}
         </Stub>
       </div>
-      <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: vertical ? 150 : 120, ...useIn(0.3) }}>beautifood</div>
+      <Wordmark size={vertical ? 150 : 120} style={useIn(0.3)} />
       <div style={{ fontSize: vertical ? 44 : 40, fontWeight: 750, textAlign: "center", ...useIn(0.5) }}>{copy.promo.tagline}</div>
       <div style={{ fontSize: vertical ? 34 : 32, fontWeight: 700, ...useIn(0.7) }}>{copy.url}</div>
     </AbsoluteFill>

@@ -15,7 +15,7 @@ self.addEventListener("push", (event) => {
           body = "Open your table's menu to order.";
         }
       } catch (e) {}
-      await self.registration.showNotification(title, { body, tag: "bf-ticket", renotify: true });
+      await self.registration.showNotification(title, { body, tag: "bf-ticket", renotify: true, icon: "/icon-192.png" });
     })(),
   );
 });

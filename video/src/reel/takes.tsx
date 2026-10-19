@@ -6,6 +6,7 @@ import type React from "react";
 import { C } from "../theme";
 import { Camera, Phone, type Box, type Shot } from "./camera";
 import { useLang, type Lang } from "./copy";
+import { usePlay } from "./focus";
 import en from "./cues/en.json";
 import zh from "./cues/zh.json";
 
@@ -90,11 +91,13 @@ export const takeLen = (id: TakeId, lang: Lang, rate?: number) => {
 /** A take on screen: phones as a screen card, desktops full-frame or in a rounded panel. */
 export const Device: React.FC<{ id: TakeId; w: number; h: number; rate?: number; tilt?: number; bare?: boolean }> = ({ id, w, h, rate, tilt, bare }) => {
   const t = take(id, useLang());
+  // waiting for the title or a caption, the screen steps back so the words have the eye
+  const opacity = 1 - 0.55 * usePlay().dim;
   const cam = { src: t.src, from: t.from, rate: rate ?? t.rate, shots: t.shots, maxZoom: t.maxZoom };
-  if (t.kind === "phone") return <Phone {...cam} width={w} height={h} tilt={tilt} />;
-  if (bare) return <Camera {...cam} vw={t.vw} vh={t.vh} w={w} h={h} />;
+  if (t.kind === "phone") return <Phone {...cam} width={w} height={h} tilt={tilt} style={{ opacity }} />;
+  if (bare) return <Camera {...cam} vw={t.vw} vh={t.vh} w={w} h={h} style={{ opacity }} />;
   return (
-    <div style={{ padding: 10, background: C.ink, borderRadius: 26, boxShadow: "0 40px 90px rgba(26,24,20,.3)", rotate: tilt ? `${tilt}deg` : undefined }}>
+    <div style={{ padding: 10, background: C.ink, borderRadius: 26, boxShadow: "0 40px 90px rgba(26,24,20,.3)", rotate: tilt ? `${tilt}deg` : undefined, opacity }}>
       <Camera {...cam} vw={t.vw} vh={t.vh} w={w - 20} h={h - 20} style={{ borderRadius: 18 }} />
     </div>
   );
