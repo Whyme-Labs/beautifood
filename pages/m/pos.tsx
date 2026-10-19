@@ -1,14 +1,38 @@
 // POS: open bills, add items, voids, discounts & promo codes, split bill
-// (by items or N ways), payments with change, refunds, and the cash drawer shift.
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Banknote, CreditCard, Minus, Plus, ReceiptText, Search, Send, Smartphone, Star, Wallet, X } from "lucide-react";
+// (by items or N ways), payments with change, refunds, the cash drawer shift, and the
+// terminal's own receipt printer + cash drawer (WebUSB / Web Serial / Web Bluetooth).
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AlertTriangle, Banknote, Bluetooth, Cable, CreditCard, Minus, Plus, Printer, ReceiptText, Search, Send, Settings2, Smartphone, Star, Usb, Wallet, X } from "lucide-react";
 import { api, msgId } from "../../src/ui/api";
 import { usePoll, useQuery } from "../../src/ui/hooks";
 import { useBranchApi, useBranchChanges, useStaff } from "../../src/ui/staff";
-import { Empty, ErrorBox, Money, Status, useAction } from "../../src/ui/components";
+import { Empty, ErrorBox, Modal, Money, Status, useAction, useToast } from "../../src/ui/components";
 import { localizeCategory, localizeItem } from "../../src/shared/menuI18n";
 import { useI18n } from "../../src/i18n/react";
-import type { MessageKey } from "../../src/i18n/core";
+import { translate, type MessageKey, type Vars } from "../../src/i18n/core";
+import {
+  BAUDS,
+  KINDS,
+  canvasRasterizer,
+  concat,
+  connect,
+  drawerKick,
+  englishDateTime,
+  englishTxt,
+  init,
+  loadSettings,
+  printReceiptPage,
+  receiptBytes,
+  reconnect,
+  saveSettings,
+  support,
+  testBytes,
+  txt,
+  type Kind,
+  type PrinterLink,
+  type PrinterSettings,
+  type ReceiptData,
+} from "../../src/ui/printer";
 import type { Menu, MenuItem } from "../../src/shared/types";
 
 interface OrderRow {
@@ -43,13 +67,16 @@ interface Order {
   refunded: number;
   due: number;
   receiptToken: string | null;
+  closedAt: number | null;
   items: { id: string; round: number; name: string; qty: number; unitPrice: number; modifiers: { option: string; price: number }[]; status: string; addedBy: string; notes: string; voidReason: string | null }[];
-  payments: { id: string; method: string; amount: number; change: number; splitLabel: string | null; status: string; refunded: number }[];
+  payments: { id: string; method: string; amount: number; tendered: number | null; change: number; splitLabel: string | null; status: string; refunded: number }[];
 }
 type Line = { item: MenuItem; qty: number; modifiers: { group: string; option: string }[] };
 type Post = (a: string, b: unknown, ok?: string) => Promise<unknown>;
+type Paid = { payment: { settled: boolean; duplicate?: boolean }; order: Order };
 
 const cents = (s: string) => Math.round(parseFloat(s || "0") * 100);
+const lineTotal = (i: Order["items"][number]) => (i.unitPrice + i.modifiers.reduce((a, m) => a + m.price, 0)) * i.qty;
 
 export default function Pos() {
   const s = useStaff();
@@ -72,6 +99,10 @@ export default function Pos() {
   const [lines, setLines] = useState<Line[]>([]);
   const [voiding, setVoiding] = useState<string[]>([]);
   const [splitIds, setSplitIds] = useState<string[] | null>(null);
+  const printer = usePrinter();
+  // a settled bill leaves the open list, so remember each bill's tables for its receipt
+  const tablesOf = useRef(new Map<string, string[]>());
+  orders?.forEach((o) => tablesOf.current.set(o.id, o.tables));
 
   useEffect(() => {
     const seating = q.get("seating");
@@ -125,6 +156,56 @@ export default function Pos() {
 
   const ask = (key: MessageKey, def?: string) => prompt(t(key), def);
 
+  /** The bill as printed: the cashier's language, with English for printers that can't draw it. */
+  const receiptFor = (o: Order): ReceiptData => {
+    const tx = (key: MessageKey, vars?: Vars) => englishTxt(locale, key, vars as Record<string, string | number>);
+    const tables = tablesOf.current.get(o.id) ?? [];
+    const method = (p: Order["payments"][number]) => {
+      const tag = p.splitLabel ? ` (${p.splitLabel})` : "";
+      return txt(t(`payMethod.${p.method}` as MessageKey) + tag, translate("en", `payMethod.${p.method}`) + tag);
+    };
+    return {
+      restaurant: s.tenant?.name ?? "",
+      branch: s.branch?.name,
+      address: s.branch?.address || undefined,
+      number: o.number,
+      table: tables.length ? tx("common.table", { label: tables.join("+") }) : undefined,
+      when: englishDateTime(locale, o.closedAt ?? Date.now(), s.tenant?.timezone),
+      currency: cur,
+      items: o.items
+        .filter((i) => i.status !== "void")
+        .map((i) => {
+          const it = byName.get(i.name);
+          return { name: txt(dishName(i.name), it ? localizeItem(it, "en", lang).name : i.name), qty: i.qty, amount: lineTotal(i), options: i.modifiers.map((m) => m.option).join(", ") || undefined };
+        }),
+      subtotal: o.subtotal,
+      discount: o.discount,
+      discountLabel: o.discountSpec ? tx("staff.pos.discountReason", { reason: o.discountSpec.reason }) : undefined,
+      serviceCharge: o.serviceCharge,
+      tax: o.tax,
+      rounding: o.rounding,
+      total: o.total,
+      payments: o.payments.map((p) => ({ label: method(p), amount: p.amount, tendered: p.method === "cash" ? p.tendered : null, change: p.change })),
+      labels: {
+        bill: tx("staff.pos.bill"),
+        subtotal: tx("common.subtotal"),
+        discount: tx("common.discount"),
+        serviceCharge: tx("common.serviceCharge"),
+        tax: tx("common.tax"),
+        rounding: tx("common.rounding"),
+        total: tx("common.total"),
+        tendered: tx("staff.pos.receiptTendered"),
+        change: tx("common.change"),
+        thanks: tx("staff.pos.receiptThanks"),
+      },
+    };
+  };
+  // after the payment is saved: print and kick the drawer, never blocking or undoing it
+  const onPaid = (method: string, r: Paid) => {
+    if (r.payment.duplicate) return;
+    printer.afterPayment(method === "cash", r.payment.settled ? () => receiptFor(r.order) : null, r.order.receiptToken);
+  };
+
   return (
     <div className="col">
       <div className="page-head">
@@ -169,6 +250,7 @@ export default function Pos() {
               )}
             </div>
           )}
+          <PrinterControl p={printer} />
           <button className="btn primary" onClick={() => setSel(null)}>
             <Plus size={18} aria-hidden /> {t("staff.pos.newTakeaway")}
           </button>
@@ -339,7 +421,7 @@ export default function Pos() {
                     )}
                   </div>
                   <BillTools order={order} cur={cur} canDiscount={s.can("order.discount")} post={post} />
-                  {s.can("payment.take") && <PayPanel order={order} cur={cur} pending={pending} post={post} />}
+                  {s.can("payment.take") && <PayPanel order={order} cur={cur} pending={pending} post={post} onPaid={onPaid} />}
                 </>
               )}
 
@@ -373,9 +455,14 @@ export default function Pos() {
                 </div>
               )}
               {order.receiptToken && (
-                <a className="btn small ghost" style={{ alignSelf: "flex-start" }} href={`/receipt/${order.receiptToken}`} target="_blank" rel="noreferrer">
-                  <ReceiptText size={16} aria-hidden /> {t("staff.pos.viewReceipt")}
-                </a>
+                <div className="row">
+                  <a className="btn small ghost" href={`/receipt/${order.receiptToken}`} target="_blank" rel="noreferrer">
+                    <ReceiptText size={16} aria-hidden /> {t("staff.pos.viewReceipt")}
+                  </a>
+                  <button className="btn small ghost" onClick={() => printer.printReceipt(() => receiptFor(order), order.receiptToken!)} data-testid="print-receipt">
+                    <Printer size={16} aria-hidden /> {t("staff.pos.printReceipt")}
+                  </button>
+                </div>
               )}
             </div>
           ) : (
@@ -529,7 +616,7 @@ const METHODS = [
   { m: "ewallet", key: "staff.pos.payEwallet", Icon: Smartphone },
 ] as const;
 
-function PayPanel({ order, cur, pending, post }: { order: Order; cur: string; pending: boolean; post: Post }) {
+function PayPanel({ order, cur, pending, post, onPaid }: { order: Order; cur: string; pending: boolean; post: Post; onPaid: (method: string, r: Paid) => void }) {
   const { t, f } = useI18n();
   const [amount, setAmount] = useState((order.due / 100).toFixed(2));
   const [tendered, setTendered] = useState("");
@@ -543,7 +630,11 @@ function PayPanel({ order, cur, pending, post }: { order: Order; cur: string; pe
       "pay",
       { method, amount: amt, tendered: method === "cash" && tendered ? given : null, splitLabel: label || null, msgId: msgId() },
       method === "cash" && tendered ? t("staff.pos.changeToast", { amount: ((given - amt) / 100).toFixed(2) }) : t("staff.pos.paymentTaken"),
-    ).then((r) => r && setTendered(""));
+    ).then((r) => {
+      if (!r) return;
+      setTendered("");
+      onPaid(method, r as Paid);
+    });
   return (
     <div className="card flat col pos-pay" data-testid="pay-panel">
       <div className="pos-pay-fields">
@@ -588,5 +679,221 @@ function PayPanel({ order, cur, pending, post }: { order: Order; cur: string; pe
         )}
       </div>
     </div>
+  );
+}
+
+const KIND: Record<Kind, { key: MessageKey; Icon: typeof Usb }> = {
+  usb: { key: "staff.pos.printerUsb", Icon: Usb },
+  serial: { key: "staff.pos.printerSerial", Icon: Cable },
+  bluetooth: { key: "staff.pos.printerBluetooth", Icon: Bluetooth },
+};
+
+/**
+ * This terminal's receipt printer: settings (per device), the live link (reconnected
+ * without a prompt on load), and print helpers that report failures as toasts and never throw.
+ */
+function usePrinter() {
+  const toast = useToast();
+  const { t, locale } = useI18n();
+  const [settings, setSettings] = useState<PrinterSettings>(loadSettings);
+  const [link, setLink] = useState<PrinterLink | null>(null);
+  const [busy, setBusy] = useState(false);
+  const supported = useMemo(support, []);
+  const raster = useMemo(canvasRasterizer, []);
+  const linkRef = useRef(link);
+  const settingsRef = useRef(settings);
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+  linkRef.current = link;
+  settingsRef.current = settings;
+  const why = (e: unknown) => (e instanceof Error ? e.message : String(e));
+  const lost = useRef(() => {});
+  lost.current = () => {
+    setLink(null);
+    toast(t("staff.pos.printerLost"), true);
+  };
+
+  useEffect(() => {
+    let live = true;
+    reconnect(settingsRef.current.device, settingsRef.current.baud, () => lost.current()).then((l) => (live ? setLink(l) : l?.close().catch(() => {})));
+    return () => {
+      live = false;
+      linkRef.current?.close().catch(() => {});
+    };
+  }, []);
+
+  const update = (p: Partial<PrinterSettings>) =>
+    setSettings((cur) => {
+      const next = { ...cur, ...p };
+      saveSettings(next);
+      return next;
+    });
+
+  /** Queue a write so a receipt and a test print never interleave; false when it failed. */
+  const write = (build: () => Uint8Array): Promise<boolean> => {
+    const job = queue.current.then(async () => {
+      const l = linkRef.current;
+      if (!l) return false;
+      try {
+        await l.write(build());
+        return true;
+      } catch (e) {
+        toast(t("staff.pos.printerFailed", { error: why(e) }), true);
+        return false;
+      }
+    });
+    queue.current = job;
+    return job;
+  };
+  const opts = (openDrawer = false) => ({ paper: settingsRef.current.paper, raster, openDrawer });
+  const anySupport = supported.usb || supported.serial || supported.bluetooth;
+
+  return {
+    settings,
+    link,
+    busy,
+    supported,
+    update,
+    async connect(kind: Kind) {
+      setBusy(true);
+      try {
+        await linkRef.current?.close().catch(() => {});
+        const l = await connect(kind, settingsRef.current.baud, () => lost.current());
+        setLink(l);
+        update({ device: l.device });
+        toast(t("staff.pos.printerConnected"));
+      } catch (e) {
+        // closing the browser's device chooser is not an error
+        if (!(e instanceof DOMException && e.name === "NotFoundError")) toast(t("staff.pos.printerConnectFailed", { error: why(e) }), true);
+      } finally {
+        setBusy(false);
+      }
+    },
+    async disconnect() {
+      await linkRef.current?.close().catch(() => {});
+      setLink(null);
+      update({ device: null });
+      toast(t("staff.pos.printerDisconnected"));
+    },
+    test: () => write(() => testBytes(englishTxt(locale, "staff.pos.printerTestTitle"), englishTxt(locale, "staff.pos.printerTestLine"), opts())),
+    kick: () => write(() => concat([init(), drawerKick()])),
+    /** After a saved payment: the receipt (when the bill settled) and the drawer kick (on cash). */
+    afterPayment(cash: boolean, receipt: (() => ReceiptData) | null, token: string | null) {
+      const s = settingsRef.current;
+      const kick = cash && s.drawerOnCash;
+      try {
+        if (linkRef.current) {
+          if (receipt && s.autoPrint) write(() => receiptBytes(receipt(), opts(kick)));
+          else if (kick) write(() => concat([init(), drawerKick()]));
+        } else if (receipt && s.autoPrint && token && !anySupport) printReceiptPage(token);
+      } catch (e) {
+        toast(t("staff.pos.printerFailed", { error: why(e) }), true);
+      }
+    },
+    /** Reprint: on the printer when connected, else the e-receipt in the print dialog. */
+    printReceipt(receipt: () => ReceiptData, token: string) {
+      if (linkRef.current) write(() => receiptBytes(receipt(), opts()));
+      else printReceiptPage(token);
+    },
+  };
+}
+type PrinterApi = ReturnType<typeof usePrinter>;
+
+function PrinterControl({ p }: { p: PrinterApi }) {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const kinds = KINDS.filter((k) => p.supported[k]);
+  const kindName = (k: Kind) => t(KIND[k].key);
+  const name = p.link ? p.link.name || t("staff.pos.printerDevice", { kind: kindName(p.link.kind) }) : null;
+  return (
+    <>
+      <div className="pos-drawer" data-testid="printer">
+        <Printer size={16} aria-hidden />
+        {name ? <span>{name}</span> : <span className="muted">{t("staff.pos.printerNone")}</span>}
+        {p.link ? (
+          <button className="btn small" onClick={p.test}>
+            {t("staff.pos.printerTest")}
+          </button>
+        ) : (
+          kinds.length > 0 && (
+            <button className="btn small" disabled={p.busy} onClick={() => (kinds.length === 1 ? p.connect(kinds[0]) : setOpen(true))}>
+              {t("staff.pos.printerConnect")}
+            </button>
+          )
+        )}
+        <button className="btn small icon ghost" onClick={() => setOpen(true)} aria-label={t("staff.pos.printerSettings")} title={t("staff.pos.printerSettings")}>
+          <Settings2 size={16} />
+        </button>
+      </div>
+      <Modal open={open} onClose={() => setOpen(false)} title={t("staff.pos.printer")}>
+        <div className="col" data-testid="printer-settings">
+          {kinds.length ? (
+            <p className="muted" style={{ margin: 0 }}>
+              {t("staff.pos.printerHint")}
+            </p>
+          ) : (
+            <div className="alert info" role="status">
+              <AlertTriangle size={18} />
+              <span>{t("staff.pos.printerUnsupported")}</span>
+            </div>
+          )}
+          {p.link ? (
+            <div className="row">
+              <span className="badge ok">{t("staff.pos.printerConnected")}</span>
+              <b>{name}</b>
+              <button className="btn small" onClick={p.test}>
+                <Printer size={16} aria-hidden /> {t("staff.pos.printerTest")}
+              </button>
+              <button className="btn small" onClick={p.kick}>
+                <Wallet size={16} aria-hidden /> {t("staff.pos.printerKick")}
+              </button>
+              <button className="btn small ghost" onClick={p.disconnect}>
+                {t("staff.pos.printerDisconnect")}
+              </button>
+            </div>
+          ) : (
+            kinds.length > 0 && (
+              <div className="row">
+                {kinds.map((k) => {
+                  const { Icon } = KIND[k];
+                  return (
+                    <button key={k} className="btn small" disabled={p.busy} onClick={() => p.connect(k)}>
+                      <Icon size={16} aria-hidden /> {t("staff.pos.printerConnectVia", { kind: kindName(k) })}
+                    </button>
+                  );
+                })}
+              </div>
+            )
+          )}
+          <div className="row">
+            <span className="muted">{t("staff.pos.printerPaper")}</span>
+            <div className="segmented" role="group" aria-label={t("staff.pos.printerPaper")}>
+              {([58, 80] as const).map((mm) => (
+                <button key={mm} type="button" className={p.settings.paper === mm ? "active" : ""} aria-pressed={p.settings.paper === mm} onClick={() => p.update({ paper: mm })}>
+                  {t("staff.pos.printerPaperMm", { mm })}
+                </button>
+              ))}
+            </div>
+          </div>
+          {p.supported.serial && (
+            <label className="inline">
+              {t("staff.pos.printerBaud")}
+              <select value={p.settings.baud} onChange={(e) => p.update({ baud: Number(e.target.value) })} style={{ width: "auto" }}>
+                {BAUDS.map((b) => (
+                  <option key={b} value={b}>
+                    {b}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          <label className="inline">
+            <input type="checkbox" checked={p.settings.drawerOnCash} onChange={(e) => p.update({ drawerOnCash: e.target.checked })} /> {t("staff.pos.printerDrawerOnCash")}
+          </label>
+          <label className="inline">
+            <input type="checkbox" checked={p.settings.autoPrint} onChange={(e) => p.update({ autoPrint: e.target.checked })} /> {t("staff.pos.printerAutoPrint")}
+          </label>
+        </div>
+      </Modal>
+    </>
   );
 }

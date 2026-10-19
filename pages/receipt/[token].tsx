@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { useParams } from "@void/react";
 import { Printer, Star } from "lucide-react";
 import { api } from "../../src/ui/api";
-import { usePoll } from "../../src/ui/hooks";
+import { usePoll, useQuery } from "../../src/ui/hooks";
 import { ErrorBox, Money } from "../../src/ui/components";
 import { GuestBar } from "../../src/ui/guest";
 import { useI18n } from "../../src/i18n/react";
@@ -12,6 +13,11 @@ export default function ReceiptPage() {
   const { t, f } = useI18n();
   const { token } = useParams<{ token: string }>();
   const { data: r, error } = usePoll(() => api<ReceiptSnapshot>(`/api/public/receipts/${token}`), { interval: 0 });
+  // ?print=1: the till's fallback when the browser can't reach a receipt printer
+  const autoPrint = useQuery().get("print") === "1";
+  useEffect(() => {
+    if (r && autoPrint) requestAnimationFrame(() => window.print());
+  }, [r, autoPrint]);
   return (
     <>
       <GuestBar
