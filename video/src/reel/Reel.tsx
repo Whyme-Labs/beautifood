@@ -212,7 +212,8 @@ export const Reel: React.FC<{ lang: Lang }> = ({ lang }) => {
 
         {/* closing time: the owner */}
         <Cut name="Closing" from={23} to={24}><Chapter lines={COPY[lang].chapter.closing} /></Cut>
-        <Cut name="Dashboard" from={24} to={26}><DeskStage id="boss" tags={<Tags items={T.boss} at={[0, 4]} first="dark" />} /><Corner who={W.owner} /></Cut>
+        <Cut name="Dashboard" from={24} to={25}><DeskStage id="boss" tags={<Tags items={T.boss.slice(0, 1)} at={[0]} first="dark" />} /><Corner who={W.owner} /></Cut>
+        <Cut name="Report" from={25} to={26}><DeskStage id="report" tags={<Tags items={T.boss.slice(1)} at={[0]} />} /><Corner who={W.owner} /></Cut>
         <Cut name="Translate" from={26} to={28}><DeskStage id="translate" tags={<Tags items={T.translate} at={[0, 4]} />} /><Corner who={W.owner} /></Cut>
         <Cut name="AI setup" from={28} to={30}><DeskStage id="setup" rate={1.4} tags={<Tags items={T.setup} at={[0, 2, 4, 6]} first="dark" />} /><Corner who={W.owner} /></Cut>
 

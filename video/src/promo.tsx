@@ -60,7 +60,7 @@ export const Promo30: React.FC<{ lang: Lang }> = ({ lang }) => {
         <Cut name="Assistant" from={6} to={7}><PhoneStage bg={C.sun} id="assistant" rate={2.4} tags={<Tags items={P.assistant} at={[0, 2]} first="dark" />} /></Cut>
         <Cut name="Kitchen" from={7} to={8}><DeskStage id="kitchen" rate={2.4} tags={<Tags items={T.kitchen.slice(0, 1)} at={[0]} first="dark" />} /></Cut>
         <Cut name="Till" from={8} to={9}><DeskStage id="till" rate={2.8} tags={<Tags items={T.till.slice(1)} at={[0]} />} /></Cut>
-        <Cut name="Dashboard" from={9} to={10}><DeskStage id="boss" rate={3} tags={<Tags items={T.boss.slice(0, 1)} at={[0]} first="dark" />} /></Cut>
+        <Cut name="Dashboard" from={9} to={10}><DeskStage id="boss" rate={1.4} tags={<Tags items={T.boss.slice(0, 1)} at={[0]} first="dark" />} /></Cut>
         <Cut name="AI setup" from={10} to={11}><DeskStage id="setup" rate={2.8} tags={<Tags items={P.setup} at={[0, 2]} />} /></Cut>
         <Cut name="Translate" from={11} to={12}><DeskStage id="translate" rate={2.4} tags={<Tags items={T.translate.slice(0, 1)} at={[0]} first="dark" />} /></Cut>
         <Cut name="End" from={12} to={PROMO_BARS}><EndCard /></Cut>

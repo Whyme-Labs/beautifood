@@ -24,7 +24,8 @@ const desk = (clip: string, rate: number, shots: ShotSpec[], maxZoom = 2): TakeS
 
 const SPECS = {
   join: phone("p-join", 1.6, [{ at: "tap +" }, { at: "type name" }, { at: "ticket number appears" }]),
-  ticket: { ...phone("p-ticket-called", 1, [{ at: "waiting ticket" }]), lead: 0.3 } as TakeSpec,
+  // the live ticket while the hero still waits (the end of the join clip, before anyone is seated)
+  ticket: { ...phone("p-join", 0.8, [{ at: "ahead + wait" }]), lead: 0.5 } as TakeSpec,
   menu: phone("p-menu", 1.2, [{ at: "allergen filter chips" }, { at: "first dish" }, { at: "dish" }]),
   assistant: phone("p-assistant", 1.6, [{ at: "tap Ask what to eat" }, { at: "type question" }, { at: "answer appears" }, { at: "safety note" }]),
   preorder: phone("p-preorder", 1.9, [{ at: "tap preorder" }, { at: "add Char Kway Teow" }, { at: "add Cendol" }, { at: "cart lines" }, { at: "preorder saved" }]),
@@ -38,7 +39,9 @@ const SPECS = {
   till: desk("d-pos", 1.6, [{ at: "select bill", pad: 4 }, { at: "bill open", pad: 1.2 }, { at: "promo applied (discount line)", pad: 3 }, { at: "change preview", pad: 2 }, { at: "change toast", pad: 3 }], 2.2),
   setup: desk("d-setup", 1.3, [{ at: "paste menu", pad: 1.3 }, { at: "describe floor", pad: 1.5 }, { at: "draft items appear", pad: 2.5 }, { at: "applied", pad: 2 }], 1.6),
   translate: desk("d-translate", 1.3, [{ at: "Translate menu", pad: 3 }, { at: "translation result", pad: 1.4 }, { at: "dishes", box: null }]),
-  boss: desk("d-boss", 1.8, [{ at: "today across both branches (totals)", pad: 1.2 }, { at: "AI insights", pad: 1.3 }, { at: "report KPIs", pad: 1.2 }, { at: "best sellers & menu engineering", pad: 1.2 }], 1.8),
+  // the dashboard, then (as its own take, skipping the page load between them) tonight's report
+  boss: desk("d-boss", 1.2, [{ at: "today across both branches (totals)", pad: 1.2 }, { at: "branch cards", pad: 1.2 }, { at: "AI insights", pad: 1.3 }], 1.8),
+  report: { ...desk("d-boss", 1.2, [{ at: "report KPIs", pad: 1.2 }, { at: "best sellers & menu engineering", pad: 1.2 }], 1.8), lead: 0.1 } as TakeSpec,
 } satisfies Record<string, TakeSpec>;
 
 export type TakeId = keyof typeof SPECS;

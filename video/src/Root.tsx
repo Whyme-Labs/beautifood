@@ -17,7 +17,7 @@ const FEATURES: { id: string; key: FeatureKey; n: string; stock: string; takes: 
   { id: "assistant", key: "assistant", n: "3", stock: "#7fddbf", takes: [{ take: "assistant", rate: 1 }, { take: "menu", rate: 1 }] },
   { id: "host", key: "host", n: "4", stock: "#bba8ff", takes: [{ take: "hostCall", rate: 1 }, { take: "board", rate: 1 }] },
   { id: "kitchen-pos", key: "kitchenPos", n: "5", stock: "#ffd12e", takes: [{ take: "kitchen", rate: 1 }, { take: "till", rate: 1.2 }] },
-  { id: "owner", key: "owner", n: "6", stock: "#ff8fa8", takes: [{ take: "setup", rate: 1 }, { take: "boss", rate: 1.3 }] },
+  { id: "owner", key: "owner", n: "6", stock: "#ff8fa8", takes: [{ take: "setup", rate: 1 }, { take: "boss", rate: 1 }, { take: "report", rate: 1 }] },
   { id: "languages", key: "languages", n: "7", stock: "#7fddbf", takes: [{ take: "translate", rate: 1 }, { take: "menu", rate: 1 }] },
   { id: "agents", key: "agents", n: "8", stock: "#bba8ff", takes: [{ clip: "clips/11-ai-agent.mp4", kind: "desktop", start: 0, len: 31 }] },
 ];
