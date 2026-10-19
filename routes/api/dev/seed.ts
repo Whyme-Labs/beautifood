@@ -1,5 +1,7 @@
 // "Load the demo restaurant": make the signed-in user the owner of a new demo restaurant with
 // two branches, a full menu (via the onboarding copilot), tables, a promo code and members.
+// ?history=1 also gives it two weeks of trading (see src/server/dev/history.ts), a team and a
+// finished setup checklist, so it looks like a restaurant that has been open for years.
 // Safe in production: it only ever creates a new restaurant owned by the caller.
 import { getUser } from "void/auth";
 import { api } from "../../../src/server/http";
@@ -13,6 +15,8 @@ import { getBranch } from "../../../src/server/domain/context";
 import { ensureMember } from "../../../src/server/domain/loyalty";
 import { SAMPLE_ABOUT, SAMPLE_FLOOR, SAMPLE_MENU, sampleProfile } from "../../../src/server/dev/sample";
 import { translateMenu } from "../../../src/server/domain/translations";
+import { seedHistory } from "../../../src/server/dev/history";
+import { newId } from "../../../src/server/ids";
 
 export const POST = api(async (c) => {
   const user = getUser();
@@ -34,5 +38,27 @@ export const POST = api(async (c) => {
   // Bilingual out of the box (Claude/Workers AI when available, else the built-in glossary).
   await translateMenu(c.env.DB, { ...appEnv(), AI: (c.env as { AI?: never }).AI }, tenantId, actor);
   for (const [email, name] of [["ali@example.com", "Ali"], ["mei@example.com", "Mei"], ["sam@example.com", "Sam"]]) await ensureMember(c.env.DB, tenantId, email, { name });
+  if (c.req.query("history")) {
+    const branches = await Promise.all(
+      [branchId, second.id].map(async (id, i) => ({
+        ctx: await getBranch(c.env.DB, id),
+        tables: (await c.env.DB.prepare("SELECT id, seats_max AS seatsMax FROM floor_tables WHERE branch_id = ? AND active = 1 AND parent_id IS NULL").bind(id).all<{ id: string; seatsMax: number }>()).results,
+        scale: i === 0 ? 1 : 0.65,
+      })),
+    );
+    const items = (
+      await c.env.DB.prepare("SELECT i.id, i.name, i.price, i.station, c.name AS category FROM menu_items i JOIN menu_categories c ON c.id = i.category_id WHERE i.tenant_id = ? AND i.active = 1")
+        .bind(tenantId)
+        .all<{ id: string; name: string; price: number; station: string; category: string }>()
+    ).results;
+    await seedHistory(c.env.DB, { tenantId, branches, items });
+    // a team that runs the floor, and a setup that was finished long ago
+    const team: [string, string, string[]][] = [["Mei Chen", "waiter", [branchId]], ["Rizal Omar", "kitchen", [branchId]], ["Priya Nair", "branch_manager", [second.id]], ["Farid Hassan", "waiter", [second.id]]];
+    for (const [name, role, ids] of team)
+      await c.env.DB.prepare("INSERT INTO staff (user_id, tenant_id, email, name, role, branch_ids, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
+        .bind(newId("demo_"), tenantId, `${name.toLowerCase().replace(/[^a-z]+/g, ".")}@example.com`, name, role, JSON.stringify(ids), Date.now() - 300 * 86_400_000)
+        .run();
+    await c.env.DB.prepare("UPDATE tenants SET onboarding = ? WHERE id = ?").bind(JSON.stringify({ allergensReviewed: true, queueReviewed: true, qrPrinted: true, loyaltyReviewed: true }), tenantId).run();
+  }
   return c.json({ tenantId, slug, branches: [{ id: branchId, ref: `${slug}~klcc` }, { id: second.id, ref: `${slug}~${second.slug}` }], items: draft.items.length, tables: draft.tables.length }, 201);
 });
