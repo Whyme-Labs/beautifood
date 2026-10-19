@@ -47,6 +47,9 @@ export function ReceiptSettingsCard() {
   const [paper, setPaper] = useState<Paper>(printer.settings.paper);
   const fileRef = useRef<HTMLInputElement>(null);
   const branch = s.branch?.name ?? "";
+  // where this branch is: printed on its receipts only, so it lives on the branch, not in the design
+  const [loc, setLoc] = useState({ address: "", phone: "" });
+  useEffect(() => setLoc({ address: s.branch?.address ?? "", phone: s.branch?.config.phone ?? "" }), [s.branch]);
 
   // start from the design this branch prints with
   const load = (d: ReceiptSettings, sc: Scope) => (setScope(sc), setDraft(sc === "branch" ? (d.branch ?? d.restaurant) : d.restaurant));
@@ -59,7 +62,8 @@ export function ReceiptSettingsCard() {
       sampleBill({
         restaurant: s.tenant?.name ?? "",
         branch: s.branch?.name,
-        address: s.branch?.address,
+        address: loc.address,
+        phone: loc.phone,
         currency: s.tenant?.currency ?? "MYR",
         timezone: s.tenant?.timezone,
         cashier: s.tenant?.me.name,
@@ -70,7 +74,7 @@ export function ReceiptSettingsCard() {
         origin: typeof location === "undefined" ? "" : location.origin,
         tenantSlug: s.tenant?.slug,
       }),
-    [s.tenant, s.branch, menu],
+    [s.tenant, s.branch, menu, loc],
   );
   const job = useMemo<ReceiptJob | null>(() => (draft ? { bill, config: draft, locale: receiptLocale(draft.language, locale) } : null), [bill, draft, locale]);
   const thumbs = useMemo(() => (job ? Object.fromEntries(TEMPLATE_IDS.map((id) => [id, { ...job, config: { ...job.config, template: id } }])) : null) as Record<TemplateId, ReceiptJob> | null, [job]);
@@ -88,6 +92,10 @@ export function ReceiptSettingsCard() {
   const save = () =>
     run(async () => {
       await api(`/api/m/branches/${s.branchId}/receipt`, { method: "PUT", body: { scope, config: draft } });
+      if (loc.address.trim() !== (s.branch?.address ?? "") || loc.phone.trim() !== (s.branch?.config.phone ?? "")) {
+        await api(`/api/m/branches/${s.branchId}/settings`, { method: "PATCH", body: { address: loc.address, phone: loc.phone } });
+        await s.reload();
+      }
       await refresh();
     }, t("staff.settings.receipts.saved"));
   const reset = () =>
@@ -160,25 +168,27 @@ export function ReceiptSettingsCard() {
               <span className="hint">{t("staff.settings.receipts.businessNameHint", { name: s.tenant?.name ?? "" })}</span>
             </label>
             <label>
-              {t("staff.settings.receipts.address")}
-              <textarea value={draft.address} maxLength={200} rows={2} style={{ minHeight: 64 }} placeholder={s.branch?.address} onChange={(e) => set({ address: e.target.value })} />
-              <span className="hint">{t("staff.settings.receipts.addressHint")}</span>
+              {t("staff.settings.receipts.taxId")}
+              <input value={draft.taxId} maxLength={60} onChange={(e) => set({ taxId: e.target.value })} />
             </label>
-            <div className="row" style={{ alignItems: "flex-start" }}>
-              <label className="grow">
-                {t("staff.settings.receipts.phone")}
-                <input value={draft.phone} maxLength={40} inputMode="tel" onChange={(e) => set({ phone: e.target.value })} />
-              </label>
-              <label className="grow">
-                {t("staff.settings.receipts.taxId")}
-                <input value={draft.taxId} maxLength={60} onChange={(e) => set({ taxId: e.target.value })} />
-              </label>
-            </div>
             <label>
               {t("staff.settings.receipts.footer")}
               <textarea value={draft.footer} maxLength={300} rows={2} style={{ minHeight: 64 }} placeholder={t("staff.pos.receiptThanks")} onChange={(e) => set({ footer: e.target.value })} />
               <span className="hint">{t("staff.settings.receipts.footerHint", { thanks: t("staff.pos.receiptThanks") })}</span>
             </label>
+          </fieldset>
+
+          <fieldset className="menu-fieldset col" data-testid="receipt-location">
+            <legend>{t("staff.settings.receipts.location", { branch })}</legend>
+            <label>
+              {t("staff.settings.receipts.address")}
+              <textarea value={loc.address} maxLength={200} rows={2} style={{ minHeight: 64 }} onChange={(e) => setLoc({ ...loc, address: e.target.value })} data-testid="receipt-address" />
+            </label>
+            <label>
+              {t("staff.settings.receipts.phone")}
+              <input value={loc.phone} maxLength={40} inputMode="tel" onChange={(e) => setLoc({ ...loc, phone: e.target.value })} data-testid="receipt-phone" />
+            </label>
+            <span className="hint">{t("staff.settings.receipts.locationHint", { branch })}</span>
           </fieldset>
 
           <fieldset className="menu-fieldset">

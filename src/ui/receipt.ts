@@ -39,7 +39,9 @@ export interface BillPayment {
 export interface Bill {
   restaurant: string;
   branch?: string;
+  /** This branch's address and phone: every branch prints its own, whatever design it shares. */
   address?: string;
+  phone?: string;
   number: string;
   tables: string[];
   cashier?: string;
@@ -99,8 +101,8 @@ export function receiptBlocks(bill: Bill, config: ReceiptConfig, locale: string)
     header: () => {
       const out: Block[] = [{ k: "text", text: name, align: head, size: "xl", bold: true }];
       if (bill.branch && bill.branch !== name) out.push({ k: "text", text: bill.branch, align: head, size: "md" });
-      for (const l of (config.address || bill.address || "").split("\n").filter((x) => x.trim())) out.push({ k: "text", text: l.trim(), align: head, size: "sm" });
-      if (config.phone) out.push({ k: "text", text: label("staff.pos.receiptTel", { phone: config.phone }, false), align: head, size: "sm" });
+      for (const l of (bill.address ?? "").split("\n").filter((x) => x.trim())) out.push({ k: "text", text: l.trim(), align: head, size: "sm" });
+      if (bill.phone) out.push({ k: "text", text: label("staff.pos.receiptTel", { phone: bill.phone }, false), align: head, size: "sm" });
       if (config.taxId) out.push({ k: "text", text: label("staff.pos.receiptTaxId", { id: config.taxId }, false), align: head, size: "sm" });
       return out;
     },
@@ -366,6 +368,7 @@ export interface SampleInput {
   restaurant: string;
   branch?: string;
   address?: string;
+  phone?: string;
   currency: string;
   timezone?: string;
   cashier?: string;
@@ -407,6 +410,7 @@ export function sampleBill(s: SampleInput): Bill {
     restaurant: s.restaurant,
     branch: s.branch,
     address: s.address,
+    phone: s.phone,
     number: "1042",
     tables: ["T3"],
     cashier: s.cashier,

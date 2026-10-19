@@ -23,10 +23,12 @@ export const POST = api(async (c) => {
   if (!user) fail(401, "unauthorized", "Sign in first");
   const q = c.req.query("name") || "Beautifood Demo";
   const profile = sampleProfile(q, c.req.query("lang") ?? "en");
-  const { tenantId, branchId, slug } = await createTenant(c.env.DB, user, { name: q, cuisine: profile.cuisine, branchName: "KLCC", address: "Level 2, Suria KLCC, Kuala Lumpur" });
+  const { tenantId, branchId, slug } = await createTenant(c.env.DB, user, { name: q, cuisine: profile.cuisine, branchName: "KLCC", address: "Lot 241, Level 2, Suria KLCC, 50088 Kuala Lumpur" });
   const actor = `staff:${user.id}`;
   await updateTenant(c.env.DB, tenantId, actor, { story: profile.story, description: profile.description });
-  const second = await addBranch(c.env.DB, tenantId, actor, { name: "Bangsar", address: "Jalan Telawi, Bangsar" });
+  const second = await addBranch(c.env.DB, tenantId, actor, { name: "Bangsar", address: "12 Jalan Telawi 3, Bangsar Baru, 59100 Kuala Lumpur" });
+  // each branch prints its own address and phone on its receipts
+  for (const [id, phone] of [[branchId, "03-2382 0118"], [second.id, "03-2201 8888"]]) await c.env.DB.prepare("UPDATE branches SET config = json_set(config, '$.phone', ?) WHERE id = ?").bind(phone, id).run();
   const draft = await onboardingDraft(appEnv(), { restaurantName: q, about: SAMPLE_ABOUT, menuText: SAMPLE_MENU, floorText: SAMPLE_FLOOR, currency: "MYR" });
   await importMenu(c.env.DB, tenantId, actor, draft.items, true);
   // satay & curry mee get a spice modifier, teh tarik a sugar level to exercise modifiers

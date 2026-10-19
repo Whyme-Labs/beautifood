@@ -129,3 +129,25 @@ test.describe("POS & payments", () => {
     expect(closed.variance).toBe(-10);
   });
 });
+
+test("each branch keeps its own receipt address and phone while sharing one design", async () => {
+  const s = await seed();
+  const klcc = await json(s.owner.get(`/api/m/branches/${s.klcc.id}/settings`));
+  const bangsar = await json(s.owner.get(`/api/m/branches/${s.bangsar.id}/settings`));
+  expect(klcc.config.phone).toBe("03-2382 0118");
+  expect(bangsar.config.phone).toBe("03-2201 8888");
+  expect(klcc.address).toContain("Suria KLCC");
+
+  await json(s.owner.patch(`/api/m/branches/${s.bangsar.id}/settings`, { data: { address: " 15 Jalan Telawi 2, Bangsar Baru ", phone: " 03-2201 9999 " } }));
+  const after = await json(s.owner.get(`/api/m/branches/${s.bangsar.id}/settings`));
+  expect(after.address).toBe("15 Jalan Telawi 2, Bangsar Baru");
+  expect(after.config.phone).toBe("03-2201 9999");
+  // KLCC is untouched
+  expect((await json(s.owner.get(`/api/m/branches/${s.klcc.id}/settings`))).config.phone).toBe("03-2382 0118");
+
+  // the restaurant-wide design no longer carries an address or a phone
+  const design = await json(s.owner.get(`/api/m/branches/${s.klcc.id}/receipt`));
+  expect(design.restaurant).not.toHaveProperty("address");
+  expect(design.restaurant).not.toHaveProperty("phone");
+  expect((await errorOf(s.owner.patch(`/api/m/branches/${s.klcc.id}/settings`, { data: { phone: "x".repeat(41) } }), 400)).code).toBeTruthy();
+});

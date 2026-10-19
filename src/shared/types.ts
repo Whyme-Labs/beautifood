@@ -51,6 +51,8 @@ export interface BranchConfig {
   modules: Modules;
   currency: string;
   timezone: string;
+  /** The branch's phone number, printed on its receipts (its address is on the branch itself). */
+  phone: string;
 }
 
 export interface Modules {
@@ -104,6 +106,7 @@ export const DEFAULT_BRANCH_CONFIG: BranchConfig = {
   modules: DEFAULT_MODULES,
   currency: "MYR",
   timezone: "Asia/Kuala_Lumpur",
+  phone: "",
 };
 
 export type TableStatus = "free" | "seated" | "dirty" | "reserved" | "blocked" | "split";

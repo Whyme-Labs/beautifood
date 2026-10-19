@@ -95,11 +95,8 @@ export const ReceiptConfigSchema = z
   .object({
     template: z.enum(TEMPLATE_IDS),
     logo: Logo.nullable(),
-    /** Empty: the restaurant's name. */
+    /** Empty: the restaurant's name. (The address and phone are each branch's own, from the branch.) */
     businessName: line(80),
-    /** Empty: the branch's address. */
-    address: line(200),
-    phone: line(40),
     /** Tax / SST registration number. */
     taxId: line(60),
     /** Printed at the bottom; empty: the standard thank-you. */
@@ -118,8 +115,6 @@ export const DEFAULT_RECEIPT: ReceiptConfig = {
   template: "classic",
   logo: null,
   businessName: "",
-  address: "",
-  phone: "",
   taxId: "",
   footer: "",
   show: { number: true, table: true, dateTime: true, cashier: true, itemOptions: true, payments: true, receiptQr: true, joinQr: false },

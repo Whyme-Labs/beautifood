@@ -14,6 +14,7 @@ const BILL: Bill = {
   restaurant: "Beautifood Kopitiam",
   branch: "Bangsar",
   address: "12 Jalan Telawi 3, Bangsar Baru\n59100 Kuala Lumpur",
+  phone: "03-2201 8888",
   number: "1042",
   tables: ["T3"],
   cashier: "Aisyah",
@@ -150,7 +151,7 @@ describe("what each template prints", () => {
   const all = (blocks: Block[]) => blocks.flatMap((b) => (b.k === "text" ? [textOf(b.text)] : b.k === "row" ? [textOf(b.left), ...(b.right ? [textOf(b.right)] : []), ...(b.subs ?? []).map(textOf)] : b.k === "qr" ? b.codes.map((c) => textOf(c.caption)) : []));
 
   it("Classic: header, meta, every dish detail, totals, payments, thank-you and the e-receipt QR", () => {
-    const blocks = receiptBlocks(BILL, design("classic", { phone: "03-2201 8888", taxId: "W10-1808-32000123" }), "en");
+    const blocks = receiptBlocks(BILL, design("classic", { taxId: "W10-1808-32000123" }), "en");
     const t = all(blocks);
     for (const s of ["Beautifood Kopitiam", "Bangsar", "59100 Kuala Lumpur", "Tel 03-2201 8888", "SST / tax reg. no. W10-1808-32000123", "Bill #1042", "Table T3", "Cashier: Aisyah", "Extra prawns", "“Less spicy”", "Subtotal", "Discount (Staff meal)", "-25.71", "Service charge", "Tax", "Total", "Cash", "Tendered", "Change", "Thank you, see you again!", "Scan for your e-receipt"])
       expect(t, s).toContain(s);
@@ -196,12 +197,23 @@ describe("what each template prints", () => {
     expect(only).toMatchObject({ right: undefined });
   });
 
-  it("uses the business name, address and footer the merchant wrote", () => {
-    const t = all(receiptBlocks(BILL, design("classic", { businessName: "BF Kopitiam Sdn Bhd", address: "Lot 5, Jalan Maarof", footer: "Wi-Fi: kopitiam123\n\nFollow us @beautifood" }), "en"));
+  it("prints each branch's own address and phone under one shared design", () => {
+    const shared = design("classic");
+    const bangsar = all(receiptBlocks(BILL, shared, "en"));
+    const klcc = all(receiptBlocks({ ...BILL, branch: "KLCC", address: "Lot 241, Suria KLCC\n50088 Kuala Lumpur", phone: "03-2382 0000" }, shared, "en"));
+    expect(bangsar).toContain("59100 Kuala Lumpur");
+    expect(bangsar).toContain("Tel 03-2201 8888");
+    expect(klcc).toContain("Lot 241, Suria KLCC");
+    expect(klcc).toContain("Tel 03-2382 0000");
+    expect(klcc).not.toContain("59100 Kuala Lumpur");
+    // an address in a design saved before addresses moved to the branch is ignored
+    expect(all(receiptBlocks(BILL, resolveReceipt({ address: "Lot 5, Jalan Maarof" } as never), "en"))).not.toContain("Lot 5, Jalan Maarof");
+  });
+
+  it("uses the business name and footer the merchant wrote", () => {
+    const t = all(receiptBlocks(BILL, design("classic", { businessName: "BF Kopitiam Sdn Bhd", footer: "Wi-Fi: kopitiam123\n\nFollow us @beautifood" }), "en"));
     expect(t).toContain("BF Kopitiam Sdn Bhd");
     expect(t).not.toContain("Beautifood Kopitiam");
-    expect(t).toContain("Lot 5, Jalan Maarof");
-    expect(t).not.toContain("59100 Kuala Lumpur");
     expect(t).toContain("Wi-Fi: kopitiam123");
     expect(t).toContain("Follow us @beautifood");
     expect(t).not.toContain("Thank you, see you again!");
@@ -236,7 +248,7 @@ describe("the merchant's receipt design", () => {
     expect(ReceiptConfigSchema.safeParse({ ...DEFAULT_RECEIPT, businessName: "x".repeat(81) }).success).toBe(false);
     expect(ReceiptConfigSchema.safeParse({ ...DEFAULT_RECEIPT, footer: "a\nb\nc\nd\ne\nf\ng" }).success).toBe(false);
     expect(ReceiptConfigSchema.safeParse({ ...DEFAULT_RECEIPT, language: "fr" }).success).toBe(false);
-    expect(ReceiptConfigSchema.parse({ ...DEFAULT_RECEIPT, phone: "  03-2201 8888 " }).phone).toBe("03-2201 8888");
+    expect(ReceiptConfigSchema.parse({ ...DEFAULT_RECEIPT, taxId: "  W10-1808 " }).taxId).toBe("W10-1808");
   });
 
   it("caps the logo at 64 KB, as a PNG, JPEG or WebP data URL of a sane size", () => {

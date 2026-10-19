@@ -146,6 +146,7 @@ export default function Pos() {
       restaurant: s.tenant?.name ?? "",
       branch: s.branch?.name,
       address: s.branch?.address || undefined,
+      phone: s.branch?.config.phone || undefined,
       number: o.number,
       tables,
       cashier: s.tenant?.me.name,
@@ -174,7 +175,7 @@ export default function Pos() {
   };
   /** What "Test print" prints: a sample bill of this restaurant's dishes in its receipt design. */
   const sample = (): ReceiptJob => ({
-    bill: sampleBill({ restaurant: s.tenant?.name ?? "", branch: s.branch?.name, address: s.branch?.address, currency: cur, timezone: s.tenant?.timezone, cashier: s.tenant?.me.name, menu, serviceChargePct: s.branch?.config.serviceChargePct, taxPct: s.branch?.config.taxPct, cashRounding: s.branch?.config.cashRounding, origin: location.origin, tenantSlug: s.tenant?.slug }),
+    bill: sampleBill({ restaurant: s.tenant?.name ?? "", branch: s.branch?.name, address: s.branch?.address, phone: s.branch?.config.phone, currency: cur, timezone: s.tenant?.timezone, cashier: s.tenant?.me.name, menu, serviceChargePct: s.branch?.config.serviceChargePct, taxPct: s.branch?.config.taxPct, cashRounding: s.branch?.config.cashRounding, origin: location.origin, tenantSlug: s.tenant?.slug }),
     config: design,
     locale: receiptLocale(design.language, locale),
   });

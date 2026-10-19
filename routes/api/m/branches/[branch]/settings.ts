@@ -6,7 +6,8 @@ import { updateBranchConfig } from "../../../../../src/server/domain/tenants";
 const Patch = z
   .object({
     name: z.string().min(2).max(60),
-    address: z.string().max(200),
+    address: z.string().trim().max(200),
+    phone: z.string().trim().max(40),
     active: z.boolean(),
     categories: z.array(z.object({ code: z.string().min(1).max(4), label: z.string().min(1).max(20), prefix: z.string().min(1).max(2), min: z.number().int(), max: z.number().int() })).min(1).max(8),
     strategy: z.enum(["fifo", "category_fifo", "best_fit", "smart"]),
