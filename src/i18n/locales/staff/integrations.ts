@@ -90,6 +90,16 @@ export const en = {
     revokeName: "Revoke {name}",
     revoked: "Key revoked",
   },
+  kits: {
+    title: "Starter kits",
+    lead: "Working code to deploy on your own Cloudflare account, or to hand your AI agent as a starting point.",
+    connectors: "Connectors kit",
+    connectorsHint: "Slack alerts, WhatsApp “table ready”, Xero invoices, delivery orders into the kitchen.",
+    storefront: "Storefront template",
+    storefrontHint: "Your storefront on your own domain, live from Beautifood.",
+    deploy: "Deploy to Cloudflare",
+    code: "Code",
+  },
   docs: "Reference: {openapi} · {llms}",
 } as const;
 
@@ -181,6 +191,16 @@ export const zh: Widen<typeof en> = {
     revoke: "撤销",
     revokeName: "撤销 {name}",
     revoked: "密钥已撤销",
+  },
+  kits: {
+    title: "入门套件",
+    lead: "可以部署到你自己 Cloudflare 账户的现成代码，也可以交给你的 AI 助手作为起点。",
+    connectors: "连接器套件",
+    connectorsHint: "Slack 提醒、WhatsApp“桌位已备好”、Xero 发票、外卖订单直进厨房。",
+    storefront: "店铺主页模板",
+    storefrontHint: "用你自己的域名放店铺主页，内容实时来自 Beautifood。",
+    deploy: "部署到 Cloudflare",
+    code: "代码",
   },
   docs: "参考：{openapi} · {llms}",
 };

@@ -123,6 +123,11 @@ With a token whose owner may manage integrations:
 - \`GET ${base}/api/m/webhooks/{id}/deliveries\`: the delivery log, with each payload and response
 
 ${b.endpoints.length ? `Already set up here:\n\n${b.endpoints.map((e) => `- \`${e.id}\` → ${e.url} (${e.events.join(", ")})`).join("\n")}\n` : "No webhooks are set up yet.\n"}
+## Starting points
+
+- **Connectors kit** (${"`"}templates/connectors-worker${"`"} in the Beautifood repository, https://github.com/Whyme-Labs/beautifood/tree/main/templates/connectors-worker): one Cloudflare Worker with signature checks, once-per-delivery handling and working connectors for Slack, WhatsApp (table ready), Xero (an invoice per paid bill) and inbound delivery orders. Add yours as one more file in ${"`"}src/connectors/${"`"}.
+- **Storefront template** (${"`"}templates/storefront-worker${"`"}, https://github.com/Whyme-Labs/beautifood/tree/main/templates/storefront-worker): the restaurant's storefront rendered on its own Cloudflare account and domain from ${"`"}GET ${base}/api/public/storefronts/${b.tenant.slug}${"`"}.
+
 ## How a good connector looks
 
 - One small service (a Cloudflare Worker is ideal) with one job, e.g. "post each paid bill to Xero as an invoice" or "send the queue-called message on WhatsApp".

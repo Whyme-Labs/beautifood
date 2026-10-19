@@ -76,6 +76,7 @@ export default function Integrations() {
       </section>
 
       <ApiKeys />
+      <StarterKits />
 
       <p className="muted" style={{ fontSize: 13 }}>
         {(() => {
@@ -334,6 +335,40 @@ function EndpointModal({ draft, onClose, onSaved }: { draft: Draft; onClose: () 
         </div>
       </form>
     </Modal>
+  );
+}
+
+const KIT_REPO = "https://github.com/Whyme-Labs/beautifood/tree/main/templates";
+
+function StarterKits() {
+  const { t } = useI18n();
+  const kits = [
+    { id: "connectors-worker", name: t("staff.integrations.kits.connectors"), hint: t("staff.integrations.kits.connectorsHint") },
+    { id: "storefront-worker", name: t("staff.integrations.kits.storefront"), hint: t("staff.integrations.kits.storefrontHint") },
+  ];
+  return (
+    <section className="card col" aria-labelledby="kits-h" data-testid="starter-kits">
+      <h2 id="kits-h" style={{ margin: 0 }}>{t("staff.integrations.kits.title")}</h2>
+      <p className="muted" style={{ margin: 0 }}>{t("staff.integrations.kits.lead")}</p>
+      <div className="list">
+        {kits.map((k) => (
+          <div key={k.id} className="row between">
+            <span className="col tight" style={{ minWidth: 0 }}>
+              <b>{k.name}</b>
+              <span className="muted" style={{ fontSize: 13 }}>{k.hint}</span>
+            </span>
+            <span className="row nowrap">
+              <a className="btn small" href={`${KIT_REPO}/${k.id}`} target="_blank" rel="noreferrer">
+                {t("staff.integrations.kits.code")}
+              </a>
+              <a className="btn small primary" href={`https://deploy.workers.cloudflare.com/?url=${encodeURIComponent(`${KIT_REPO}/${k.id}`)}`} target="_blank" rel="noreferrer">
+                {t("staff.integrations.kits.deploy")}
+              </a>
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 

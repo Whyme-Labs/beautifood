@@ -9,6 +9,9 @@ import { RETRY_MINUTES, WEBHOOK_EVENT_TYPES, WEBHOOK_HEADERS, WEBHOOK_PING, subs
 import { fail, notFound } from "../errors";
 import { newId } from "../ids";
 import { orderView } from "./orders";
+import { endpointSecret, signature } from "../webhookSign";
+
+export { endpointSecret, signature };
 
 const CONSUMER = "webhooks";
 const TIMEOUT_MS = 10_000;
@@ -38,21 +41,6 @@ export const toEndpoint = (r: EndpointRow, stats?: { delivered: number; failed: 
   createdAt: r.created_at,
   stats: stats ?? null,
 });
-
-/** The endpoint's signing secret, derived from the app secret: nothing to store or leak from the database. */
-export async function endpointSecret(appSecret: string, id: string, version: number): Promise<string> {
-  const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(appSecret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const mac = new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(`webhook:${id}:${version}`)));
-  return `whsec_${[...mac.slice(0, 24)].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
-}
-
-/** `t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>.<body>">`, the same scheme Stripe uses. */
-export async function signature(secret: string, body: string, at: number): Promise<string> {
-  const t = Math.floor(at / 1000);
-  const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const mac = new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(`${t}.${body}`)));
-  return `t=${t},v1=${[...mac].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
-}
 
 /** Only https (http too outside production, for local receivers), and never this app's own host. */
 export function checkUrl(raw: string, env: { APP_ENV: string; PUBLIC_URL: string }) {
@@ -312,7 +300,7 @@ async function about(db: D1Database, e: EventRow, data: Record<string, unknown>)
   const [kind, id] = e.stream.split(":");
   try {
     if (e.type.startsWith("queue.") && typeof data.ticketId === "string") {
-      const t = await db.prepare("SELECT id, number, name, party_size, status, created_at, called_at, seated_at FROM tickets WHERE id = ?").bind(data.ticketId).first();
+      const t = await db.prepare("SELECT id, number, name, phone, locale, party_size, status, created_at, called_at, seated_at FROM tickets WHERE id = ?").bind(data.ticketId).first();
       return t ? { ticket: t } : {};
     }
     if (kind === "booking") {

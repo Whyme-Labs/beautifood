@@ -1,0 +1,13 @@
+{
+  "name": "beautifood-storefront",
+  "private": true,
+  "type": "module",
+  "description": "Your restaurant's storefront on your own Cloudflare account, live from Beautifood.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}

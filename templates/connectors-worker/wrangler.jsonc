@@ -1,0 +1,19 @@
+{
+  "name": "my-restaurant-connectors",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "vars": {
+    "BEAUTIFOOD_URL": "https://beautifood-app.swmengappdev.workers.dev"
+  },
+  // Optional: a KV namespace remembers deliveries already handled (and Xero's rotating refresh
+  // token). Create one with `npx wrangler kv namespace create STATE` and paste its id here.
+  // "kv_namespaces": [{ "binding": "STATE", "id": "<id>" }]
+  //
+  // Secrets (npx wrangler secret put <NAME>); each connector runs only when its secrets are set:
+  //   BEAUTIFOOD_WEBHOOK_SECRET   the whsec_… of the Beautifood webhook pointing at /hooks (required)
+  //   BEAUTIFOOD_TOKEN            a bf_pat_… API key (for the delivery connector)
+  //   SLACK_WEBHOOK_URL           Slack incoming webhook
+  //   WHATSAPP_TOKEN, WHATSAPP_PHONE_ID[, WHATSAPP_TEMPLATE]
+  //   XERO_CLIENT_ID, XERO_CLIENT_SECRET, XERO_REFRESH_TOKEN, XERO_TENANT_ID[, XERO_ACCOUNT_CODE]
+  //   DELIVERY_SECRET             shared secret your delivery middleware sends to /delivery/orders
+}

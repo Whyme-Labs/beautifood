@@ -1,0 +1,13 @@
+{
+  "name": "beautifood-connectors",
+  "private": true,
+  "type": "module",
+  "description": "Example connectors between Beautifood and Slack, WhatsApp, Xero and delivery platforms, as one Cloudflare Worker.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}

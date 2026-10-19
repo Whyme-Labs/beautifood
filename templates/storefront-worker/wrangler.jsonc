@@ -1,0 +1,13 @@
+{
+  // Deploy with the button in README.md, or `npx wrangler deploy`.
+  "name": "my-restaurant-storefront",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "vars": {
+    // Your restaurant's slug on Beautifood: the part after /at/ in your storefront address.
+    "RESTAURANT": "auntie-lims-kitchen",
+    // Where your Beautifood lives (no trailing slash).
+    "BEAUTIFOOD_URL": "https://beautifood-app.swmengappdev.workers.dev"
+  }
+  // Add your own domain under Workers → your worker → Settings → Domains & Routes.
+}
