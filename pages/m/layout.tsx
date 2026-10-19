@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useRouter } from "@void/react";
 import { auth } from "void/client";
 import { StaffProvider, useStaff } from "../../src/ui/staff";
-import { BarChart3, BookOpen, CalendarDays, ChefHat, Gift, LayoutDashboard, LogOut, QrCode, Receipt, Settings, Sparkles, Webhook, UserCog, Users, type LucideIcon } from "lucide-react";
+import { BarChart3, BookOpen, CalendarDays, ChefHat, Gift, LayoutDashboard, LogOut, QrCode, Receipt, Settings, Sparkles, Store, Webhook, UserCog, Users, type LucideIcon } from "lucide-react";
 import { Empty, LangSwitch, Logo } from "../../src/ui/components";
 import { useI18n } from "../../src/i18n/react";
 import type { MessageKey } from "../../src/i18n/core";
@@ -21,6 +21,7 @@ const NAV: { href: string; key: keyof Messages["staff"]["shell"]["nav"]; icon: L
   { href: "/m/reports", key: "reports", icon: BarChart3, perm: "report.view" },
   { href: "/m/staff", key: "team", icon: UserCog, perm: "staff.manage" },
   { href: "/m/settings", key: "settings", icon: Settings, perm: "settings.manage" },
+  { href: "/m/storefront", key: "storefront", icon: Store, perm: "settings.manage" },
   { href: "/m/integrations", key: "integrations", icon: Webhook, perm: "integrations.manage" },
   { href: "/m/setup", key: "setup", icon: Sparkles, perm: "menu.manage" },
 ];

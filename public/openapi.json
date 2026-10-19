@@ -509,6 +509,84 @@
           }
         }
       }
+    },
+    "/api/public/storefronts/{slug}": {
+      "get": {
+        "summary": "A restaurant's live storefront: the published design (theme tokens, sections, words per language) and what's on now (branches, signatures, deals). Render it yourself, e.g. from your own Cloudflare deployment",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "{ design, published, restaurant, branches, currency, menuLanguage, menu }"
+          }
+        }
+      }
+    },
+    "/api/m/storefront": {
+      "get": {
+        "summary": "The storefront draft, what's live and the preview data",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "State"
+          }
+        }
+      },
+      "put": {
+        "summary": "Save the draft ({ design })",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "{ draft }"
+          }
+        }
+      }
+    },
+    "/api/m/storefront/publish": {
+      "post": {
+        "summary": "Publish the draft",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "State"
+          }
+        }
+      }
+    },
+    "/api/m/storefront/design": {
+      "post": {
+        "summary": "AI designer: { prompt, refine } → { design, notes } (not saved)",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Design"
+          }
+        }
+      }
     }
   },
   "components": {

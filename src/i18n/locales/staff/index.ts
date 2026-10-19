@@ -10,6 +10,7 @@ import * as menu from "./menu";
 import * as pos from "./pos";
 import * as settings from "./settings";
 import * as setup from "./setup";
+import * as storefront from "./storefront";
 import * as shell from "./shell";
 import * as tables from "./tables";
 import * as team from "./team";
@@ -29,6 +30,7 @@ export const staffEn = {
   setup: setup.en,
   inbox: inbox.en,
   integrations: integrations.en,
+  storefront: storefront.en,
 } as const;
 
 export const staffZh = {
@@ -46,4 +48,5 @@ export const staffZh = {
   setup: setup.zh,
   inbox: inbox.zh,
   integrations: integrations.zh,
+  storefront: storefront.zh,
 };

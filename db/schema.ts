@@ -633,6 +633,16 @@ export const webhookDeliveries = sqliteTable(
   (t) => [uniqueIndex("webhook_deliveries_event").on(t.endpointId, t.eventId), index("webhook_deliveries_due").on(t.status, t.nextAt), index("webhook_deliveries_endpoint").on(t.endpointId, t.createdAt)],
 );
 
+/** A restaurant's storefront design (src/shared/storefront.ts): the draft being edited and what's live. */
+export const storefronts = sqliteTable("storefronts", {
+  tenantId: text("tenant_id").primaryKey(),
+  draft: text("draft").notNull(),
+  published: text("published"),
+  updatedAt: integer("updated_at").notNull(),
+  updatedBy: text("updated_by").notNull().default(""),
+  publishedAt: integer("published_at"),
+});
+
 export const consumerCursors = sqliteTable("consumer_cursors", {
   name: text("name").primaryKey(),
   lastId: integer("last_id").notNull().default(0),
