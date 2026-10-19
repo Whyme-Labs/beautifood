@@ -24,10 +24,12 @@ type Props = {
   shots: Shot[];
   /** Never zoom past this multiple of "fit". */
   maxZoom?: number;
+  /** A sticky header this tall (video px): a frame that would start partway through it starts at the top instead. */
+  snapTop?: number;
   style?: React.CSSProperties;
 };
 
-export const Camera: React.FC<Props> = ({ src, vw, vh, w, h, from = 0, rate = 1, shots, maxZoom = 2.6, style }) => {
+export const Camera: React.FC<Props> = ({ src, vw, vh, w, h, from = 0, rate = 1, shots, maxZoom = 2.6, snapTop = 0, style }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const clipT = from + (frame / fps) * rate;
@@ -36,7 +38,9 @@ export const Camera: React.FC<Props> = ({ src, vw, vh, w, h, from = 0, rate = 1,
     if (!s.box) return { scale: fit, cx: vw / 2, cy: vh / 2 };
     const pad = s.pad ?? 1.25;
     const scale = Math.min(fit * maxZoom, Math.max(fit, Math.min(w / (s.box.w * pad), h / (s.box.h * pad))));
-    return { scale, cx: s.box.x + s.box.w / 2, cy: s.box.y + s.box.h / 2 };
+    const half = h / (2 * scale);
+    const cy = s.box.y + s.box.h / 2;
+    return { scale, cx: s.box.x + s.box.w / 2, cy: cy - half < snapTop ? half : cy };
   };
   const ks = shots.map(frameFor);
   const ts = shots.map((s) => s.t);
@@ -71,11 +75,12 @@ export const Camera: React.FC<Props> = ({ src, vw, vh, w, h, from = 0, rate = 1,
 };
 
 /**
- * A phone screen card around a Camera. It is wider than a real phone on purpose: the camera
- * crops to the part of the page that matters, so the UI reads at a legible size in a 1080p frame.
+ * A phone screen card around a Camera. It is shorter than a real phone on purpose: the camera
+ * shows the screen's full width and pans up and down to the part that matters, so the UI reads
+ * at a legible size in a 1080p frame and nothing is cut off at the sides.
  */
 export const Phone: React.FC<Omit<Props, "w" | "h" | "vw" | "vh"> & { height?: number; width?: number; tilt?: number }> = ({ height = 1000, width = 860, tilt = 0, style, ...rest }) => (
   <div style={{ padding: 14, background: C.ink, borderRadius: 56, boxShadow: "0 40px 90px rgba(26,24,20,.35)", rotate: `${tilt}deg`, ...style }}>
-    <Camera vw={1170} vh={2532} w={width - 28} h={height - 28} style={{ borderRadius: 42 }} {...rest} />
+    <Camera vw={1170} vh={2532} w={width - 28} h={height - 28} style={{ borderRadius: 42 }} {...rest} maxZoom={1} snapTop={260} />
   </div>
 );

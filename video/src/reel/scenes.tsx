@@ -4,6 +4,7 @@ import { AbsoluteFill, interpolate, random, useCurrentFrame, useVideoConfig } fr
 import { Video } from "@remotion/media";
 import { staticFile } from "remotion";
 import { C, NUM, SANS } from "../theme";
+import { useCopy } from "./copy";
 import { BEAT, clamp, ease, useAt, useBeat, usePulse } from "./beat";
 
 const STOCK = { A: C.sun, B: "#ff8fa8", C: "#7fddbf", D: "#bba8ff" } as const;
@@ -113,7 +114,8 @@ export const CrowdScene: React.FC = () => {
   const { beat, phase, fps, frame } = useBeat();
   const shown = Math.min(38, Math.floor((beat + phase) * 4.6));
   const people = Array.from({ length: 38 }, (_, i) => i);
-  const shouts = ["Ah Meng!", "4 pax?", "No. 37!", "Table for 2?", "Still waiting…"];
+  const copy = useCopy();
+  const shouts = copy.crowd.shouts;
   const pulse = usePulse(0.4);
   return (
     <AbsoluteFill style={{ background: C.ink, fontFamily: SANS }}>
@@ -124,7 +126,7 @@ export const CrowdScene: React.FC = () => {
         ))}
       </div>
       <div style={{ position: "absolute", top: 215, left: 0, right: 0, textAlign: "center", color: C.sun, fontFamily: NUM, fontWeight: 800, fontSize: 64, letterSpacing: ".04em" }}>
-        AUNTIE MEI'S · 7:42 PM
+        {copy.crowd.sign}
       </div>
       {/* the queue grows */}
       <div style={{ position: "absolute", left: 150, right: 150, bottom: 110, display: "flex", flexWrap: "wrap-reverse", gap: "22px 30px", justifyContent: "center" }}>
@@ -146,7 +148,7 @@ export const CrowdScene: React.FC = () => {
       })}
       <div style={{ position: "absolute", right: 150, top: 300, textAlign: "right", color: C.sun }}>
         <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: 220, lineHeight: 0.9, scale: String(1 + pulse * 0.06) }}>{shown}</div>
-        <div style={{ fontSize: 40, fontWeight: 800, color: C.paper }}>waiting</div>
+        <div style={{ fontSize: 40, fontWeight: 800, color: C.paper }}>{copy.crowd.waiting}</div>
       </div>
     </AbsoluteFill>
   );
@@ -156,6 +158,7 @@ export const CrowdScene: React.FC = () => {
 
 export const PaperScene: React.FC = () => {
   const { t, fps, frame, beat } = useBeat();
+  const copy = useCopy();
   const slips = Array.from({ length: 22 }, (_, i) => i);
   const gone = Math.min(9, Math.max(0, beat - 2));
   return (
@@ -181,7 +184,7 @@ export const PaperScene: React.FC = () => {
         })}
       </div>
       <div style={{ position: "absolute", left: 140, top: 140, color: C.sun, fontFamily: NUM, fontWeight: 800, fontSize: 170, lineHeight: 1 }}>−{gone}</div>
-      <div style={{ position: "absolute", left: 146, top: 320, color: C.paper, fontSize: 44, fontWeight: 800 }}>walked away</div>
+      <div style={{ position: "absolute", left: 146, top: 320, color: C.paper, fontSize: 44, fontWeight: 800 }}>{copy.paper.walkedAway}</div>
     </AbsoluteFill>
   );
 };
@@ -242,6 +245,7 @@ export const ScanScene: React.FC = () => {
 
 export const DropScene: React.FC = () => {
   const { t } = useBeat();
+  const [queue, order, book, noApp] = useCopy().drop;
   const flash = interpolate(t, [0, 0.25], [1, 0], clamp);
   const s = interpolate(t, [0, 0.35], [1.25, 1], { ...clamp, easing: ease });
   return (
@@ -254,10 +258,10 @@ export const DropScene: React.FC = () => {
         <span style={{ fontFamily: NUM, fontWeight: 800, fontSize: 240, color: C.ink }}>beautifood</span>
       </div>
       <div style={{ display: "flex", gap: 22, marginTop: 34 }}>
-        <Tag at={1} dark>Queue</Tag>
-        <Tag at={1.5} dark>Order</Tag>
-        <Tag at={2} dark>Book</Tag>
-        <Tag at={3} style={{ background: C.paper }}>No app</Tag>
+        <Tag at={1} dark>{queue}</Tag>
+        <Tag at={1.5} dark>{order}</Tag>
+        <Tag at={2} dark>{book}</Tag>
+        <Tag at={3} style={{ background: C.paper }}>{noApp}</Tag>
       </div>
       <AbsoluteFill style={{ background: "#fff", opacity: flash }} />
     </AbsoluteFill>
@@ -586,14 +590,7 @@ export const LangScene: React.FC = () => {
 
 export const AgentScene: React.FC = () => {
   const { t } = useBeat();
-  const lines = [
-    ["→", "find_restaurants", '{ query: "laksa" }'],
-    ["←", "2 branches", "queue 3 · ~12 min"],
-    ["→", "get_menu", '{ lang: "zh", exclude: ["peanuts"] }'],
-    ["←", "炒粿条", "original: Char Kway Teow"],
-    ["→", "join_queue", "{ party_size: 2 }"],
-    ["←", "B001", "status: waiting"],
-  ];
+  const lines = useCopy().agent;
   return (
     <AbsoluteFill style={{ background: "#14120e", fontFamily: "ui-monospace, Menlo, monospace", padding: "140px 180px", gap: 26 }}>
       {lines.map(([dir, a, b], i) => {
@@ -618,13 +615,14 @@ export const AgentScene: React.FC = () => {
 
 export const WallScene: React.FC = () => {
   const { t } = useBeat();
+  const copy = useCopy();
   const filled = Math.floor(interpolate(t, [0.2, 4 * BEAT], [0, 300], clamp));
   return (
     <AbsoluteFill style={{ background: C.ink, fontFamily: SANS, padding: "70px 90px", color: C.paper }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 30, marginBottom: 26 }}>
         <span style={{ fontFamily: NUM, fontWeight: 800, fontSize: 150, color: C.sun, lineHeight: 1 }}>{filled}</span>
-        <span style={{ fontSize: 46, fontWeight: 800 }}>people join at once</span>
-        <span style={{ marginLeft: "auto", fontSize: 46, fontWeight: 900, color: filled === 300 ? C.sun : "#6f675b" }}>0 duplicates · 0 gaps</span>
+        <span style={{ fontSize: 46, fontWeight: 800 }}>{copy.wall.join}</span>
+        <span style={{ marginLeft: "auto", fontSize: 46, fontWeight: 900, color: filled === 300 ? C.sun : "#6f675b" }}>{copy.wall.clean}</span>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(25, 1fr)", gap: 6 }}>
         {Array.from({ length: 300 }, (_, i) => (
@@ -666,15 +664,16 @@ export const MontageScene: React.FC<{ clips: { src: string; kind: "phone" | "des
 
 export const CloseScene: React.FC = () => {
   const { t } = useBeat();
+  const copy = useCopy();
   const tear = useAt(0, 0.8);
   return (
     <AbsoluteFill style={{ background: C.sun, fontFamily: SANS, alignItems: "center", justifyContent: "center", gap: 36 }}>
       <div style={{ rotate: `${interpolate(t, [0, 1], [-10, -4], { ...clamp, easing: ease })}deg`, opacity: tear, scale: String(0.9 + 0.1 * tear) }}>
-        <Ticket serial="A013" label="Next please" foot="Your table is ready" stock={C.paper} width={560} />
+        <Ticket serial="A013" label={copy.ticket.next} foot={copy.ticket.ready} stock={C.paper} width={560} />
       </div>
       <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: 150, lineHeight: 1 }}>beautifood</div>
       <Tag at={2} dark size={44}>
-        beautifood-app.swmengappdev.workers.dev
+        {copy.url}
       </Tag>
     </AbsoluteFill>
   );

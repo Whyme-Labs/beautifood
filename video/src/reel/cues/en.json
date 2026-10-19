@@ -1,0 +1,876 @@
+{
+  "clips": {
+    "p-join": {
+      "file": "p-join.mp4",
+      "width": 1170,
+      "height": 2532,
+      "fps": 30,
+      "duration": 5.17,
+      "cues": [
+        {
+          "label": "tap +",
+          "t": 0.4,
+          "box": {
+            "x": 456,
+            "y": 930,
+            "w": 156,
+            "h": 156
+          }
+        },
+        {
+          "label": "type name",
+          "t": 1.5,
+          "box": {
+            "x": 105,
+            "y": 1199,
+            "w": 960,
+            "h": 132
+          }
+        },
+        {
+          "label": "tap Get my number",
+          "t": 2.37,
+          "box": {
+            "x": 105,
+            "y": 1608,
+            "w": 960,
+            "h": 162
+          }
+        },
+        {
+          "label": "ticket number appears",
+          "t": 3.34,
+          "box": {
+            "x": 108,
+            "y": 379,
+            "w": 954,
+            "h": 294
+          }
+        },
+        {
+          "label": "ahead + wait",
+          "t": 3.66,
+          "box": {
+            "x": 108,
+            "y": 951,
+            "w": 954,
+            "h": 190
+          }
+        }
+      ]
+    },
+    "p-ticket-called": {
+      "file": "p-ticket-called.mp4",
+      "width": 1170,
+      "height": 2532,
+      "fps": 30,
+      "duration": 5.62,
+      "cues": [
+        {
+          "label": "waiting ticket",
+          "t": 0.4,
+          "box": {
+            "x": 48,
+            "y": 225,
+            "w": 1074,
+            "h": 1083
+          }
+        },
+        {
+          "label": "host calls (API)",
+          "t": 1.56,
+          "box": null
+        },
+        {
+          "label": "table ready",
+          "t": 3,
+          "box": {
+            "x": 108,
+            "y": 855,
+            "w": 954,
+            "h": 171
+          }
+        },
+        {
+          "label": "ticket stub (called)",
+          "t": 3.01,
+          "box": {
+            "x": 48,
+            "y": 225,
+            "w": 1074,
+            "h": 855
+          }
+        }
+      ]
+    },
+    "p-preorder": {
+      "file": "p-preorder.mp4",
+      "width": 1170,
+      "height": 2532,
+      "fps": 30,
+      "duration": 8.89,
+      "cues": [
+        {
+          "label": "tap preorder",
+          "t": 0.4,
+          "box": {
+            "x": 48,
+            "y": 1356,
+            "w": 1074,
+            "h": 162
+          }
+        },
+        {
+          "label": "preorder menu",
+          "t": 1.74,
+          "box": {
+            "x": 48,
+            "y": 839,
+            "w": 1074,
+            "h": 1693
+          }
+        },
+        {
+          "label": "add Char Kway Teow",
+          "t": 1.76,
+          "box": {
+            "x": 48,
+            "y": 839,
+            "w": 1074,
+            "h": 452
+          }
+        },
+        {
+          "label": "add Cendol",
+          "t": 2.51,
+          "box": {
+            "x": 48,
+            "y": 999,
+            "w": 1074,
+            "h": 534
+          }
+        },
+        {
+          "label": "cart (2)",
+          "t": 3.16,
+          "box": {
+            "x": 48,
+            "y": 2334,
+            "w": 1074,
+            "h": 162
+          }
+        },
+        {
+          "label": "cart lines",
+          "t": 4,
+          "box": {
+            "x": 48,
+            "y": 593,
+            "w": 1074,
+            "h": 812
+          }
+        },
+        {
+          "label": "preorder saved",
+          "t": 6.88,
+          "box": {
+            "x": 48,
+            "y": 508,
+            "w": 1074,
+            "h": 954
+          }
+        }
+      ]
+    },
+    "p-cart-a": {
+      "file": "p-cart-a.mp4",
+      "width": 1170,
+      "height": 2532,
+      "fps": 30,
+      "duration": 8.08,
+      "cues": [
+        {
+          "label": "A types name",
+          "t": 0.4,
+          "box": {
+            "x": 54,
+            "y": 2148,
+            "w": 1062,
+            "h": 132
+          }
+        },
+        {
+          "label": "A adds Char Kway Teow",
+          "t": 1.64,
+          "box": {
+            "x": 48,
+            "y": 839,
+            "w": 1074,
+            "h": 452
+          }
+        },
+        {
+          "label": "A adds Nasi Lemak",
+          "t": 2.34,
+          "box": {
+            "x": 48,
+            "y": 1107,
+            "w": 1074,
+            "h": 585
+          }
+        },
+        {
+          "label": "cart picks up the other phone's dishes (4)",
+          "t": 5.29,
+          "box": {
+            "x": 48,
+            "y": 2334,
+            "w": 1074,
+            "h": 162
+          }
+        },
+        {
+          "label": "cart view (grouped by person)",
+          "t": 6.27,
+          "box": {
+            "x": 48,
+            "y": 593,
+            "w": 1074,
+            "h": 1270
+          }
+        }
+      ]
+    },
+    "p-cart-b": {
+      "file": "p-cart-b.mp4",
+      "width": 1170,
+      "height": 2532,
+      "fps": 30,
+      "duration": 8.08,
+      "cues": [
+        {
+          "label": "B types name",
+          "t": 0.42,
+          "box": {
+            "x": 54,
+            "y": 2148,
+            "w": 1062,
+            "h": 132
+          }
+        },
+        {
+          "label": "B adds Cendol",
+          "t": 1.64,
+          "box": {
+            "x": 48,
+            "y": 1107,
+            "w": 1074,
+            "h": 533
+          }
+        },
+        {
+          "label": "B adds Satay",
+          "t": 2.34,
+          "box": {
+            "x": 48,
+            "y": 0,
+            "w": 1074,
+            "h": 281
+          }
+        },
+        {
+          "label": "cart picks up the other phone's dishes (4)",
+          "t": 2.97,
+          "box": {
+            "x": 48,
+            "y": 2334,
+            "w": 1074,
+            "h": 162
+          }
+        },
+        {
+          "label": "cart view (grouped by person)",
+          "t": 6.27,
+          "box": {
+            "x": 48,
+            "y": 593,
+            "w": 1074,
+            "h": 1231
+          }
+        }
+      ]
+    },
+    "p-assistant": {
+      "file": "p-assistant.mp4",
+      "width": 1170,
+      "height": 2532,
+      "fps": 30,
+      "duration": 7.32,
+      "cues": [
+        {
+          "label": "tap Ask what to eat",
+          "t": 0.41,
+          "box": {
+            "x": 48,
+            "y": 2087,
+            "w": 522,
+            "h": 193
+          }
+        },
+        {
+          "label": "type question",
+          "t": 1.46,
+          "box": {
+            "x": 54,
+            "y": 2346,
+            "w": 799,
+            "h": 132
+          }
+        },
+        {
+          "label": "answer appears",
+          "t": 4.09,
+          "box": {
+            "x": 66,
+            "y": 922,
+            "w": 913,
+            "h": 1490
+          }
+        },
+        {
+          "label": "safety note",
+          "t": 5.12,
+          "box": {
+            "x": 105,
+            "y": 1920,
+            "w": 835,
+            "h": 335
+          }
+        }
+      ]
+    },
+    "p-signatures": {
+      "file": "p-signatures.mp4",
+      "width": 1170,
+      "height": 2532,
+      "fps": 30,
+      "duration": 6.78,
+      "cues": [
+        {
+          "label": "tap Ask what to eat",
+          "t": 0.41,
+          "box": {
+            "x": 48,
+            "y": 2087,
+            "w": 522,
+            "h": 193
+          }
+        },
+        {
+          "label": "type question",
+          "t": 1.45,
+          "box": {
+            "x": 54,
+            "y": 2346,
+            "w": 799,
+            "h": 132
+          }
+        },
+        {
+          "label": "answer appears",
+          "t": 3.25,
+          "box": {
+            "x": 66,
+            "y": 1025,
+            "w": 913,
+            "h": 1260
+          }
+        },
+        {
+          "label": "recommended dishes",
+          "t": 4.58,
+          "box": {
+            "x": 66,
+            "y": 1025,
+            "w": 913,
+            "h": 1260
+          }
+        }
+      ]
+    },
+    "p-menu": {
+      "file": "p-menu.mp4",
+      "width": 1170,
+      "height": 2532,
+      "fps": 30,
+      "duration": 6.51,
+      "cues": [
+        {
+          "label": "allergen filter chips",
+          "t": 0.4,
+          "box": {
+            "x": 48,
+            "y": 586,
+            "w": 1074,
+            "h": 637
+          }
+        },
+        {
+          "label": "first dish",
+          "t": 1.13,
+          "box": {
+            "x": 48,
+            "y": 1259,
+            "w": 1074,
+            "h": 453
+          }
+        },
+        {
+          "label": "dish",
+          "t": 3.17,
+          "box": {
+            "x": 48,
+            "y": 874,
+            "w": 1074,
+            "h": 512
+          }
+        },
+        {
+          "label": "dish card",
+          "t": 5.81,
+          "box": {
+            "x": 48,
+            "y": 1001,
+            "w": 1074,
+            "h": 392
+          }
+        }
+      ]
+    },
+    "d-kitchen": {
+      "file": "d-kitchen.mp4",
+      "width": 2880,
+      "height": 1800,
+      "fps": 30,
+      "duration": 6.33,
+      "cues": [
+        {
+          "label": "tickets",
+          "t": 0.42,
+          "box": {
+            "x": 232,
+            "y": 396,
+            "w": 2416,
+            "h": 930
+          }
+        },
+        {
+          "label": "bump → cooking",
+          "t": 1.25,
+          "box": {
+            "x": 262,
+            "y": 568,
+            "w": 523,
+            "h": 138
+          }
+        },
+        {
+          "label": "bump → ready",
+          "t": 2.34,
+          "box": {
+            "x": 262,
+            "y": 844,
+            "w": 523,
+            "h": 136
+          }
+        },
+        {
+          "label": "all ready",
+          "t": 3.35,
+          "box": {
+            "x": 262,
+            "y": 1004,
+            "w": 523,
+            "h": 108
+          }
+        },
+        {
+          "label": "served button",
+          "t": 4.23,
+          "box": {
+            "x": 262,
+            "y": 1004,
+            "w": 523,
+            "h": 108
+          }
+        },
+        {
+          "label": "ticket cleared",
+          "t": 4.52,
+          "box": {
+            "x": 232,
+            "y": 396,
+            "w": 2416,
+            "h": 930
+          }
+        }
+      ]
+    },
+    "d-pos": {
+      "file": "d-pos.mp4",
+      "width": 2880,
+      "height": 1800,
+      "fps": 30,
+      "duration": 6.88,
+      "cues": [
+        {
+          "label": "select bill",
+          "t": 0.4,
+          "box": {
+            "x": 588,
+            "y": 389,
+            "w": 337,
+            "h": 118
+          }
+        },
+        {
+          "label": "bill open",
+          "t": 1.23,
+          "box": {
+            "x": 1808,
+            "y": 543,
+            "w": 840,
+            "h": 1257
+          }
+        },
+        {
+          "label": "promo applied (discount line)",
+          "t": 2.77,
+          "box": {
+            "x": 1846,
+            "y": 372,
+            "w": 349,
+            "h": 42
+          }
+        },
+        {
+          "label": "change preview",
+          "t": 4.49,
+          "box": {
+            "x": 1884,
+            "y": 1597,
+            "w": 688,
+            "h": 105
+          }
+        },
+        {
+          "label": "change toast",
+          "t": 5.27,
+          "box": {
+            "x": 1285,
+            "y": 1703,
+            "w": 310,
+            "h": 89
+          }
+        }
+      ]
+    },
+    "d-host": {
+      "file": "d-host.mp4",
+      "width": 2880,
+      "height": 1800,
+      "fps": 30,
+      "duration": 5.48,
+      "cues": [
+        {
+          "label": "suggestions",
+          "t": 0.4,
+          "box": {
+            "x": 270,
+            "y": 693,
+            "w": 1386,
+            "h": 139
+          }
+        },
+        {
+          "label": "Call",
+          "t": 1.33,
+          "box": {
+            "x": 1393,
+            "y": 731,
+            "w": 129,
+            "h": 64
+          }
+        },
+        {
+          "label": "called: table held on the floor",
+          "t": 1.82,
+          "box": {
+            "x": 2344,
+            "y": 818,
+            "w": 266,
+            "h": 168
+          }
+        },
+        {
+          "label": "Seat",
+          "t": 2.86,
+          "box": {
+            "x": 1534,
+            "y": 731,
+            "w": 98,
+            "h": 64
+          }
+        },
+        {
+          "label": "floor: seated",
+          "t": 3.24,
+          "box": {
+            "x": 1772,
+            "y": 1006,
+            "w": 266,
+            "h": 168
+          }
+        }
+      ]
+    },
+    "d-display": {
+      "file": "d-display.mp4",
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "duration": 7.3,
+      "cues": [
+        {
+          "label": "board: nobody called yet",
+          "t": 0.4,
+          "box": {
+            "x": 48,
+            "y": 252,
+            "w": 1824,
+            "h": 108
+          }
+        },
+        {
+          "label": "first called",
+          "t": 1.8,
+          "box": {
+            "x": 48,
+            "y": 252,
+            "w": 533,
+            "h": 400
+          }
+        },
+        {
+          "label": "second called",
+          "t": 5.09,
+          "box": {
+            "x": 623,
+            "y": 252,
+            "w": 535,
+            "h": 400
+          }
+        }
+      ]
+    },
+    "d-translate": {
+      "file": "d-translate.mp4",
+      "width": 2880,
+      "height": 1800,
+      "fps": 30,
+      "duration": 5.82,
+      "cues": [
+        {
+          "label": "Translate menu",
+          "t": 0.83,
+          "box": {
+            "x": 2291,
+            "y": 343,
+            "w": 319,
+            "h": 85
+          }
+        },
+        {
+          "label": "translation result",
+          "t": 1.43,
+          "box": {
+            "x": 270,
+            "y": 529,
+            "w": 2340,
+            "h": 214
+          }
+        },
+        {
+          "label": "dishes",
+          "t": 4.21,
+          "box": {
+            "x": 200,
+            "y": 0,
+            "w": 2480,
+            "h": 1800
+          }
+        }
+      ]
+    },
+    "d-boss": {
+      "file": "d-boss.mp4",
+      "width": 2880,
+      "height": 1800,
+      "fps": 30,
+      "duration": 8.17,
+      "cues": [
+        {
+          "label": "today across both branches (totals)",
+          "t": 0.4,
+          "box": {
+            "x": 232,
+            "y": 697,
+            "w": 2416,
+            "h": 171
+          }
+        },
+        {
+          "label": "branch cards",
+          "t": 1.02,
+          "box": {
+            "x": 232,
+            "y": 892,
+            "w": 2416,
+            "h": 559
+          }
+        },
+        {
+          "label": "AI insights",
+          "t": 2.34,
+          "box": {
+            "x": 232,
+            "y": 1254,
+            "w": 2416,
+            "h": 506
+          }
+        },
+        {
+          "label": "click Reports",
+          "t": 3.24,
+          "box": {
+            "x": 1900,
+            "y": 112,
+            "w": 181,
+            "h": 70
+          }
+        },
+        {
+          "label": "report KPIs",
+          "t": 4.5,
+          "box": {
+            "x": 232,
+            "y": 405,
+            "w": 2416,
+            "h": 171
+          }
+        },
+        {
+          "label": "sales by hour chart",
+          "t": 4.52,
+          "box": {
+            "x": 232,
+            "y": 600,
+            "w": 1188,
+            "h": 536
+          }
+        },
+        {
+          "label": "best sellers & menu engineering",
+          "t": 6.75,
+          "box": {
+            "x": 1460,
+            "y": 721,
+            "w": 1188,
+            "h": 1039
+          }
+        }
+      ]
+    },
+    "d-setup": {
+      "file": "d-setup.mp4",
+      "width": 2880,
+      "height": 1800,
+      "fps": 30,
+      "duration": 7.3,
+      "cues": [
+        {
+          "label": "paste menu",
+          "t": 0.4,
+          "box": {
+            "x": 270,
+            "y": 955,
+            "w": 2340,
+            "h": 360
+          }
+        },
+        {
+          "label": "describe floor",
+          "t": 1.39,
+          "box": {
+            "x": 270,
+            "y": 1388,
+            "w": 2340,
+            "h": 200
+          }
+        },
+        {
+          "label": "Generate my setup",
+          "t": 3.32,
+          "box": {
+            "x": 270,
+            "y": 1612,
+            "w": 2340,
+            "h": 108
+          }
+        },
+        {
+          "label": "draft items appear",
+          "t": 3.86,
+          "box": {
+            "x": 270,
+            "y": 1011,
+            "w": 2340,
+            "h": 166
+          }
+        },
+        {
+          "label": "draft tables",
+          "t": 4.51,
+          "box": {
+            "x": 270,
+            "y": 1422,
+            "w": 216,
+            "h": 168
+          }
+        },
+        {
+          "label": "Apply",
+          "t": 5.04,
+          "box": {
+            "x": 232,
+            "y": 1652,
+            "w": 564,
+            "h": 108
+          }
+        },
+        {
+          "label": "applied",
+          "t": 5.49,
+          "box": {
+            "x": 232,
+            "y": 388,
+            "w": 2416,
+            "h": 97
+          }
+        }
+      ]
+    }
+  },
+  "lang": "en",
+  "note": "t = seconds from the start of the clip; box = {x,y,w,h} of the key element in video pixels at that moment (CSS box × deviceScaleFactor)."
+}

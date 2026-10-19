@@ -3,53 +3,57 @@ import type React from "react";
 import { AbsoluteFill, Easing, interpolate, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, NUM, SANS } from "./theme";
 import { Headline, Screen, Stub, useIn } from "./parts";
-import { Device, TAKES, type TakeId, takeLen } from "./reel/takes";
+import { Device, take, type TakeId, takeLen } from "./reel/takes";
+import { LangProvider, useCopy, useLang, type Lang } from "./reel/copy";
 
 /** A take from the real recordings (one phone, two phones side by side, or a desktop), or an older clip. */
 export type Segment = { take: TakeId; take2?: TakeId; rate?: number; note: string } | { clip: string; kind: "phone" | "desktop"; start: number; len: number; note: string };
-export type FeatureDemoProps = { n: string; stock: string; title: string; sub: string; points: string[]; segments: Segment[] };
+export type FeatureDemoProps = { lang: Lang; n: string; stock: string; title: string; sub: string; points: string[]; segments: Segment[] };
 
 const INTRO = 2.6;
 const OUTRO = 2.4;
 
 /** Frames a feature demo lasts, for its Composition registration. */
-export const featureFrames = (segments: Segment[], fps = 30) => Math.round((INTRO + segments.reduce((s, x) => s + segLen(x), 0) + OUTRO) * fps);
+export const featureFrames = (segments: Segment[], lang: Lang, fps = 30) => Math.round((INTRO + segments.reduce((s, x) => s + segLen(x, lang), 0) + OUTRO) * fps);
 
 /** A take plays until its recording (the shorter one, for a pair) runs out. */
-const segLen = (seg: Segment) => ("take" in seg ? Math.min(takeLen(seg.take, seg.rate), seg.take2 ? takeLen(seg.take2, seg.rate) : Infinity) : seg.len);
+const segLen = (seg: Segment, lang: Lang) => ("take" in seg ? Math.min(takeLen(seg.take, lang, seg.rate), seg.take2 ? takeLen(seg.take2, lang, seg.rate) : Infinity) : seg.len);
 
-export const FeatureDemo: React.FC<FeatureDemoProps> = ({ n, stock, title, sub, points, segments }) => {
+export const FeatureDemo: React.FC<FeatureDemoProps> = ({ lang, n, stock, title, sub, points, segments }) => {
   const { fps } = useVideoConfig();
   let at = INTRO;
   const body = segments.map((seg, i) => {
     const from = Math.round(at * fps);
-    at += segLen(seg);
+    at += segLen(seg, lang);
     return (
-      <Sequence key={i} name={`Clip ${i + 1}`} from={from} durationInFrames={Math.round(segLen(seg) * fps)}>
+      <Sequence key={i} name={`Clip ${i + 1}`} from={from} durationInFrames={Math.round(segLen(seg, lang) * fps)}>
         <SegmentView seg={seg} n={n} stock={stock} title={title} points={points} />
       </Sequence>
     );
   });
   return (
-    <AbsoluteFill style={{ background: C.paper, fontFamily: SANS, color: C.ink }}>
-      <Sequence name="Title" durationInFrames={Math.round(INTRO * fps)}>
-        <TitleCard n={n} stock={stock} title={title} sub={sub} />
-      </Sequence>
-      {body}
-      <Sequence name="Sign-off" from={Math.round(at * fps)}>
-        <SignOff />
-      </Sequence>
-    </AbsoluteFill>
+    <LangProvider value={lang}>
+      <AbsoluteFill style={{ background: C.paper, fontFamily: SANS, color: C.ink }}>
+        <Sequence name="Title" durationInFrames={Math.round(INTRO * fps)}>
+          <TitleCard n={n} stock={stock} title={title} sub={sub} />
+        </Sequence>
+        {body}
+        <Sequence name="Sign-off" from={Math.round(at * fps)}>
+          <SignOff />
+        </Sequence>
+      </AbsoluteFill>
+    </LangProvider>
   );
 };
 
 const TitleCard: React.FC<{ n: string; stock: string; title: string; sub: string }> = ({ n, stock, title, sub }) => {
   const frame = useCurrentFrame();
+  const label = useCopy().feature.label;
   const { fps } = useVideoConfig();
   return (
     <AbsoluteFill style={{ background: C.sun, alignItems: "center", justifyContent: "center", gap: 40, flexDirection: "row", padding: 140 }}>
       <div style={{ ...useIn(0), rotate: `${interpolate(frame, [0, 0.8 * fps], [-8, -3], { extrapolateRight: "clamp", easing: Easing.bezier(0.23, 1, 0.32, 1) })}deg` }}>
-        <Stub serial={n} label="Feature" stock={stock} width={360}>
+        <Stub serial={n} label={label} stock={stock} width={360}>
           beautifood
         </Stub>
       </div>
@@ -64,7 +68,8 @@ const TitleCard: React.FC<{ n: string; stock: string; title: string; sub: string
 };
 
 const SegmentView: React.FC<{ seg: Segment; n: string; stock: string; title: string; points: string[] }> = ({ seg, n, stock, title, points }) => {
-  const phone = "take" in seg ? TAKES[seg.take].kind === "phone" : seg.kind === "phone";
+  const lang = useLang();
+  const phone = "take" in seg ? take(seg.take, lang).kind === "phone" : seg.kind === "phone";
   const media =
     "take" in seg ? (
       seg.take2 ? (
@@ -113,10 +118,13 @@ const SegmentView: React.FC<{ seg: Segment; n: string; stock: string; title: str
   );
 };
 
-const SignOff: React.FC = () => (
-  <AbsoluteFill style={{ background: C.ink, color: C.paper, alignItems: "center", justifyContent: "center", gap: 18 }}>
-    <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: 120, color: C.sun, ...useIn(0) }}>beautifood</div>
-    <div style={{ fontSize: 38, fontWeight: 650, ...useIn(0.3) }}>Recorded from the running app, with demo data.</div>
-    <div style={{ fontSize: 32, fontWeight: 700, color: C.sun, ...useIn(0.6) }}>beautifood-app.swmengappdev.workers.dev</div>
-  </AbsoluteFill>
-);
+const SignOff: React.FC = () => {
+  const copy = useCopy();
+  return (
+    <AbsoluteFill style={{ background: C.ink, color: C.paper, alignItems: "center", justifyContent: "center", gap: 18 }}>
+      <div style={{ fontFamily: NUM, fontWeight: 800, fontSize: 120, color: C.sun, ...useIn(0) }}>beautifood</div>
+      <div style={{ fontSize: 38, fontWeight: 650, ...useIn(0.3) }}>{copy.feature.signOff}</div>
+      <div style={{ fontSize: 32, fontWeight: 700, color: C.sun, ...useIn(0.6) }}>{copy.url}</div>
+    </AbsoluteFill>
+  );
+};
