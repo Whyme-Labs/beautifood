@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Render the promo cuts and every feature demo into out/ (pass --browser-executable=… if needed).
+# Render the reel, the promo cuts and every feature demo into out/ (pass --browser-executable=… if needed).
+# Needs public/reel-clips (node e2e/evidence/reel-clips.mjs) and public/audio/bgm.m4a.
 set -euo pipefail
 cd "$(dirname "$0")"
 npm run -s clips

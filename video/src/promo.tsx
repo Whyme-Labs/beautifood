@@ -1,15 +1,17 @@
-// Promo cuts: fast, mostly type and real footage. Promo30 is 16:9, Teaser15 is 9:16 for social.
+// Promo cuts: fast, mostly real footage cut on the beat. Promo30 is 16:9, Teaser15 is 9:16 for social.
 import type React from "react";
 import { Audio } from "@remotion/media";
-import { AbsoluteFill, Easing, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Easing, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, NUM, SANS } from "./theme";
-import { Screen, Stub, useIn } from "./parts";
+import { Stub, useIn } from "./parts";
+import { CartStage, Cut, DeskStage, PhoneStage } from "./reel/Reel";
+import { Tag } from "./reel/scenes";
 
 /** The soundtrack, faded in and out to fit the cut. */
 const Music: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
-  return <Audio src={staticFile("audio/bgm.m4a")} trimBefore={Math.round(18.0 * fps)} volume={interpolate(frame, [0, 6, durationInFrames - 1.5 * fps, durationInFrames - 1], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />;
+  return <Audio src={staticFile("audio/bgm.m4a")} volume={interpolate(frame, [0, 6, durationInFrames - 1.5 * fps, durationInFrames - 1], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />;
 };
 
 const Slam: React.FC<{ children: React.ReactNode; size: number; color?: string; at?: number }> = ({ children, size, color = C.ink, at = 0 }) => {
@@ -18,15 +20,6 @@ const Slam: React.FC<{ children: React.ReactNode; size: number; color?: string; 
   const p = interpolate(frame, [at * fps, (at + 0.35) * fps], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.bezier(0.23, 1, 0.32, 1) });
   return <div style={{ fontFamily: SANS, fontWeight: 900, fontSize: size, lineHeight: 1, letterSpacing: "-.03em", color, opacity: p, scale: 0.92 + 0.08 * p, textAlign: "center" }}>{children}</div>;
 };
-
-type Shot = { clip: string; kind: "phone" | "desktop"; start: number; label: string; bg: string };
-
-const ShotScene: React.FC<{ shot: Shot; vertical?: boolean }> = ({ shot, vertical }) => (
-  <AbsoluteFill style={{ background: shot.bg, alignItems: "center", justifyContent: "center", flexDirection: vertical ? "column" : "row", gap: vertical ? 50 : 80, padding: vertical ? "120px 60px" : 80 }}>
-    <div style={{ fontFamily: SANS, fontWeight: 900, fontSize: vertical ? 92 : 88, lineHeight: 1.02, letterSpacing: "-.02em", color: C.ink, maxWidth: vertical ? 960 : 640, textAlign: vertical ? "center" : "left", ...useIn(0, 0.35) }}>{shot.label}</div>
-    <Screen src={shot.clip} kind={shot.kind} height={vertical ? (shot.kind === "phone" ? 1300 : 560) : shot.kind === "phone" ? 900 : 700} start={shot.start} rate={1.5} />
-  </AbsoluteFill>
-);
 
 const EndCard: React.FC<{ vertical?: boolean }> = ({ vertical }) => (
   <AbsoluteFill style={{ background: C.sun, alignItems: "center", justifyContent: "center", gap: 34, fontFamily: SANS, color: C.ink }}>
@@ -41,64 +34,63 @@ const EndCard: React.FC<{ vertical?: boolean }> = ({ vertical }) => (
   </AbsoluteFill>
 );
 
-const SHOTS: Shot[] = [
-  { clip: "clips/01-guest-walk-in.mp4", kind: "phone", start: 10, label: "Scan. Get a number. Walk away.", bg: C.paper },
-  { clip: "clips/02-diner-group-a.mp4", kind: "phone", start: 6, label: "One cart, every phone at the table.", bg: C.sunSoft },
-  { clip: "clips/04-host.mp4", kind: "desktop", start: 2, label: "AI seats the right party at the right table.", bg: C.paper },
-  { clip: "clips/05-kitchen.mp4", kind: "desktop", start: 2, label: "Orders fire straight to the kitchen.", bg: C.sunSoft },
-  { clip: "clips/07-owner.mp4", kind: "desktop", start: 2, label: "Paste your menu. The shop sets itself up.", bg: C.paper },
-];
+/** Bars each cut lasts; the soundtrack plays from its start, so cuts land on its downbeats. */
+export const PROMO_BARS = 14;
+export const TEASER_BARS = 7;
 
-export const Promo30: React.FC = () => {
-  const { fps } = useVideoConfig();
-  return (
-    <AbsoluteFill style={{ background: C.ink }}>
-      <Music />
-      <Sequence name="Hook" durationInFrames={3 * fps}>
-        <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", gap: 24 }}>
-          <Slam size={150} color={C.sun}>Still shouting</Slam>
-          <Slam size={150} color={C.sun} at={0.4}>names at the door?</Slam>
-        </AbsoluteFill>
-      </Sequence>
-      {SHOTS.map((s, i) => (
-        <Sequence key={s.label} name={`Shot ${i + 1}`} from={Math.round((3 + i * 4) * fps)} durationInFrames={4 * fps}>
-          <ShotScene shot={s} />
-        </Sequence>
-      ))}
-      <Sequence name="Languages" from={23 * fps} durationInFrames={3 * fps}>
-        <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", gap: 20 }}>
-          <Slam size={170} color={C.sun}>English · 中文</Slam>
-          <Slam size={56} color={C.paper} at={0.4}>Menus translated by AI. You have the final say.</Slam>
-        </AbsoluteFill>
-      </Sequence>
-      <Sequence name="End" from={26 * fps}>
-        <EndCard />
-      </Sequence>
-    </AbsoluteFill>
-  );
-};
+export const Promo30: React.FC = () => (
+  <AbsoluteFill style={{ background: C.ink }}>
+    <Music />
+    <Cut name="Hook" from={0} to={1}>
+      <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", gap: 24 }}>
+        <Slam size={150} color={C.sun}>Still shouting</Slam>
+        <Slam size={150} color={C.sun} at={0.4}>names at the door?</Slam>
+      </AbsoluteFill>
+    </Cut>
+    <Cut name="Join" from={1} to={3}>
+      <PhoneStage bg={C.sunSoft} id="join" tags={<><Tag at={0}>Scan the QR</Tag><Tag at={3}>Get a number</Tag><Tag at={6} dark>Walk away</Tag></>} />
+    </Cut>
+    <Cut name="Called" from={3} to={4}>
+      <PhoneStage bg={C.sun} id="called" side="right" tilt={2} rate={1.6} tags={<><Tag at={0} dark>Table ready</Tag><Tag at={1.5} style={{ background: C.paper }}>桌位已准备好</Tag></>} />
+    </Cut>
+    <Cut name="Shared cart" from={4} to={6}><CartStage /></Cut>
+    <Cut name="Assistant" from={6} to={7}>
+      <PhoneStage bg={C.sun} id="assistant" rate={2} tags={<><Tag at={0} dark>Allergic to peanuts?</Tag><Tag at={2} style={{ background: C.paper }}>Ask the menu</Tag></>} />
+    </Cut>
+    <Cut name="Host" from={7} to={9}>
+      <DeskStage id="host" tags={<><Tag at={0}>AI seats every party</Tag><Tag at={4} dark>With reasons</Tag></>} />
+    </Cut>
+    <Cut name="Kitchen" from={9} to={10}><DeskStage id="kitchen" rate={2} tags={<Tag at={0} dark>厨房 · Kitchen</Tag>} /></Cut>
+    <Cut name="AI setup" from={10} to={11}>
+      <DeskStage id="setup" rate={2.6} tags={<><Tag at={0}>Paste the menu</Tag><Tag at={2} dark>AI sets up the shop</Tag></>} />
+    </Cut>
+    <Cut name="Dashboard" from={11} to={12}><DeskStage id="boss" rate={3} tags={<Tag at={0} dark>Every branch, live</Tag>} /></Cut>
+    <Cut name="End" from={12} to={PROMO_BARS}><EndCard /></Cut>
+  </AbsoluteFill>
+);
 
-export const Teaser15: React.FC = () => {
-  const { fps } = useVideoConfig();
-  const shots = [SHOTS[0], SHOTS[1], { ...SHOTS[2], label: "AI seats every party." }];
-  return (
-    <AbsoluteFill style={{ background: C.ink }}>
-      <Music />
-      <Sequence name="Hook" durationInFrames={2.5 * fps}>
-        <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", gap: 24, padding: 60 }}>
-          <Slam size={150} color={C.sun}>No more</Slam>
-          <Slam size={150} color={C.sun} at={0.3}>shouting</Slam>
-          <Slam size={150} color={C.sun} at={0.6}>names.</Slam>
-        </AbsoluteFill>
-      </Sequence>
-      {shots.map((s, i) => (
-        <Sequence key={s.label} name={`Shot ${i + 1}`} from={Math.round((2.5 + i * 3.3) * fps)} durationInFrames={Math.round(3.3 * fps)}>
-          <ShotScene shot={s} vertical />
-        </Sequence>
-      ))}
-      <Sequence name="End" from={Math.round(12.4 * fps)}>
-        <EndCard vertical />
-      </Sequence>
-    </AbsoluteFill>
-  );
-};
+export const Teaser15: React.FC = () => (
+  <AbsoluteFill style={{ background: C.ink }}>
+    <Music />
+    <Cut name="Hook" from={0} to={1}>
+      <AbsoluteFill style={{ background: C.ink, alignItems: "center", justifyContent: "center", gap: 24, padding: 60 }}>
+        <Slam size={150} color={C.sun}>No more</Slam>
+        <Slam size={150} color={C.sun} at={0.3}>shouting</Slam>
+        <Slam size={150} color={C.sun} at={0.6}>names.</Slam>
+      </AbsoluteFill>
+    </Cut>
+    <Cut name="Join" from={1} to={2}>
+      <PhoneStage vertical bg={C.sunSoft} id="join" rate={1.8} tags={<Tag at={0} size={72}>Scan. Get a number.</Tag>} />
+    </Cut>
+    <Cut name="Called" from={2} to={3}>
+      <PhoneStage vertical bg={C.sun} id="called" rate={1.6} tags={<Tag at={0} size={72} dark>Table ready</Tag>} />
+    </Cut>
+    <Cut name="Shared cart" from={3} to={4}>
+      <PhoneStage vertical bg={C.paper} id="cartB" rate={2.6} tags={<Tag at={0} size={72}>One cart, every phone</Tag>} />
+    </Cut>
+    <Cut name="Host" from={4} to={5}>
+      <DeskStage vertical bg={C.sunSoft} id="host" rate={1.8} tags={<Tag at={0} size={72} dark>AI seats every party</Tag>} />
+    </Cut>
+    <Cut name="End" from={5} to={TEASER_BARS}><EndCard vertical /></Cut>
+  </AbsoluteFill>
+);
