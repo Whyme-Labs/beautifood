@@ -1,9 +1,11 @@
-// Branch settings: queue size classes, seating strategy, QR mode, rates, modules, bookings; loyalty program.
+// Branch settings: queue size classes, seating strategy, QR mode, rates, modules, bookings; loyalty program;
+// the printed receipt's design (restaurant-wide, or this branch's own).
 import { useEffect, useState } from "react";
 import { Languages, Plus, Store, X } from "lucide-react";
 import { api } from "../../src/ui/api";
 import { useStaff, type TenantInfo } from "../../src/ui/staff";
 import { useAction } from "../../src/ui/components";
+import { ReceiptSettingsCard } from "../../src/ui/receiptSettings";
 import { LOCALES, type MessageKey } from "../../src/i18n/core";
 import { useI18n } from "../../src/i18n/react";
 import type { BranchConfig } from "../../src/shared/types";
@@ -201,6 +203,7 @@ export default function Settings() {
           {t("staff.settings.save")}
         </button>
       </div>
+      {s.can("settings.manage") && <ReceiptSettingsCard />}
       {s.can("branch.manage") && (
         <section className="card col">
           <h2>{t("staff.settings.branches.title")}</h2>

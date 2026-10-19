@@ -107,6 +107,12 @@ export const en = {
   printReceipt: "Print receipt",
   receiptTendered: "Tendered",
   receiptThanks: "Thank you, see you again!",
+  receiptBillNo: "Bill #{number}",
+  receiptCashier: "Cashier: {name}",
+  receiptTel: "Tel {phone}",
+  receiptTaxId: "SST / tax reg. no. {id}",
+  receiptScanReceipt: "Scan for your e-receipt",
+  receiptScanJoin: "Scan to join our rewards",
 } as const;
 
 export const zh: Widen<typeof en> = {
@@ -215,4 +221,10 @@ export const zh: Widen<typeof en> = {
   printReceipt: "打印收据",
   receiptTendered: "收款",
   receiptThanks: "谢谢光临，欢迎再来！",
+  receiptBillNo: "账单 #{number}",
+  receiptCashier: "收银员：{name}",
+  receiptTel: "电话 {phone}",
+  receiptTaxId: "SST / 税务登记号 {id}",
+  receiptScanReceipt: "扫码查看电子收据",
+  receiptScanJoin: "扫码加入会员",
 };

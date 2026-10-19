@@ -424,6 +424,38 @@ tbody tr:last-child td { border-bottom: 0; }
 .settings-class[data-stock="C"] { --stock: var(--stock-c); }
 .settings-class[data-stock="D"] { --stock: var(--stock-d); }
 .settings-swatch { width: 10px; align-self: stretch; min-height: 32px; border-radius: 3px; background: var(--stock); }
+/* Receipt designer: the form beside a live preview. Receipt paper stays white in both schemes. */
+.receipt-editor { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .receipt-editor { grid-template-columns: 1fr; } }
+.receipt-side { position: sticky; top: 120px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+@media (max-width: 900px) { .receipt-side { position: static; } }
+.receipt-paper { display: flex; justify-content: center; align-items: flex-start; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-stub); padding: 14px 10px; max-height: 70vh; overflow: auto; }
+.receipt-paper canvas { display: block; height: auto; }
+.receipt-templates { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; }
+.receipt-template {
+  appearance: none; font: inherit; text-align: left; padding: 0; cursor: pointer; overflow: hidden; display: flex; flex-direction: column;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-ctl); background: var(--surface); color: var(--ink);
+  transition: transform 160ms var(--ease-out), border-color 160ms ease;
+}
+.receipt-template:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .receipt-template:hover { border-color: var(--ink-3); } }
+.receipt-template .rt-thumb { height: 150px; overflow: hidden; display: flex; justify-content: center; padding-top: 10px; background: #fff; border-bottom: 1px solid var(--line); }
+.receipt-template .rt-thumb canvas { width: 84% !important; height: auto; display: block; }
+.receipt-template .rt-label { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px 10px; transition: background-color 160ms ease, color 160ms ease; }
+.receipt-template .rt-hint { font-size: 12px; font-weight: 450; color: var(--ink-3); line-height: 1.35; }
+.receipt-template[aria-pressed="true"] { border-color: #1a1814; }
+.receipt-template[aria-pressed="true"] .rt-label { background: #1a1814; color: var(--sun); }
+.receipt-template[aria-pressed="true"] .rt-hint { color: color-mix(in srgb, var(--sun) 80%, transparent); }
+@media (prefers-color-scheme: dark) {
+  .receipt-template[aria-pressed="true"] { border-color: var(--sun); }
+  .receipt-template[aria-pressed="true"] .rt-label { background: var(--sun); color: #1a1814; }
+  .receipt-template[aria-pressed="true"] .rt-hint { color: color-mix(in srgb, #1a1814 75%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .receipt-template { transition-property: border-color; }
+  .receipt-template:active { transform: none; }
+}
+.receipt-logo img { display: block; max-height: 64px; max-width: 200px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-stub); padding: 4px; }
 
 /* ── Staff: host stand, kitchen, bookings ─────────────────────────────── */
 .host .stats > * { padding: 12px 16px; }

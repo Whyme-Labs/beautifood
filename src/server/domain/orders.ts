@@ -505,11 +505,12 @@ export async function getOrderRow(db: D1Database, id: string) {
 
 export async function orderView(db: D1Database, id: string) {
   const [o, items, pays] = await db.batch([
-    db.prepare("SELECT * FROM orders WHERE id = ?").bind(id),
+    // the guest's language, when they queued or booked online (for the printed receipt)
+    db.prepare("SELECT o.*, COALESCE((SELECT locale FROM tickets WHERE id = o.ticket_id), (SELECT locale FROM bookings WHERE id = o.booking_id)) AS guest_locale FROM orders o WHERE o.id = ?").bind(id),
     db.prepare("SELECT * FROM order_items WHERE order_id = ? ORDER BY round, created_at").bind(id),
     db.prepare("SELECT * FROM payments WHERE order_id = ? ORDER BY created_at").bind(id),
   ]);
-  const r = o.results[0] as unknown as OrderRow | undefined;
+  const r = o.results[0] as unknown as (OrderRow & { guest_locale: string | null }) | undefined;
   if (!r) notFound("Order");
   return {
     id: r!.id,
@@ -535,6 +536,7 @@ export async function orderView(db: D1Database, id: string) {
     due: Math.max(0, r!.total - r!.paid),
     covers: r!.covers,
     receiptToken: r!.receipt_token,
+    guestLocale: r!.guest_locale,
     createdAt: r!.created_at,
     closedAt: r!.closed_at,
     version: r!.version,

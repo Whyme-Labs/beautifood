@@ -541,3 +541,19 @@ export const staffInvites = sqliteTable("staff_invites", {
   createdAt: integer("created_at").notNull(),
   acceptedAt: integer("accepted_at"),
 });
+
+/**
+ * Printed-receipt design per restaurant: the row with branch_id "" is the restaurant's default,
+ * a row with a branch id overrides it for that branch. config is a ReceiptConfig as JSON (the
+ * logo is inlined as a small data URL, capped by the API).
+ */
+export const receiptSettings = sqliteTable(
+  "receipt_settings",
+  {
+    tenantId: text("tenant_id").notNull(),
+    branchId: text("branch_id").notNull().default(""),
+    config: text("config").notNull().default("{}"),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.tenantId, t.branchId] })],
+);

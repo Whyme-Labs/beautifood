@@ -1,15 +1,13 @@
 // Receipt printer + cash drawer, straight from the browser: an ESC/POS encoder
 // (pure, no DOM, unit-tested) and three transports (WebUSB, Web Serial, Web Bluetooth).
 //
-// Non-ASCII text (中文 dish names, a Chinese restaurant name, a zh cashier's labels):
-// most cheap printers ship without GBK/GB18030 fonts, and their code pages disagree
-// above 0x7f, so the encoder never sends a byte above 0x7f as text. Each line is, in order:
-//   1. printed as text when it is ASCII after safe transliteration (NFKC folds fullwidth
-//      forms, NFKD strips accents: "Café" → "Cafe", typographic quotes and dashes map to ASCII);
-//   2. otherwise drawn as a 1-bit image (GS v 0) by a rasterizer, when one is given:
-//      the browser renders the line on a canvas, so CJK prints on every printer;
-//   3. otherwise printed from its ASCII alternative (the English label, or the dish's English
-//      or original name: orders carry original names), with any leftover character as "?".
+// Receipts print as one image (GS v 0 raster, in bands): src/ui/receipt.ts draws the merchant's
+// template on a canvas at the paper's dot width, so typography, CJK, the logo and the QR code look
+// the same on every printer and match the preview in the settings. The drawer kick and the cut stay
+// commands. Where no canvas exists, text mode is the fallback, and it never sends a byte above 0x7f
+// (cheap printers ship without GBK fonts and disagree above it): each line prints as text when it is
+// ASCII after safe transliteration (NFKC folds fullwidth forms, NFKD strips accents: "Café" → "Cafe"),
+// else from its ASCII alternative (the English label, or the dish's English name), leftovers as "?".
 import { formatters, translate } from "../i18n/core";
 
 // ---------------------------------------------------------------------------
@@ -118,25 +116,63 @@ export interface Bitmap {
   data: Uint8Array;
 }
 
-/** Threshold RGBA pixels (as from a canvas) into a bitmap. */
-export function packBitmap(rgba: ArrayLike<number>, width: number, height: number): Bitmap {
+/** A region of an image, in dots. */
+export interface Rect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * RGBA pixels (as from a canvas) to a bitmap: a plain threshold keeps text and rules crisp, and
+ * inside the `dither` regions (photos, logos) Floyd–Steinberg error diffusion keeps the greys.
+ * Transparent pixels are paper.
+ */
+export function packBitmap(rgba: ArrayLike<number>, width: number, height: number, dither: Rect[] = []): Bitmap {
   const bytes = Math.ceil(width / 8);
   const data = new Uint8Array(bytes * height);
-  for (let y = 0; y < height; y++)
-    for (let x = 0; x < width; x++) {
-      const p = (y * width + x) * 4;
-      const lum = 0.299 * rgba[p] + 0.587 * rgba[p + 1] + 0.114 * rgba[p + 2];
-      if (rgba[p + 3] > 127 && lum < 128) data[y * bytes + (x >> 3)] |= 0x80 >> (x & 7);
-    }
+  const lum = new Float32Array(width * height);
+  for (let i = 0; i < width * height; i++) {
+    const p = i * 4;
+    const a = rgba[p + 3] / 255;
+    lum[i] = 255 - a * (255 - (0.299 * rgba[p] + 0.587 * rgba[p + 1] + 0.114 * rgba[p + 2]));
+  }
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) if (lum[y * width + x] < 128) data[y * bytes + (x >> 3)] |= 0x80 >> (x & 7);
+  for (const r of dither) {
+    const x0 = Math.max(0, Math.floor(r.x));
+    const y0 = Math.max(0, Math.floor(r.y));
+    const x1 = Math.min(width, Math.ceil(r.x + r.w));
+    const y1 = Math.min(height, Math.ceil(r.y + r.h));
+    for (let y = y0; y < y1; y++)
+      for (let x = x0; x < x1; x++) {
+        const i = y * width + x;
+        const old = lum[i];
+        const black = old < 128;
+        const j = y * bytes + (x >> 3);
+        data[j] = black ? data[j] | (0x80 >> (x & 7)) : data[j] & ~(0x80 >> (x & 7));
+        const err = old - (black ? 0 : 255);
+        if (x + 1 < x1) lum[i + 1] += (err * 7) / 16;
+        if (y + 1 < y1) {
+          if (x > x0) lum[i + width - 1] += (err * 3) / 16;
+          lum[i + width] += (err * 5) / 16;
+          if (x + 1 < x1) lum[i + width + 1] += err / 16;
+        }
+      }
+  }
   return { width: bytes * 8, height, data };
 }
 
-/** GS v 0 raster image, in bands so small printer buffers keep up. */
-export function raster(b: Bitmap, band = 128): number[] {
+/** Rows per GS v 0 band: small enough for the buffers of cheap printers (many take at most 255). */
+export const BAND = 128;
+
+/** GS v 0 raster image, in bands of at most `band` (≤ 255) rows so small printer buffers keep up. */
+export function raster(b: Bitmap, band = BAND): number[] {
   const bytes = b.width / 8;
+  const rows = Math.max(1, Math.min(255, band));
   const out: number[] = [];
-  for (let y = 0; y < b.height; y += band) {
-    const h = Math.min(band, b.height - y);
+  for (let y = 0; y < b.height; y += rows) {
+    const h = Math.min(rows, b.height - y);
     out.push(GS, 0x76, 0x30, 0, bytes & 0xff, bytes >> 8, h & 0xff, h >> 8);
     for (const v of b.data.subarray(y * bytes, (y + h) * bytes)) out.push(v);
   }
@@ -148,42 +184,32 @@ export function raster(b: Bitmap, band = 128): number[] {
 
 /** Text shown to the guest, with an ASCII alternative for printers that cannot draw it. */
 export type Txt = string | { text: string; ascii: string };
-const textOf = (t: Txt) => (typeof t === "string" ? t : t.text);
-const asciiOf = (t: Txt) => (typeof t === "string" ? t : t.ascii);
+export const textOf = (t: Txt) => (typeof t === "string" ? t : t.text);
+export const asciiOf = (t: Txt) => (typeof t === "string" ? t : t.ascii);
 export const txt = (text: string, ascii: string): Txt => (text === ascii ? text : { text, ascii });
 
 export type Line = { left: Txt; right?: Txt; align?: Align; bold?: boolean; big?: boolean } | "rule";
 
-/** Draws one line that is not plain ASCII; returns null when it cannot. */
-export type Rasterizer = (line: { left: string; right?: string; align: Align; bold: boolean; big: boolean }, dots: number) => Bitmap | null;
-
 export interface EncodeOptions {
   paper: Paper;
-  raster?: Rasterizer;
 }
 
-/** Encode lines as ESC/POS (no init or cut). */
-export function encodeLines(lines: Line[], { paper, raster: draw }: EncodeOptions): Uint8Array {
+/** Encode lines as text-mode ESC/POS (no init or cut). */
+export function encodeLines(lines: Line[], { paper }: EncodeOptions): Uint8Array {
   const parts: number[][] = [];
   for (const l of lines) {
     if (l === "rule") {
       parts.push([...ascii("-".repeat(COLS[paper])), LF]);
       continue;
     }
-    const a = l.align ?? "left";
     const left = textOf(l.left);
     const right = l.right === undefined ? "" : textOf(l.right);
     const plain = toAscii(left).printable && toAscii(right).printable;
-    const img = !plain && draw ? draw({ left, right: right || undefined, align: a, bold: !!l.bold, big: !!l.big }, DOTS[paper]) : null;
-    if (img) {
-      parts.push(align("left"), raster(img));
-      continue;
-    }
     const L = plain ? left : asciiOf(l.left);
     const R = plain ? right : l.right === undefined ? "" : asciiOf(l.right);
     const cols = l.big ? COLS[paper] / 2 : COLS[paper];
     const rows = R ? columns(toAscii(L).text, toAscii(R).text, cols) : wrap(toAscii(L).text, cols);
-    parts.push(R ? align("left") : align(a), bold(!!l.bold), size(!!l.big));
+    parts.push(R ? align("left") : align(l.align ?? "left"), bold(!!l.bold), size(!!l.big));
     for (const r of rows) parts.push([...ascii(r), LF]);
     parts.push(size(false), bold(false), align("left"));
   }
@@ -200,81 +226,23 @@ export function money(minor: number, currency?: string): string {
   return `${minor < 0 ? "-" : ""}${sym}${n}`;
 }
 
-export interface ReceiptLabels {
-  bill: Txt;
-  subtotal: Txt;
-  discount: Txt;
-  serviceCharge: Txt;
-  tax: Txt;
-  rounding: Txt;
-  total: Txt;
-  tendered: Txt;
-  change: Txt;
-  thanks: Txt;
-}
-
-/** What the till knows about a settled bill (derived from the POS order view). */
-export interface ReceiptData {
-  restaurant: Txt;
-  branch?: Txt;
-  address?: Txt;
-  number: string;
-  table?: Txt;
-  when: Txt;
-  currency: string;
-  items: { name: Txt; qty: number; amount: number; options?: Txt }[];
-  subtotal: number;
-  discount: number;
-  discountLabel?: Txt;
-  serviceCharge: number;
-  tax: number;
-  rounding: number;
-  total: number;
-  payments: { label: Txt; amount: number; tendered?: number | null; change: number }[];
-  labels: ReceiptLabels;
-}
-
-export interface ReceiptOptions extends EncodeOptions {
+export interface PrintOptions {
   /** Kick the cash drawer before printing (one write for both). */
   openDrawer?: boolean;
 }
 
-const join = (a: Txt, b: string): Txt => txt(`${textOf(a)} ${b}`, `${asciiOf(a)} ${b}`);
-
-/** The receipt as lines: header, items, totals, payments, thank-you. */
-export function receiptLines(r: ReceiptData): Line[] {
-  const L = r.labels;
-  const lines: Line[] = [{ left: r.restaurant, align: "center", bold: true, big: true }];
-  if (r.branch) lines.push({ left: r.branch, align: "center" });
-  if (r.address) lines.push({ left: r.address, align: "center" });
-  lines.push("rule", { left: join(L.bill, `#${r.number}`), right: r.table, bold: true }, { left: r.when }, "rule");
-  for (const i of r.items) {
-    lines.push({ left: txt(`${i.qty} x ${textOf(i.name)}`, `${i.qty} x ${asciiOf(i.name)}`), right: money(i.amount) });
-    if (i.options) lines.push({ left: txt(`    ${textOf(i.options)}`, `    ${asciiOf(i.options)}`) });
-  }
-  lines.push("rule", { left: L.subtotal, right: money(r.subtotal) });
-  if (r.discount) lines.push({ left: r.discountLabel ?? L.discount, right: money(-r.discount) });
-  if (r.serviceCharge) lines.push({ left: L.serviceCharge, right: money(r.serviceCharge) });
-  if (r.tax) lines.push({ left: L.tax, right: money(r.tax) });
-  if (r.rounding) lines.push({ left: L.rounding, right: money(r.rounding) });
-  lines.push({ left: L.total, right: money(r.total, r.currency), bold: true });
-  if (r.payments.length) lines.push("rule");
-  for (const p of r.payments) {
-    lines.push({ left: p.label, right: money(p.amount) });
-    if (p.tendered) lines.push({ left: txt(`  ${textOf(L.tendered)}`, `  ${asciiOf(L.tendered)}`), right: money(p.tendered) });
-    if (p.change) lines.push({ left: txt(`  ${textOf(L.change)}`, `  ${asciiOf(L.change)}`), right: money(p.change) });
-  }
-  lines.push("rule", { left: L.thanks, align: "center" });
-  return lines;
+/** Init, (drawer kick,) the image in raster bands, feed and partial cut. */
+export function imageBytes(b: Bitmap, opts: PrintOptions = {}): Uint8Array {
+  return concat([init(), opts.openDrawer ? drawerKick() : [], align("left"), raster(b), cut()]);
 }
 
-/** Init, (drawer kick,) the receipt, feed and partial cut. */
-export function receiptBytes(r: ReceiptData, opts: ReceiptOptions): Uint8Array {
-  return concat([init(), opts.openDrawer ? drawerKick() : [], encodeLines(receiptLines(r), opts), cut()]);
+/** Init, (drawer kick,) the lines in text mode, feed and partial cut: the fallback without a canvas. */
+export function linesBytes(lines: Line[], opts: EncodeOptions & PrintOptions): Uint8Array {
+  return concat([init(), opts.openDrawer ? drawerKick() : [], encodeLines(lines, opts), cut()]);
 }
 
-/** A short test page: the paper width, a column row and the alphabet. */
-export function testBytes(title: Txt, line: Txt, opts: ReceiptOptions): Uint8Array {
+/** A short text-mode test page: the paper width, a column row and the alphabet. */
+export function testBytes(title: Txt, line: Txt, opts: EncodeOptions & PrintOptions): Uint8Array {
   const lines: Line[] = [
     { left: title, align: "center", bold: true, big: true },
     "rule",
@@ -282,57 +250,7 @@ export function testBytes(title: Txt, line: Txt, opts: ReceiptOptions): Uint8Arr
     { left: "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789" },
     { left: line, align: "center" },
   ];
-  return concat([init(), opts.openDrawer ? drawerKick() : [], encodeLines(lines, opts), cut()]);
-}
-
-// ---------------------------------------------------------------------------
-// Browser: canvas rasterizer for non-ASCII lines
-
-/** Wrap text to a pixel width, at spaces where possible, else between characters (CJK). */
-function wrapPx(s: string, max: number, measure: (s: string) => number): string[] {
-  const out: string[] = [];
-  let row = "";
-  for (const ch of s) {
-    if (row && measure(row + ch) > max) {
-      const sp = row.lastIndexOf(" ");
-      if (sp > 0 && ch !== " ") (out.push(row.slice(0, sp)), (row = row.slice(sp + 1) + ch));
-      else (out.push(row), (row = ch === " " ? "" : ch));
-    } else row += ch;
-  }
-  out.push(row);
-  return out;
-}
-
-/** Draws lines on a canvas (24 dots per row, 48 when big); undefined outside a browser. */
-export function canvasRasterizer(): Rasterizer | undefined {
-  if (typeof document === "undefined") return undefined;
-  return (line, dots) => {
-    const c = document.createElement("canvas");
-    let g = c.getContext("2d");
-    if (!g) return null;
-    const px = line.big ? 48 : 24;
-    const font = `${line.bold || line.big ? "700" : "500"} ${px - 2}px "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif`;
-    g.font = font;
-    const rightW = line.right ? g.measureText(line.right).width + px / 2 : 0;
-    const rows = wrapPx(line.left, dots - rightW, (s) => g!.measureText(s).width);
-    c.width = dots;
-    c.height = rows.length * px + 4;
-    g = c.getContext("2d")!;
-    g.fillStyle = "#fff";
-    g.fillRect(0, 0, c.width, c.height);
-    g.fillStyle = "#000";
-    g.font = font;
-    g.textBaseline = "middle";
-    rows.forEach((r, i) => {
-      g!.textAlign = line.right ? "left" : line.align;
-      g!.fillText(r, line.right || line.align === "left" ? 0 : line.align === "center" ? dots / 2 : dots, i * px + px / 2 + 2);
-    });
-    if (line.right) {
-      g.textAlign = "right";
-      g.fillText(line.right, dots, (rows.length - 1) * px + px / 2 + 2);
-    }
-    return packBitmap(g.getImageData(0, 0, c.width, c.height).data, c.width, c.height);
-  };
+  return linesBytes(lines, opts);
 }
 
 // ---------------------------------------------------------------------------
