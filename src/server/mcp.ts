@@ -10,7 +10,7 @@ import { customerChat } from "./ai";
 import { availability, createBooking, toBooking } from "./domain/bookings";
 import { getBranch, type BranchCtx } from "./domain/context";
 import { joinQueue, publicStatus, queueBoard, cancelTicket, ticketView } from "./domain/floor";
-import { getMenu, setAvailability } from "./domain/menu";
+import { menuAt, setAvailability } from "./domain/menu";
 import { searchBranches } from "./domain/tenants";
 import { branchReport, tenantOverview } from "./domain/reports";
 import { AppError } from "./errors";
@@ -75,7 +75,7 @@ const TOOLS: Tool[] = [
   {
     name: "get_menu",
     title: "Get menu",
-    description: "The branch's current menu with prices, signatures, spice level, dietary tags and allergens. Optionally exclude allergens or require dietary tags. Allergen data comes from the restaurant; advise guests with severe allergies to confirm with staff.",
+    description: "What the branch is serving right now (breakfast, lunch and other timed menus are applied) with today's prices (a happy hour shows the deal and the usual price), signatures, spice level, dietary tags and allergens. Optionally exclude allergens or require dietary tags. Allergen data comes from the restaurant; advise guests with severe allergies to confirm with staff.",
     inputSchema: obj(
       {
         branch: branchArg,
@@ -88,7 +88,7 @@ const TOOLS: Tool[] = [
     annotations: { readOnlyHint: true },
     run: async (c, a) => {
       const ctx = await branch(c, a.branch);
-      const menu = await getMenu(c.env.DB, ctx.tenant.id, ctx.branch.id);
+      const menu = await menuAt(c.env.DB, ctx);
       const ex = (a.exclude_allergens as string[] | undefined) ?? [];
       const di = (a.dietary as string[] | undefined) ?? [];
       const base = menu.language ?? "en";
@@ -98,10 +98,10 @@ const TOOLS: Tool[] = [
         restaurant: ctx.tenant.name,
         currency: ctx.config.currency,
         items: menu.items
-          .filter((i) => !i.soldOut && !ex.some((x) => i.allergens.includes(x)) && di.every((d) => i.dietary.includes(d)))
+          .filter((i) => !i.soldOut && i.servedNow !== false && !ex.some((x) => i.allergens.includes(x)) && di.every((d) => i.dietary.includes(d)))
           .map((i) => {
             const l = localizeItem(i, lang, base);
-            return { id: i.id, name: l.name, original_name: l.original ?? undefined, category: cats.get(i.categoryId), price: formatMoney(i.price, ctx.config.currency), description: l.description, signature: i.isSignature, spiceLevel: i.spiceLevel, dietary: i.dietary, allergens: i.allergens, story: l.story || undefined };
+            return { id: i.id, name: l.name, original_name: l.original ?? undefined, category: cats.get(i.categoryId), price: formatMoney(i.price, ctx.config.currency), ...(i.deal && i.listPrice ? { usual_price: formatMoney(i.listPrice, ctx.config.currency), deal: i.deal.name } : {}), description: l.description, signature: i.isSignature, spiceLevel: i.spiceLevel, dietary: i.dietary, allergens: i.allergens, story: l.story || undefined };
           }),
         language: lang,
         allergenNote: "Allergen information is provided by the restaurant. Guests with severe allergies should confirm with staff.",

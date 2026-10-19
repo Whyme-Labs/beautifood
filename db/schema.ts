@@ -292,6 +292,9 @@ export const orderItems = sqliteTable(
     name: text("name").notNull(),
     category: text("category").notNull().default(""),
     unitPrice: integer("unit_price").notNull(),
+    /** The usual price when a price rule (happy hour) set unit_price, and the rule's name. */
+    listPrice: integer("list_price"),
+    deal: text("deal"),
     qty: integer("qty").notNull(),
     modifiers: text("modifiers").notNull().default("[]"),
     notes: text("notes").notNull().default(""),
@@ -372,8 +375,48 @@ export const menuItems = sqliteTable(
     sort: integer("sort").notNull().default(0),
     /** {"zh":{"name":"…","description":"…","story":"…","modifiers":{"Temperature":{"name":"温度","options":{"Hot":"热"}}}}} */
     translations: text("translations").notNull().default("{}"),
+    /** Timed menus (timed_menus.id) it is served on; [] = all day. */
+    menuIds: text("menu_ids").notNull().default("[]"),
   },
   (t) => [index("menu_items_tenant").on(t.tenantId)],
+);
+
+/** Breakfast, Lunch, All day…: weekly windows of branch-local time, at some or all branches. */
+export const timedMenus = sqliteTable(
+  "timed_menus",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id").notNull(),
+    name: text("name").notNull(),
+    translations: text("translations").notNull().default("{}"),
+    /** [{"days":[1,2,3,4,5],"from":"07:00","to":"11:00"}] */
+    windows: text("windows").notNull().default("[]"),
+    /** ["*"] or branch ids */
+    branches: text("branches").notNull().default('["*"]'),
+    active: integer("active").notNull().default(1),
+    sort: integer("sort").notNull().default(0),
+  },
+  (t) => [index("timed_menus_tenant").on(t.tenantId)],
+);
+
+/** Happy hours and other timed prices: percent or amount off some dishes during windows. */
+export const priceRules = sqliteTable(
+  "price_rules",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id").notNull(),
+    name: text("name").notNull(),
+    translations: text("translations").notNull().default("{}"),
+    kind: text("kind").notNull(),
+    value: real("value").notNull(),
+    /** category ids and item ids it covers; both empty = every dish */
+    categories: text("categories").notNull().default("[]"),
+    items: text("items").notNull().default("[]"),
+    windows: text("windows").notNull().default("[]"),
+    branches: text("branches").notNull().default('["*"]'),
+    active: integer("active").notNull().default(1),
+  },
+  (t) => [index("price_rules_tenant").on(t.tenantId)],
 );
 
 export const itemAvailability = sqliteTable(

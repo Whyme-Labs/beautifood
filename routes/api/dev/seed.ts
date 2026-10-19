@@ -9,11 +9,11 @@ import { appEnv } from "../../../src/server/appenv";
 import { fail } from "../../../src/server/errors";
 import { onboardingDraft } from "../../../src/server/ai";
 import { addBranch, createTenant, updateTenant } from "../../../src/server/domain/tenants";
-import { importMenu } from "../../../src/server/domain/menu";
+import { importMenu, savePriceRule, saveTimedMenu, upsertCategory, upsertItem } from "../../../src/server/domain/menu";
 import { saveTables } from "../../../src/server/domain/floor";
 import { getBranch } from "../../../src/server/domain/context";
 import { ensureMember } from "../../../src/server/domain/loyalty";
-import { SAMPLE_ABOUT, SAMPLE_FLOOR, SAMPLE_MENU, sampleProfile } from "../../../src/server/dev/sample";
+import { SAMPLE_ABOUT, SAMPLE_FLOOR, SAMPLE_MENU, SAMPLE_TIMED, sampleProfile } from "../../../src/server/dev/sample";
 import { translateMenu } from "../../../src/server/domain/translations";
 import { seedHistory } from "../../../src/server/dev/history";
 import { newId } from "../../../src/server/ids";
@@ -61,6 +61,29 @@ export const POST = api(async (c) => {
         .bind(newId("demo_"), tenantId, `${name.toLowerCase().replace(/[^a-z]+/g, ".")}@example.com`, name, role, JSON.stringify(ids), Date.now() - 300 * 86_400_000)
         .run();
     await c.env.DB.prepare("UPDATE tenants SET onboarding = ? WHERE id = ?").bind(JSON.stringify({ allergensReviewed: true, queueReviewed: true, qrPrinted: true, loyaltyReviewed: true }), tenantId).run();
+    // the day has a shape: a breakfast menu in the morning, and a happy hour on drinks on weekday afternoons
+    const T = SAMPLE_TIMED;
+    const zh = (x: { zh: unknown }) => JSON.stringify({ zh: typeof x.zh === "string" ? { name: x.zh } : { ...(x.zh as object), source: "manual" } });
+    const breakfast = await saveTimedMenu(c.env.DB, tenantId, actor, {
+      name: T.breakfast.name,
+      windows: [
+        { days: [1, 2, 3, 4, 5], from: "07:00", to: "11:00" },
+        { days: [6, 0], from: "08:00", to: "12:00" },
+      ],
+      branches: ["*"],
+    });
+    await c.env.DB.prepare("UPDATE timed_menus SET translations = ? WHERE id = ?").bind(zh(T.breakfast), breakfast.id).run();
+    const cat = await upsertCategory(c.env.DB, tenantId, actor, { name: T.category.name, sort: -1 });
+    await c.env.DB.prepare("UPDATE menu_categories SET translations = ? WHERE id = ?").bind(zh(T.category), cat.id).run();
+    for (const d of T.dishes) {
+      const { id } = await upsertItem(c.env.DB, tenantId, actor, { categoryId: cat.id, name: d.name, price: d.price, description: d.description, station: "kitchen", menuIds: [breakfast.id] });
+      await c.env.DB.prepare("UPDATE menu_items SET translations = ? WHERE id = ?").bind(zh(d), id).run();
+    }
+    const drinks = (await c.env.DB.prepare("SELECT id FROM menu_categories WHERE tenant_id = ? AND lower(name) LIKE '%drink%'").bind(tenantId).first<{ id: string }>())?.id;
+    if (drinks) {
+      const hh = await savePriceRule(c.env.DB, tenantId, actor, { name: T.happyHour.name, kind: "percent", value: 30, categories: [drinks], items: [], windows: [{ days: [1, 2, 3, 4, 5], from: "15:00", to: "18:00" }], branches: ["*"] });
+      await c.env.DB.prepare("UPDATE price_rules SET translations = ? WHERE id = ?").bind(zh(T.happyHour), hh.id).run();
+    }
   }
   return c.json({ tenantId, slug, branches: [{ id: branchId, ref: `${slug}~klcc` }, { id: second.id, ref: `${slug}~${second.slug}` }], items: draft.items.length, tables: draft.tables.length }, 201);
 });

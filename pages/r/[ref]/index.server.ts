@@ -1,12 +1,12 @@
 import { defineHandler, type InferProps } from "void";
 import { getBranch } from "../../../src/server/domain/context";
-import { getMenu } from "../../../src/server/domain/menu";
+import { menuAt } from "../../../src/server/domain/menu";
 
 export type Props = InferProps<typeof loader>;
 
 export const loader = defineHandler(async (c) => {
   const ctx = await getBranch(c.env.DB, c.req.param("ref")!);
-  const menu = await getMenu(c.env.DB, ctx.tenant.id, ctx.branch.id);
+  const menu = await menuAt(c.env.DB, ctx);
   return {
     ref: `${ctx.tenant.slug}~${ctx.branch.slug}`,
     branch: { id: ctx.branch.id, name: ctx.branch.name, address: ctx.branch.address, open: !!ctx.branch.active },

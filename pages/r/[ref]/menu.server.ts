@@ -1,6 +1,6 @@
 import { defineHandler, type InferProps } from "void";
 import { getBranch } from "../../../src/server/domain/context";
-import { getMenu } from "../../../src/server/domain/menu";
+import { menuAt } from "../../../src/server/domain/menu";
 
 export type Props = InferProps<typeof loader>;
 
@@ -15,6 +15,6 @@ export const loader = defineHandler(async (c) => {
     currency: ctx.config.currency,
     menuDisplay: ctx.config.modules.menuDisplay,
     aiAssistant: ctx.config.modules.aiAssistant,
-    menu: await getMenu(c.env.DB, ctx.tenant.id, ctx.branch.id),
+    menu: await menuAt(c.env.DB, ctx),
   };
 });

@@ -50,7 +50,7 @@ interface Order {
   /** The guest's language, when they queued or booked online. */
   guestLocale: string | null;
   closedAt: number | null;
-  items: { id: string; round: number; name: string; qty: number; unitPrice: number; modifiers: { option: string; price: number }[]; status: string; addedBy: string; notes: string; voidReason: string | null }[];
+  items: { id: string; round: number; name: string; qty: number; unitPrice: number; listPrice?: number | null; deal?: string | null; modifiers: { option: string; price: number }[]; status: string; addedBy: string; notes: string; voidReason: string | null }[];
   payments: { id: string; method: string; amount: number; tendered: number | null; change: number; splitLabel: string | null; status: string; refunded: number }[];
 }
 type Line = { item: MenuItem; qty: number; modifiers: { group: string; option: string }[] };
@@ -70,7 +70,7 @@ export default function Pos() {
   const [sel, setSel] = useState<string | null>(null);
   const { data: orders, refresh: refreshList } = usePoll(() => (s.branchId ? api<OrderRow[]>(b("orders?status=open")) : Promise.resolve(null)), { interval: 15_000, deps: [s.branchId] });
   const { data: order, refresh: refreshOrder, error } = usePoll(() => (sel ? api<Order>(b(`orders/${sel}`)) : Promise.resolve(null)), { interval: 0, deps: [sel] });
-  const { data: menu } = usePoll(() => (s.branchId ? api<Menu>(`/api/m/menu?branch=${s.branchId}`) : Promise.resolve(null)), { interval: 0, deps: [s.branchId] });
+  const { data: menu } = usePoll(() => (s.branchId ? api<Menu>(`/api/m/menu?branch=${s.branchId}&now=1`) : Promise.resolve(null)), { interval: 60_000, deps: [s.branchId] });
   const { data: shift, refresh: refreshShift } = usePoll(() => (s.can("shift.manage") && s.branchId ? api<{ current: { id: string; opened_at: number; opening_float: number } | null }>(b("shifts")) : Promise.resolve(null)), { interval: 0, deps: [s.branchId] });
   useBranchChanges(
     useCallback(() => {
@@ -158,7 +158,7 @@ export default function Pos() {
         .map((i) => {
           const it = byName.get(i.name);
           const names = Object.fromEntries(LOCALES.map((l) => [l.code, it ? localizeItem(it, l.code, lang).name : i.name]));
-          return { names, original: i.name, qty: i.qty, amount: lineTotal(i), options: i.modifiers.map((m) => m.option), notes: i.notes || undefined };
+          return { names, original: i.name, qty: i.qty, amount: lineTotal(i), options: i.modifiers.map((m) => m.option), notes: i.notes || undefined, deal: i.deal || undefined };
         }),
       subtotal: o.subtotal,
       discount: o.discount,
@@ -512,8 +512,15 @@ function MenuGrid({ menu, cur, lines, disabled, onAdd }: { menu: Menu | null; cu
                 <span className="pi-foot">
                   <span className="pi-price">
                     <Money v={it.price} c={cur} />
+                    {it.listPrice != null && (
+                      <s className="pi-list">
+                        <Money v={it.listPrice} c={cur} />
+                      </s>
+                    )}
                   </span>
                   {it.soldOut && <span className="badge bad">{t("menu.soldOut")}</span>}
+                  {!it.soldOut && it.servedNow === false && <span className="badge" title={it.nextServed ? `${it.nextServed.menu} ${it.nextServed.time}` : undefined}>{t("menu.notNow")}</span>}
+                  {it.deal && <span className="badge deal">{it.deal.name}</span>}
                 </span>
                 {n > 0 && (
                   <span className="pi-qty" aria-label={t("staff.pos.inDraft", { count: n })}>

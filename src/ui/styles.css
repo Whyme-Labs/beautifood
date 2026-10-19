@@ -339,6 +339,19 @@ tbody tr:last-child td { border-bottom: 0; }
 .dish .alt { color: var(--ink-3); font-size: 13px; }
 .dish .price { font: 800 20px/1 var(--font-num); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .dish.sold { opacity: 0.55; }
+.dish .list-price { font: 650 13px/1 var(--font-num); }
+.badge.deal { background: #1a1814; color: #ffd12e; }
+.pi-list { margin-left: 6px; font-weight: 600; font-size: 0.8em; color: var(--ink-3); }
+.timed-row { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+.timed-row .meta { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.timed-window { display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+.timed-window input[type="time"] { width: 130px; }
+.day-picks { display: flex; flex-wrap: wrap; gap: 6px; }
+.day-picks .chip { min-width: 44px; justify-content: center; }
+.menu-now { display: flex; flex-wrap: wrap; gap: 8px; }
+.menu-now-item { display: inline-flex; align-items: baseline; gap: 6px; padding: 8px 12px; border-radius: 12px; background: var(--sun-soft, #fff3c4); color: var(--ink); font-size: 14px; }
+.menu-now-item.deal { background: #1a1814; color: #ffd12e; }
+.menu-now-item.deal span { color: inherit; opacity: 0.85; }
 .sig { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; background: var(--sun); color: #1a1814; padding: 1px 7px; border-radius: 4px; letter-spacing: 0.02em; }
 
 /* ── Floor plan ───────────────────────────────────────────────────────── */

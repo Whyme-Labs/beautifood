@@ -94,7 +94,7 @@ Each guard maps to a clear error, for example `409 table_taken` or `409 insuffic
 A seated table gets a **session**. Everyone who scans the table QR or follows the ticket's table link joins it under a self-chosen name.
 
 - **Lines are owned.** Each cart line records its participant. You can change your own lines, but not your friend's (`403`).
-- **Server-side pricing.** The client sends item ids and modifier choices. The server prices from the menu at send time and rejects sold-out dishes and missing required modifiers.
+- **Server-side pricing.** The client sends item ids and modifier choices. The server prices from the menu at send time, applying any price rule (happy hour) on at that moment in branch-local time, and rejects sold-out dishes, dishes whose timed menu is not on (guests only; the till may ring them up) and missing required modifiers. Order lines keep the usual price and the rule name beside the price charged, for the receipt and reports.
 - **Send is versioned.** "Send to kitchen" carries `expectedVersion` and a `msgId`:
   - A stale send gets `409` plus the fresh cart.
   - Two phones pressing send at once: one fires the round, the other gets `already_sent`.

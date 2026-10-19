@@ -10,6 +10,8 @@ import { ALLERGENS } from "../../src/shared/allergens";
 import { LOCALES, localeInfo, type MessageKey } from "../../src/i18n/core";
 import { useI18n } from "../../src/i18n/react";
 import type { ItemTranslation, Menu, MenuItem } from "../../src/shared/types";
+import type { TimedMenu } from "../../src/shared/schedule";
+import { ServedOnField, TimedMenusCard } from "../../src/ui/timedMenus";
 
 interface TranslateResult {
   locales: string[];
@@ -57,6 +59,7 @@ export default function MenuEditor() {
       </div>
       <ErrorBox error={error} />
       {canEdit && menu && <TranslatePanel language={language} onDone={refresh} />}
+      {canEdit && menu && <TimedMenusCard menu={menu} currency={cur} onChange={refresh} />}
       {menu && !menu.categories.length && <Empty>{t("staff.menu.noCategories")}</Empty>}
       {menu?.categories.map((c) => {
         const items = menu.items.filter((i) => i.categoryId === c.id);
@@ -83,6 +86,13 @@ export default function MenuEditor() {
                           <EyeOff /> {t("staff.menu.hidden")}
                         </span>
                       )}
+                      {(menu.menus ?? [])
+                        .filter((m) => i.menuIds?.includes(m.id))
+                        .map((m) => (
+                          <span key={m.id} className="badge info">
+                            {m.name}
+                          </span>
+                        ))}
                     </div>
                     {i.description && <div className="muted" style={{ fontSize: 13 }}>{i.description}</div>}
                     <Dietary list={i.dietary} spice={i.spiceLevel} />
@@ -127,6 +137,7 @@ export default function MenuEditor() {
         currency={cur}
         language={language}
         categories={menu?.categories ?? []}
+        menus={menu?.menus ?? []}
         onClose={() => setEdit(null)}
         onTranslated={refresh}
         onSave={(it) =>
@@ -198,7 +209,7 @@ function TranslatePanel({ language, onDone }: { language: string; onDone: () => 
   );
 }
 
-function ItemModal({ item, currency, language, categories, onClose, onSave, onDelete, onTranslated }: { item: Partial<MenuItem> | null; currency: string; language: string; categories: { id: string; name: string }[]; onClose: () => void; onSave: (i: Partial<MenuItem>) => void; onDelete: (id: string) => void; onTranslated: () => Promise<void> }) {
+function ItemModal({ item, currency, language, categories, menus, onClose, onSave, onDelete, onTranslated }: { item: Partial<MenuItem> | null; currency: string; language: string; categories: { id: string; name: string }[]; menus: TimedMenu[]; onClose: () => void; onSave: (i: Partial<MenuItem>) => void; onDelete: (id: string) => void; onTranslated: () => Promise<void> }) {
   const { t, f: fmt } = useI18n();
   const toast = useToast();
   const [f, setF] = useState<Partial<MenuItem>>({});
@@ -302,6 +313,7 @@ function ItemModal({ item, currency, language, categories, onClose, onSave, onDe
             </label>
           </div>
         </fieldset>
+        <ServedOnField menus={menus} value={f.menuIds ?? []} onChange={(menuIds) => set({ menuIds })} />
         <label>
           {t("staff.menu.editor.modifiers")}
           <span className="hint">{t("staff.menu.editor.modifiersHint")}</span>

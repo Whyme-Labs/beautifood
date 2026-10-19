@@ -111,7 +111,7 @@ export function answerLocally(ctx: AssistantContext, question: string, locale = 
   const note = allergyNote(locale);
 
   const q = question.trim();
-  const items = ctx.items.filter((i) => i.active && !i.soldOut);
+  const items = ctx.items.filter((i) => i.active && !i.soldOut && i.servedNow !== false);
   const allergens = mentionedAllergens(q);
   const wantsVegan = /vegan|plant[- ]based|纯素|全素/i.test(q);
   const wantsVeg = /vegetarian|veggie|no meat|meatless|素|斋/i.test(q);

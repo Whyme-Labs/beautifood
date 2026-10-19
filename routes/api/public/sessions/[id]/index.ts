@@ -3,7 +3,7 @@ import { api } from "../../../../../src/server/http";
 import { customerToken } from "../../../../../src/server/routing";
 import { getBranch } from "../../../../../src/server/domain/context";
 import { cartView } from "../../../../../src/server/domain/orders";
-import { getMenu } from "../../../../../src/server/domain/menu";
+import { menuAt } from "../../../../../src/server/domain/menu";
 
 export const GET = api(async (c) => {
   const id = c.req.param("id")!;
@@ -27,7 +27,7 @@ export const GET = api(async (c) => {
       ...view,
       tables,
       branch: { id: ctx.branch.id, name: ctx.branch.name, restaurant: ctx.tenant.name, currency: ctx.config.currency, serviceChargePct: ctx.config.serviceChargePct, taxPct: ctx.config.taxPct, taxInclusive: ctx.config.taxInclusive, cashRounding: ctx.config.cashRounding },
-      menu: await getMenu(c.env.DB, ctx.tenant.id, ctx.branch.id),
+      menu: await menuAt(c.env.DB, ctx),
     };
   }
   return view;

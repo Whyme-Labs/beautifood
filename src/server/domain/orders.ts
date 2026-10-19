@@ -1,11 +1,12 @@
 // Shared carts, orders (bills), kitchen tickets and payments.
 import { core } from "../../core/server";
-import type { CartModifier, OrderType } from "../../shared/types";
+import type { CartModifier, MenuItem, OrderType } from "../../shared/types";
+import type { Serving } from "../../shared/schedule";
 import { AppError, fail, notFound } from "../errors";
 import { localParts, newId, randomToken } from "../ids";
 import { DuplicateCommand, Tx } from "../tx";
 import { loyaltyConfig, streams, type BranchCtx } from "./context";
-import { getItems, priceModifiers, type ChosenModifier } from "./menu";
+import { itemsAt, priceModifiers, type ChosenModifier } from "./menu";
 
 // ── rows & mappers ──────────────────────────────────────────────────────────
 
@@ -76,6 +77,8 @@ export interface ItemRow {
   name: string;
   category: string;
   unit_price: number;
+  list_price: number | null;
+  deal: string | null;
   qty: number;
   modifiers: string;
   notes: string;
@@ -125,6 +128,8 @@ export const toOrderItem = (r: ItemRow) => ({
   name: r.name,
   category: r.category,
   unitPrice: r.unit_price,
+  listPrice: r.list_price,
+  deal: r.deal,
   qty: r.qty,
   modifiers: JSON.parse(r.modifiers) as CartModifier[],
   notes: r.notes,
@@ -207,9 +212,10 @@ export async function addLine(
   input: { itemId: string; qty: number; modifiers?: ChosenModifier[]; notes?: string },
 ) {
   if (!Number.isInteger(input.qty) || input.qty < 1 || input.qty > 50) fail(400, "invalid_qty", "Quantity must be 1–50");
-  const item = (await getItems(db, ctx.tenant.id, ctx.branch.id, [input.itemId])).get(input.itemId);
+  const item = (await itemsAt(db, ctx, [input.itemId], Date.now())).get(input.itemId);
   if (!item || !item.active) fail(404, "item_unavailable", "That dish isn't on the menu");
   if (item.soldOut) fail(409, "sold_out", `${item.name} is sold out`);
+  notServedNow(item);
   const mods = priceModifiers(item, input.modifiers ?? []);
   const id = newId("ln_");
   const tx = new Tx(db, { tenantId: ctx.tenant.id, branchId: ctx.branch.id, actor: `diner:${who.id}` });
@@ -222,7 +228,7 @@ export async function addLine(
     who.name.slice(0, 40),
     item.id,
     item.name,
-    item.price,
+    item.serving.price,
     input.qty,
     JSON.stringify(mods),
     (input.notes ?? "").slice(0, 200),
@@ -269,12 +275,32 @@ function itemStatusFor(type: OrderType, round: number, ctx: BranchCtx): string {
   return "fired";
 }
 
+/** Guests can only order what is being served now (staff at the till may still ring it up). */
+function notServedNow(item: { name: string; serving: Serving }) {
+  if (item.serving.servedNow) return;
+  const n = item.serving.next;
+  fail(409, "not_served_now", n ? `${item.name} is on the ${n.menu} menu, from ${n.time}` : `${item.name} isn't being served right now`, { item: item.name, next: n });
+}
+
+const priceNow = (m: MenuItem & { category: string; serving: Serving }) => ({
+  itemId: m.id,
+  name: m.name,
+  category: m.category,
+  station: m.station,
+  unitPrice: m.serving.price,
+  listPrice: m.serving.rule ? m.serving.listPrice : null,
+  deal: m.serving.rule?.name ?? null,
+});
+
 export interface PricedLine {
   itemId: string;
   name: string;
   category: string;
   station: string;
   unitPrice: number;
+  /** Set when a price rule (happy hour) made unitPrice: the usual price and the rule's name. */
+  listPrice?: number | null;
+  deal?: string | null;
   qty: number;
   modifiers: CartModifier[];
   notes: string;
@@ -383,8 +409,8 @@ async function addRound(
   }
   for (const l of lines) {
     tx.run(
-      `INSERT INTO order_items (id, order_id, branch_id, round, item_id, name, category, unit_price, qty, modifiers, notes, added_by, status, station, created_at, fired_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO order_items (id, order_id, branch_id, round, item_id, name, category, unit_price, list_price, deal, qty, modifiers, notes, added_by, status, station, created_at, fired_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       newId("oi_"),
       orderId,
       ctx.branch.id,
@@ -393,6 +419,8 @@ async function addRound(
       l.name,
       l.category,
       l.unitPrice,
+      l.listPrice ?? null,
+      l.deal ?? null,
       l.qty,
       JSON.stringify(l.modifiers),
       l.notes,
@@ -425,14 +453,15 @@ export async function submitCart(db: D1Database, ctx: BranchCtx, sessionId: stri
     }
     const rows = (await db.prepare("SELECT * FROM cart_lines WHERE session_id = ?").bind(sessionId).all<LineRow>()).results;
     if (!rows.length) fail(400, "empty_cart", "The cart is empty");
-    const menu = await getItems(db, ctx.tenant.id, ctx.branch.id, rows.map((r) => r.item_id));
+    const menu = await itemsAt(db, ctx, rows.map((r) => r.item_id), Date.now());
     const lines: PricedLine[] = rows.map((r) => {
       const m = menu.get(r.item_id);
       if (!m || !m.active) fail(409, "item_unavailable", `${r.name} is no longer available`);
       if (m.soldOut) fail(409, "sold_out", `${r.name} just sold out — please remove it`);
-      // authoritative price at submit time (menu may have changed since the line was added)
+      notServedNow(m);
+      // authoritative price at submit time (the menu, or the happy hour, may have changed since the line was added)
       const mods = priceModifiers(m, JSON.parse(r.modifiers));
-      return { itemId: m.id, name: m.name, category: m.category, station: m.station, unitPrice: m.price, qty: r.qty, modifiers: mods, notes: r.notes, addedBy: r.participant_name };
+      return { ...priceNow(m), qty: r.qty, modifiers: mods, notes: r.notes, addedBy: r.participant_name };
     });
     const round = s.submit_seq + 1;
     const tx = new Tx(db, { tenantId: ctx.tenant.id, branchId: ctx.branch.id, actor: `diner:${who.id}` });
@@ -479,13 +508,14 @@ export async function posAddItems(
     } else {
       s = await getSession(db, await openSession(db, ctx, "pos", null));
     }
-    const menu = await getItems(db, ctx.tenant.id, ctx.branch.id, items.map((i) => i.itemId));
+    // the till may ring up a dish outside its menu's hours (the guest asked, the kitchen agreed); the price is still the price now
+    const menu = await itemsAt(db, ctx, items.map((i) => i.itemId), Date.now());
     const lines: PricedLine[] = items.map((i) => {
       const m = menu.get(i.itemId);
       if (!m || !m.active) fail(404, "item_unavailable", "Unknown item");
       if (m.soldOut) fail(409, "sold_out", `${m.name} is sold out`);
       if (!Number.isInteger(i.qty) || i.qty < 1) fail(400, "invalid_qty", "Invalid quantity");
-      return { itemId: m.id, name: m.name, category: m.category, station: m.station, unitPrice: m.price, qty: i.qty, modifiers: priceModifiers(m, i.modifiers ?? []), notes: i.notes ?? "", addedBy: "staff" };
+      return { ...priceNow(m), qty: i.qty, modifiers: priceModifiers(m, i.modifiers ?? []), notes: i.notes ?? "", addedBy: "staff" };
     });
     const tx = new Tx(db, { tenantId: ctx.tenant.id, branchId: ctx.branch.id, actor });
     tx.assert("EXISTS (SELECT 1 FROM sessions WHERE id = ? AND submit_seq = ?)", [s.id, s.submit_seq], 409, "order_changed", "retry");

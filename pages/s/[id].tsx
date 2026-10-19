@@ -102,10 +102,11 @@ export default function CartPage() {
   const preview = useMemo(() => {
     if (!core || !cart || !meta?.branch) return null;
     const sent = cart.order?.items.filter((i) => i.status !== "void").map((i) => ({ unitPrice: i.unitPrice, qty: i.qty, modifiers: i.modifiers })) ?? [];
-    const pendingLines = cart.lines.map((l) => ({ unitPrice: l.unitPrice, qty: l.qty, modifiers: l.modifiers }));
+    // unsent lines are charged at the price when they're sent: the menu's price now (a happy hour may have started or ended)
+    const pendingLines = cart.lines.map((l) => ({ unitPrice: itemById.get(l.itemId)?.price ?? l.unitPrice, qty: l.qty, modifiers: l.modifiers }));
     const b = meta.branch;
     return core.computeTotals({ lines: [...sent, ...pendingLines], serviceChargePct: cart.session.kind === "takeaway" ? 0 : b.serviceChargePct, taxPct: b.taxPct, taxInclusive: b.taxInclusive, cashRounding: b.cashRounding });
-  }, [core, cart, meta]);
+  }, [core, cart, meta, itemById]);
 
   const add = (item: MenuItem, qty = 1, modifiers: { group: string; option: string }[] = [], notes = "") =>
     run(async () => {
@@ -210,7 +211,7 @@ export default function CartPage() {
                             {l.notes ? <span className="muted"> · “{l.notes}”</span> : null}
                           </span>
                           <span className="row nowrap" style={{ gap: 6 }}>
-                            <Money v={(l.unitPrice + l.modifiers.reduce((s, m) => s + m.price, 0)) * l.qty} c={cur} />
+                            <Money v={((itemById.get(l.itemId)?.price ?? l.unitPrice) + l.modifiers.reduce((s, m) => s + m.price, 0)) * l.qty} c={cur} />
                             {mine(l) && open && (
                               <>
                                 <button className="btn small icon" onClick={() => setQty(l, l.qty - 1)} aria-label={t("cart.removeOne", { name: ln.name })}>

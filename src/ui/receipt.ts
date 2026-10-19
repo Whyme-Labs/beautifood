@@ -24,6 +24,8 @@ export interface BillItem {
   amount: number;
   options: string[];
   notes?: string;
+  /** The price rule that priced it ("Happy hour"), printed under the dish. */
+  deal?: string;
 }
 
 export interface BillPayment {
@@ -126,6 +128,7 @@ export function receiptBlocks(bill: Bill, config: ReceiptConfig, locale: string)
         }
         if (show.itemOptions && i.options.length) subs.push(i.options.join(", "));
         if (show.itemOptions && i.notes) subs.push(`“${i.notes}”`);
+        if (i.deal) subs.push(i.deal);
         return { k: "row", qty: i.qty, left: txt(primary, i.names.en || i.original), right: money(i.amount), size: "md", subs };
       }),
     totals: () => {

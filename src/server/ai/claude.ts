@@ -63,7 +63,7 @@ interface SearchInput {
 }
 
 function runTool(ctx: AssistantContext, name: string, input: unknown, referenced: Set<string>): string {
-  const items = ctx.items.filter((i) => i.active && !i.soldOut);
+  const items = ctx.items.filter((i) => i.active && !i.soldOut && i.servedNow !== false);
   if (name === "get_dish") {
     const id = (input as { id: string }).id;
     const it = ctx.items.find((i) => i.id === id);

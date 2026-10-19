@@ -9,6 +9,18 @@ export function sampleProfile(name: string, lang: string) {
     : { story: `${name} started in 1998 as a Penang hawker stall. Today we cook the same family recipes over charcoal and wok-hei in Kuala Lumpur, with the coconut milk squeezed fresh every morning.`, description: "Penang hawker classics, charcoal wok-hei.", cuisine: "Malaysian" };
 }
 
+/** The demo's timed menus (the menu is written in English and translated, like the rest of it). */
+export const SAMPLE_TIMED = {
+  breakfast: { name: "Breakfast", zh: "早餐" },
+  happyHour: { name: "Happy hour", zh: "欢乐时光" },
+  category: { name: "Breakfast", zh: "早餐" },
+  dishes: [
+    { name: "Kaya Butter Toast", price: 650, description: "charcoal-toasted bread, kaya, cold butter", zh: { name: "咖椰牛油吐司", description: "炭烤面包、咖椰酱、冰牛油" } },
+    { name: "Half-Boiled Eggs", price: 450, description: "two soft eggs, white pepper, dark soy", zh: { name: "半生熟蛋", description: "两颗溏心蛋、白胡椒、黑酱油" } },
+    { name: "Roti Canai with Dhal", price: 550, description: "flaky griddle bread, lentil curry", zh: { name: "印度煎饼配豆咖喱", description: "酥脆煎饼、扁豆咖喱" } },
+  ],
+};
+
 export const SAMPLE_MENU = `NOODLES
 ★ Char Kway Teow - RM16.90 - wok-fried flat rice noodles with prawns, egg, bean sprouts, chives and soy sauce
 Penang Assam Laksa - RM15.50 - tamarind mackerel broth, chilli, mint, pineapple, shrimp paste (signature)

@@ -1,3 +1,4 @@
+import type { PriceRule, TimedMenu } from "./schedule";
 // Domain types shared by the Worker, Durable Objects and the web app.
 // Money is always integer minor units (sen / cents).
 
@@ -207,6 +208,14 @@ export interface MenuItem {
   sort: number;
   soldOut?: boolean;
   translations?: Record<string, ItemTranslation>;
+  /** The timed menus it is on (Breakfast, Lunch…); empty = served all day. */
+  menuIds?: string[];
+  /** Filled in for "now" at a branch (see menuNow): served right now, or when next. */
+  servedNow?: boolean;
+  nextServed?: { weekday: number; time: string; today: boolean; menu: string; menuId: string };
+  /** When a price rule is on: `price` is the price now and this is the usual one. */
+  listPrice?: number;
+  deal?: { id: string; name: string };
 }
 
 export interface MenuCategory {
@@ -222,6 +231,11 @@ export interface Menu {
   version: number;
   categories: MenuCategory[];
   items: MenuItem[];
+  /** Timed menus and price rules (happy hours); at a branch, only those that apply there. */
+  menus?: TimedMenu[];
+  rules?: PriceRule[];
+  /** What is on right now at the branch, and until when ("HH:MM" branch-local). */
+  now?: { menus: { id: string; name: string; until: string | null }[]; deals: { id: string; name: string; until: string | null }[] };
 }
 
 export interface CartModifier {
@@ -253,6 +267,9 @@ export interface OrderItem {
   itemId: string;
   name: string;
   unitPrice: number;
+  /** Set when a price rule (happy hour) priced it: the usual price and the rule's name. */
+  listPrice?: number | null;
+  deal?: string | null;
   qty: number;
   modifiers: CartModifier[];
   notes: string;

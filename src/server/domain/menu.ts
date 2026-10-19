@@ -1,8 +1,9 @@
 import type { Menu, MenuCategory, MenuItem, ModifierGroup } from "../../shared/types";
+import { clockAt, menuNow, menusAt, rulesAt, serving, type PriceRule, type Serving, type TimedMenu, type Window } from "../../shared/schedule";
 import { fail, notFound } from "../errors";
 import { newId } from "../ids";
 import { Tx } from "../tx";
-import { streams } from "./context";
+import { streams, type BranchCtx } from "./context";
 
 interface ItemRow {
   id: string;
@@ -24,6 +25,7 @@ interface ItemRow {
   sort: number;
   translations?: string | null;
   sold_out?: number | null;
+  menu_ids?: string | null;
 }
 
 export const toItem = (r: ItemRow): MenuItem => ({
@@ -45,11 +47,52 @@ export const toItem = (r: ItemRow): MenuItem => ({
   sort: r.sort,
   soldOut: !!r.sold_out,
   translations: JSON.parse(r.translations || "{}"),
+  menuIds: JSON.parse(r.menu_ids || "[]"),
 });
+
+interface TimedMenuRow {
+  id: string;
+  name: string;
+  translations: string;
+  windows: string;
+  branches: string;
+  active: number;
+  sort: number;
+}
+interface PriceRuleRow {
+  id: string;
+  name: string;
+  translations: string;
+  kind: "percent" | "amount";
+  value: number;
+  categories: string;
+  items: string;
+  windows: string;
+  branches: string;
+  active: number;
+}
+const toTimedMenu = (r: TimedMenuRow): TimedMenu => ({ id: r.id, name: r.name, translations: JSON.parse(r.translations || "{}"), windows: JSON.parse(r.windows || "[]"), branches: JSON.parse(r.branches || '["*"]'), active: !!r.active, sort: r.sort });
+const toPriceRule = (r: PriceRuleRow): PriceRule => ({
+  id: r.id,
+  name: r.name,
+  translations: JSON.parse(r.translations || "{}"),
+  kind: r.kind,
+  value: r.value,
+  categories: JSON.parse(r.categories || "[]"),
+  items: JSON.parse(r.items || "[]"),
+  windows: JSON.parse(r.windows || "[]"),
+  branches: JSON.parse(r.branches || '["*"]'),
+  active: !!r.active,
+});
+
+const timedStmts = (db: D1Database, tenantId: string) => [
+  db.prepare("SELECT * FROM timed_menus WHERE tenant_id = ? ORDER BY sort, name").bind(tenantId),
+  db.prepare("SELECT * FROM price_rules WHERE tenant_id = ? ORDER BY name").bind(tenantId),
+];
 
 /** Full menu for a tenant; with a branch, sold-out flags are applied. */
 export async function getMenu(db: D1Database, tenantId: string, branchId?: string | null, includeInactive = false): Promise<Menu> {
-  const [cats, items, ver, lang] = await db.batch([
+  const [cats, items, ver, lang, menus, rules] = await db.batch([
     db.prepare("SELECT id, name, sort, translations FROM menu_categories WHERE tenant_id = ? ORDER BY sort, name").bind(tenantId),
     db
       .prepare(
@@ -59,13 +102,119 @@ export async function getMenu(db: D1Database, tenantId: string, branchId?: strin
       .bind(branchId ?? "", tenantId),
     db.prepare("SELECT COUNT(*) AS v FROM events WHERE stream = ?").bind(streams.menu(tenantId)),
     db.prepare("SELECT menu_language FROM tenants WHERE id = ?").bind(tenantId),
+    ...timedStmts(db, tenantId),
   ]);
   return {
     language: (lang.results[0] as { menu_language?: string } | undefined)?.menu_language ?? "en",
     version: (ver.results[0] as { v: number }).v,
     categories: (cats.results as unknown as (MenuCategory & { translations: string })[]).map((c) => ({ ...c, translations: JSON.parse(c.translations || "{}") })),
     items: (items.results as unknown as ItemRow[]).map(toItem),
+    menus: (menus.results as unknown as TimedMenuRow[]).map(toTimedMenu),
+    rules: (rules.results as unknown as PriceRuleRow[]).map(toPriceRule),
   };
+}
+
+/** The menu guests see at a branch right now: what is served now, and at what price now. */
+export async function menuAt(db: D1Database, ctx: BranchCtx, at = Date.now(), includeInactive = false): Promise<Menu> {
+  return menuNow(await getMenu(db, ctx.tenant.id, ctx.branch.id, includeInactive), ctx.branch.id, clockAt(at, ctx.config.timezone));
+}
+
+/** Dishes as they stand at `at` (the command's time): the menu row, whether it is served now and its price now. */
+export async function itemsAt(db: D1Database, ctx: BranchCtx, ids: string[], at: number): Promise<Map<string, MenuItem & { category: string; serving: Serving }>> {
+  const [items, [menus, rules]] = await Promise.all([getItems(db, ctx.tenant.id, ctx.branch.id, ids), db.batch(timedStmts(db, ctx.tenant.id))]);
+  const m = menusAt((menus.results as unknown as TimedMenuRow[]).map(toTimedMenu), ctx.branch.id);
+  const r = rulesAt((rules.results as unknown as PriceRuleRow[]).map(toPriceRule), ctx.branch.id);
+  const c = clockAt(at, ctx.config.timezone);
+  return new Map([...items].map(([id, i]) => [id, { ...i, serving: serving(i, m, r, c) }]));
+}
+
+// ── timed menus and price rules ─────────────────────────────────────────────
+
+export interface TimedMenuInput {
+  id?: string;
+  name: string;
+  windows: Window[];
+  branches: string[];
+  active?: boolean;
+  sort?: number;
+}
+
+export async function saveTimedMenu(db: D1Database, tenantId: string, actor: string, m: TimedMenuInput) {
+  const id = m.id ?? newId("tm_");
+  await new Tx(db, { tenantId, actor })
+    .run(
+      `INSERT INTO timed_menus (id, tenant_id, name, windows, branches, active, sort) VALUES (?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET name = excluded.name, windows = excluded.windows, branches = excluded.branches, active = excluded.active, sort = excluded.sort
+       WHERE timed_menus.tenant_id = excluded.tenant_id`,
+      id,
+      tenantId,
+      m.name,
+      JSON.stringify(m.windows),
+      JSON.stringify(m.branches.length ? m.branches : ["*"]),
+      m.active === false ? 0 : 1,
+      m.sort ?? 0,
+    )
+    .event({ stream: streams.menu(tenantId), type: "menu.timed_saved", data: { id, name: m.name, windows: m.windows } })
+    .commit();
+  return { id };
+}
+
+/** Delete a timed menu; its dishes stay, served all day unless they are on another menu. */
+export async function deleteTimedMenu(db: D1Database, tenantId: string, actor: string, id: string) {
+  await new Tx(db, { tenantId, actor })
+    .run("DELETE FROM timed_menus WHERE id = ? AND tenant_id = ?", id, tenantId)
+    .run(
+      `UPDATE menu_items SET menu_ids = COALESCE((SELECT json_group_array(value) FROM json_each(menu_items.menu_ids) WHERE value <> ?), '[]')
+       WHERE tenant_id = ? AND EXISTS (SELECT 1 FROM json_each(menu_items.menu_ids) WHERE value = ?)`,
+      id,
+      tenantId,
+      id,
+    )
+    .event({ stream: streams.menu(tenantId), type: "menu.timed_deleted", data: { id } })
+    .commit();
+}
+
+export interface PriceRuleInput {
+  id?: string;
+  name: string;
+  kind: "percent" | "amount";
+  value: number;
+  categories: string[];
+  items: string[];
+  windows: Window[];
+  branches: string[];
+  active?: boolean;
+}
+
+export async function savePriceRule(db: D1Database, tenantId: string, actor: string, r: PriceRuleInput) {
+  const id = r.id ?? newId("pr_");
+  await new Tx(db, { tenantId, actor })
+    .run(
+      `INSERT INTO price_rules (id, tenant_id, name, kind, value, categories, items, windows, branches, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET name = excluded.name, kind = excluded.kind, value = excluded.value, categories = excluded.categories, items = excluded.items,
+         windows = excluded.windows, branches = excluded.branches, active = excluded.active
+       WHERE price_rules.tenant_id = excluded.tenant_id`,
+      id,
+      tenantId,
+      r.name,
+      r.kind,
+      r.value,
+      JSON.stringify(r.categories),
+      JSON.stringify(r.items),
+      JSON.stringify(r.windows),
+      JSON.stringify(r.branches.length ? r.branches : ["*"]),
+      r.active === false ? 0 : 1,
+    )
+    .event({ stream: streams.menu(tenantId), type: "menu.price_rule_saved", data: { id, name: r.name, kind: r.kind, value: r.value } })
+    .commit();
+  return { id };
+}
+
+export async function deletePriceRule(db: D1Database, tenantId: string, actor: string, id: string) {
+  await new Tx(db, { tenantId, actor })
+    .run("DELETE FROM price_rules WHERE id = ? AND tenant_id = ?", id, tenantId)
+    .event({ stream: streams.menu(tenantId), type: "menu.price_rule_deleted", data: { id } })
+    .commit();
 }
 
 export async function getItems(db: D1Database, tenantId: string, branchId: string, ids: string[]): Promise<Map<string, MenuItem & { category: string }>> {
@@ -125,6 +274,7 @@ export interface ItemInput {
   modifiers?: ModifierGroup[];
   active?: boolean;
   sort?: number;
+  menuIds?: string[];
 }
 
 export async function upsertCategory(db: D1Database, tenantId: string, actor: string, c: { id?: string; name: string; sort?: number }) {
@@ -152,11 +302,12 @@ export async function deleteCategory(db: D1Database, tenantId: string, actor: st
 
 function itemStmt(tx: Tx, tenantId: string, i: ItemInput & { id: string }) {
   tx.run(
-    `INSERT INTO menu_items (id, tenant_id, category_id, name, description, price, image_url, allergens, dietary, spice_level, story, is_signature, tags, station, modifiers, active, sort)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO menu_items (id, tenant_id, category_id, name, description, price, image_url, allergens, dietary, spice_level, story, is_signature, tags, station, modifiers, active, sort, menu_ids)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, '[]'))
      ON CONFLICT(id) DO UPDATE SET category_id = excluded.category_id, name = excluded.name, description = excluded.description, price = excluded.price,
        image_url = excluded.image_url, allergens = excluded.allergens, dietary = excluded.dietary, spice_level = excluded.spice_level, story = excluded.story,
-       is_signature = excluded.is_signature, tags = excluded.tags, station = excluded.station, modifiers = excluded.modifiers, active = excluded.active, sort = excluded.sort
+       is_signature = excluded.is_signature, tags = excluded.tags, station = excluded.station, modifiers = excluded.modifiers, active = excluded.active, sort = excluded.sort,
+       menu_ids = CASE WHEN ? IS NULL THEN menu_items.menu_ids ELSE excluded.menu_ids END
      WHERE menu_items.tenant_id = excluded.tenant_id`,
     i.id,
     tenantId,
@@ -175,6 +326,8 @@ function itemStmt(tx: Tx, tenantId: string, i: ItemInput & { id: string }) {
     JSON.stringify(i.modifiers ?? []),
     i.active === false ? 0 : 1,
     i.sort ?? 0,
+    i.menuIds ? JSON.stringify(i.menuIds) : null,
+    i.menuIds ? 1 : null,
   );
 }
 

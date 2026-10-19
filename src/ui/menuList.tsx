@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, Plus, ShieldAlert, Star } from "lucide-react";
 import type { Menu, MenuItem } from "../shared/types";
+import { clockLabel, scheduleName, weekdayNames } from "../shared/schedule";
 import { ALLERGENS } from "../shared/allergens";
 import { localizeCategory, localizeItem } from "../shared/menuI18n";
 import { useI18n } from "../i18n/react";
@@ -13,9 +14,39 @@ export function MenuList({ menu, currency, onPick, action }: { menu: Menu; curre
   const [avoid, setAvoid] = useState<string[]>([]);
   const [cat, setCat] = useState<string>("all");
   const [showStory, setShowStory] = useState<string | null>(null);
-  const items = useMemo(() => menu.items.filter((i) => (cat === "all" || i.categoryId === cat) && !avoid.some((a) => i.allergens.includes(a))), [menu, cat, avoid]);
+  // what is served now first; later menus' dishes after, greyed, with when they are on
+  const items = useMemo(
+    () => menu.items.filter((i) => (cat === "all" || i.categoryId === cat) && !avoid.some((a) => i.allergens.includes(a))).sort((a, b) => Number(a.servedNow === false) - Number(b.servedNow === false)),
+    [menu, cat, avoid],
+  );
+  const named = (id: string, fallback: string) => {
+    const x = [...(menu.menus ?? []), ...(menu.rules ?? [])].find((m) => m.id === id);
+    return x ? scheduleName(x, locale) : fallback;
+  };
+  const when = (n: NonNullable<MenuItem["nextServed"]>) => {
+    const time = clockLabel(n.time, locale);
+    const name = named(n.menuId, n.menu);
+    return n.today ? t("menu.servedFrom", { menu: name, time }) : t("menu.servedFromDay", { menu: name, day: weekdayNames(locale)[n.weekday], time });
+  };
+  const now = menu.now;
   return (
     <div className="col">
+      {now && (now.menus.length > 0 || now.deals.length > 0) && (menu.menus?.length || now.deals.length) ? (
+        <div className="menu-now" data-testid="menu-now">
+          {now.menus.length > 0 && (
+            <span className="menu-now-item">
+              <b>{t("menu.nowServing")}</b> {now.menus.map((m) => named(m.id, m.name)).join(" · ")}
+              {now.menus.length === 1 && now.menus[0].until && <span className="muted"> {t("menu.until", { time: clockLabel(now.menus[0].until, locale) })}</span>}
+            </span>
+          )}
+          {now.deals.map((d) => (
+            <span key={d.id} className="menu-now-item deal" data-testid="menu-deal">
+              <b>{named(d.id, d.name)}</b>
+              {d.until && <span> {t("menu.until", { time: clockLabel(d.until, locale) })}</span>}
+            </span>
+          ))}
+        </div>
+      ) : null}
       <div className="chips" role="toolbar" aria-label={t("menu.title")}>
         <button className="chip" aria-pressed={cat === "all"} onClick={() => setCat("all")}>
           {t("menu.all")}
@@ -44,7 +75,7 @@ export function MenuList({ menu, currency, onPick, action }: { menu: Menu; curre
         {items.map((i) => {
           const l = localizeItem(i, locale, lang);
           return (
-            <div key={i.id} className={`dish ${i.soldOut ? "sold" : ""}`} data-testid="dish">
+            <div key={i.id} className={`dish ${i.soldOut || i.servedNow === false ? "sold" : ""}`} data-testid="dish">
               <div className="meta">
                 <div className="row" style={{ gap: 6 }}>
                   <span className="name">{l.name}</span>
@@ -54,6 +85,8 @@ export function MenuList({ menu, currency, onPick, action }: { menu: Menu; curre
                     </span>
                   )}
                   {i.soldOut && <span className="badge bad">{t("menu.soldOut")}</span>}
+                  {!i.soldOut && i.servedNow === false && <span className="badge" data-testid="dish-later">{i.nextServed ? when(i.nextServed) : t("menu.notNow")}</span>}
+                  {i.deal && <span className="badge deal">{named(i.deal.id, i.deal.name)}</span>}
                 </div>
                 {l.original && <div className="alt">{l.original}</div>}
                 {l.description && <div className="muted" style={{ fontSize: 13.5, marginTop: 2 }}>{l.description}</div>}
@@ -70,8 +103,14 @@ export function MenuList({ menu, currency, onPick, action }: { menu: Menu; curre
                 <span className="price">
                   <Money v={i.price} c={currency} />
                 </span>
+                {i.listPrice != null && (
+                  <s className="muted list-price">
+                    <span className="sr-only">{t("menu.usually", { price: "" })}</span>
+                    <Money v={i.listPrice} c={currency} />
+                  </s>
+                )}
                 {onPick && (
-                  <button className="btn small primary" disabled={i.soldOut} onClick={() => onPick(i)} aria-label={`${action ?? t("menu.add")} ${l.name}`}>
+                  <button className="btn small primary" disabled={i.soldOut || i.servedNow === false} onClick={() => onPick(i)} aria-label={`${action ?? t("menu.add")} ${l.name}`}>
                     <Plus size={15} /> {action ?? t("menu.add")}
                   </button>
                 )}

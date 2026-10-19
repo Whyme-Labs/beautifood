@@ -5,14 +5,14 @@ import { localizeItem } from "../../shared/menuI18n";
 import { formatMoney } from "../../shared/format";
 import { parseFloorText, parseMenuText, stationFor } from "../../shared/menuParser";
 import type { BranchCtx } from "../domain/context";
-import { getMenu, type ImportItem } from "../domain/menu";
+import { menuAt, type ImportItem } from "../domain/menu";
 import type { TableInput } from "../domain/floor";
 import { localParts } from "../ids";
 import { answerWithClaude, claudeEnabled, extractWithClaude, narrateWithClaude, type ClaudeEnv } from "./claude";
 import { answerLocally, type AssistantContext, type AssistantReply } from "./local";
 
 export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<AssistantContext> {
-  const menu = await getMenu(db, ctx.tenant.id, ctx.branch.id);
+  const menu = await menuAt(db, ctx);
   const since = Date.now() - 7 * 86_400_000;
   const pop = (
     await db
