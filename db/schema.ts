@@ -71,6 +71,25 @@ export const branches = sqliteTable(
   (t) => [uniqueIndex("branches_tenant_slug").on(t.tenantId, t.slug)],
 );
 
+/** A restaurant's own role: a name and the permissions it carries (staff.role holds its id, "rl_…"). */
+export const roles = sqliteTable(
+  "roles",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id").notNull(),
+    name: text("name").notNull(),
+    description: text("description").notNull().default(""),
+    /** ["queue.operate", …] */
+    permissions: text("permissions").notNull().default("[]"),
+    /** Sees every branch, whatever the person's branch list. */
+    tenantWide: integer("tenant_wide").notNull().default(0),
+    createdBy: text("created_by").notNull().default(""),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (t) => [index("roles_tenant").on(t.tenantId)],
+);
+
 /** Staff membership of a Better Auth user in a tenant, with RBAC role and branch scope. */
 export const staff = sqliteTable(
   "staff",

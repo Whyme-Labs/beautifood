@@ -7,7 +7,10 @@ export interface Membership {
   tenantId: string;
   tenantName: string;
   tenantSlug: string;
-  role: Role;
+  /** A built-in role, or a custom role id (rl_…) whose name is roleName. */
+  role: Role | string;
+  roleName?: string;
+  tenantWide?: boolean;
   branchIds: string[];
   permissions: string[];
 }

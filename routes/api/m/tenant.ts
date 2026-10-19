@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isTenantWide } from "../../../src/shared/rbac";
 import { api, body } from "../../../src/server/http";
 import { staffTenant, actorOf } from "../../../src/server/routing";
 import { getTenant, loyaltyConfig } from "../../../src/server/domain/context";
@@ -20,7 +21,7 @@ export const GET = api(async (c) => {
     menuLanguage: t.menu_language || "en",
     loyalty: loyaltyConfig(t),
     onboarding: JSON.parse(t.onboarding || "{}"),
-    branches: (await listBranches(c.env.DB, t.id)).filter((b) => s.branches.includes("*") || ["owner", "admin", "marketing"].includes(s.role) || s.branches.includes(b.id)),
+    branches: (await listBranches(c.env.DB, t.id)).filter((b) => s.branches.includes("*") || isTenantWide(s) || s.branches.includes(b.id)),
     me: { role: s.role, branches: s.branches, name: s.name, email: s.email },
   };
 });

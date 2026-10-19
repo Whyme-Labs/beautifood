@@ -2,10 +2,11 @@ import type { Context } from "hono";
 import { defineHandler } from "void";
 import { getUser } from "void/auth";
 import type { z } from "zod";
-import { can, inBranchScope, type Permission } from "../shared/rbac";
+import { can, inBranchScope, isTenantWide, permsOf, type Permission } from "../shared/rbac";
 import type { Role } from "../shared/types";
 import { AppError, errorResponse, fail } from "./errors";
 import { sha256Hex } from "./sign";
+import { resolveRole } from "./domain/roles";
 
 export type Ctx = Context<{ Bindings: Env }>;
 type Env = { DB: D1Database; KV?: KVNamespace };
@@ -42,7 +43,13 @@ export const db = (c: Ctx) => c.env.DB;
 export interface Staff {
   userId: string;
   tenantId: string;
-  role: Role;
+  /** A built-in role name, or a custom role id ("rl_…"). */
+  role: Role | string;
+  /** What the role grants, resolved at sign-in (custom roles from the roles table). */
+  perms: Permission[];
+  tenantWide: boolean;
+  /** The role's name: the built-in name, or the custom role's. */
+  roleName: string;
   branches: string[];
   name: string;
   email: string;
@@ -58,15 +65,21 @@ interface StaffRow {
   email: string;
 }
 
-const toStaff = (r: StaffRow, via: Staff["via"]): Staff => ({
-  userId: r.user_id,
-  tenantId: r.tenant_id,
-  role: r.role,
-  branches: JSON.parse(r.branch_ids),
-  name: r.name,
-  email: r.email,
-  via,
-});
+async function toStaff(c: Ctx, r: StaffRow, via: Staff["via"]): Promise<Staff> {
+  const g = await resolveRole(db(c), r.tenant_id, r.role);
+  return {
+    userId: r.user_id,
+    tenantId: r.tenant_id,
+    role: r.role,
+    perms: permsOf(g),
+    tenantWide: isTenantWide(g),
+    roleName: g.name,
+    branches: JSON.parse(r.branch_ids),
+    name: r.name,
+    email: r.email,
+    via,
+  };
+}
 
 /**
  * Resolve the signed-in staff member (Better Auth session cookie, or a personal
@@ -83,7 +96,7 @@ export async function requireStaff(c: Ctx, tenantId?: string | null): Promise<St
     const row = await db(c).prepare("SELECT * FROM staff WHERE user_id = ? AND tenant_id = ?").bind(tok.user_id, tok.tenant_id).first<StaffRow>();
     if (!row) fail(403, "forbidden", "No longer a member of this restaurant");
     c.executionCtx.waitUntil(db(c).prepare("UPDATE api_tokens SET last_used_at = ? WHERE token_hash = ?").bind(Date.now(), hash).run());
-    return toStaff(row, "token");
+    return toStaff(c, row, "token");
   }
   const user = getUser();
   if (!user) fail(401, "unauthorized", "Sign in required");
@@ -91,11 +104,11 @@ export async function requireStaff(c: Ctx, tenantId?: string | null): Promise<St
   if (!rows.length) fail(403, "no_tenant", "This account is not linked to a restaurant yet");
   const row = tenant ? rows.find((r) => r.tenant_id === tenant) : rows[0];
   if (!row) fail(403, "forbidden", "Not a member of this restaurant");
-  return toStaff(row, "session");
+  return toStaff(c, row, "session");
 }
 
 export function requirePerm(s: Staff, perm: Permission, branchId?: string | null): void {
-  if (!can(s, perm)) throw new AppError(403, "forbidden", `Your role (${s.role}) cannot ${perm.replace(".", " ")}`);
+  if (!can(s, perm)) throw new AppError(403, "forbidden", `Your role (${s.roleName}) cannot ${perm.replace(".", " ")}`);
   if (branchId && !inBranchScope(s, branchId)) throw new AppError(403, "forbidden", "This branch is outside your access");
 }
 

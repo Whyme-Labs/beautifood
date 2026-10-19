@@ -1,11 +1,12 @@
 import { z } from "zod";
+import { isTenantWide } from "../../../../src/shared/rbac";
 import { api, body } from "../../../../src/server/http";
 import { actorOf, staffTenant } from "../../../../src/server/routing";
 import { addBranch, listBranches } from "../../../../src/server/domain/tenants";
 
 export const GET = api(async (c) => {
   const s = await staffTenant(c, null);
-  return (await listBranches(c.env.DB, s.tenantId)).filter((b) => s.branches.includes("*") || ["owner", "admin", "marketing"].includes(s.role) || s.branches.includes(b.id));
+  return (await listBranches(c.env.DB, s.tenantId)).filter((b) => s.branches.includes("*") || isTenantWide(s) || s.branches.includes(b.id));
 });
 
 export const POST = api(async (c) => {

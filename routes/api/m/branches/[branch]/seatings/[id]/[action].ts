@@ -1,4 +1,5 @@
 // add_tables | transfer | merge | close | link (dynamic QR for this seating)
+import { can } from "../../../../../../../src/shared/rbac";
 import { z } from "zod";
 import { api, body } from "../../../../../../../src/server/http";
 import { actorOf, kick, staffBranch } from "../../../../../../../src/server/routing";
@@ -23,7 +24,7 @@ export const POST = api(async (c) => {
       return mergeSeatings(c.env.DB, ctx, actor, id, (await body(c, z.object({ fromSeatingId: z.string() }))).fromSeatingId);
     case "close": {
       const { force } = await body(c, z.object({ force: z.boolean().optional() }));
-      if (force && !["owner", "admin", "branch_manager"].includes(staff.role)) fail(403, "forbidden", "Only managers can close an unpaid table");
+      if (force && !can(staff, "order.void")) fail(403, "forbidden", "Only managers can close an unpaid table");
       const r = await closeSeating(c.env.DB, ctx, actor, id, !!force);
       kick(c);
       return r;

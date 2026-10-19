@@ -68,7 +68,7 @@ function Shell({ children }: { children: ReactNode }) {
           <span className="grow" />
           <span className="who hide-sm">
             {s.user.name}
-            {role && <span className="role">{t(`staff.shell.roles.${role}` as MessageKey)}</span>}
+            {role && <span className="role">{role.startsWith("rl_") ? s.membership?.roleName : t(`staff.shell.roles.${role}` as MessageKey)}</span>}
           </span>
           <LangSwitch />
           <button className="btn small ghost icon" onClick={async () => (await auth.signOut(), (location.href = "/m/login"))} aria-label={t("common.signOut")} title={t("common.signOut")}>

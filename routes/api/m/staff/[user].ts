@@ -3,7 +3,8 @@ import { api, body } from "../../../../src/server/http";
 import { staffTenant } from "../../../../src/server/routing";
 import { updateStaff } from "../../../../src/server/domain/tenants";
 
-const Role = z.enum(["owner", "admin", "branch_manager", "cashier", "waiter", "kitchen", "marketing"]);
+// a built-in role, or one of the restaurant's own (rl_…)
+const Role = z.union([z.enum(["owner", "admin", "branch_manager", "cashier", "waiter", "kitchen", "marketing"]), z.string().regex(/^rl_[a-z0-9]{6,40}$/)]);
 
 export const PATCH = api(async (c) => {
   const s = await staffTenant(c, "staff.manage");

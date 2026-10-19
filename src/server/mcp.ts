@@ -19,7 +19,7 @@ import { localParts, zonedTime } from "./ids";
 import { sign, verify } from "./sign";
 import { ALLERGEN_LABELS } from "../shared/allergens";
 import { formatMoney } from "../shared/format";
-import { TENANT_WIDE_ROLES } from "../shared/rbac";
+import { isTenantWide } from "../shared/rbac";
 
 const PROTOCOLS = ["2025-11-25", "2025-06-18", "2025-03-26"];
 
@@ -201,7 +201,7 @@ const TOOLS: Tool[] = [
     merchant: true,
     run: async (c, _a, s) => {
       if (!s) throw new AppError(401, "unauthorized", "Merchant tools need a personal access token");
-      return tenantOverview(c.env.DB, s.tenantId, TENANT_WIDE_ROLES.includes(s.role) || s.branches.includes("*") ? "*" : s.branches);
+      return tenantOverview(c.env.DB, s.tenantId, isTenantWide(s) || s.branches.includes("*") ? "*" : s.branches);
     },
   },
   {

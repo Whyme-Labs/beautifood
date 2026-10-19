@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { parseMenuText, parseFloorText } from "../../src/shared/menuParser";
 import { inferAllergens, inferDietary } from "../../src/shared/allergens";
-import { can, inBranchScope, ROLE_PERMISSIONS, GRANTABLE } from "../../src/shared/rbac";
+import { can, canGrant, inBranchScope, ROLE_PERMISSIONS, GRANTABLE } from "../../src/shared/rbac";
 
 const MENU = `
 NOODLES
@@ -105,5 +105,22 @@ describe("RBAC", () => {
         for (const p of ROLE_PERMISSIONS[g]) expect(mine.has(p), `${role} granting ${g} (${p})`).toBe(true);
       }
     }
+  });
+  it("the general grant rule (only what you hold, tenant-wide only from tenant-wide) gives exactly the built-in table", () => {
+    const roles = Object.keys(ROLE_PERMISSIONS) as (keyof typeof ROLE_PERMISSIONS)[];
+    for (const by of roles) for (const target of roles) expect(canGrant({ role: by }, { role: target }), `${by} → ${target}`).toBe(GRANTABLE[by].includes(target));
+  });
+  it("custom roles: permissions as listed, scope as set, and never more than the grantor holds", () => {
+    const supervisor = { role: "rl_sup", perms: ["queue.operate", "order.create", "order.void", "payment.refund"] as const, tenantWide: false };
+    expect(can(supervisor, "order.void")).toBe(true);
+    expect(can(supervisor, "report.view")).toBe(false);
+    expect(inBranchScope({ ...supervisor, branches: ["b1"] }, "b2")).toBe(false);
+    expect(inBranchScope({ ...supervisor, tenantWide: true, branches: [] }, "b2")).toBe(true);
+    expect(canGrant({ role: "branch_manager" }, supervisor)).toBe(true);
+    expect(canGrant({ role: "cashier" }, supervisor)).toBe(false); // can't manage staff
+    expect(canGrant({ role: "branch_manager" }, { ...supervisor, perms: [...supervisor.perms, "member.manage"] })).toBe(false); // BM lacks member.manage
+    expect(canGrant({ role: "branch_manager" }, { ...supervisor, tenantWide: true })).toBe(false);
+    expect(canGrant({ role: "rl_mgr", perms: ["staff.manage", "queue.operate"] }, { role: "waiter" })).toBe(false); // waiter can do more than this manager
+    expect(canGrant({ role: "rl_mgr", perms: ["staff.manage", "queue.operate", "order.create", "booking.manage", "kds.operate"] }, { role: "waiter" })).toBe(true);
   });
 });

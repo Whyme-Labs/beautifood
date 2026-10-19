@@ -7,12 +7,12 @@ import { useStaff } from "../../src/ui/staff";
 import { Empty, useAction } from "../../src/ui/components";
 import { useI18n } from "../../src/i18n/react";
 import type { MessageKey } from "../../src/i18n/core";
-import { GRANTABLE } from "../../src/shared/rbac";
-import type { Role } from "../../src/shared/types";
+import { GRANTABLE, isBuiltInRole } from "../../src/shared/rbac";
+import { RolesCard, type RolesData } from "../../src/ui/rolesCard";
 
 interface Team {
-  staff: { userId: string; email: string; name: string; role: Role; branchIds: string[] }[];
-  invites: { code: string; email: string; name: string; role: Role; branchIds: string[] }[];
+  staff: { userId: string; email: string; name: string; role: string; branchIds: string[] }[];
+  invites: { code: string; email: string; name: string; role: string; branchIds: string[] }[];
 }
 
 export default function Staff() {
@@ -21,11 +21,13 @@ export default function Staff() {
   const { run, pending } = useAction();
   const { data, refresh } = usePoll(() => api<Team>("/api/m/staff"), { interval: 0 });
   const { data: tokens, refresh: refreshTokens } = usePoll(() => api<{ id: string; name: string; created_at: number; last_used_at: number | null }[]>("/api/m/tokens"), { interval: 0 });
-  const roles = s.membership ? GRANTABLE[s.membership.role] : [];
-  const [inv, setInv] = useState<{ email: string; name: string; role: Role; branchIds: string[] }>({ email: "", name: "", role: roles[roles.length - 1] ?? "waiter", branchIds: [] });
+  const { data: roleData, refresh: refreshRoles } = usePoll(() => api<RolesData>("/api/m/roles"), { interval: 0 });
+  // the roles I may hand out: built-in and the restaurant's own (before they load, the built-in table)
+  const roles: string[] = roleData ? [...roleData.builtIn.filter((r) => r.grantable).map((r) => r.id), ...roleData.custom.filter((r) => r.grantable).map((r) => r.id)] : s.membership && isBuiltInRole(s.membership.role) ? GRANTABLE[s.membership.role] : [];
+  const [inv, setInv] = useState<{ email: string; name: string; role: string; branchIds: string[] }>({ email: "", name: "", role: "waiter", branchIds: [] });
   const [newToken, setNewToken] = useState<string | null>(null);
   const [link, setLink] = useState<string | null>(null);
-  const roleName = (r: Role) => t(`staff.shell.roles.${r}` as MessageKey);
+  const roleName = (r: string) => (isBuiltInRole(r) ? t(`staff.shell.roles.${r}` as MessageKey) : (roleData?.custom.find((c) => c.id === r)?.name ?? r));
   const bname = (ids: string[]) => (ids.includes("*") ? t("staff.team.allBranches") : ids.map((id) => s.tenant?.branches.find((b) => b.id === id)?.name ?? id).join(", "));
   const [mcpBefore, mcpAfter] = t("staff.team.tokens.about").split("{mcp}");
   return (
@@ -95,7 +97,7 @@ export default function Staff() {
               onSubmit={(e) => {
                 e.preventDefault();
                 run(async () => {
-                  const r = await api<{ url: string }>("/api/m/staff", { body: { ...inv, branchIds: inv.branchIds.length ? inv.branchIds : ["*"] } });
+                  const r = await api<{ url: string }>("/api/m/staff", { body: { ...inv, role: roles.includes(inv.role) ? inv.role : roles[roles.length - 1], branchIds: inv.branchIds.length ? inv.branchIds : ["*"] } });
                   setLink(location.origin + r.url);
                   await refresh();
                 }, t("staff.team.invite.created"));
@@ -114,7 +116,7 @@ export default function Staff() {
               </label>
               <label>
                 {t("staff.team.role")}
-                <select value={inv.role} onChange={(e) => setInv({ ...inv, role: e.target.value as Role })} aria-label={t("staff.team.role")}>
+                <select value={roles.includes(inv.role) ? inv.role : (roles[roles.length - 1] ?? "")} onChange={(e) => setInv({ ...inv, role: e.target.value })} aria-label={t("staff.team.role")} data-testid="invite-role">
                   {roles.map((r) => (
                     <option key={r} value={r}>
                       {roleName(r)}
@@ -188,6 +190,7 @@ export default function Staff() {
           </div>
         </section>
       </div>
+      {roleData && <RolesCard data={roleData} onChange={async () => (await refreshRoles(), await refresh())} />}
     </div>
   );
 }

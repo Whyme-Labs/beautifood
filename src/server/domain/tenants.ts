@@ -1,5 +1,6 @@
 // Restaurants (tenants), branches, staff and RBAC assignments.
-import { GRANTABLE, TENANT_WIDE_ROLES } from "../../shared/rbac";
+import { canGrant, isTenantWide } from "../../shared/rbac";
+import { resolveRole } from "./roles";
 import { DEFAULT_BRANCH_CONFIG, type BranchConfig, type Role } from "../../shared/types";
 import { fail, notFound } from "../errors";
 import { newId, randomToken, shortCode, slugify } from "../ids";
@@ -131,15 +132,18 @@ export async function listBranches(db: D1Database, tenantId: string) {
 
 // ── staff ───────────────────────────────────────────────────────────────────
 
-function checkGrant(by: Staff, role: Role, branchIds: string[]) {
-  if (!GRANTABLE[by.role].includes(role)) fail(403, "forbidden", `A ${by.role} can't assign the ${role} role`);
-  if (!TENANT_WIDE_ROLES.includes(by.role) && !by.branches.includes("*")) {
+/** May `by` give (or manage someone in) `role` at these branches? See canGrant: nobody hands out more than they hold. */
+async function checkGrant(db: D1Database, by: Staff, role: string, branchIds: string[]) {
+  const target = await resolveRole(db, by.tenantId, role);
+  if (!target.exists) fail(400, "unknown_role", "That role doesn't exist");
+  if (!canGrant(by, target)) fail(403, "forbidden", `You can't assign the ${target.name} role`);
+  if (!isTenantWide(by) && !by.branches.includes("*")) {
     if (branchIds.includes("*") || branchIds.some((b) => !by.branches.includes(b))) fail(403, "forbidden", "You can only assign staff to your own branches");
   }
 }
 
-export async function inviteStaff(db: D1Database, by: Staff, input: { email: string; name: string; role: Role; branchIds: string[] }) {
-  checkGrant(by, input.role, input.branchIds);
+export async function inviteStaff(db: D1Database, by: Staff, input: { email: string; name: string; role: string; branchIds: string[] }) {
+  await checkGrant(db, by, input.role, input.branchIds);
   const code = randomToken(12);
   await new Tx(db, { tenantId: by.tenantId, actor: by.userId })
     .run(
@@ -192,12 +196,12 @@ export async function listStaff(db: D1Database, tenantId: string) {
   };
 }
 
-export async function updateStaff(db: D1Database, by: Staff, userId: string, input: { role: Role; branchIds: string[] } | null) {
-  const target = await db.prepare("SELECT role, branch_ids FROM staff WHERE user_id = ? AND tenant_id = ?").bind(userId, by.tenantId).first<{ role: Role; branch_ids: string }>();
+export async function updateStaff(db: D1Database, by: Staff, userId: string, input: { role: string; branchIds: string[] } | null) {
+  const target = await db.prepare("SELECT role, branch_ids FROM staff WHERE user_id = ? AND tenant_id = ?").bind(userId, by.tenantId).first<{ role: string; branch_ids: string }>();
   if (!target) notFound("Staff member");
   if (userId === by.userId) fail(400, "self", "You can't change your own role");
-  checkGrant(by, target.role, JSON.parse(target.branch_ids)); // may manage this person at all
-  if (input) checkGrant(by, input.role, input.branchIds);
+  await checkGrant(db, by, target.role, JSON.parse(target.branch_ids)); // may manage this person at all
+  if (input) await checkGrant(db, by, input.role, input.branchIds);
   const tx = new Tx(db, { tenantId: by.tenantId, actor: by.userId });
   if (input) tx.run("UPDATE staff SET role = ?, branch_ids = ? WHERE user_id = ? AND tenant_id = ?", input.role, JSON.stringify(input.branchIds), userId, by.tenantId);
   else {
