@@ -42,6 +42,19 @@ const ALLERGEN_WORDS: Record<Allergen, RegExp> = {
   lupin: /lupin/i,
 };
 
+// Malay (and Manglish) words for the common ones. "kacang" alone is beans or nuts (ais kacang has
+// red beans), so it only counts as an allergen when the guest says they're allergic.
+const ALLERGEN_WORDS_MS: Partial<Record<Allergen, RegExp>> = {
+  crustaceans: /\b(udang|ketam|makanan laut)\b/i,
+  molluscs: /\b(sotong|kerang|siput|lala|tiram|makanan laut)\b/i,
+  fish: /\bikan\b/i,
+  egg: /\btelur\b/i,
+  milk: /\bsusu\b|\btenusu\b/i,
+  peanuts: /\bkacang tanah\b/i,
+  sesame: /\bbijan\b/i,
+  soy: /\bkacang soya\b|\btauhu\b/i,
+};
+
 // The same, for questions asked in Chinese (no word boundaries in CJK).
 const ALLERGEN_WORDS_ZH: Partial<Record<Allergen, RegExp>> = {
   gluten: /麸质|麦/,
@@ -59,7 +72,9 @@ const ALLERGEN_WORDS_ZH: Partial<Record<Allergen, RegExp>> = {
 };
 
 export function mentionedAllergens(q: string): Allergen[] {
-  const found = ALLERGENS.filter((a) => ALLERGEN_WORDS[a].test(q) || ALLERGEN_WORDS_ZH[a]?.test(q));
+  const found = ALLERGENS.filter((a) => ALLERGEN_WORDS[a].test(q) || ALLERGEN_WORDS_ZH[a]?.test(q) || ALLERGEN_WORDS_MS[a]?.test(q));
+  // "saya alergi kacang": allergic to nuts, so peanuts and tree nuts both
+  if (/alergi|allerg/i.test(q) && /\bkacang\b/i.test(q)) for (const a of ["peanuts", "tree_nuts"] as Allergen[]) if (!found.includes(a)) found.push(a);
   // "nuts" alone should cover peanuts too
   if (found.includes("tree_nuts") && /\bnuts?\b/i.test(q) && !found.includes("peanuts")) found.push("peanuts");
   if (/seafood/i.test(q)) for (const a of ["crustaceans", "molluscs"] as Allergen[]) if (!found.includes(a)) found.push(a);
@@ -114,15 +129,16 @@ export function answerLocally(ctx: AssistantContext, question: string, locale = 
   const items = ctx.items.filter((i) => i.active && !i.soldOut && i.servedNow !== false);
   const allergens = mentionedAllergens(q);
   const wantsVegan = /vegan|plant[- ]based|纯素|全素/i.test(q);
-  const wantsVeg = /vegetarian|veggie|no meat|meatless|素|斋/i.test(q);
-  const wantsHalal = /halal|no pork|清真|无猪|没有猪/i.test(q);
-  const notSpicy = /(not|non|no|less|mild|without)[- ]?spic|can'?t (take|handle) (spice|chil+i)|kid|不辣|不要辣|不吃辣|小孩|孩子/i.test(q);
+  const wantsVeg = /vegetarian|veggie|no meat|meatless|sayur(an)?|tak makan daging|素|斋/i.test(q);
+  const wantsHalal = /halal|no pork|tak makan babi|tiada babi|清真|无猪|没有猪/i.test(q);
+  const notSpicy = /(not|non|no|less|mild|without)[- ]?(spic|pedas)|can'?t (take|handle) (spice|chil+i|pedas)|\b(tak|tidak|x|kurang|bukan|tak nak|tanpa)[- ]?pedas|kid|budak|anak|不辣|不要辣|不吃辣|小孩|孩子/i.test(q);
   const wantsSpicy = !notSpicy && /spicy|hot\b|chil+i|pedas|辣/i.test(q);
   const budget = budgetOf(q);
-  const item = findItem(ctx.items, q);
+  // "saya alergi kacang" names an allergen, not the dish Ais Kacang
+  const item = findItem(ctx.items, q.replace(/\b(alergi|allergic to|allergy to|allergic)\s+\S+/gi, " "));
 
   // 1. allergen question about a specific dish
-  if (item && (allergens.length || /allerg|contain|ingredient|safe for|过敏|含有|含不含|有没有|成分|可以吃/i.test(q))) {
+  if (item && (allergens.length || /allerg|alergi|contain|ingredient|safe for|ada .* tak|boleh makan|过敏|含有|含不含|有没有|成分|可以吃/i.test(q))) {
     const conflict = allergens.filter((a) => item.allergens.includes(a));
     const name = dish(item).name;
     let answer = item.allergens.length ? t("assistantReply.contains", { dish: name, list: list(item.allergens.map(allergen)) }) : t("assistantReply.noAllergens", { dish: name });
@@ -173,7 +189,7 @@ export function answerLocally(ctx: AssistantContext, question: string, locale = 
     filters.push(t("assistantReply.under", { price: money(budget) }));
   }
 
-  const signatureAsk = /signature|famous|known for|best|must[- ]try|special|recommend|suggest|what should i (eat|order|get|try)|popular|first time|招牌|推荐|好吃|必吃|人气|有名|第一次|吃什么|点什么/i.test(q);
+  const signatureAsk = /signature|famous|known for|best|must[- ]try|special|recommend|suggest|what should i (eat|order|get|try)|popular|first time|sedap|syok|cadang|apa yang best|招牌|推荐|好吃|必吃|人气|有名|第一次|吃什么|点什么/i.test(q);
   const rank = (a: (typeof items)[number], b: (typeof items)[number]) =>
     Number(b.isSignature) - Number(a.isSignature) || (b.popularity ?? 0) - (a.popularity ?? 0) || a.sort - b.sort;
   const filterText = filters.join(t("assistantReply.filterSep"));
