@@ -102,4 +102,70 @@ test.describe("QR, receipts and role-aware console (browser)", () => {
     await expect(dish.getByTestId("dish-facts")).toHaveText("Halal certified");
     await expect(page.getByText("Pak Ali")).toHaveCount(0);
   });
+
+  test("an owner adds an ingredient, gives a dish its recipe, receives stock, and the dish sells out when it runs out", async ({ page }) => {
+    const s = await seed();
+    await open(page, "/m/login");
+    await page.getByLabel("Email").fill(s.ownerEmail);
+    await page.getByLabel("Password").fill("password-123456");
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.waitForURL(/\/m$/);
+    await page.getByTestId("staff-nav").getByRole("link", { name: "Inventory" }).click();
+    await page.waitForURL(/\/m\/inventory$/);
+    const ing = page.getByTestId("inv-ingredients");
+    await ing.getByTestId("ingredient-name").fill("Peanut sauce");
+    await ing.getByTestId("ingredient-submit").click();
+    await expect(ing.getByTestId("ingredient-row")).toContainText("Peanut sauce");
+    await expect(page.getByTestId("inv-row")).toContainText("Not counted here");
+
+    // the recipe lives on the dish
+    await open(page, "/m/menu");
+    await page.getByTestId("menu-item").filter({ hasText: "Rojak" }).getByRole("button", { name: "Edit" }).click();
+    const recipe = page.getByTestId("recipe");
+    await recipe.getByTestId("recipe-add").click();
+    await recipe.getByTestId("recipe-qty").fill("100");
+    if (process.env.SHOTS) await recipe.screenshot({ path: `${process.env.SHOTS}/inventory-recipe.png` });
+    await recipe.getByTestId("recipe-save").click();
+    await expect(page.getByText("Recipe saved")).toBeVisible();
+
+    // a delivery of 150 g, with a low mark at 100 g
+    await open(page, "/m/inventory");
+    const row = page.getByTestId("inv-row").filter({ hasText: "Peanut sauce" });
+    await row.getByRole("button", { name: "Receive" }).click();
+    const entry = page.getByTestId("inv-entry");
+    await entry.getByTestId("inv-qty").fill("150");
+    await entry.getByTestId("inv-save").click();
+    await expect(row.getByTestId("inv-onhand")).toHaveText("150 g");
+    await row.getByRole("button", { name: "Count or correct Peanut sauce" }).click();
+    await entry.getByTestId("inv-low-mark").fill("100");
+    await entry.getByTestId("inv-low-save").click();
+    await expect(page.getByText("Low-stock mark set")).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    // two Rojak at the till run it out: it shows as running low and Rojak is sold out
+    const rojak = (await menuItems(s.owner)).byName("Rojak");
+    await json(s.owner.post(`/api/m/branches/${s.klcc.id}/orders`, { data: { takeaway: true, items: [{ itemId: rojak.id, qty: 2 }] } }), 201);
+    await page.reload();
+    await expect(row.getByTestId("inv-onhand")).toHaveText("-50 g");
+    await expect(row).toHaveAttribute("data-status", "out");
+    const low = page.getByTestId("inv-low");
+    await expect(low).toContainText("Peanut sauce");
+    await expect(low).toContainText("Sold out: Rojak");
+    await expect(page.getByTestId("inv-movement").first()).toContainText("Used by an order");
+    if (process.env.SHOTS) {
+      await page.screenshot({ path: `${process.env.SHOTS}/inventory-out.png`, fullPage: true });
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.screenshot({ path: `${process.env.SHOTS}/inventory-phone.png`, fullPage: true });
+      await page.setViewportSize({ width: 1280, height: 720 });
+    }
+
+    // restocking puts Rojak back on the menu
+    await low.getByRole("button", { name: "Receive" }).click();
+    await entry.getByTestId("inv-qty").fill("500");
+    await entry.getByTestId("inv-save").click();
+    await expect(row.getByTestId("inv-onhand")).toHaveText("450 g");
+    await expect(page.getByTestId("inv-low")).toHaveCount(0);
+    await open(page, "/m/menu");
+    await expect(page.getByTestId("menu-item").filter({ hasText: "Rojak" }).getByRole("button", { name: "In stock" })).toBeVisible();
+  });
 });

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useRouter } from "@void/react";
 import { auth } from "void/client";
 import { StaffProvider, useStaff } from "../../src/ui/staff";
-import { BarChart3, BookOpen, CalendarDays, ChefHat, Gift, LayoutDashboard, LogOut, QrCode, Receipt, Settings, Sparkles, Store, Webhook, UserCog, Users, type LucideIcon } from "lucide-react";
+import { BarChart3, BookOpen, CalendarDays, ChefHat, Gift, LayoutDashboard, LogOut, Package, QrCode, Receipt, Settings, Sparkles, Store, Webhook, UserCog, Users, type LucideIcon } from "lucide-react";
 import { Empty, LangSwitch, Logo } from "../../src/ui/components";
 import { useI18n } from "../../src/i18n/react";
 import { useScanIntoFields } from "../../src/ui/scanner";
@@ -17,6 +17,7 @@ const NAV: { href: string; key: keyof Messages["staff"]["shell"]["nav"]; icon: L
   { href: "/m/kitchen", key: "kitchen", icon: ChefHat, perm: "kds.operate" },
   { href: "/m/bookings", key: "bookings", icon: CalendarDays, perm: "booking.manage" },
   { href: "/m/menu", key: "menu", icon: BookOpen, any: ["menu.manage", "menu.availability"] },
+  { href: "/m/inventory", key: "inventory", icon: Package, any: ["inventory.manage", "inventory.stock"] },
   { href: "/m/tables", key: "tables", icon: QrCode, perm: "table.manage" },
   { href: "/m/members", key: "members", icon: Gift, any: ["member.manage", "campaign.manage"] },
   { href: "/m/reports", key: "reports", icon: BarChart3, perm: "report.view" },

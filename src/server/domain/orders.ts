@@ -6,6 +6,7 @@ import { AppError, fail, notFound } from "../errors";
 import { localParts, newId, randomToken } from "../ids";
 import { DuplicateCommand, Tx } from "../tx";
 import { loyaltyConfig, streams, type BranchCtx } from "./context";
+import { returnStock, useStock } from "./inventory";
 import { itemsAt, priceModifiers, type ChosenModifier } from "./menu";
 
 // ── rows & mappers ──────────────────────────────────────────────────────────
@@ -407,11 +408,14 @@ async function addRound(
     assertVersion(tx, existing.id, existing.version);
     totalsStmt(tx, existing.id, existing.version, totals);
   }
+  const added: { id: string; itemId: string; qty: number }[] = [];
   for (const l of lines) {
+    const id = newId("oi_");
+    added.push({ id, itemId: l.itemId, qty: l.qty });
     tx.run(
       `INSERT INTO order_items (id, order_id, branch_id, round, item_id, name, category, unit_price, list_price, deal, qty, modifiers, notes, added_by, status, station, created_at, fired_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      newId("oi_"),
+      id,
       orderId,
       ctx.branch.id,
       round,
@@ -432,6 +436,8 @@ async function addRound(
     );
   }
   tx.event({ stream: streams.order(orderId!), type: "order.round_added", data: { round, items: lines.length, status } });
+  // the round uses its recipes' ingredients from this branch's stock, in the same batch
+  await useStock(db, ctx, tx, added);
   return { orderId: orderId! };
 }
 
@@ -617,6 +623,8 @@ export async function voidItems(db: D1Database, ctx: BranchCtx, actor: string, o
     tx.run(`UPDATE order_items SET status = 'void', void_reason = ? WHERE id IN (${itemIds.map(() => "?").join(",")})`, reason.slice(0, 120), ...itemIds);
     const t = await repriceStatements(db, ctx, tx, o, { voidIds: itemIds });
     tx.event({ stream: streams.order(orderId), type: "order.items_voided", data: { itemIds, reason } });
+    // a voided dish puts back what it used
+    await returnStock(db, ctx, tx, itemIds);
     await tx.commit();
     return t;
   });

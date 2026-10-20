@@ -22,6 +22,7 @@ A restaurant platform covering walk-in queues, ordering and the front of house. 
 - A storefront designed by describing it ("a 1960s kopitiam feel, story first"), with a live preview and publish.
 - Loyalty tiers, promo broadcasts, and an AI onboarding copilot (paste your menu, describe your floor).
 - Custom fields on dishes, orders, members and staff (text, number, yes/no, choice, date, web address), with one-tap starters like "Halal certified" or "Delivery platform"; dish fields can show on the guest menu.
+- Inventory: ingredients, a recipe per dish and stock per branch. Orders use stock as they're rung up (voids put it back), the kitchen records deliveries and wastage, and when an ingredient runs out the dishes that need it sell out at that branch until it's restocked. Low stock is an `inventory.low` webhook.
 
 **For AI agents and integrations**
 - A stateless MCP server at `/mcp` with public tools; merchant tools unlock with a personal access token.

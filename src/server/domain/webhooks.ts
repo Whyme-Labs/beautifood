@@ -327,6 +327,14 @@ async function about(db: D1Database, e: EventRow, data: Record<string, unknown>)
         },
       };
     }
+    if (e.type.startsWith("inventory.") && typeof data.ingredientId === "string") {
+      // quantities in the ingredient's unit, as they stand when the delivery is made
+      const i = await db
+        .prepare("SELECT i.id, i.name, i.name_zh, i.unit, s.on_hand / 1000.0 AS on_hand, s.low_at / 1000.0 AS low_at FROM ingredients i LEFT JOIN inventory_stock s ON s.ingredient_id = i.id AND s.branch_id = ? WHERE i.id = ?")
+        .bind(e.branch_id ?? "", data.ingredientId)
+        .first();
+      return i ? { ingredient: i } : {};
+    }
     if (e.type.startsWith("menu.")) {
       const itemId = (data.itemId ?? data.id) as string | undefined;
       const i = itemId ? await db.prepare("SELECT id, name, price, active FROM menu_items WHERE id = ?").bind(itemId).first() : null;

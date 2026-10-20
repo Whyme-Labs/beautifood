@@ -973,3 +973,13 @@ tbody tr:last-child td { border-bottom: 0; }
 .cf-form { display: grid; gap: 12px; align-items: end; }
 .cf-form > label.inline { min-height: 44px; }
 @media (min-width: 640px) { .cf-form.two { grid-template-columns: 1fr 1fr; } }
+
+/* inventory */
+.inv-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: center; }
+.inv-qty { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; font-variant-numeric: tabular-nums; }
+.inv-actions { grid-column: 1 / -1; justify-content: flex-end; }
+@media (min-width: 720px) { .inv-row { grid-template-columns: minmax(0, 1fr) auto auto; } .inv-actions { grid-column: auto; } }
+.inv-neg { color: var(--bad); }
+.recipe-line { display: grid; grid-template-columns: minmax(0, 1fr) 130px auto; gap: 8px; align-items: center; }
+.recipe-qty { display: flex; align-items: center; gap: 6px; }
+.recipe-qty input { min-width: 0; }

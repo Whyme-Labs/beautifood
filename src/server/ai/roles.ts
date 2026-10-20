@@ -33,6 +33,8 @@ const RULES: [RegExp, Permission[]][] = [
   [/order|take orders?|serve|waiter|server|点单|下单|服务员|上菜/i, ["order.create"]],
   [/kitchen|cook|chef|bump|kds|厨房|厨师|出餐/i, ["kds.operate"]],
   [/sold.?out|stock|availability|售罄|库存|沽清/i, ["menu.availability"]],
+  [/inventory|ingredient|wastage|deliveries|stock ?(take|count|level)|进货|收货|报损|食材/i, ["inventory.stock"]],
+  [/recipe|(manage|set up|run).{0,12}(inventory|ingredients)|stock ?(take|count)|配方|盘点|库存管理/i, ["inventory.manage"]],
   [/(edit|change|update|manage|write).{0,20}menu|menu.{0,12}(edit|price|manage)|price|改菜单|编辑菜单|菜单管理|定价|改价/i, ["menu.manage"]],
   [/report|sales|revenue|numbers|报表|销售|营业额|数据/i, ["report.view"]],
   [/(every|all|each|across).{0,12}(branch|outlet|store)|所有分店|全部分店|各分店|跨分店/i, ["report.view_all"]],
@@ -128,6 +130,8 @@ const PERMISSION_GUIDE: Record<Permission, string> = {
   "settings.manage": "change branch settings and the receipt design",
   "ai.merchant": "use the merchant AI assistant and insights",
   "integrations.manage": "set up webhooks and integrations",
+  "inventory.manage": "set up ingredients and recipes, correct and count stock, set low-stock marks",
+  "inventory.stock": "see stock, record deliveries and wastage",
 };
 
 async function withClaude(env: ClaudeEnv, text: string, locale: string): Promise<{ name: string; permissions: Permission[]; tenantWide: boolean; explanation: string } | null> {

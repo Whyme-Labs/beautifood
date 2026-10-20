@@ -62,6 +62,23 @@ export class Tx {
     return this;
   }
 
+  /**
+   * Append an event only if `cond` holds at this point in the batch: for facts the batch itself
+   * decides, like "this order took the rice below its low mark". No version or msgId.
+   */
+  eventIf(cond: string, params: unknown[], e: Omit<EventInput, "version" | "msgId"> & { branchId?: string }): this {
+    this.stmts.push(
+      this.db
+        .prepare(`INSERT INTO events (tenant_id, branch_id, stream, type, data, actor, at) SELECT ?, ?, ?, ?, ?, ?, ? WHERE (${cond})`)
+        .bind(this.scope.tenantId, e.branchId ?? this.scope.branchId ?? null, e.stream, e.type, JSON.stringify(e.data ?? {}), this.scope.actor ?? null, this.at, ...params),
+    );
+    return this;
+  }
+
+  get actor() {
+    return this.scope.actor ?? null;
+  }
+
   get size() {
     return this.stmts.length;
   }

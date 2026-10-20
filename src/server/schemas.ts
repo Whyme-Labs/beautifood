@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UNITS } from "../shared/inventory";
 
 export const Participant = z.object({ id: z.string().min(4).max(64), name: z.string().trim().min(1).max(40) });
 
@@ -27,3 +28,13 @@ export const RoleInput = z
 
 /** A custom field's name, in English and optionally Chinese. */
 export const FieldLabel = z.object({ en: z.string().trim().min(1).max(60), zh: z.string().trim().max(60).optional() });
+
+/** An ingredient as the Inventory page sends it (cost: one unit, in minor units). */
+export const IngredientInput = z
+  .object({
+    name: z.string().trim().min(1).max(60),
+    nameZh: z.string().trim().max(60).optional(),
+    unit: z.enum(UNITS),
+    cost: z.number().int().min(0).nullable().optional(),
+  })
+  .strict();

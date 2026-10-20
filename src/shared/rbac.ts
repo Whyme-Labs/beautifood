@@ -23,6 +23,8 @@ export const PERMISSIONS = [
   "settings.manage",
   "ai.merchant",
   "integrations.manage",
+  "inventory.manage",
+  "inventory.stock",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 
@@ -48,10 +50,13 @@ export const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {
     "staff.manage",
     "settings.manage",
     "ai.merchant",
+    "inventory.manage",
+    "inventory.stock",
   ]),
   cashier: new Set<Permission>(["queue.operate", "order.create", "payment.take", "shift.manage", "booking.manage"]),
   waiter: new Set<Permission>(["queue.operate", "order.create", "booking.manage", "kds.operate"]),
-  kitchen: new Set<Permission>(["kds.operate", "menu.availability"]),
+  // the kitchen takes in deliveries and writes off wastage; ingredients, recipes, corrections and counts are managers'
+  kitchen: new Set<Permission>(["kds.operate", "menu.availability", "inventory.stock"]),
   marketing: new Set<Permission>(["member.manage", "campaign.manage", "report.view", "report.view_all"]),
 };
 
@@ -126,6 +131,7 @@ export const PERMISSION_GROUPS: { group: string; perms: Permission[] }[] = [
   { group: "orders", perms: ["order.create", "order.void", "order.discount", "kds.operate", "menu.availability"] },
   { group: "money", perms: ["payment.take", "payment.refund", "shift.manage"] },
   { group: "menu", perms: ["menu.manage"] },
+  { group: "inventory", perms: ["inventory.stock", "inventory.manage"] },
   { group: "guests", perms: ["member.manage", "campaign.manage"] },
   { group: "reports", perms: ["report.view", "report.view_all"] },
   { group: "admin", perms: ["staff.manage", "settings.manage", "branch.manage", "integrations.manage", "ai.merchant", "tenant.manage"] },
