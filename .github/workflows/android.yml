@@ -25,7 +25,21 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - uses: android-actions/setup-android@v3
+      # The runner has an Android SDK; add the platform and build tools this app compiles against.
+      # (setup-android@v3 asks sdkmanager for the retired "tools" package and fails on new images.)
+      - name: Android SDK
+        run: |
+          sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          if [ ! -d "$sdk/cmdline-tools" ]; then
+            mkdir -p "$sdk/cmdline-tools"
+            curl -fsSL -o "$RUNNER_TEMP/tools.zip" https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q "$RUNNER_TEMP/tools.zip" -d "$sdk/cmdline-tools" && mv "$sdk/cmdline-tools/cmdline-tools" "$sdk/cmdline-tools/latest"
+          fi
+          sdkmanager="$(ls -d "$sdk"/cmdline-tools/*/bin/sdkmanager | sort -V | tail -1)"
+          yes | "$sdkmanager" --sdk_root="$sdk" --licenses > /dev/null || true
+          "$sdkmanager" --sdk_root="$sdk" "platforms;android-35" "build-tools;35.0.0" "platform-tools" > /dev/null
+          echo "ANDROID_HOME=$sdk" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$sdk" >> "$GITHUB_ENV"
       - uses: gradle/actions/setup-gradle@v4
       - name: Unit tests and lint
         run: ./gradlew testDebugUnitTest lintDebug --no-daemon
