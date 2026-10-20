@@ -5,7 +5,13 @@ name: App domain
 # to see what holds the name today; with it on, it removes the name's old DNS records, attaches
 # it to beautifood-app and points the app's links at it. It refuses when another Worker holds
 # the name. Deploys keep the domain (void.config.ts) and use it as PUBLIC_URL (ci.yml).
+#
+# The repository's default branch isn't main, so manual runs may not be offered; a push to main
+# that changes this file runs it too, with ATTACH below deciding whether it only reports.
 on:
+  push:
+    branches: ["main"]
+    paths: [".github/workflows/app-domain.yml"]
   workflow_dispatch:
     inputs:
       hostname:
@@ -27,8 +33,10 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      HOST: ${{ inputs.hostname }}
+      HOST: ${{ inputs.hostname || 'app.beautifood.io' }}
       SCRIPT: beautifood-app
+      # pushes: "true" attaches, anything else only reports
+      ATTACH: ${{ github.event_name == 'workflow_dispatch' && inputs.attach || 'false' }}
     steps:
       - name: What holds the name
         id: look
@@ -52,7 +60,7 @@ jobs:
           curl -sS -m 15 -o /dev/null -w "%{http_code} -> %{redirect_url}\n" "https://$HOST/" || true
 
       - name: Attach to ${{ env.SCRIPT }}
-        if: inputs.attach
+        if: env.ATTACH == 'true'
         env:
           ZONE: ${{ steps.look.outputs.zone }}
         run: |
