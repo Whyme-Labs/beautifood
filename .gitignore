@@ -27,3 +27,6 @@ crates/core/target/
 /.claude/agents/
 /.claude/settings.local.json
 .wrangler/
+
+# Agents' isolated worktrees
+/.claude/worktrees/
