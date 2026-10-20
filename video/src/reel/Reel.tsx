@@ -1,8 +1,9 @@
 // The Devpost reel: no voiceover, so the story is told by the real product on screen.
 // Every product shot is a recording of the running app; a camera follows the cued UI on the beat.
 import type React from "react";
-import { Audio, Video } from "@remotion/media";
-import { AbsoluteFill, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { Video } from "@remotion/media";
+import { Soundtrack } from "./soundtrack";
+import { AbsoluteFill, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { C, NUM, SANS } from "../theme";
 import { BEAT, barF, barsF, clamp, ease, useAt, useBeat } from "./beat";
 import { FocusScene, focusBars, landAt, useFocus } from "./focus";
@@ -264,15 +265,12 @@ const STARTS = SCENES.reduce<number[]>((acc, s, i) => [...acc, i === 0 ? 0 : acc
 export const REEL_END_BAR = STARTS[STARTS.length - 1] + lengthOf(SCENES[SCENES.length - 1]);
 
 export const Reel: React.FC<{ lang: Lang }> = ({ lang }) => {
-  const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
-  const volume = interpolate(frame, [0, 0.4 * fps, durationInFrames - 3 * fps, durationInFrames - 2], [0, 1, 1, 0], clamp);
   const copy = COPY[lang];
   const ctx: ReelCtx = { lang, copy, guest: `${copy.who.guest} · ${copy.hero}` };
   return (
     <LangProvider value={lang}>
       <AbsoluteFill style={{ background: C.ink }}>
-        <Audio src={staticFile("audio/bgm.m4a")} volume={volume} />
+        <Soundtrack />
         {SCENES.map((s, i) => (
           <Cut key={s.name} name={s.name} from={STARTS[i]} to={STARTS[i] + lengthOf(s)}>
             {s.focus ? <FocusScene at={marksOf(s, lang)}>{s.render(ctx)}</FocusScene> : s.render(ctx)}
