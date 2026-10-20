@@ -25,7 +25,7 @@ function client(env: ClaudeEnv) {
   return new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 2, timeout: 45_000 });
 }
 
-const TOOLS: Anthropic.Beta.BetaTool[] = [
+export const MENU_TOOLS: Anthropic.Beta.BetaTool[] = [
   {
     name: "search_menu",
     description:
@@ -62,7 +62,7 @@ interface SearchInput {
   signatures_only: boolean;
 }
 
-function runTool(ctx: AssistantContext, name: string, input: unknown, referenced: Set<string>): string {
+export function runTool(ctx: AssistantContext, name: string, input: unknown, referenced: Set<string>): string {
   const items = ctx.items.filter((i) => i.active && !i.soldOut && i.servedNow !== false);
   if (name === "get_dish") {
     const id = (input as { id: string }).id;
@@ -84,7 +84,18 @@ function runTool(ctx: AssistantContext, name: string, input: unknown, referenced
     });
   }
   if (name === "search_menu") {
-    const s = input as SearchInput;
+    // small models leave fields out or send them as text: read what's there
+    const raw = (input ?? {}) as Partial<Record<keyof SearchInput, unknown>>;
+    const list = (v: unknown) => (Array.isArray(v) ? v.map(String) : typeof v === "string" && v ? v.split(/[,\s]+/) : []);
+    const num = (v: unknown) => (v === null || v === undefined || v === "" || !Number.isFinite(Number(v)) ? null : Number(v));
+    const s: SearchInput = {
+      query: typeof raw.query === "string" ? raw.query : "",
+      exclude_allergens: list(raw.exclude_allergens),
+      dietary: list(raw.dietary),
+      max_price_minor: num(raw.max_price_minor),
+      max_spice_level: num(raw.max_spice_level),
+      signatures_only: raw.signatures_only === true || raw.signatures_only === "true",
+    };
     const words = s.query.toLowerCase().split(/\s+/).filter((w) => w.length > 2);
     const hits = items.filter(
       (i) =>
@@ -112,9 +123,9 @@ function runTool(ctx: AssistantContext, name: string, input: unknown, referenced
   return JSON.stringify({ error: `Unknown tool ${name}` });
 }
 
-export async function answerWithClaude(env: ClaudeEnv, ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply> {
-  const c = client(env);
-  const system = [
+/** The guest assistant's instructions, for every model. */
+export function systemPrompt(ctx: AssistantContext, locale: string): string {
+  return [
     `You are the friendly menu assistant for ${ctx.restaurant.name}${ctx.restaurant.cuisine ? ` (${ctx.restaurant.cuisine})` : ""}, ${ctx.branchName} branch.`,
     ctx.restaurant.story ? `About the restaurant: ${ctx.restaurant.story}` : "",
     "Help guests decide what to eat: recommend signatures, respect dietary needs and budgets, and share the stories behind dishes.",
@@ -124,19 +135,33 @@ export async function answerWithClaude(env: ClaudeEnv, ctx: AssistantContext, hi
   ]
     .filter(Boolean)
     .join("\n");
+}
+
+export async function answerWithClaude(
+  env: ClaudeEnv,
+  ctx: AssistantContext,
+  history: { role: "user" | "assistant"; content: string }[],
+  locale = "en",
+  opts: { model?: string; onUsage?: (u: { model: string; input: number; output: number }) => void } = {},
+): Promise<AssistantReply> {
+  const c = client(env);
+  const model = opts.model ?? env.ANTHROPIC_MODEL;
+  // Haiku has no server-side fallback, and answers guests faster without thinking
+  const small = /haiku/.test(model);
+  const system = systemPrompt(ctx, locale);
   const messages: Anthropic.Beta.BetaMessageParam[] = history.slice(-10).map((m) => ({ role: m.role, content: m.content }));
   const referenced = new Set<string>();
   for (let turn = 0; turn < 6; turn++) {
     const res = await c.beta.messages.create({
-      model: env.ANTHROPIC_MODEL,
-      max_tokens: 4000,
-      betas: [FALLBACK_BETA],
-      fallbacks: "default",
+      model,
+      max_tokens: small ? 1200 : 4000,
+      ...(small ? { thinking: { type: "disabled" as const } } : { betas: [FALLBACK_BETA], fallbacks: "default" as const }),
       output_config: { effort: "low" },
-      system,
-      tools: TOOLS,
+      system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
+      tools: MENU_TOOLS,
       messages,
     });
+    opts.onUsage?.({ model, input: (res.usage.input_tokens ?? 0) + (res.usage.cache_read_input_tokens ?? 0) * 0.1 + (res.usage.cache_creation_input_tokens ?? 0) * 1.25, output: res.usage.output_tokens ?? 0 });
     if (res.stop_reason === "refusal") {
       return { answer: "Sorry, I can't help with that one. Ask me about our dishes, ingredients or what to order!", items: [], engine: "claude" };
     }

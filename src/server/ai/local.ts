@@ -19,8 +19,18 @@ export interface AssistantReply {
   answer: string;
   items: { id: string; name: string; price: number; reason?: string; /** The dish name in the guest's language. */ label?: string }[];
   safetyNote?: string;
-  engine: "local" | "claude";
+  engine: "local" | "claude" | "model";
+  /**
+   * The rules engine's own view of its answer: false when it fell back to a generic reply or the
+   * question is conversational (a comparison, a pairing, "those", "something light"), which a
+   * language model answers better.
+   */
+  confident?: boolean;
 }
+
+/** Asks the rules engine can't really answer: comparisons, pairings, groups, moods, follow-ups. */
+export const CONVERSATIONAL =
+  /difference|compare|\bvs\.?\b|versus|\bbetter\b|go(es)? (well )?with|pair|\bshare\b|people|\bgroup\b|light|heavy|hungry|\bfull\b|which (of|one)|\bthose\b|\bthat one\b|cheapest|most expensive|instead|similar|like the|区别|比较|搭配|配什么|几个人|分享|清淡|不饿|哪个|那些|最便宜|beza|sesuai dengan|kongsi|ringan/i;
 
 export const allergyNote = (locale = "en") => translator(locale)("assistantReply.safety");
 export const ALLERGY_NOTE = allergyNote();
@@ -113,6 +123,11 @@ function budgetOf(q: string): number | null {
  * language when the menu has a translation; `items` keep the original names for ordering.
  */
 export function answerLocally(ctx: AssistantContext, question: string, locale = "en"): AssistantReply {
+  const r = rulesAnswer(ctx, question, locale);
+  return { ...r, confident: r.confident !== false && !CONVERSATIONAL.test(question) };
+}
+
+function rulesAnswer(ctx: AssistantContext, question: string, locale: string): AssistantReply {
   const t = translator(locale);
   const f = formatters(locale);
   const money = (n: number) => f.money(n, ctx.currency);
@@ -227,7 +242,7 @@ export function answerLocally(ctx: AssistantContext, question: string, locale = 
   if (item) {
     const d = dish(item);
     const al = item.allergens.length ? t("assistantReply.allergensLabel", { list: list(item.allergens.map(allergen)) }) : "";
-    return { answer: `${d.name} — ${d.description || d.story || t("assistantReply.favourite")}. ${money(item.price)}.${al}`, items: [brief(item)], safetyNote: al ? note : undefined, engine: "local" };
+    return { answer: `${d.name} — ${d.description || d.story || t("assistantReply.favourite")}. ${money(item.price)}.${al}`, items: [brief(item)], safetyNote: al ? note : undefined, engine: "local", confident: false };
   }
 
   // 5. about the restaurant
@@ -244,5 +259,6 @@ export function answerLocally(ctx: AssistantContext, question: string, locale = 
     answer: t("assistantReply.help", { list: list(sig.map((s) => dish(s).name)) }),
     items: sig.map((s) => brief(s)),
     engine: "local",
+    confident: false,
   };
 }

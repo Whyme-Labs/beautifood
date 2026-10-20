@@ -1,0 +1,45 @@
+name: Guest assistant eval
+
+# Scores small models on what we promise guests (src/shared/assistantEval.ts), on Workers AI with
+# the deploy token: each model alone, and the assistant as deployed (rules engine first, the model
+# for the rest, the allergen guard). Results are in the job summary and the assistant-eval artifact.
+on:
+  push:
+    branches: ["main"]
+    paths: [".github/workflows/assistant-eval.yml", "test/eval/**", "src/server/ai/**", "src/shared/assistantEval.ts"]
+  workflow_dispatch:
+    inputs:
+      models:
+        description: Workers AI models, comma-separated
+        default: "@cf/google/gemma-4-26b-a4b-it,@cf/qwen/qwen3.8-27b,@cf/deepseek-ai/deepseek-v4-flash-0731,@cf/meta/llama-3.1-8b-instruct-fp8-fast"
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 45
+    environment: production
+    env:
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      EVAL_MODELS: ${{ inputs.models || '@cf/google/gemma-4-26b-a4b-it,@cf/qwen/qwen3.8-27b,@cf/deepseek-ai/deepseek-v4-flash-0731,@cf/meta/llama-3.1-8b-instruct-fp8-fast' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Score the models
+        run: npx vitest run --config vitest.eval.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: assistant-eval
+          path: test-results/assistant-eval.json
+          if-no-files-found: ignore

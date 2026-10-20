@@ -9,7 +9,10 @@ import { menuAt, type ImportItem } from "../domain/menu";
 import type { TableInput } from "../domain/floor";
 import { localParts } from "../ids";
 import { answerWithClaude, claudeEnabled, extractWithClaude, narrateWithClaude, type ClaudeEnv } from "./claude";
-import { answerLocally, type AssistantContext, type AssistantReply } from "./local";
+import { allergyNote, answerLocally, findItem, mentionedAllergens, type AssistantContext, type AssistantReply } from "./local";
+import { answerWithModel, guestModel, type AiBinding } from "./guestModel";
+import { limitsFrom, mayUseModel, recordUsage, type Usage } from "./usage";
+import type { AssistantSettings } from "../appenv";
 
 export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<AssistantContext> {
   const menu = await menuAt(db, ctx);
@@ -31,7 +34,13 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
   };
 }
 
-export async function customerChat(db: D1Database, env: ClaudeEnv, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply> {
+/**
+ * The guest menu assistant. The free rules engine answers first; only what it can't really answer
+ * (comparisons, pairings, moods, follow-ups) goes to the configured small model, within each
+ * branch's daily allowance and the platform's monthly budget. Any failure, or a model answer that
+ * puts an allergen the guest named in front of them, falls back to the engine's answer.
+ */
+export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & { AI?: AiBinding }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply> {
   const actx = await assistantContext(db, ctx);
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
   // Dish cards read in the guest's language; `name` stays the original for matching and ordering.
@@ -42,14 +51,36 @@ export async function customerChat(db: D1Database, env: ClaudeEnv, ctx: BranchCt
       return item ? { ...it, label: localizeItem(item, locale, actx.menuLanguage ?? "en").name } : it;
     }),
   });
-  if (claudeEnabled(env)) {
-    try {
-      return label(await answerWithClaude(env, actx, history, locale));
-    } catch (e) {
-      console.warn("claude assistant failed, using local engine", e);
-    }
+  const local = answerLocally(actx, question, locale);
+  if (local.confident) return label(local);
+  const m = guestModel(env);
+  if (!m) return label(local);
+  const scope = { tenantId: ctx.tenant.id, branchId: ctx.branch.id };
+  if (!(await mayUseModel(db, scope, limitsFrom(env)).catch(() => ({ ok: false }))).ok) return label(local);
+  const uses: Usage[] = [];
+  try {
+    const r = m.provider === "anthropic" ? await answerWithClaude(env, actx, history, locale, { model: m.model, onUsage: (u) => uses.push(u) }) : await answerWithModel(m, actx, history, locale, (u) => uses.push(u));
+    return label(guard(actx, question, r, local, locale));
+  } catch (e) {
+    console.warn("guest model failed, using the rules engine", e);
+    return label(local);
+  } finally {
+    await recordUsage(db, { ...scope, kind: "assistant" }, uses, env.ASSISTANT_PRICE).catch((e) => console.error("ai usage", e));
   }
-  return label(answerLocally(actx, question, locale));
+}
+
+/**
+ * A model's answer to a guest who named an allergen: it may not mention or show a dish with that
+ * allergen (other than the one they asked about), and it always carries the safety note.
+ */
+export function guard(ctx: AssistantContext, question: string, r: AssistantReply, safe: AssistantReply, locale: string): AssistantReply {
+  const allergens = mentionedAllergens(question);
+  if (!allergens.length) return r;
+  const asked = findItem(ctx.items, question.replace(/\b(alergi|allergic to|allergy to|allergic)\s+\S+/gi, " "));
+  const text = r.answer.toLowerCase();
+  const shown = ctx.items.filter((i) => r.items.some((x) => x.id === i.id) || text.includes(i.name.toLowerCase()));
+  if (shown.some((i) => i.id !== asked?.id && i.allergens.some((a) => allergens.includes(a as never)))) return safe;
+  return { ...r, safetyNote: allergyNote(locale) };
 }
 
 export interface OnboardingInput {

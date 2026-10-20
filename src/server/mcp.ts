@@ -4,9 +4,9 @@
 // with a personal access token (Authorization: Bearer bf_pat_…).
 import { isLocale, LOCALES } from "../i18n/core";
 import { localizeCategory, localizeItem } from "../shared/menuI18n";
+import { guestFacts } from "../shared/customFields";
 import { z } from "zod";
 import { appEnv } from "./appenv";
-import { customerChat } from "./ai";
 import { availability, createBooking, toBooking } from "./domain/bookings";
 import { getBranch, type BranchCtx } from "./domain/context";
 import { joinQueue, publicStatus, queueBoard, cancelTicket, ticketView } from "./domain/floor";
@@ -101,20 +101,12 @@ const TOOLS: Tool[] = [
           .filter((i) => !i.soldOut && i.servedNow !== false && !ex.some((x) => i.allergens.includes(x)) && di.every((d) => i.dietary.includes(d)))
           .map((i) => {
             const l = localizeItem(i, lang, base);
-            return { id: i.id, name: l.name, original_name: l.original ?? undefined, category: cats.get(i.categoryId), price: formatMoney(i.price, ctx.config.currency), ...(i.deal && i.listPrice ? { usual_price: formatMoney(i.listPrice, ctx.config.currency), deal: i.deal.name } : {}), description: l.description, signature: i.isSignature, spiceLevel: i.spiceLevel, dietary: i.dietary, allergens: i.allergens, story: l.story || undefined };
+            return { id: i.id, name: l.name, original_name: l.original ?? undefined, category: cats.get(i.categoryId), price: formatMoney(i.price, ctx.config.currency), ...(i.deal && i.listPrice ? { usual_price: formatMoney(i.listPrice, ctx.config.currency), deal: i.deal.name } : {}), description: l.description, signature: i.isSignature, spiceLevel: i.spiceLevel, dietary: i.dietary, allergens: i.allergens, story: l.story || undefined, ...(menu.fields && i.custom ? { facts: guestFacts(menu.fields, i.custom, lang) } : {}) };
           }),
         language: lang,
         allergenNote: "Allergen information is provided by the restaurant. Guests with severe allergies should confirm with staff.",
       };
     },
-  },
-  {
-    name: "ask_menu_assistant",
-    title: "Ask the restaurant's menu assistant",
-    description: "Ask the restaurant's own assistant what to eat: signatures, dishes for a diet or budget, allergens in a dish, or the story behind a dish.",
-    inputSchema: obj({ branch: branchArg, question: str("The guest's question"), lang: { type: "string", enum: LOCALES.map((l) => l.code), description: "Language for the answer" } }, ["branch", "question"]),
-    annotations: { readOnlyHint: true },
-    run: async (c, a) => customerChat(c.env.DB, appEnv(), await branch(c, a.branch), [{ role: "user", content: String(a.question ?? "").slice(0, 2000) }], isLocale(a.lang) ? a.lang : "en"),
   },
   {
     name: "queue_status",

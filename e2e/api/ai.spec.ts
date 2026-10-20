@@ -96,7 +96,7 @@ test.describe("AI for guests and merchants", () => {
     expect((await mcp({ jsonrpc: "2.0", method: "notifications/initialized" })).status).toBe(202);
     const pub = await mcp({ jsonrpc: "2.0", id: 2, method: "tools/list" });
     const names = pub.body.result.tools.map((t: any) => t.name);
-    expect(names).toEqual(expect.arrayContaining(["find_restaurants", "get_menu", "ask_menu_assistant", "queue_status", "join_queue", "check_ticket", "cancel_ticket", "booking_availability", "create_booking"]));
+    expect(names).toEqual(expect.arrayContaining(["find_restaurants", "get_menu", "queue_status", "join_queue", "check_ticket", "cancel_ticket", "booking_availability", "create_booking"]));
     expect(names.some((n: string) => n.startsWith("merchant_"))).toBe(false);
 
     const found = await call("find_restaurants", { query: s.slug.split("-").pop() });

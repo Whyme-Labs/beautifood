@@ -4,6 +4,7 @@ import { api, body } from "../../../../../src/server/http";
 import { appEnv } from "../../../../../src/server/appenv";
 import { getBranch } from "../../../../../src/server/domain/context";
 import { customerChat } from "../../../../../src/server/ai";
+import type { AiBinding } from "../../../../../src/server/ai/guestModel";
 import { fail } from "../../../../../src/server/errors";
 import { requestLocale } from "../../../../../src/server/locale";
 
@@ -15,5 +16,5 @@ export const POST = api(async (c) => {
   const { messages } = await body(c, Chat);
   const ctx = await getBranch(c.env.DB, c.req.param("branch")!);
   if (!ctx.config.modules.aiAssistant) fail(409, "assistant_off", "The menu assistant is turned off here");
-  return customerChat(c.env.DB, appEnv(), ctx, messages, requestLocale(c.req));
+  return customerChat(c.env.DB, { ...appEnv(), AI: (c.env as { AI?: AiBinding }).AI }, ctx, messages, requestLocale(c.req));
 });

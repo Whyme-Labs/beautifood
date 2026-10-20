@@ -83,7 +83,7 @@ test("AI agents: MCP tools over JSON-RPC (guest + merchant), llms.txt and OpenAP
   expect(init.body.result.serverInfo.name).toBe("beautifood");
   const list = await rpc("tools/list (no token: guest tools only)", "tools/list");
   const names = list.body.result.tools.map((x: any) => x.name);
-  expect(names).toEqual(expect.arrayContaining(["find_restaurants", "get_menu", "ask_menu_assistant", "queue_status", "join_queue", "check_ticket", "cancel_ticket", "booking_availability", "create_booking"]));
+  expect(names).toEqual(expect.arrayContaining(["find_restaurants", "get_menu", "queue_status", "join_queue", "check_ticket", "cancel_ticket", "booking_availability", "create_booking"]));
   expect(names.some((n: string) => n.startsWith("merchant_"))).toBe(false);
   calls[calls.length - 1].response = { result: { tools: list.body.result.tools.map((x: any) => ({ name: x.name, description: x.description.slice(0, 90) + "…" })) } };
 
@@ -95,8 +95,8 @@ test("AI agents: MCP tools over JSON-RPC (guest + merchant), llms.txt and OpenAP
   const ckt = menu.data.items.find((i: any) => i.original_name === "Char Kway Teow");
   expect(ckt.name).toBe("炒粿条");
   expect(menu.data.allergenNote).toMatch(/confirm with staff|店员/);
-  const askd = await tool("ask_menu_assistant", "ask_menu_assistant", { branch: s.klcc.ref, question: "What are your signatures?" });
-  expect(JSON.stringify(askd.data)).toContain("Char Kway Teow");
+  const sigs = await tool("get_menu: signatures and stories", "get_menu", { branch: s.klcc.ref });
+  expect(sigs.data.items.some((i: any) => i.signature && i.name === "Char Kway Teow")).toBe(true);
   const qs = await tool("queue_status", "queue_status", { branch: s.klcc.ref });
   expect(JSON.stringify(qs.data)).toContain("A");
   const joined = await tool("join_queue (party of 3)", "join_queue", { branch: s.klcc.ref, party_size: 3, name: "Agent Smith" });
@@ -131,10 +131,10 @@ test("AI agents: MCP tools over JSON-RPC (guest + merchant), llms.txt and OpenAP
     await expect(page.locator("#c0")).toContainText('"name": "beautifood"');
     await say("An AI agent talks to Beautifood over MCP: POST /mcp, JSON-RPC, no auth for guest tools");
     const notes: Record<number, string> = {
-      1: "tools/list: 9 guest tools (no merchant tools without a token)",
+      1: "tools/list: 8 guest tools (no merchant tools without a token)",
       2: "find_restaurants: both branches with live queue and wait",
       3: "get_menu lang=zh, exclude peanuts: Chinese names + original_name, allergen note",
-      4: "ask_menu_assistant: the restaurant's own assistant recommends its signatures",
+      4: "get_menu: signatures and dish stories, for the agent's own AI to recommend from",
       5: "queue_status: waiting parties per party size and ETA",
       6: "join_queue: number B001, private tracking link + token",
       7: "check_ticket: still waiting, parties ahead, ETA",

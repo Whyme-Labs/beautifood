@@ -699,6 +699,24 @@ export const customValues = sqliteTable(
   (t) => [primaryKey({ columns: [t.tenantId, t.entity, t.recordId] })],
 );
 
+/** AI model use per day, restaurant, branch and feature: calls, tokens and what they cost us. */
+export const aiUsage = sqliteTable(
+  "ai_usage",
+  {
+    day: text("day").notNull(),
+    tenantId: text("tenant_id").notNull(),
+    branchId: text("branch_id").notNull().default(""),
+    /** assistant | onboarding | storefront | roles | translate | insights */
+    kind: text("kind").notNull(),
+    calls: integer("calls").notNull().default(0),
+    inputTokens: integer("input_tokens").notNull().default(0),
+    outputTokens: integer("output_tokens").notNull().default(0),
+    /** US dollars × 1,000,000 */
+    costMicros: integer("cost_micros").notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.tenantId, t.branchId, t.kind] }), index("ai_usage_day").on(t.day)],
+);
+
 export const consumerCursors = sqliteTable("consumer_cursors", {
   name: text("name").primaryKey(),
   lastId: integer("last_id").notNull().default(0),
