@@ -14,6 +14,7 @@ import { receiptLocale } from "../../src/shared/receipt";
 import { sampleBill, type Bill, type ReceiptJob } from "../../src/ui/receipt";
 import { PrinterControl, usePrinter, useReceiptSettings } from "../../src/ui/receiptPrinter";
 import type { Menu, MenuItem } from "../../src/shared/types";
+import { CustomFieldsButton, useFieldDefs } from "../../src/ui/customFields";
 
 interface OrderRow {
   id: string;
@@ -65,6 +66,7 @@ export default function Pos() {
   const b = useBranchApi();
   const q = useQuery();
   const { t, f, locale } = useI18n();
+  const { defs: orderFields } = useFieldDefs("order");
   const cur = s.tenant?.currency ?? "MYR";
   const { run, pending } = useAction();
   const [sel, setSel] = useState<string | null>(null);
@@ -297,7 +299,10 @@ export default function Pos() {
                   <div className="serial mid">#{order.number}</div>
                 </div>
                 <div className="col tight" style={{ alignItems: "flex-end" }}>
-                  <Status s={order.status} />
+                  <span className="row nowrap">
+                    <CustomFieldsButton entity="order" id={order.id} name={`#${order.number}`} defs={orderFields} />
+                    <Status s={order.status} />
+                  </span>
                   <span className="muted" style={{ fontSize: 13 }}>
                     {typeLabel(order.type)}
                   </span>

@@ -5,6 +5,7 @@ import { api } from "../../src/ui/api";
 import { usePoll } from "../../src/ui/hooks";
 import { useStaff } from "../../src/ui/staff";
 import { Empty, Modal, Status, useAction } from "../../src/ui/components";
+import { CustomFieldsButton, useFieldDefs } from "../../src/ui/customFields";
 import { useI18n } from "../../src/i18n/react";
 
 interface Member {
@@ -23,6 +24,7 @@ export default function Members() {
   const { t, f } = useI18n();
   const cur = s.tenant?.currency ?? "MYR";
   const { run, pending } = useAction();
+  const { defs: memberFields } = useFieldDefs("member");
   const [q, setQ] = useState("");
   const { data: m, refresh } = usePoll(() => api<{ members: Member[]; stats: { n: number; points: number; opted: number } }>(`/api/m/members?q=${encodeURIComponent(q)}`), { interval: 0, deps: [q] });
   const { data: promos, refresh: refreshPromos } = usePoll(() => api<{ code: string; kind: string; value: number; used: number; max_uses: number | null; min_spend: number; description: string }[]>("/api/m/promos"), { interval: 0 });
@@ -84,6 +86,7 @@ export default function Members() {
                     <td className="num">{f.number(x.points)}</td>
                     <td className="num">{f.number(x.visits)}</td>
                     <td className="num">
+                      {s.can("member.manage") && <CustomFieldsButton entity="member" id={x.id} name={x.name || x.email} defs={memberFields} />}
                       {s.can("member.manage") && (
                         <button className="btn small ghost icon" title={t("staff.members.adjust")} aria-label={t("staff.members.adjustFor", { name: x.name || x.email })} onClick={() => setAdj({ member: x, delta: "", reason: "" })}>
                           <PlusCircle size={16} />

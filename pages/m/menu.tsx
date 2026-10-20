@@ -6,6 +6,7 @@ import { api } from "../../src/ui/api";
 import { usePoll } from "../../src/ui/hooks";
 import { useStaff } from "../../src/ui/staff";
 import { Allergens, Dietary, Empty, ErrorBox, Modal, Money, useAction, useToast } from "../../src/ui/components";
+import { CustomFieldsForm } from "../../src/ui/customFields";
 import { ALLERGENS } from "../../src/shared/allergens";
 import { LOCALES, localeInfo, type MessageKey } from "../../src/i18n/core";
 import { useI18n } from "../../src/i18n/react";
@@ -328,6 +329,11 @@ function ItemModal({ item, currency, language, categories, menus, onClose, onSav
           )}
         </div>
       </form>
+      {item.id && (
+        <div style={{ marginTop: 18 }}>
+          <CustomFieldsForm entity="dish" id={item.id} heading={t("staff.fields.details")} />
+        </div>
+      )}
       <hr className="rule" style={{ margin: "18px 0" }} />
       <TranslationsSection item={item} language={language} onSaved={onTranslated} />
     </Modal>

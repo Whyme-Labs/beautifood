@@ -662,6 +662,41 @@ export const customDomains = sqliteTable(
   (t) => [index("custom_domains_tenant").on(t.tenantId), index("custom_domains_status").on(t.status, t.checkedAt)],
 );
 
+/** A restaurant's own fields on dishes, orders, members or staff (src/shared/customFields.ts). */
+export const customFields = sqliteTable(
+  "custom_fields",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id").notNull(),
+    /** dish | order | member | staff */
+    entity: text("entity").notNull(),
+    key: text("key").notNull(),
+    /** {"en":"Halal certified","zh":"清真认证"} */
+    label: text("label").notNull(),
+    type: text("type").notNull(),
+    options: text("options").notNull().default("[]"),
+    required: integer("required").notNull().default(0),
+    public: integer("public").notNull().default(0),
+    sort: integer("sort").notNull().default(0),
+    createdAt: integer("created_at").notNull(),
+  },
+  (t) => [uniqueIndex("custom_fields_key").on(t.tenantId, t.entity, t.key), index("custom_fields_tenant").on(t.tenantId, t.entity, t.sort)],
+);
+
+/** The values of a record's custom fields, as one JSON object keyed by field key. */
+export const customValues = sqliteTable(
+  "custom_values",
+  {
+    tenantId: text("tenant_id").notNull(),
+    entity: text("entity").notNull(),
+    recordId: text("record_id").notNull(),
+    data: text("data").notNull().default("{}"),
+    updatedAt: integer("updated_at").notNull(),
+    updatedBy: text("updated_by").notNull().default(""),
+  },
+  (t) => [primaryKey({ columns: [t.tenantId, t.entity, t.recordId] })],
+);
+
 export const consumerCursors = sqliteTable("consumer_cursors", {
   name: text("name").primaryKey(),
   lastId: integer("last_id").notNull().default(0),

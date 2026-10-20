@@ -1,6 +1,7 @@
 // Team & roles (RBAC): invite staff with a role and branch scope; API tokens for your own AI agent.
 import { useState } from "react";
 import { Bot, KeyRound, Link2, Trash2, UserPlus, Users } from "lucide-react";
+import { CustomFieldsButton, useFieldDefs } from "../../src/ui/customFields";
 import { api } from "../../src/ui/api";
 import { usePoll } from "../../src/ui/hooks";
 import { useStaff } from "../../src/ui/staff";
@@ -20,6 +21,7 @@ export default function Staff() {
   const { t, f } = useI18n();
   const { run, pending } = useAction();
   const { data, refresh } = usePoll(() => api<Team>("/api/m/staff"), { interval: 0 });
+  const { defs: staffFields } = useFieldDefs("staff");
   const { data: tokens, refresh: refreshTokens } = usePoll(() => api<{ id: string; name: string; created_at: number; last_used_at: number | null }[]>("/api/m/tokens"), { interval: 0 });
   const { data: roleData, refresh: refreshRoles } = usePoll(() => api<RolesData>("/api/m/roles"), { interval: 0 });
   // the roles I may hand out: built-in and the restaurant's own (before they load, the built-in table)
@@ -61,6 +63,7 @@ export default function Staff() {
                   </td>
                   <td className="muted">{bname(p.branchIds)}</td>
                   <td className="num">
+                    {s.can("staff.manage") && (p.userId === s.user?.id || roles.includes(p.role)) && <CustomFieldsButton entity="staff" id={p.userId} name={p.name} defs={staffFields} />}
                     {p.userId !== s.user?.id && roles.includes(p.role) && (
                       <button
                         className="btn small ghost icon danger"

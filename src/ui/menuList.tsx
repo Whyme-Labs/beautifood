@@ -4,6 +4,7 @@ import type { Menu, MenuItem } from "../shared/types";
 import { clockLabel, scheduleName, weekdayNames } from "../shared/schedule";
 import { ALLERGENS } from "../shared/allergens";
 import { localizeCategory, localizeItem } from "../shared/menuI18n";
+import { guestFacts } from "../shared/customFields";
 import { useI18n } from "../i18n/react";
 import { Allergens, Dietary, Money } from "./components";
 
@@ -92,6 +93,11 @@ export function MenuList({ menu, currency, onPick, action }: { menu: Menu; curre
                 {l.description && <div className="muted" style={{ fontSize: 13.5, marginTop: 2 }}>{l.description}</div>}
                 <Dietary list={i.dietary} spice={i.spiceLevel} />
                 <Allergens list={i.allergens} />
+                {menu.fields && i.custom && (
+                  <div className="muted dish-facts" data-testid="dish-facts">
+                    {guestFacts(menu.fields, i.custom, locale).join(" · ")}
+                  </div>
+                )}
                 {l.story && (
                   <button className="btn ghost small" style={{ paddingLeft: 0, marginTop: 2 }} onClick={() => setShowStory(showStory === i.id ? null : i.id)} aria-expanded={showStory === i.id}>
                     {showStory === i.id ? t("menu.hideStory") : t("menu.story")}

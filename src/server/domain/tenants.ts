@@ -141,7 +141,7 @@ export async function listBranches(db: D1Database, tenantId: string) {
 // ── staff ───────────────────────────────────────────────────────────────────
 
 /** May `by` give (or manage someone in) `role` at these branches? See canGrant: nobody hands out more than they hold. */
-async function checkGrant(db: D1Database, by: Staff, role: string, branchIds: string[]) {
+export async function checkGrant(db: D1Database, by: Staff, role: string, branchIds: string[]) {
   const target = await resolveRole(db, by.tenantId, role);
   if (!target.exists) fail(400, "unknown_role", "That role doesn't exist");
   if (!canGrant(by, target)) fail(403, "forbidden", `You can't assign the ${target.name} role`);

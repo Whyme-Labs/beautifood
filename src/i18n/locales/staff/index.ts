@@ -3,6 +3,7 @@ import * as boss from "./boss";
 import * as bookings from "./bookings";
 import * as host from "./host";
 import * as inbox from "./inbox";
+import * as fields from "./fields";
 import * as integrations from "./integrations";
 import * as kitchen from "./kitchen";
 import * as members from "./members";
@@ -31,6 +32,7 @@ export const staffEn = {
   inbox: inbox.en,
   integrations: integrations.en,
   storefront: storefront.en,
+  fields: fields.en,
 } as const;
 
 export const staffZh = {
@@ -49,4 +51,5 @@ export const staffZh = {
   inbox: inbox.zh,
   integrations: integrations.zh,
   storefront: storefront.zh,
+  fields: fields.zh,
 };

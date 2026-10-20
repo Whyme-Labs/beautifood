@@ -216,6 +216,8 @@ export interface MenuItem {
   /** When a price rule is on: `price` is the price now and this is the usual one. */
   listPrice?: number;
   deal?: { id: string; name: string };
+  /** The restaurant's own fields marked public (Menu.fields describes them), by key. */
+  custom?: Record<string, string | number | boolean>;
 }
 
 export interface MenuCategory {
@@ -236,6 +238,8 @@ export interface Menu {
   rules?: PriceRule[];
   /** What is on right now at the branch, and until when ("HH:MM" branch-local). */
   now?: { menus: { id: string; name: string; until: string | null }[]; deals: { id: string; name: string; until: string | null }[] };
+  /** The restaurant's own dish fields that guests see (values are on each item's `custom`). */
+  fields?: { key: string; label: { en: string; zh?: string }; type: "text" | "number" | "boolean" | "select" | "date" | "url" }[];
 }
 
 export interface CartModifier {

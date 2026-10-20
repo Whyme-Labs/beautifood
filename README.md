@@ -21,6 +21,7 @@ A restaurant platform covering walk-in queues, ordering and the front of house. 
 - Multi-branch RBAC with a boss dashboard across all branches, plus custom roles: describe the role and the AI suggests the permissions. Nobody can hand out more than they hold.
 - A storefront designed by describing it ("a 1960s kopitiam feel, story first"), with a live preview and publish.
 - Loyalty tiers, promo broadcasts, and an AI onboarding copilot (paste your menu, describe your floor).
+- Custom fields on dishes, orders, members and staff (text, number, yes/no, choice, date, web address), with one-tap starters like "Halal certified" or "Delivery platform"; dish fields can show on the guest menu.
 
 **For AI agents and integrations**
 - A stateless MCP server at `/mcp` with public tools; merchant tools unlock with a personal access token.

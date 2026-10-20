@@ -24,3 +24,6 @@ export const RoleInput = z
     tenantWide: z.boolean().optional(),
   })
   .strict();
+
+/** A custom field's name, in English and optionally Chinese. */
+export const FieldLabel = z.object({ en: z.string().trim().min(1).max(60), zh: z.string().trim().max(60).optional() });

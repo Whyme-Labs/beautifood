@@ -3,6 +3,7 @@ import { clockAt, menuNow, menusAt, rulesAt, serving, type PriceRule, type Servi
 import { fail, notFound } from "../errors";
 import { newId } from "../ids";
 import { Tx } from "../tx";
+import { publicDishFields } from "./customFields";
 import { streams, type BranchCtx } from "./context";
 
 interface ItemRow {
@@ -104,11 +105,15 @@ export async function getMenu(db: D1Database, tenantId: string, branchId?: strin
     db.prepare("SELECT menu_language FROM tenants WHERE id = ?").bind(tenantId),
     ...timedStmts(db, tenantId),
   ]);
+  const list = (items.results as unknown as ItemRow[]).map(toItem);
+  // the restaurant's own dish fields that guests may see
+  const custom = await publicDishFields(db, tenantId, list.map((i) => i.id));
   return {
     language: (lang.results[0] as { menu_language?: string } | undefined)?.menu_language ?? "en",
     version: (ver.results[0] as { v: number }).v,
     categories: (cats.results as unknown as (MenuCategory & { translations: string })[]).map((c) => ({ ...c, translations: JSON.parse(c.translations || "{}") })),
-    items: (items.results as unknown as ItemRow[]).map(toItem),
+    items: custom.fields.length ? list.map((i) => (custom.values[i.id] ? { ...i, custom: custom.values[i.id] } : i)) : list,
+    ...(custom.fields.length ? { fields: custom.fields } : {}),
     menus: (menus.results as unknown as TimedMenuRow[]).map(toTimedMenu),
     rules: (rules.results as unknown as PriceRuleRow[]).map(toPriceRule),
   };

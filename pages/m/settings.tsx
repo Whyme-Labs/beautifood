@@ -6,6 +6,7 @@ import { api } from "../../src/ui/api";
 import { useStaff, type TenantInfo } from "../../src/ui/staff";
 import { useAction } from "../../src/ui/components";
 import { ReceiptSettingsCard } from "../../src/ui/receiptSettings";
+import { CustomFieldsCard } from "../../src/ui/customFields";
 import { LOCALES, type MessageKey } from "../../src/i18n/core";
 import { useI18n } from "../../src/i18n/react";
 import type { BranchConfig } from "../../src/shared/types";
@@ -203,6 +204,7 @@ export default function Settings() {
           {t("staff.settings.save")}
         </button>
       </div>
+      {s.can("settings.manage") && <CustomFieldsCard />}
       {s.can("settings.manage") && <ReceiptSettingsCard />}
       {s.can("branch.manage") && (
         <section className="card col">

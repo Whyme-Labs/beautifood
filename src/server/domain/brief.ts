@@ -134,6 +134,7 @@ ${b.endpoints.length ? `Already set up here:\n\n${b.endpoints.map((e) => `- \`${
 - Verify every delivery, dedupe on \`${WEBHOOK_HEADERS.delivery}\`, answer 2xx fast, then do the work.
 - Map ids, don't copy names: keep Beautifood's \`order.id\` / \`item_id\` beside the other system's id.
 - Going the other way (e.g. a delivery platform order into the kitchen), use the staff API: \`POST /api/m/branches/{branch}/orders\` with \`{ "takeaway": true, "items": [{ "itemId": "itm_…", "qty": 1 }] }\`; mark dishes sold out with \`POST /api/m/branches/{branch}/availability\`.
+- Keep what the other system knows in the restaurant's custom fields instead of a database of your own: \`GET /api/m/fields\` lists them (dishes, orders, members, staff); \`PUT /api/m/fields/values/{dish|order|member|staff}/{id}\` with \`{ "values": { "platform_order_no": "GF-123" } }\` sets values (null clears); \`GET /api/m/fields/values/{type}?ids=a,b\` reads them. Ask the merchant to add a field (Settings → Custom fields) when one is missing.
 - Log what you did with the delivery id, so the merchant can match it to the delivery log.
 - Ask the merchant before anything that sends money or messages to guests.
 `;

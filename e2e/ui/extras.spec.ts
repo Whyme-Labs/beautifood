@@ -69,4 +69,37 @@ test.describe("QR, receipts and role-aware console (browser)", () => {
     await expect(row.getByRole("link", { name: host })).toBeVisible();
     if (process.env.SHOTS) await card.screenshot({ path: `${process.env.SHOTS}/domains-live.png` });
   });
+
+  test("an owner adds a dish field in Settings, fills it in on a dish, and guests see it on the menu", async ({ page }) => {
+    const s = await seed();
+    await open(page, "/m/login");
+    await page.getByLabel("Email").fill(s.ownerEmail);
+    await page.getByLabel("Password").fill("password-123456");
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.waitForURL(/\/m$/);
+    await open(page, "/m/settings");
+    const card = page.getByTestId("custom-fields");
+    await card.getByRole("button", { name: "Halal certified" }).click();
+    await expect(card.getByTestId("cf-row")).toContainText("Halal certified");
+    await expect(card.getByTestId("cf-row")).toContainText("On menu");
+    // a private one too, by hand
+    await card.getByTestId("cf-name").fill("Supplier");
+    await card.getByTestId("cf-add").click();
+    await expect(card.getByTestId("cf-row")).toHaveCount(2);
+    if (process.env.SHOTS) await card.screenshot({ path: `${process.env.SHOTS}/fields-settings.png` });
+
+    await open(page, "/m/menu");
+    await page.getByTestId("menu-item").filter({ hasText: "Rojak" }).getByRole("button", { name: "Edit" }).click();
+    const form = page.getByTestId("cf-form-dish");
+    await form.locator('[data-field="halal_certified"]').check();
+    await form.locator('[data-field="supplier"]').fill("Pak Ali");
+    if (process.env.SHOTS) await form.screenshot({ path: `${process.env.SHOTS}/fields-dish.png` });
+    await form.getByTestId("cf-save").click();
+    await expect(page.getByText("Details saved")).toBeVisible();
+
+    await open(page, `/r/${s.klcc.ref}/menu`);
+    const dish = page.getByTestId("dish").filter({ hasText: "Rojak" });
+    await expect(dish.getByTestId("dish-facts")).toHaveText("Halal certified");
+    await expect(page.getByText("Pak Ali")).toHaveCount(0);
+  });
 });
