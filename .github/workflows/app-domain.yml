@@ -1,0 +1,80 @@
+name: App domain
+
+# Puts the app on its own address (default app.beautifood.io) as a Workers Custom Domain:
+# Cloudflare manages the DNS record and issues the certificate. Run it with "attach" off first
+# to see what holds the name today; with it on, it removes the name's old DNS records, attaches
+# it to beautifood-app and points the app's links at it. It refuses when another Worker holds
+# the name. Deploys keep the domain (void.config.ts) and use it as PUBLIC_URL (ci.yml).
+on:
+  workflow_dispatch:
+    inputs:
+      hostname:
+        description: Address for the app
+        default: app.beautifood.io
+      attach:
+        description: Attach it (off = only report what holds it)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  domain:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 15
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      HOST: ${{ inputs.hostname }}
+      SCRIPT: beautifood-app
+    steps:
+      - name: What holds the name
+        id: look
+        run: |
+          set -euo pipefail
+          cf() { curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" "$@"; }
+          acct="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          # the zone is the name's last two labels (beautifood.io)
+          zone_name=$(echo "$HOST" | awk -F. '{print $(NF-1)"."$NF}')
+          zone=$(cf "https://api.cloudflare.com/client/v4/zones?name=$zone_name" | jq -r '.result[0].id // empty')
+          if [ -z "$zone" ]; then echo "::error::Zone $zone_name isn't visible to the deploy token"; exit 1; fi
+          echo "zone=$zone" >> "$GITHUB_OUTPUT"
+          echo "Zone $zone_name found"
+          echo "--- DNS records named $HOST"
+          cf "https://api.cloudflare.com/client/v4/zones/$zone/dns_records?name=$HOST" | tee dns.json | jq -r 'if .success then (.result[] | "\(.type) \(.content) proxied=\(.proxied) id=\(.id)") else "cannot read DNS: \(.errors)" end'
+          echo "--- Worker routes on the zone matching $HOST"
+          cf "https://api.cloudflare.com/client/v4/zones/$zone/workers/routes" | tee routes.json | jq -r --arg h "$HOST" 'if .success then (.result[] | select(.pattern | contains($h)) | "\(.pattern) -> \(.script // "(no worker)") id=\(.id)") else "cannot read routes: \(.errors)" end'
+          echo "--- Workers Custom Domains for $HOST"
+          cf "$acct/workers/domains?hostname=$HOST" | tee domains.json | jq -r 'if .success then (.result[] | "\(.hostname) -> \(.service) (\(.environment)) id=\(.id)") else "cannot read custom domains: \(.errors)" end'
+          echo "--- What it answers now"
+          curl -sS -m 15 -o /dev/null -w "%{http_code} -> %{redirect_url}\n" "https://$HOST/" || true
+
+      - name: Attach to ${{ env.SCRIPT }}
+        if: inputs.attach
+        env:
+          ZONE: ${{ steps.look.outputs.zone }}
+        run: |
+          set -euo pipefail
+          cf() { curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" "$@"; }
+          acct="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          other=$(jq -r --arg s "$SCRIPT" '[.result[]? | select(.service != $s) | .service] | join(", ")' domains.json)
+          routed=$(jq -r --arg h "$HOST" --arg s "$SCRIPT" '[.result[]? | select((.pattern | contains($h)) and .script != null and .script != $s) | .script] | join(", ")' routes.json)
+          if [ -n "$other$routed" ]; then echo "::error::$HOST is attached to another Worker ($other$routed); not taking it"; exit 1; fi
+          for id in $(jq -r '.result[]? | select(.type == "A" or .type == "AAAA" or .type == "CNAME") | .id' dns.json); do
+            echo "Removing old DNS record $id"
+            cf -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE/dns_records/$id" | jq -c '{success, errors}'
+          done
+          echo "Attaching $HOST to $SCRIPT"
+          cf -X PUT "$acct/workers/domains" -d "$(jq -n --arg h "$HOST" --arg s "$SCRIPT" --arg z "$ZONE" '{hostname:$h, service:$s, environment:"production", zone_id:$z}')" | jq -c '{success, errors, result: (.result | {hostname, service})?}' | tee attach.json
+          jq -e '.success' attach.json >/dev/null
+          echo "Waiting for the certificate and the app to answer"
+          for i in $(seq 1 60); do
+            if curl -fsS -m 10 "https://$HOST/api/health" 2>/dev/null | grep -q '"ok":true'; then echo "https://$HOST is live"; break; fi
+            sleep 10
+          done
+          curl -fsS -m 10 "https://$HOST/api/health"
+          echo "Pointing the app's links at https://$HOST"
+          cf -X PUT "$acct/workers/scripts/$SCRIPT/secrets" -d "$(jq -n --arg v "https://$HOST" '{name:"PUBLIC_URL", text:$v, type:"secret_text"}')" | jq -c '{success, errors}'
+          echo "App is on https://$HOST" >> "$GITHUB_STEP_SUMMARY"
