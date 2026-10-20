@@ -1,5 +1,6 @@
 import { Fragment } from "react";
-import { Composition } from "remotion";
+import { Composition, Still } from "remotion";
+import { Thumbnail } from "./thumbnail";
 import "./theme";
 import { Demo } from "./Demo";
 import { Close, Feature, Hook, Languages, Problem, Proof, Title } from "./scenes";
@@ -44,6 +45,8 @@ export const RemotionRoot = () => (
         })}
       </Fragment>
     ))}
+    <Still id="Thumbnail-en" component={Thumbnail} width={1280} height={720} defaultProps={{ lang: "en" as const }} />
+    <Still id="Thumbnail-zh" component={Thumbnail} width={1280} height={720} defaultProps={{ lang: "zh" as const }} />
     <Composition id="Hook" component={Hook} durationInFrames={150} fps={30} width={1920} height={1080} />
     <Composition id="Problem" component={Problem} durationInFrames={180} fps={30} width={1920} height={1080} />
     <Composition id="Title" component={Title} durationInFrames={120} fps={30} width={1920} height={1080} />
