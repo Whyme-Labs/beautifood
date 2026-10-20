@@ -303,17 +303,91 @@ interface BluetoothLike {
 
 const nav = () => (typeof navigator === "undefined" ? {} : navigator) as unknown as { usb?: Usb; serial?: SerialLike; bluetooth?: BluetoothLike };
 
-export type Kind = "usb" | "serial" | "bluetooth";
-export const KINDS: Kind[] = ["usb", "serial", "bluetooth"];
+export type Kind = "builtin" | "usb" | "serial" | "bluetooth";
+export const KINDS: Kind[] = ["builtin", "usb", "serial", "bluetooth"];
 
-/** Which transports this browser has (Chrome/Edge on desktop and Android; none on Safari, iOS or Firefox). */
+/** Which transports this browser has (Chrome/Edge on desktop and Android; none on Safari, iOS or Firefox; "builtin" inside the Beautifood Android app on a Sunmi). */
 export function support(): Record<Kind, boolean> {
   const n = nav();
-  return { usb: !!n.usb, serial: !!n.serial, bluetooth: !!n.bluetooth };
+  return { builtin: !!nativeInfo()?.printer?.available, usb: !!n.usb, serial: !!n.serial, bluetooth: !!n.bluetooth };
 }
 
 /** The device to reconnect to without a prompt on the next visit. */
-export type Remembered = { kind: "usb"; vendorId: number; productId: number; serialNumber?: string } | { kind: "serial"; vendorId?: number; productId?: number } | { kind: "bluetooth"; id: string };
+export type Remembered = { kind: "builtin" } | { kind: "usb"; vendorId: number; productId: number; serialNumber?: string } | { kind: "serial"; vendorId?: number; productId?: number } | { kind: "bluetooth"; id: string };
+
+// ---------------------------------------------------------------------------
+// The device's own printer, inside the Beautifood Android app (android/): the page hands it the
+// same ESC/POS bytes as any printer; the app sends them to the Sunmi printer service and answers
+// once the paper is out (or with why not).
+
+interface NativeBridge {
+  info(): string;
+  write(id: string, base64: string): void;
+}
+export interface NativeInfo {
+  app: string;
+  version: string;
+  device: string;
+  printer?: { available: boolean; paper: 58 | 80; model: string; state: number; status: string };
+}
+type Pending = { ok: () => void; fail: (e: Error) => void; timer: ReturnType<typeof setTimeout> };
+
+const bridge = () => (typeof window === "undefined" ? undefined : (window as unknown as { BeautifoodNative?: NativeBridge }).BeautifoodNative);
+
+/** What the Android app reports about this device; null in a browser. */
+export function nativeInfo(): NativeInfo | null {
+  const b = bridge();
+  if (!b) return null;
+  try {
+    const i = JSON.parse(b.info()) as NativeInfo;
+    return i.app ? i : null;
+  } catch {
+    return null;
+  }
+}
+
+const pending = new Map<string, Pending>();
+let seq = 0;
+function answers() {
+  const w = window as unknown as { __beautifoodNative?: { done(id: string, ok: boolean, error: string | null): void } };
+  w.__beautifoodNative ??= {
+    done(id, ok, error) {
+      const p = pending.get(id);
+      if (!p) return;
+      pending.delete(id);
+      clearTimeout(p.timer);
+      if (ok) p.ok();
+      else p.fail(new Error(error || "The built-in printer failed"));
+    },
+  };
+}
+
+export function base64(data: Uint8Array): string {
+  let s = "";
+  for (let i = 0; i < data.length; i += 0x8000) s += String.fromCharCode(...data.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+
+function openBuiltin(): PrinterLink {
+  const b = bridge();
+  const info = nativeInfo();
+  if (!b || !info?.printer?.available) throw new Error("This device has no built-in printer");
+  answers();
+  return {
+    kind: "builtin",
+    name: info.printer.model || info.device,
+    device: { kind: "builtin" },
+    write: (data) =>
+      new Promise<void>((ok, fail) => {
+        const id = `p${++seq}`;
+        // a long receipt takes a few seconds; no answer in 30 s means the service is stuck
+        const timer = setTimeout(() => (pending.delete(id), fail(new Error("The built-in printer didn't answer"))), 30_000);
+        pending.set(id, { ok, fail, timer });
+        b.write(id, base64(data));
+      }),
+    async close() {},
+  };
+}
 
 export interface PrinterLink {
   kind: Kind;
@@ -451,6 +525,7 @@ const rank = (uuid: string) => (BLE_SERVICES.indexOf(uuid) + BLE_SERVICES.length
 /** Ask the cashier to pick a printer (needs a click). Throws NotFoundError when they cancel. */
 export async function connect(kind: Kind, baud: number, onLost: () => void): Promise<PrinterLink> {
   const n = nav();
+  if (kind === "builtin") return openBuiltin();
   if (kind === "usb") return openUsb(await n.usb!.requestDevice({ filters: [] }), onLost);
   if (kind === "serial") return openSerial(await n.serial!.requestPort(), baud, onLost);
   return openBluetooth(await n.bluetooth!.requestDevice({ acceptAllDevices: true, optionalServices: BLE_SERVICES }), onLost);
@@ -460,6 +535,7 @@ export async function connect(kind: Kind, baud: number, onLost: () => void): Pro
 export async function reconnect(dev: Remembered | null, baud: number, onLost: () => void): Promise<PrinterLink | null> {
   const n = nav();
   try {
+    if (dev?.kind === "builtin" || (!dev && support().builtin)) return openBuiltin();
     if (dev?.kind === "usb" && n.usb) {
       const list = await n.usb.getDevices();
       const d = list.find((x) => x.vendorId === dev.vendorId && x.productId === dev.productId && (!dev.serialNumber || x.serialNumber === dev.serialNumber));
@@ -496,8 +572,10 @@ export const BAUDS = [9600, 19200, 38400, 115200];
 
 export function loadSettings(): PrinterSettings {
   const s = support();
+  const own = s.builtin ? nativeInfo()?.printer : null;
   // Without a transport, auto-print means a print dialog after every bill: opt-in only.
-  const def: PrinterSettings = { paper: 80, baud: 9600, drawerOnCash: true, autoPrint: s.usb || s.serial || s.bluetooth, device: null };
+  // On a device with its own printer, that printer (and its paper width) is the default.
+  const def: PrinterSettings = { paper: own?.paper ?? 80, baud: 9600, drawerOnCash: true, autoPrint: s.builtin || s.usb || s.serial || s.bluetooth, device: own ? { kind: "builtin" } : null };
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) ?? "null") as Partial<PrinterSettings> | null;
     if (!raw) return def;

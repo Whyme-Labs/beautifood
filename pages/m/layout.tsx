@@ -6,6 +6,7 @@ import { StaffProvider, useStaff } from "../../src/ui/staff";
 import { BarChart3, BookOpen, CalendarDays, ChefHat, Gift, LayoutDashboard, LogOut, QrCode, Receipt, Settings, Sparkles, Store, Webhook, UserCog, Users, type LucideIcon } from "lucide-react";
 import { Empty, LangSwitch, Logo } from "../../src/ui/components";
 import { useI18n } from "../../src/i18n/react";
+import { useScanIntoFields } from "../../src/ui/scanner";
 import type { MessageKey } from "../../src/i18n/core";
 import type { Messages } from "../../src/i18n/locales/en";
 
@@ -28,6 +29,8 @@ const NAV: { href: string; key: keyof Messages["staff"]["shell"]["nav"]; icon: L
 
 function Shell({ children }: { children: ReactNode }) {
   const s = useStaff();
+  // on a Sunmi in the Android app, the scanner types into the focused field
+  useScanIntoFields();
   const { t } = useI18n();
   const router = useRouter();
   const path = router.path;

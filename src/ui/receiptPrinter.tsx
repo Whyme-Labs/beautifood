@@ -2,7 +2,7 @@
 // (per device, reconnected without a prompt), the print queue, the printer settings dialog,
 // and the restaurant's receipt design for the current branch.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, Bluetooth, Cable, Printer, Settings2, Usb, Wallet } from "lucide-react";
+import { AlertTriangle, Bluetooth, Cable, Printer, ReceiptText, Settings2, Usb, Wallet } from "lucide-react";
 import { api } from "./api";
 import { usePoll } from "./hooks";
 import { useStaff } from "./staff";
@@ -28,6 +28,7 @@ export function useReceiptSettings() {
 }
 
 const KIND: Record<Kind, { key: MessageKey; Icon: typeof Usb }> = {
+  builtin: { key: "staff.pos.printerBuiltin", Icon: ReceiptText },
   usb: { key: "staff.pos.printerUsb", Icon: Usb },
   serial: { key: "staff.pos.printerSerial", Icon: Cable },
   bluetooth: { key: "staff.pos.printerBluetooth", Icon: Bluetooth },
@@ -89,7 +90,7 @@ export function usePrinter() {
     return job;
   };
   const receipt = (job: () => ReceiptJob, openDrawer = false) => write(() => receiptBytes(job(), settingsRef.current.paper, openDrawer));
-  const anySupport = supported.usb || supported.serial || supported.bluetooth;
+  const anySupport = supported.builtin || supported.usb || supported.serial || supported.bluetooth;
 
   return {
     settings,
