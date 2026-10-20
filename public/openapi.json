@@ -675,6 +675,7 @@
               "menu.sold_out",
               "menu.back_in_stock",
               "menu.item_saved",
+              "inventory.low",
               "webhook.ping"
             ]
           },
@@ -1519,6 +1520,54 @@
     "menu.item_saved": {
       "post": {
         "summary": "menu.item_saved",
+        "parameters": [
+          {
+            "name": "x-beautifood-signature",
+            "in": "header",
+            "required": true,
+            "description": "t=<unix seconds>,v1=<hex HMAC-SHA256 of \"<t>.<raw body>\"> with the endpoint's secret",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-delivery",
+            "in": "header",
+            "required": true,
+            "description": "Unique delivery id; dedupe on it",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-beautifood-event",
+            "in": "header",
+            "required": true,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Any 2xx within 10 s acknowledges; anything else is retried after 1, 5, 30 min, 2, 6, 12 h"
+          }
+        }
+      }
+    },
+    "inventory.low": {
+      "post": {
+        "summary": "inventory.low",
         "parameters": [
           {
             "name": "x-beautifood-signature",

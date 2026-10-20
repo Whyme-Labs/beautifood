@@ -1,5 +1,5 @@
 // Menu editor: categories, dishes (price, allergens, dietary, spice, story, signature, station, modifiers),
-// per-branch sold-out, and the menu's translations (machine-translate all, or edit one dish per language).
+// per-branch sold-out, each dish's recipe (inventory), and the menu's translations (machine-translate all, or edit one dish per language).
 import { useEffect, useState } from "react";
 import { EyeOff, Languages, Plus, RefreshCw, Star } from "lucide-react";
 import { api } from "../../src/ui/api";
@@ -7,6 +7,7 @@ import { usePoll } from "../../src/ui/hooks";
 import { useStaff } from "../../src/ui/staff";
 import { Allergens, Dietary, Empty, ErrorBox, Modal, Money, useAction, useToast } from "../../src/ui/components";
 import { CustomFieldsForm } from "../../src/ui/customFields";
+import { RecipeSection } from "../../src/ui/inventory";
 import { ALLERGENS } from "../../src/shared/allergens";
 import { LOCALES, localeInfo, type MessageKey } from "../../src/i18n/core";
 import { useI18n } from "../../src/i18n/react";
@@ -212,6 +213,7 @@ function TranslatePanel({ language, onDone }: { language: string; onDone: () => 
 
 function ItemModal({ item, currency, language, categories, menus, onClose, onSave, onDelete, onTranslated }: { item: Partial<MenuItem> | null; currency: string; language: string; categories: { id: string; name: string }[]; menus: TimedMenu[]; onClose: () => void; onSave: (i: Partial<MenuItem>) => void; onDelete: (id: string) => void; onTranslated: () => Promise<void> }) {
   const { t, f: fmt } = useI18n();
+  const s = useStaff();
   const toast = useToast();
   const [f, setF] = useState<Partial<MenuItem>>({});
   const [mods, setMods] = useState("");
@@ -332,6 +334,11 @@ function ItemModal({ item, currency, language, categories, menus, onClose, onSav
       {item.id && (
         <div style={{ marginTop: 18 }}>
           <CustomFieldsForm entity="dish" id={item.id} heading={t("staff.fields.details")} />
+        </div>
+      )}
+      {item.id && s.can("inventory.manage") && (
+        <div style={{ marginTop: 18 }}>
+          <RecipeSection itemId={item.id} />
         </div>
       )}
       <hr className="rule" style={{ margin: "18px 0" }} />

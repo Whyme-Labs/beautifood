@@ -21,11 +21,12 @@ export const WEBHOOK_EVENTS = [
   { type: "menu.sold_out", group: "menu", about: "item" },
   { type: "menu.back_in_stock", group: "menu", about: "item" },
   { type: "menu.item_saved", group: "menu", about: "item" },
+  { type: "inventory.low", group: "inventory", about: "ingredient" },
 ] as const;
 
 export type WebhookEventType = (typeof WEBHOOK_EVENTS)[number]["type"];
 export const WEBHOOK_EVENT_TYPES = WEBHOOK_EVENTS.map((e) => e.type) as WebhookEventType[];
-export const WEBHOOK_GROUPS = ["queue", "bookings", "orders", "payments", "menu"] as const;
+export const WEBHOOK_GROUPS = ["queue", "bookings", "orders", "payments", "menu", "inventory"] as const;
 
 /** The test event a merchant can send to check an endpoint. */
 export const WEBHOOK_PING = "webhook.ping";

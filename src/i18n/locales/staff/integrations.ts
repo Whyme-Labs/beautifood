@@ -54,7 +54,7 @@ export const en = {
     attempts: { one: "{count} attempt", other: "{count} attempts" },
     nextTry: "next try {when}",
     status: { delivered: "Delivered", pending: "Retrying", failed: "Failed" },
-    groups: { queue: "Queue", bookings: "Bookings", orders: "Orders & kitchen", payments: "Payments & shifts", menu: "Menu" },
+    groups: { queue: "Queue", bookings: "Bookings", orders: "Orders & kitchen", payments: "Payments & shifts", menu: "Menu", inventory: "Inventory" },
     eventNames: {
       queue_joined: "Guest joined the queue",
       queue_called: "Guest called",
@@ -74,6 +74,7 @@ export const en = {
       menu_sold_out: "Dish sold out",
       menu_back_in_stock: "Dish back in stock",
       menu_item_saved: "Dish added or changed",
+      inventory_low: "Ingredient running low",
       webhook_ping: "Test",
     },
   },
@@ -156,7 +157,7 @@ export const zh: Widen<typeof en> = {
     attempts: { one: "{count} 次尝试", other: "{count} 次尝试" },
     nextTry: "下次重试 {when}",
     status: { delivered: "已送达", pending: "重试中", failed: "失败" },
-    groups: { queue: "排队", bookings: "订位", orders: "订单与厨房", payments: "付款与交班", menu: "菜单" },
+    groups: { queue: "排队", bookings: "订位", orders: "订单与厨房", payments: "付款与交班", menu: "菜单", inventory: "库存" },
     eventNames: {
       queue_joined: "客人加入排队",
       queue_called: "叫号",
@@ -176,6 +177,7 @@ export const zh: Widen<typeof en> = {
       menu_sold_out: "菜品售罄",
       menu_back_in_stock: "菜品恢复供应",
       menu_item_saved: "菜品新增或修改",
+      inventory_low: "食材库存偏低",
       webhook_ping: "测试",
     },
   },

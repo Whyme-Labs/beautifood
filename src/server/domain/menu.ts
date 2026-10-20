@@ -363,7 +363,8 @@ export async function setAvailability(db: D1Database, tenantId: string, branchId
   if (!exists) notFound("Item");
   await new Tx(db, { tenantId, branchId, actor })
     .run(
-      "INSERT INTO item_availability (branch_id, item_id, sold_out) VALUES (?, ?, ?) ON CONFLICT(branch_id, item_id) DO UPDATE SET sold_out = excluded.sold_out",
+      // staff's own call: inventory won't undo it (src/server/domain/inventory.ts)
+      "INSERT INTO item_availability (branch_id, item_id, sold_out, by_inventory) VALUES (?, ?, ?, 0) ON CONFLICT(branch_id, item_id) DO UPDATE SET sold_out = excluded.sold_out, by_inventory = 0",
       branchId,
       itemId,
       soldOut ? 1 : 0,

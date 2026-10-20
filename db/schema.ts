@@ -444,6 +444,8 @@ export const itemAvailability = sqliteTable(
     branchId: text("branch_id").notNull(),
     itemId: text("item_id").notNull(),
     soldOut: integer("sold_out").notNull().default(0),
+    /** 1 when inventory marked it sold out (an ingredient ran out), so restocking may clear it; a manager's own flag stays 0. */
+    byInventory: integer("by_inventory").notNull().default(0),
   },
   (t) => [primaryKey({ columns: [t.branchId, t.itemId] })],
 );
@@ -730,4 +732,78 @@ export const receiptSettings = sqliteTable(
     updatedAt: integer("updated_at").notNull(),
   },
   (t) => [primaryKey({ columns: [t.tenantId, t.branchId] })],
+);
+
+// ── inventory (src/shared/inventory.ts) ─────────────────────────────────────
+// Quantities are integer thousandths of the ingredient's unit (1.5 kg = 1500), so stock adds up exactly.
+
+/** What the kitchen buys and counts: per restaurant, in one fixed unit. */
+export const ingredients = sqliteTable(
+  "ingredients",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id").notNull(),
+    name: text("name").notNull(),
+    nameZh: text("name_zh").notNull().default(""),
+    /** g | kg | ml | l | pcs */
+    unit: text("unit").notNull(),
+    /** Cost of one unit in minor units, when known. */
+    cost: integer("cost"),
+    /** 0 once removed: kept for the stock ledger's history. */
+    active: integer("active").notNull().default(1),
+    createdAt: integer("created_at").notNull(),
+  },
+  (t) => [index("ingredients_tenant").on(t.tenantId, t.active)],
+);
+
+/** A dish's recipe: how much of each ingredient one serving uses. */
+export const recipeLines = sqliteTable(
+  "recipe_lines",
+  {
+    tenantId: text("tenant_id").notNull(),
+    itemId: text("item_id").notNull(),
+    ingredientId: text("ingredient_id").notNull(),
+    qty: integer("qty").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.itemId, t.ingredientId] }), index("recipe_lines_ingredient").on(t.ingredientId)],
+);
+
+/** On-hand stock per branch: the projection of stock_movements. A branch tracks an ingredient once it has a row. */
+export const inventoryStock = sqliteTable(
+  "inventory_stock",
+  {
+    branchId: text("branch_id").notNull(),
+    ingredientId: text("ingredient_id").notNull(),
+    tenantId: text("tenant_id").notNull(),
+    /** May go below zero: a sale is never blocked by stock the system doesn't know about. */
+    onHand: integer("on_hand").notNull().default(0),
+    /** At or below this, the ingredient is low (inventory.low fires on the way down). */
+    lowAt: integer("low_at").notNull().default(0),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.branchId, t.ingredientId] })],
+);
+
+/** The stock ledger, append-only: every delivery, use, return, wastage, adjustment and count. */
+export const stockMovements = sqliteTable(
+  "stock_movements",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id").notNull(),
+    branchId: text("branch_id").notNull(),
+    ingredientId: text("ingredient_id").notNull(),
+    /** received | used | returned | wastage | adjusted | counted */
+    kind: text("kind").notNull(),
+    delta: integer("delta").notNull(),
+    /** On hand right after this movement. */
+    onHand: integer("on_hand").notNull(),
+    reason: text("reason").notNull().default(""),
+    /** The order item, for used / returned. */
+    ref: text("ref"),
+    /** What a delivery cost in total, in minor units. */
+    cost: integer("cost"),
+    actor: text("actor"),
+    at: integer("at").notNull(),
+  },
+  (t) => [index("stock_movements_branch").on(t.branchId, t.at), index("stock_movements_ref").on(t.ref)],
 );

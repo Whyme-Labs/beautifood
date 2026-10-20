@@ -102,6 +102,7 @@ A seated table gets a **session**. Everyone who scans the table QR or follows th
   - Two phones pressing send at once: one fires the round, the other gets `already_sent`.
   - A retried send is idempotent.
 - **Rounds:** each send becomes a numbered round on the table's single bill and fires to the KDS. A preorder from the queue or a booking is **held** and fires when the party is seated or checked in.
+- **Stock:** the same batch that adds a round writes one `stock_movements` row per line and ingredient of its recipe (only for ingredients the branch tracks) and updates `inventory_stock`; a void puts back what those lines used. Stock never refuses a sale and may go below zero. Still in that batch, conditional statements decide what the change means against the state it just wrote: `inventory.low` when an ingredient went down through its low mark, and dishes whose ingredient just ran out are sold out at that branch with `item_availability.by_inventory = 1`. Restocking clears only those flags, so a manager's own sold-out stays. See `src/server/domain/inventory.ts`.
 
 ## 5. Tables: merge, split, transfer
 

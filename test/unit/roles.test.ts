@@ -26,6 +26,13 @@ describe("reading a role description", () => {
     expect(r.perms).toEqual(expect.arrayContaining(["report.view", "report.view_all", "staff.manage"]));
   });
 
+  it("tells taking in stock from running inventory", () => {
+    const store = readDescription("Storekeeper: takes in deliveries and records wastage, but can't change recipes");
+    expect(store.perms).toContain("inventory.stock");
+    expect(store.perms).not.toContain("inventory.manage");
+    expect(readDescription("负责进货和报损，也做盘点").perms).toEqual(expect.arrayContaining(["inventory.stock", "inventory.manage"]));
+  });
+
   it("names the nearest built-in role and the difference", () => {
     const perms: Permission[] = [...ROLE_PERMISSIONS.cashier, "payment.refund", "order.void"];
     expect(closestBuiltIn(perms)).toMatchObject({ role: "cashier", adds: ["order.void", "payment.refund"], removes: [] });
