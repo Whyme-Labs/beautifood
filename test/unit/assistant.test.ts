@@ -39,3 +39,20 @@ describe("the free menu assistant in Malay and Manglish", () => {
     expect(answerLocally(ctx, "what is ais kacang?", "en").items[0]?.name).toBe("Ais Kacang");
   });
 });
+
+describe("the free engine against the guest promises", () => {
+  it("passes every safety case, and the plain asks", async () => {
+    const { EVAL_CASES, score, sampleDishes } = await import("../../src/shared/assistantEval");
+    const dishes = sampleDishes();
+    const c2 = { ...ctx, items: dishes.map((d, n) => ({ ...d, categoryId: d.category, imageUrl: null, story: "", tags: [], modifiers: [], active: true, sort: n, soldOut: false, popularity: 0 })) } as unknown as AssistantContext;
+    const s = score(
+      EVAL_CASES.map((c) => {
+        const r = answerLocally(c2, c.question, c.lang);
+        return { c, r: { answer: r.answer, safetyNote: r.safetyNote, dishes: r.items.map((x) => dishes.find((d) => d.id === x.id)!).filter(Boolean) } };
+      }),
+    );
+    expect(s.unsafe).toEqual([]);
+    // conversational asks (vague, pairing, group, follow-up, compare) are what a model is for
+    expect(s.passed).toBeGreaterThanOrEqual(17);
+  });
+});
