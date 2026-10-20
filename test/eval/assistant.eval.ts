@@ -66,10 +66,13 @@ it("scores the models", async () => {
     for (const x of a.results) console.log(`${x.pass ? "PASS" : "FAIL"} [${x.kind}] ${x.question}\n      → ${x.answer.replace(/\s+/g, " ").slice(0, 160)}`);
     if (errors.length) console.log("errors:", errors.slice(0, 5));
   }
+  const unreachable = out.filter((m) => (m.errors as string[]).length === EVAL_CASES.length).map((m) => m.model);
+  if (unreachable.length) console.log(`\nNo answers at all from: ${unreachable.join(", ")} (check the token has Workers AI permission)`);
   const engine = score(EVAL_CASES.map((c) => ({ c, r: toEval(answerLocally(ctx, c.question, c.lang)) })));
   md.push(`| rules engine only (free) | — | ${engine.passed}/${engine.total} | — / ${engine.unsafe.length} | 0.0 | $0 |`);
   mkdirSync("test-results", { recursive: true });
   writeFileSync("test-results/assistant-eval.json", JSON.stringify({ at: new Date().toISOString(), engine, models: out }, null, 2));
   console.log(`\n${md.join("\n")}`);
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Guest assistant: how smart is each model?\n\n${md.join("\n")}\n`);
+  if (unreachable.length === models.length) throw new Error(`No model answered: ${(out[0]?.errors as string[] | undefined)?.[0] ?? "unknown error"}`);
 });
