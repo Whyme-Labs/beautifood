@@ -169,3 +169,32 @@ test.describe("QR, receipts and role-aware console (browser)", () => {
     await expect(page.getByTestId("menu-item").filter({ hasText: "Rojak" }).getByRole("button", { name: "In stock" })).toBeVisible();
   });
 });
+
+test.describe("on-device AI lab (browser)", () => {
+  test("shows what the device supports and downloads nothing until asked", async ({ page }) => {
+    const external: string[] = [];
+    page.on("request", (r) => {
+      const host = new URL(r.url()).hostname;
+      if (/(^|\.)(esm\.run|jsdelivr\.net|huggingface\.co|hf\.co|githubusercontent\.com)$/.test(host)) external.push(r.url());
+    });
+    await open(page, "/lab/on-device");
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+    const caps = page.getByTestId("lab-caps");
+    await expect(caps).toContainText("WebGPU");
+    await expect(caps).toContainText("Cross-origin isolated");
+    await expect(caps).toContainText("SIMD");
+    await expect(caps.getByText("checking…")).toHaveCount(0);
+    await expect(page.getByTestId("lab-verdict").locator(".badge")).toHaveCount(3);
+    // the smallest model is picked, and its size is shown before anything downloads
+    await expect(page.getByRole("radio", { name: /LFM2\.5 350M/ })).toBeChecked();
+    await expect(page.getByTestId("lab-size")).toContainText("MB");
+    await expect(page.getByTestId("lab-download")).toContainText("Download & test");
+    await page.waitForLoadState("networkidle");
+    expect(external).toEqual([]);
+    if (process.env.SHOTS) {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.screenshot({ path: `${process.env.SHOTS}/lab-phone.png`, fullPage: true });
+      await page.setViewportSize({ width: 1280, height: 720 });
+    }
+  });
+});
