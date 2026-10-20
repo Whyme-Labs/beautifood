@@ -104,7 +104,7 @@ pnpm core   # cargo build --target wasm32-unknown-unknown + wasm-bindgen → src
 
 Pushes to the default branch deploy through GitHub Actions on Blacksmith runners (`.github/workflows/ci.yml`): tests first, then `void deploy --platform cloudflare`, a smoke test, and a commit of `void.lock.json`. The job needs two repository secrets, `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, and optionally a `MAIL_FROM` variable.
 
-Resources use explicit names (Worker `beautifood-app`, D1 `beautifood-app-db`, queue `beautifood-app-broadcasts`), and the workflow refuses to deploy over a database or Worker that isn't this app's. `PUBLIC_URL` is set from the deployed URL.
+Resources use explicit names (Worker `beautifood-app`, D1 `beautifood-app-db`, queue `beautifood-app-broadcasts`), and the workflow refuses to deploy over a database or Worker that isn't this app's. The app is served on `APP_DOMAIN` (a repository variable, default `app.beautifood.io`) as a Workers Custom Domain, so Cloudflare keeps its DNS record and certificate; `PUBLIC_URL` points there. The name must have no other DNS record the first time (`.github/workflows/app-domain.yml` reports what holds it).
 
 To deploy by hand:
 

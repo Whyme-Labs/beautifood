@@ -15,8 +15,12 @@ const NAME = "beautifood-app";
 // on this account, with a proxied wildcard DNS record) routes <slug>.<domain> here. CUSTOM_DOMAINS_ZONE
 // is the Cloudflare for SaaS zone whose custom hostnames (restaurants' own domains) this Worker serves.
 const storefrontDomain = process.env.STOREFRONT_DOMAIN?.trim();
+// APP_DOMAIN (e.g. app.beautifood.io) is the app's own address, a Workers Custom Domain:
+// Cloudflare keeps its DNS record and certificate. Its zone must be on this account.
+const appDomain = process.env.APP_DOMAIN?.trim();
 const saasZone = process.env.CUSTOM_DOMAINS_ZONE?.trim();
 const routes = [
+  ...(appDomain ? [{ pattern: appDomain, custom_domain: true }] : []),
   ...(storefrontDomain ? [{ pattern: `*.${storefrontDomain}/*`, zone_name: storefrontDomain }] : []),
   ...(saasZone ? [{ pattern: "*/*", zone_name: saasZone }] : []),
 ];
@@ -50,7 +54,7 @@ export default defineConfig({
   cloudflare: {
     name: NAME,
     // Declared so deploys never have to guess the Worker's public surface:
-    // served on <name>.<subdomain>.workers.dev, no per-version preview URLs, and only the storefront routes above.
+    // served on <name>.<subdomain>.workers.dev and the routes above (the app's domain, storefront hosts), no per-version preview URLs.
     workers_dev: true,
     preview_urls: false,
     routes,

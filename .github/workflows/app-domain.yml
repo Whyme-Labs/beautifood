@@ -4,7 +4,8 @@ name: App domain
 # Cloudflare manages the DNS record and issues the certificate. Run it with "attach" off first
 # to see what holds the name today; with it on, it removes the name's old DNS records, attaches
 # it to beautifood-app and points the app's links at it. It refuses when another Worker holds
-# the name. Deploys keep the domain (void.config.ts) and use it as PUBLIC_URL (ci.yml).
+# the name. Normally the deploy attaches APP_DOMAIN itself (void.config.ts, ci.yml); this job is
+# for seeing what's in the way, or attaching by hand.
 #
 # The repository's default branch isn't main, so manual runs may not be offered; a push to main
 # that changes this file runs it too, with ATTACH below deciding whether it only reports.

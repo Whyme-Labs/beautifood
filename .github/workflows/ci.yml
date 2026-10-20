@@ -62,7 +62,7 @@ jobs:
     timeout-minutes: 20
     environment:
       name: production
-      url: ${{ steps.url.outputs.url }}
+      url: ${{ steps.url.outputs.public }}
     permissions:
       contents: write # commit void.lock.json after the first deploy
     env:
@@ -72,6 +72,8 @@ jobs:
       MAIL_FROM: ${{ vars.MAIL_FROM || 'Beautifood <noreply@beautifood.io>' }}
       # Bind Workers AI so menus translate without an Anthropic key.
       BEAUTIFOOD_WORKERS_AI: "1"
+      # The app's own address (a Workers Custom Domain, see void.config.ts); links point at it.
+      APP_DOMAIN: ${{ vars.APP_DOMAIN || 'app.beautifood.io' }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -136,14 +138,17 @@ jobs:
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | grep -v -- '-[0-9a-f]\{8\}\.' | head -1)
           if [ -z "$url" ]; then url="https://beautifood-app.${{ steps.sub.outputs.subdomain }}.workers.dev"; fi
           echo "url=$url" >> "$GITHUB_OUTPUT"
-          echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
+          public=$url
+          if [ -n "$APP_DOMAIN" ]; then public="https://$APP_DOMAIN"; fi
+          echo "public=$public" >> "$GITHUB_OUTPUT"
+          echo "Deployed to $public ($url)" >> "$GITHUB_STEP_SUMMARY"
       - name: Point links at the public URL
         # PUBLIC_URL is what emails, pushes and QR codes link to. Set it once as a Worker secret
         # (Void keeps existing remote secrets on later deploys).
         run: |
           curl -fsS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/beautifood-app/secrets" \
-            -d "$(jq -n --arg v "${{ steps.url.outputs.url }}" '{name:"PUBLIC_URL", text:$v, type:"secret_text"}')" | jq -c '{success, errors}'
+            -d "$(jq -n --arg v "${{ steps.url.outputs.public }}" '{name:"PUBLIC_URL", text:$v, type:"secret_text"}')" | jq -c '{success, errors}'
       - name: Smoke test
         run: |
           for i in $(seq 1 20); do
@@ -153,6 +158,16 @@ jobs:
           curl -fsS "${{ steps.url.outputs.url }}/api/health"
           # dev tools must be off in production
           test "$(curl -s -o /dev/null -w '%{http_code}' "${{ steps.url.outputs.url }}/api/dev/inbox")" = "404"
+      - name: App domain answers
+        if: env.APP_DOMAIN != ''
+        # A new custom domain's certificate takes a few minutes the first time.
+        run: |
+          for i in $(seq 1 40); do
+            if curl -fsS -m 10 "https://$APP_DOMAIN/api/health" 2>/dev/null | grep -q '"ok":true'; then echo "https://$APP_DOMAIN is live"; exit 0; fi
+            sleep 15
+          done
+          echo "::warning::https://$APP_DOMAIN isn't answering yet (certificate still issuing?); links already point at it"
+          curl -sS -m 10 -o /dev/null -w "%{http_code}\n" "https://$APP_DOMAIN/api/health" || true
       - name: Commit lock file
         if: always() && steps.deploy.outcome == 'success'
         run: |
