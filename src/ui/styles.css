@@ -944,6 +944,12 @@ tbody tr:last-child td { border-bottom: 0; }
 
 /* storefront editor */
 .sf-editor { display: grid; gap: 18px; align-items: start; }
+.sf-domain { gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.sf-records { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.4fr); gap: 2px 12px; font-size: 13px; }
+.sf-record { display: contents; }
+.sf-record.head span { color: var(--ink-2); font-weight: 650; font-size: 12px; }
+.sf-record code { overflow-wrap: anywhere; font-size: 12.5px; }
+@media (max-width: 560px) { .sf-records { grid-template-columns: 1fr; } .sf-record.head { display: none; } .sf-record span:first-child { margin-top: 8px; } }
 @media (min-width: 1100px) { .sf-editor { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); } .sf-preview-col { position: sticky; top: 112px; } }
 .sf-preview-col { display: flex; flex-direction: column; gap: 10px; }
 .sf-preview { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--ground-2); height: min(78vh, 900px); }

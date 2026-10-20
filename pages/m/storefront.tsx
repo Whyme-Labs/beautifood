@@ -1,6 +1,6 @@
 // Storefront editor: describe the look and the AI designs it; refine by asking again, or adjust the
 // colours, fonts, layout, sections and words by hand. The preview is the real page with live data.
-// Edits save to a draft; Publish puts it live at /at/<slug>.
+// Edits save to a draft; Publish puts it live at /at/<slug>, the restaurant's subdomain and its own domains.
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Eye, EyeOff, Monitor, Rocket, Smartphone, Sparkles } from "lucide-react";
 import { api } from "../../src/ui/api";
@@ -10,6 +10,7 @@ import { useI18n } from "../../src/i18n/react";
 import type { MessageKey } from "../../src/i18n/core";
 import { FONT_IDS, PRESETS, readable, contrast, type Storefront } from "../../src/shared/storefront";
 import { StorefrontView, type StorefrontPayload } from "../../src/ui/storefront";
+import { StorefrontDomains } from "../../src/ui/storefrontDomains";
 
 interface State {
   draft: Storefront;
@@ -17,6 +18,7 @@ interface State {
   updatedAt: number | null;
   publishedAt: number | null;
   data: StorefrontPayload & { restaurant: { slug: string } };
+  url: string;
 }
 
 const COLOR_KEYS = ["bg", "surface", "ink", "accent", "accentInk"] as const;
@@ -72,7 +74,7 @@ export default function StorefrontEditor() {
       const r = await api<Omit<State, "data">>("/api/m/storefront/publish", { method: "POST" });
       setSt({ ...st, ...r });
     }, t("staff.storefront.published"));
-  const live = `/at/${st.data.restaurant.slug}`;
+  const live = st.url || `/at/${st.data.restaurant.slug}`;
   const changed = JSON.stringify(st.published) !== JSON.stringify(d);
   const weak = contrast(d.theme.ink, d.theme.bg) < 4.5 || contrast(d.theme.accentInk, d.theme.accent) < 4.5;
   return (
@@ -81,7 +83,7 @@ export default function StorefrontEditor() {
         <div>
           <h1>{t("staff.storefront.title")}</h1>
           <p className="muted" style={{ margin: "4px 0 0" }}>
-            {t("staff.storefront.lead")} <a href={live} target="_blank" rel="noreferrer">{location.host}{live}</a>
+            {t("staff.storefront.lead")} <a href={live} target="_blank" rel="noreferrer">{live.replace(/^https?:\/\//, "")}</a>
           </p>
         </div>
         <div className="row">
@@ -238,6 +240,8 @@ export default function StorefrontEditor() {
               <span className="hint">{t("staff.storefront.galleryHint")}</span>
             </label>
           </section>
+
+          <StorefrontDomains tenantId={s.tenant?.id} />
         </div>
 
         <div className="sf-preview-col">

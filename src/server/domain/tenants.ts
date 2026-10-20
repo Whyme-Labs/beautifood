@@ -3,6 +3,7 @@ import { canGrant, isTenantWide } from "../../shared/rbac";
 import { resolveRole } from "./roles";
 import { DEFAULT_BRANCH_CONFIG, type BranchConfig, type Role } from "../../shared/types";
 import { fail, notFound } from "../errors";
+import { RESERVED_LABELS } from "../../shared/domains";
 import { newId, randomToken, shortCode, slugify } from "../ids";
 import { Tx } from "../tx";
 import { branchConfig, invalidateBranch, streams, type BranchCtx } from "./context";
@@ -19,21 +20,28 @@ export interface TenantInput {
   address?: string;
 }
 
+/** A slug that works as a subdomain: no outer hyphens, and never one of the platform's own names. */
+function siteSlug(s: string) {
+  const slug = slugify(s).replace(/^-+|-+$/g, "") || "restaurant";
+  return RESERVED_LABELS.has(slug) ? `${slug}-eats` : slug;
+}
+
 async function uniqueSlug(db: D1Database, base: string) {
-  let slug = slugify(base);
+  let slug = siteSlug(base);
   for (let i = 0; i < 5; i++) {
     const hit = await db.prepare("SELECT 1 FROM tenants WHERE slug = ?").bind(slug).first();
     if (!hit) return slug;
-    slug = `${slugify(base)}-${shortCode(3).toLowerCase()}`;
+    slug = `${siteSlug(base)}-${shortCode(3).toLowerCase()}`;
   }
-  return `${slugify(base)}-${randomToken(4).toLowerCase()}`;
+  return `${siteSlug(base)}-${randomToken(4).toLowerCase()}`;
 }
 
 /** Self-serve signup: create the restaurant, its first branch, and make the creator the owner. */
 export async function createTenant(db: D1Database, user: { id: string; email: string; name: string }, input: TenantInput) {
   const tenantId = newId("tn_");
   const branchId = newId("br_");
-  const slug = input.slug ? slugify(input.slug) : await uniqueSlug(db, input.name);
+  const slug = input.slug ? slugify(input.slug).replace(/^-+|-+$/g, "") : await uniqueSlug(db, input.name);
+  if (input.slug && (!slug || RESERVED_LABELS.has(slug))) fail(400, "slug_reserved", "That web address is reserved. Try another.");
   const now = Date.now();
   const tx = new Tx(db, { tenantId, branchId, actor: user.id });
   tx.assert("NOT EXISTS (SELECT 1 FROM tenants WHERE slug = ?)", [slug], 409, "slug_taken", "That web address is taken");

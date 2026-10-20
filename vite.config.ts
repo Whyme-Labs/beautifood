@@ -32,6 +32,9 @@ export default defineConfig({
   // Sender address for Cloudflare Email Sending (see src/shared/mail.ts); empty = email off.
   define: { __MAIL_FROM__: JSON.stringify(process.env.MAIL_FROM?.trim() ?? "") },
   resolve: { dedupe: ["react", "react-dom"] },
+  // End-to-end runs ask for restaurants' storefront hosts (src/shared/domains.ts) by Host header.
+  // Local dev needs nothing: <slug>.localhost is allowed already (set STOREFRONT_DOMAIN=localhost).
+  ...(process.env.APP_ENV === "test" ? { preview: { allowedHosts: true as const } } : {}),
   optimizeDeps: { include: [...REACT_DEPS, "qrcode"] },
   environments: {
     void_worker: { optimizeDeps: { include: REACT_DEPS } },

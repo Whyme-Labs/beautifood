@@ -45,4 +45,28 @@ test.describe("QR, receipts and role-aware console (browser)", () => {
     for (const hidden of ["Team", "Reports", "Settings", "Menu", "Loyalty & promos"]) await expect(nav.getByRole("link", { name: hidden, exact: true })).toHaveCount(0);
     await expect(page.getByTestId("branch-select")).not.toContainText("Bangsar");
   });
+
+  test("an owner connects their own web address from the storefront editor", async ({ page }) => {
+    const s = await seed();
+    const host = `www.${uid("ui").toLowerCase().replace(/[^a-z0-9]/g, "")}.com`;
+    await open(page, "/m/login");
+    await page.getByLabel("Email").fill(s.ownerEmail);
+    await page.getByLabel("Password").fill("password-123456");
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.waitForURL(/\/m$/);
+    await open(page, "/m/storefront");
+    const card = page.getByTestId("sf-domains");
+    await expect(card).toContainText(`${s.slug}.stores.test`);
+    await card.getByTestId("sf-domain-input").fill(host);
+    await card.getByTestId("sf-domain-add").click();
+    const row = card.getByTestId("sf-domain");
+    await expect(row).toHaveAttribute("data-status", "pending");
+    await expect(row).toContainText("CNAME");
+    await expect(row).toContainText("Waiting for DNS");
+    if (process.env.SHOTS) await card.screenshot({ path: `${process.env.SHOTS}/domains-pending.png` });
+    await row.getByRole("button", { name: "Check now" }).click();
+    await expect(row).toHaveAttribute("data-status", "active");
+    await expect(row.getByRole("link", { name: host })).toBeVisible();
+    if (process.env.SHOTS) await card.screenshot({ path: `${process.env.SHOTS}/domains-live.png` });
+  });
 });

@@ -10,7 +10,7 @@ A restaurant platform covering walk-in queues, ordering and the front of house. 
 - Order with friends from a shared cart: scan the table QR (static or dynamic) and each diner adds from their own phone.
 - Book a table with a preorder, collect and redeem loyalty points, and receive e-receipts.
 - Ask an AI menu assistant about signatures, allergens, a dish's story, budget or diet.
-- See what's served now (breakfast, lunch, a branch's supper menu) and happy-hour prices, on the restaurant's own storefront page at `/at/<restaurant>`.
+- See what's served now (breakfast, lunch, a branch's supper menu) and happy-hour prices, on the restaurant's own storefront page at `/at/<restaurant>`, its subdomain, or its own domain.
 
 **For merchants**
 - Host stand that suggests seatings with reasons, including merge and split, with a fairness bound.
@@ -66,6 +66,8 @@ Put these in `.env`; never commit it.
 | `BETTER_AUTH_SECRET` | Signs sessions. `void deploy` generates one for you |
 | `TOKEN_SECRET` | Signs guest links (tickets, carts, receipts). Optional: derived from `BETTER_AUTH_SECRET` when unset; 32+ characters if you set it |
 | `MAIL_FROM` | Build-time sender, e.g. `Beautifood <noreply@your-domain>` |
+| `STOREFRONT_DOMAIN` | Storefronts on `<restaurant>.<this>`. Locally, `localhost` makes `http://<restaurant>.localhost:5173` work |
+| `CUSTOM_DOMAINS_ZONE_ID`, `CUSTOM_DOMAINS_API_TOKEN`, `CUSTOM_DOMAIN_TARGET` | Restaurants' own domains through Cloudflare for SaaS (see [Storefront web addresses](#storefront-web-addresses)). Without them, development uses a stand-in and production hides the option |
 
 ## Email
 
@@ -111,3 +113,22 @@ npx void deploy --platform cloudflare
 ```
 
 Void builds the Worker and provisions what the project declares: D1, the broadcasts queue, the 1-minute cron, Workers AI (with `BEAUTIFOOD_WORKERS_AI=1`) and Cloudflare Email Sending. `APP_ENV` defaults to `production`.
+
+### Storefront web addresses
+
+Every restaurant has its page at `/at/<restaurant>`. Two more addresses are opt-in:
+
+**Subdomains** (`ah-seng.beautifood.store`). Pick a domain whose zone is on the same Cloudflare account and:
+
+1. Add a proxied wildcard DNS record, `*` → `192.0.2.1` (an `A` record; the Worker answers, the address is never contacted).
+2. Deploy with `STOREFRONT_DOMAIN=beautifood.store` in the environment, so `void.config.ts` adds the `*.beautifood.store/*` route, and set the same value as a Worker variable.
+
+Restaurant slugs that aren't a single DNS label, or that are reserved (`www`, `api`, `app` and the like), don't get a subdomain; new restaurants can't take reserved names.
+
+**Their own domains** (`www.ahseng.com.my`), through [Cloudflare for SaaS](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/):
+
+1. On a zone you own (it can be the storefront domain), enable Cloudflare for SaaS and set a fallback origin, e.g. `stores.beautifood.store` (a proxied `A` record to `192.0.2.1`).
+2. Deploy with `CUSTOM_DOMAINS_ZONE=<that zone's name>` in the environment, so `void.config.ts` adds a `*/*` route on it and every custom hostname reaches the Worker.
+3. Set the Worker's `CUSTOM_DOMAINS_ZONE_ID`, `CUSTOM_DOMAIN_TARGET` (the fallback origin) and, as a secret, `CUSTOM_DOMAINS_API_TOKEN`: an API token for that zone with *SSL and Certificates: Edit*.
+
+A restaurant then types its address under **Storefront → Web address**, adds the `CNAME` it's shown at its DNS provider, and the page goes live once Cloudflare has checked it and issued the certificate (re-checked every minute for the first hour, then every 15 minutes). On a storefront host, `/` is the storefront, ordering and booking pages work as usual, and the staff console and sign-in redirect to the app's own address.

@@ -643,6 +643,25 @@ export const storefronts = sqliteTable("storefronts", {
   publishedAt: integer("published_at"),
 });
 
+/** A restaurant's own web address for its storefront (shared/domains.ts), via Cloudflare for SaaS. */
+export const customDomains = sqliteTable(
+  "custom_domains",
+  {
+    hostname: text("hostname").primaryKey(),
+    tenantId: text("tenant_id").notNull(),
+    /** pending | active | failed */
+    status: text("status").notNull().default("pending"),
+    /** Cloudflare's custom hostname id. */
+    providerId: text("provider_id").notNull().default(""),
+    /** DnsRecord[] to show the restaurant. */
+    records: text("records").notNull().default("[]"),
+    detail: text("detail").notNull().default(""),
+    createdAt: integer("created_at").notNull(),
+    checkedAt: integer("checked_at"),
+  },
+  (t) => [index("custom_domains_tenant").on(t.tenantId), index("custom_domains_status").on(t.status, t.checkedAt)],
+);
+
 export const consumerCursors = sqliteTable("consumer_cursors", {
   name: text("name").primaryKey(),
   lastId: integer("last_id").notNull().default(0),

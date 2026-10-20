@@ -11,6 +11,16 @@ const mailFrom = process.env.MAIL_FROM?.trim();
 // path (queues/beautifood-app/broadcasts.ts → "beautifood-app-broadcasts").
 const NAME = "beautifood-app";
 
+// Storefront hosts (src/shared/domains.ts), both opt-in at deploy time. STOREFRONT_DOMAIN (a zone
+// on this account, with a proxied wildcard DNS record) routes <slug>.<domain> here. CUSTOM_DOMAINS_ZONE
+// is the Cloudflare for SaaS zone whose custom hostnames (restaurants' own domains) this Worker serves.
+const storefrontDomain = process.env.STOREFRONT_DOMAIN?.trim();
+const saasZone = process.env.CUSTOM_DOMAINS_ZONE?.trim();
+const routes = [
+  ...(storefrontDomain ? [{ pattern: `*.${storefrontDomain}/*`, zone_name: storefrontDomain }] : []),
+  ...(saasZone ? [{ pattern: "*/*", zone_name: saasZone }] : []),
+];
+
 export default defineConfig({
   worker: {
     compatibility_date: "2026-09-01",
@@ -40,10 +50,10 @@ export default defineConfig({
   cloudflare: {
     name: NAME,
     // Declared so deploys never have to guess the Worker's public surface:
-    // served on <name>.<subdomain>.workers.dev, no per-version preview URLs, no custom routes.
+    // served on <name>.<subdomain>.workers.dev, no per-version preview URLs, and only the storefront routes above.
     workers_dev: true,
     preview_urls: false,
-    routes: [],
+    routes,
     d1_databases: [{ binding: "DB", database_name: `${NAME}-db` }],
     // Workers AI for menu translation in production (no local simulator, so not in dev/tests).
     ...(process.env.BEAUTIFOOD_WORKERS_AI ? { ai: { binding: "AI" } } : {}),

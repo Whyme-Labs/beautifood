@@ -13,6 +13,12 @@ export default defineEnv({
   VAPID_SUBJECT: string().default("mailto:ops@beautifood.app"),
   /** Better Auth session secret (Void creates it on deploy; set locally for production previews). */
   BETTER_AUTH_SECRET: string().optional(),
+  /** Restaurants' storefronts on <slug>.<this> (e.g. "beautifood.store"). Needs a wildcard DNS record and route to this Worker. */
+  STOREFRONT_DOMAIN: string().optional(),
+  /** Custom domains (Cloudflare for SaaS): the zone holding the fallback origin, an API token with SSL and Certificates: Edit, and the CNAME target restaurants point at. */
+  CUSTOM_DOMAINS_ZONE_ID: string().optional(),
+  CUSTOM_DOMAINS_API_TOKEN: string().optional(),
+  CUSTOM_DOMAIN_TARGET: string().optional(),
   /** Lets a trusted caller (e2e runner) bypass auth rate limits. Never expose to browsers. */
   AUTH_TRUSTED_KEY: string().optional(),
 });
