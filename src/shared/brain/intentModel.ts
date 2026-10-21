@@ -117,23 +117,26 @@ export function forward(m: IntentModel, feats: number[]) {
   const probs = new Float32Array(n);
   for (let c = 0; c < n; c++) sum += probs[c] = Math.exp(logits[c] - max);
   for (let c = 0; c < n; c++) probs[c] /= sum;
-  return { h0, h1, probs };
+  return { h0, h1, logits, probs };
 }
 
 export interface IntentGuess {
   intent: Intent;
   confidence: number;
-  /** Every intent's probability, highest first. */
-  ranked: { intent: Intent; p: number }[];
+  /** Every intent's probability (and its raw logit), highest first. */
+  ranked: { intent: Intent; p: number; logit: number }[];
+  /** The question had no word the model learnt, so it was ruled out of scope whatever the logits said. */
+  rejected: boolean;
 }
 
 export function classify(m: IntentModel, toks: string[]): IntentGuess {
-  const { probs } = forward(m, features(toks, m.buckets));
+  const { probs, logits } = forward(m, features(toks, m.buckets));
   // open-set rejection: nothing in the question is a word the model learnt
-  if (m.vocab && toks.length && !toks.some((t) => t.startsWith("§") || m.vocab!.has(t))) {
+  const rejected = !!m.vocab && toks.length > 0 && !toks.some((t) => t.startsWith("§") || m.vocab!.has(t));
+  if (rejected) {
     const c = m.intents.indexOf("out_of_scope");
     if (c >= 0) probs.fill(0.01).set([0.99 - 0.01 * (m.intents.length - 2)], c);
   }
-  const ranked = [...probs].map((p, c) => ({ intent: m.intents[c] as Intent, p })).sort((a, b) => b.p - a.p);
-  return { intent: ranked[0].intent, confidence: ranked[0].p, ranked };
+  const ranked = [...probs].map((p, c) => ({ intent: m.intents[c] as Intent, p, logit: logits[c] })).sort((a, b) => b.p - a.p);
+  return { intent: ranked[0].intent, confidence: ranked[0].p, ranked, rejected };
 }

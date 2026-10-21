@@ -7,6 +7,8 @@ import { modelTokens, read, understand, type Dish } from "../../src/server/ai/br
 import type { AssistantContext } from "../../src/server/ai/local";
 import { HELD_OUT } from "../../test/unit/brainIntents";
 import { CAFE_MENU, FINAL_CASES } from "../../test/unit/brainFinal";
+import { existsSync } from "node:fs";
+import { loadCases, loadMenu } from "../../bench/run";
 
 const asItems = (dishes: Dish[]) => dishes.map((d, n) => ({ ...d, categoryId: d.category, imageUrl: null, story: "", tags: [], modifiers: [], active: true, sort: n, soldOut: false, popularity: 0 }));
 const hawker = sampleDishes() as unknown as Dish[];
@@ -26,6 +28,11 @@ export function protectedQuestions(): Set<string> {
     ...[...EVAL_CASES, ...MORE_CASES].flatMap((c) => [c.question, ...(c.before ?? []).map((b) => b.question)]).map((q) => asRead(hawker, q)),
     ...HELD_OUT.map(([q]) => asRead(hawker, q)),
     ...FINAL_CASES.flatMap((c) => [c.question, ...(c.before ?? []).map((b) => b.question)]).map((q) => asRead(cafeDishes, q)),
+    // the benchmark, both splits (bench/): never trained on either
+    ...(existsSync(new URL("../../bench/cases", import.meta.url)) ? loadCases("all") : []).flatMap((c) => {
+      const items = loadMenu(c.menu).items as unknown as Dish[];
+      return [c.question, ...(c.before ?? []).map((b) => b.user)].map((q) => asRead(items, q));
+    }),
   ]);
 }
 
