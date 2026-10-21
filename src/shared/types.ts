@@ -237,7 +237,12 @@ export interface Menu {
   menus?: TimedMenu[];
   rules?: PriceRule[];
   /** What is on right now at the branch, and until when ("HH:MM" branch-local). */
-  now?: { menus: { id: string; name: string; until: string | null }[]; deals: { id: string; name: string; until: string | null }[] };
+  now?: {
+    menus: { id: string; name: string; until: string | null }[];
+    deals: { id: string; name: string; until: string | null }[];
+    /** The price rules not on now, and when each next starts (within the coming week). */
+    dealsNext?: { id: string; name: string; weekday: number; time: string; today: boolean }[];
+  };
   /** The restaurant's own dish fields that guests see (values are on each item's `custom`). */
   fields?: { key: string; label: { en: string; zh?: string }; type: "text" | "number" | "boolean" | "select" | "date" | "url" }[];
 }

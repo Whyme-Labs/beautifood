@@ -8,7 +8,31 @@ import Anthropic from "@anthropic-ai/sdk";
 import { ALLERGEN_LABELS, type Allergen } from "../../shared/allergens";
 import { formatMoney } from "../../shared/format";
 import { allergyNote, findItem, type AssistantContext, type AssistantReply } from "./local";
-import { localeInfo } from "../../i18n/core";
+import { catalog, GUIDE, now as nowText } from "./menuInput";
+
+/** Menus up to this many dishes go into the prompt whole (cached); bigger ones are looked up through tools. */
+export const INLINE_MAX = 120;
+
+/**
+ * The cached layout (./menuInput): tools and the guide (the same for every restaurant), then the
+ * branch's catalog (the same for every guest), then the conversation, with NOW in the last turn.
+ * Breakpoints: after the guide, after the catalog, and after the previous turn.
+ */
+export function layout(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale: string) {
+  const inline = ctx.items.length <= INLINE_MAX;
+  const system: Anthropic.Beta.BetaTextBlockParam[] = [
+    { type: "text", text: GUIDE, cache_control: { type: "ephemeral" } },
+    { type: "text", text: inline ? catalog(ctx) : `${catalog({ ...ctx, items: [] })}\nThe dishes are too many to list: look them up with the tools.`, cache_control: { type: "ephemeral" } },
+  ];
+  const turns = history.slice(-10);
+  const messages: Anthropic.Beta.BetaMessageParam[] = turns.map((m, n) => {
+    const last = n === turns.length - 1;
+    if (last) return { role: m.role, content: [{ type: "text", text: nowText(ctx, locale, ctx.clock ?? { weekday: 0, minutes: 0 }) }, { type: "text", text: m.content }] };
+    // the turn before the question: the conversation so far is a cached prefix for the next request
+    return { role: m.role, content: [{ type: "text", text: m.content, ...(n === turns.length - 2 ? { cache_control: { type: "ephemeral" as const } } : {}) }] };
+  });
+  return { system, messages, tools: inline ? [] : MENU_TOOLS };
+}
 
 const FALLBACK_BETA = "server-side-fallback-2026-07-01";
 
@@ -123,19 +147,6 @@ export function runTool(ctx: AssistantContext, name: string, input: unknown, ref
   return JSON.stringify({ error: `Unknown tool ${name}` });
 }
 
-/** The guest assistant's instructions, for every model. */
-export function systemPrompt(ctx: AssistantContext, locale: string): string {
-  return [
-    `You are the friendly menu assistant for ${ctx.restaurant.name}${ctx.restaurant.cuisine ? ` (${ctx.restaurant.cuisine})` : ""}, ${ctx.branchName} branch.`,
-    ctx.restaurant.story ? `About the restaurant: ${ctx.restaurant.story}` : "",
-    "Help guests decide what to eat: recommend signatures, respect dietary needs and budgets, and share the stories behind dishes.",
-    "Use the tools for every fact about dishes, prices and allergens. Never guess an ingredient or allergen; if the data doesn't say, say you don't know and suggest asking staff.",
-    "Keep answers short (2-4 sentences), warm and specific. Mention prices. Only recommend dishes that the tools returned.",
-    `Reply in ${localeInfo(locale).english}, whatever language the menu is in. Name dishes the way the menu data translates them for that language when it has a translation, with the original name in brackets the first time.`,
-  ]
-    .filter(Boolean)
-    .join("\n");
-}
 
 export async function answerWithClaude(
   env: ClaudeEnv,
@@ -148,8 +159,7 @@ export async function answerWithClaude(
   const model = opts.model ?? env.ANTHROPIC_MODEL;
   // Haiku has no server-side fallback, and answers guests faster without thinking
   const small = /haiku/.test(model);
-  const system = systemPrompt(ctx, locale);
-  const messages: Anthropic.Beta.BetaMessageParam[] = history.slice(-10).map((m) => ({ role: m.role, content: m.content }));
+  const { system, messages, tools } = layout(ctx, history, locale);
   const referenced = new Set<string>();
   for (let turn = 0; turn < 6; turn++) {
     const res = await c.beta.messages.create({
@@ -157,8 +167,8 @@ export async function answerWithClaude(
       max_tokens: small ? 1200 : 4000,
       ...(small ? { thinking: { type: "disabled" as const } } : { betas: [FALLBACK_BETA], fallbacks: "default" as const }),
       output_config: { effort: "low" },
-      system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-      tools: MENU_TOOLS,
+      system,
+      ...(tools.length ? { tools } : {}),
       messages,
     });
     opts.onUsage?.({ model, input: (res.usage.input_tokens ?? 0) + (res.usage.cache_read_input_tokens ?? 0) * 0.1 + (res.usage.cache_creation_input_tokens ?? 0) * 1.25, output: res.usage.output_tokens ?? 0 });

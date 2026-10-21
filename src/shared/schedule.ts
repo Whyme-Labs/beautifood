@@ -10,6 +10,12 @@ export interface Window {
   days: number[];
   from: string;
   to: string;
+  /**
+   * A season or a promotion's dates, inclusive, "YYYY-MM-DD" branch-local: the window only runs
+   * between them (Durian season 1 Oct – 30 Nov, a Raya promo). Either may be left open.
+   */
+  start?: string;
+  end?: string;
 }
 
 export interface TimedMenu {
@@ -43,6 +49,8 @@ export interface Clock {
   weekday: number;
   /** Minutes since local midnight. */
   minutes: number;
+  /** The local date, "YYYY-MM-DD": windows with dates only run between them. Without it, dates are ignored. */
+  date?: string;
 }
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -53,7 +61,8 @@ const MINUTES_PER_WEEK = 7 * MINUTES_PER_DAY;
 export function clockAt(at: number, timezone: string): Clock {
   const parts = new Intl.DateTimeFormat("en-US", { timeZone: timezone, weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(at));
   const g = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-  return { weekday: WEEKDAYS.indexOf(g("weekday")), minutes: (Number(g("hour")) % 24) * 60 + Number(g("minute")) };
+  const d = new Intl.DateTimeFormat("en-CA", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(at));
+  return { weekday: WEEKDAYS.indexOf(g("weekday")), minutes: (Number(g("hour")) % 24) * 60 + Number(g("minute")), date: d };
 }
 
 export const toMinutes = (hhmm: string) => {
@@ -72,17 +81,32 @@ function spans(w: Window): [number, number][] {
 
 const weekMinute = (c: Clock) => c.weekday * MINUTES_PER_DAY + c.minutes;
 
+/** "YYYY-MM-DD" plus n days. */
+const addDays = (date: string, n: number) => new Date(Date.parse(`${date}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
+
+/** The windows whose dates allow `date` (+ up to `ahead` days): all of them when the clock has no date. */
+const dated = (windows: Window[], c: Clock, ahead = 0) =>
+  c.date ? windows.filter((w) => (!w.end || w.end >= c.date!) && (!w.start || w.start <= addDays(c.date!, ahead))) : windows;
+
 /** Is any window on at this time? */
 export function isOn(windows: Window[], c: Clock): boolean {
   const t = weekMinute(c);
-  return windows.some((w) => spans(w).some(([s, e]) => (t >= s && t < e) || (t + MINUTES_PER_WEEK >= s && t + MINUTES_PER_WEEK < e)));
+  return dated(windows, c, 0).some((w) => spans(w).some(([s, e]) => (t >= s && t < e) || (t + MINUTES_PER_WEEK >= s && t + MINUTES_PER_WEEK < e)));
 }
 
 /** When the windows next start, within the coming week: the weekday and "HH:MM", and whether it is today. */
 export function nextStart(windows: Window[], c: Clock): { weekday: number; time: string; today: boolean } | null {
   const t = weekMinute(c);
   let best = Infinity;
-  for (const w of windows) for (const [s] of spans(w)) for (const cand of [s, s + MINUTES_PER_WEEK]) if (cand > t && cand < best) best = cand;
+  for (const w of dated(windows, c, 6))
+    for (const [s] of spans(w))
+      for (const cand of [s, s + MINUTES_PER_WEEK]) {
+        if (cand <= t || cand >= best) continue;
+        // a season that starts in a few days: its first day, not an earlier weekday
+        const day = c.date ? addDays(c.date, Math.floor((cand - t + c.minutes) / MINUTES_PER_DAY)) : null;
+        if (day && ((w.start && day < w.start) || (w.end && day > w.end))) continue;
+        best = cand;
+      }
   if (best === Infinity) return null;
   const m = best % MINUTES_PER_WEEK;
   const weekday = Math.floor(m / MINUTES_PER_DAY);
@@ -93,7 +117,7 @@ export function nextStart(windows: Window[], c: Clock): { weekday: number; time:
 export function endsAt(windows: Window[], c: Clock): string | null {
   const t = weekMinute(c);
   let end = -1;
-  for (const w of windows)
+  for (const w of dated(windows, c, 0))
     for (const [s, e] of spans(w)) {
       if (t >= s && t < e) end = Math.max(end, e);
       if (t + MINUTES_PER_WEEK >= s && t + MINUTES_PER_WEEK < e) end = Math.max(end, e - MINUTES_PER_WEEK);
@@ -165,6 +189,10 @@ export function menuNow(menu: Menu, branchId: string | null | undefined, c: Cloc
     now: {
       menus: menus.filter((m) => isOn(m.windows, c)).map((m) => ({ id: m.id, name: m.name, until: endsAt(m.windows, c) })),
       deals: rules.filter((r) => isOn(r.windows, c)).map((r) => ({ id: r.id, name: r.name, until: endsAt(r.windows, c) })),
+      dealsNext: rules.filter((r) => !isOn(r.windows, c)).flatMap((r) => {
+        const n = nextStart(r.windows, c);
+        return n ? [{ id: r.id, name: r.name, ...n }] : [];
+      }),
     },
     // a dish only on menus that don't run here (another branch's supper, a switched-off brunch) isn't on this branch's menu
     items: menu.items.filter((i) => !(i.menuIds ?? []).length || menus.some((m) => i.menuIds!.includes(m.id))).map((i) => {

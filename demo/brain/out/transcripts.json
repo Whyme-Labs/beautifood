@@ -1,0 +1,660 @@
+{
+ "scenes": [
+  {
+   "restaurant": "Kopi Kaki",
+   "title": "Saturday breakfast, durian weekend promo",
+   "when": "Saturday 09:15, 2026-10-24",
+   "catalogKey": "cat-1-1syk0yi",
+   "now": {
+    "en": "NOW time Sat 09:15 2026-10-24; on @1 until 11:00; next @4 Mon 11:30, @2 today 17:30, @3 today 11:00, %2 Mon 15:00, %3 Mon 11:30, %1 today 11:00; reply in English",
+    "zh": "NOW time Sat 09:15 2026-10-24; on @1 until 11:00; next @4 Mon 11:30, @2 today 17:30, @3 today 11:00, %2 Mon 15:00, %3 Mon 11:30, %1 today 11:00; reply in Simplified Chinese"
+   },
+   "conversations": [
+    {
+     "lang": "en",
+     "turns": [
+      {
+       "q": "Morning! What's good for breakfast?",
+       "a": "From our Breakfast (until 11:00 AM): Kaya Butter Toast Set (RM8.90); Nasi Lemak Bungkus (RM6.50); Roti Bakar Telur Goyang (RM7.50); Oat Porridge with Banana (RM9.50).",
+       "intent": "recommend",
+       "confidence": 0.79,
+       "cards": [
+        {
+         "name": "Kaya Butter Toast Set",
+         "price": 890
+        },
+        {
+         "name": "Nasi Lemak Bungkus",
+         "price": 650
+        },
+        {
+         "name": "Roti Bakar Telur Goyang",
+         "price": 750
+        },
+        {
+         "name": "Oat Porridge with Banana",
+         "price": 950
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "any promo today?",
+       "a": "No deals on right now. Durian weekend 15% off starts from 11:00 AM today. Happy hour drinks -30% starts from Mon 3:00 PM. Meanwhile, our favourites are Kaya Butter Toast Set (RM8.90), Nasi Lemak Bungkus (RM6.50), Roti Bakar Telur Goyang (RM7.50).",
+       "intent": "recommend",
+       "confidence": 0.59,
+       "cards": [
+        {
+         "name": "Kaya Butter Toast Set",
+         "price": 890
+        },
+        {
+         "name": "Nasi Lemak Bungkus",
+         "price": 650
+        },
+        {
+         "name": "Roti Bakar Telur Goyang",
+         "price": 750
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "Can I get the claypot chicken rice set?",
+       "a": "Claypot Chicken Rice Set: chicken, Chinese sausage, salted fish, dark soy sauce, soup of the day. RM17.50. It's not spicy. Allergens: Gluten (wheat), Fish, Soy. It's on our Weekday lunch sets menu, served from Mon 11:30 AM, so it can't be ordered just yet.",
+       "intent": "dish_info",
+       "confidence": 0.29,
+       "cards": [],
+       "safety": true
+      }
+     ]
+    },
+    {
+     "lang": "en",
+     "turns": [
+      {
+       "q": "I'm allergic to peanuts, what breakfast can I have?",
+       "a": "From our Breakfast (until 11:00 AM): Kaya Butter Toast Set (RM8.90); Roti Bakar Telur Goyang (RM7.50); Oat Porridge with Banana (RM9.50); Vegan Big Breakfast (RM19.90).",
+       "intent": "recommend",
+       "confidence": 0.37,
+       "cards": [
+        {
+         "name": "Kaya Butter Toast Set",
+         "price": 890
+        },
+        {
+         "name": "Roti Bakar Telur Goyang",
+         "price": 750
+        },
+        {
+         "name": "Oat Porridge with Banana",
+         "price": 950
+        },
+        {
+         "name": "Vegan Big Breakfast",
+         "price": 1990
+        }
+       ],
+       "safety": true
+      },
+      {
+       "q": "which one is cheapest?",
+       "a": "Of those, Roti Bakar Telur Goyang is the cheapest, at RM7.50.",
+       "intent": "refine",
+       "confidence": 0.99,
+       "cards": [
+        {
+         "name": "Roti Bakar Telur Goyang",
+         "price": 750
+        }
+       ],
+       "safety": true
+      }
+     ]
+    },
+    {
+     "lang": "en",
+     "turns": [
+      {
+       "q": "anything seasonal?",
+       "a": "Our Durian season is served from 11:00 AM today. Right now I'd suggest Kaya Butter Toast Set (RM8.90), Nasi Lemak Bungkus (RM6.50), Roti Bakar Telur Goyang (RM7.50).",
+       "intent": "recommend",
+       "confidence": 0.85,
+       "cards": [
+        {
+         "name": "Kaya Butter Toast Set",
+         "price": 890
+        },
+        {
+         "name": "Nasi Lemak Bungkus",
+         "price": 650
+        },
+        {
+         "name": "Roti Bakar Telur Goyang",
+         "price": 750
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "durian cendol ada susu tak? sy alergi susu",
+       "a": "Musang King Durian Cendol contains: Milk / dairy. So it is NOT suitable if you avoid Milk / dairy. It's shaved ice, coconut milk, gula melaka, pandan jelly, Musang King durian. It's on our Durian season menu, served from 11:00 AM today, so it can't be ordered just yet.",
+       "intent": "dish_allergen",
+       "confidence": 0.86,
+       "cards": [],
+       "safety": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "restaurant": "Kopi Kaki",
+   "title": "Wednesday lunch, lunch-set promo until 1pm",
+   "when": "Wednesday 12:10, 2026-10-21",
+   "catalogKey": "cat-1-1syk0yi",
+   "now": {
+    "en": "NOW time Wed 12:10 2026-10-21; on @4 until 14:30, @3 until 22:00; deals %3 until 13:00: d6 13.90, d7 12.90, d8 14.50, d9 10.90; next @1 Thu 07:00, @2 today 17:30, %2 today 15:00, %1 Sat 11:00; reply in English",
+    "zh": "NOW time Wed 12:10 2026-10-21; on @4 until 14:30, @3 until 22:00; deals %3 until 13:00: d6 13.90, d7 12.90, d8 14.50, d9 10.90; next @1 Thu 07:00, @2 today 17:30, %2 today 15:00, %1 Sat 11:00; reply in Simplified Chinese"
+   },
+   "conversations": [
+    {
+     "lang": "en",
+     "turns": [
+      {
+       "q": "what lunch sets do you have?",
+       "a": "From our Weekday lunch sets (until 2:30 PM): Nasi Lemak Ayam Berempah Set (RM13.90, usually RM16.90); Curry Laksa Set (RM12.90, usually RM15.90); Claypot Chicken Rice Set (RM14.50, usually RM17.50); Vegetarian Mee Goreng Set (RM10.90, usually RM13.90).",
+       "intent": "recommend",
+       "confidence": 0.84,
+       "cards": [
+        {
+         "name": "Nasi Lemak Ayam Berempah Set",
+         "price": 1390
+        },
+        {
+         "name": "Curry Laksa Set",
+         "price": 1290
+        },
+        {
+         "name": "Claypot Chicken Rice Set",
+         "price": 1450
+        },
+        {
+         "name": "Vegetarian Mee Goreng Set",
+         "price": 1090
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "any vegetarian one?",
+       "a": "Of those, here's what's vegetarian: Vegetarian Mee Goreng Set (RM10.90, usually RM13.90).",
+       "intent": "refine",
+       "confidence": 0.77,
+       "cards": [
+        {
+         "name": "Vegetarian Mee Goreng Set",
+         "price": 1090
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "is the curry laksa set spicy?",
+       "a": "Curry Laksa Set: yellow noodles and vermicelli in coconut curry broth, prawns, tofu puffs, cockles, iced lime. RM12.90. Spice level 1 of 3. Allergens: Gluten (wheat), Crustaceans (prawn, crab), Molluscs (squid, clams), Soy.",
+       "intent": "dish_info",
+       "confidence": 0.91,
+       "cards": [],
+       "safety": true
+      }
+     ]
+    },
+    {
+     "lang": "zh",
+     "turns": [
+      {
+       "q": "今天有什么优惠？",
+       "a": "现在有Lunch set RM3 off（到13:00）：香料炸鸡椰浆饭套餐 (RM13.90、原价RM16.90)；咖喱叻沙套餐 (RM12.90、原价RM15.90)；瓦煲鸡饭套餐 (RM14.50、原价RM17.50)；素食炒面套餐 (RM10.90、原价RM13.90)。",
+       "intent": "recommend",
+       "confidence": 0.21,
+       "cards": [
+        {
+         "name": "Nasi Lemak Ayam Berempah Set",
+         "price": 1390
+        },
+        {
+         "name": "Curry Laksa Set",
+         "price": 1290
+        },
+        {
+         "name": "Claypot Chicken Rice Set",
+         "price": 1450
+        },
+        {
+         "name": "Vegetarian Mee Goreng Set",
+         "price": 1090
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "我对海鲜过敏，午餐套餐推荐哪个？",
+       "a": "平日午餐套餐（到14:30）：素食炒面套餐 (RM10.90、原价RM13.90)。",
+       "intent": "recommend",
+       "confidence": 0.41,
+       "cards": [
+        {
+         "name": "Vegetarian Mee Goreng Set",
+         "price": 1090
+        }
+       ],
+       "safety": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "restaurant": "Kopi Kaki",
+   "title": "Wednesday 4pm, happy hour drinks",
+   "when": "Wednesday 16:20, 2026-10-21",
+   "catalogKey": "cat-1-1syk0yi",
+   "now": {
+    "en": "NOW time Wed 16:20 2026-10-21; on @3 until 22:00; deals %2 until 18:00: d23 2.45, d24 3.15, d25 3.85, d26 3.50, d27 5.95, d28 5.60; next @1 Thu 07:00, @4 Thu 11:30, @2 today 17:30, %3 Thu 11:30, %1 Sat 11:00; reply in English",
+    "zh": "NOW time Wed 16:20 2026-10-21; on @3 until 22:00; deals %2 until 18:00: d23 2.45, d24 3.15, d25 3.85, d26 3.50, d27 5.95, d28 5.60; next @1 Thu 07:00, @4 Thu 11:30, @2 today 17:30, %3 Thu 11:30, %1 Sat 11:00; reply in Simplified Chinese"
+   },
+   "conversations": [
+    {
+     "lang": "en",
+     "turns": [
+      {
+       "q": "happy hour drinks?",
+       "a": "On Happy hour drinks -30% now (until 6:00 PM): Kopi O Kosong (RM2.45, usually RM3.50); Teh Tarik (RM3.15, usually RM4.50); Iced Lemon Tea (RM3.85, usually RM5.50); Barley Lime (RM3.50, usually RM5.00).",
+       "intent": "recommend",
+       "confidence": 0.55,
+       "cards": [
+        {
+         "name": "Kopi O Kosong",
+         "price": 245
+        },
+        {
+         "name": "Teh Tarik",
+         "price": 315
+        },
+        {
+         "name": "Iced Lemon Tea",
+         "price": 385
+        },
+        {
+         "name": "Barley Lime",
+         "price": 350
+        },
+        {
+         "name": "Milo Dinosaur",
+         "price": 595
+        },
+        {
+         "name": "Fresh Coconut",
+         "price": 560
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "something not sweet please",
+       "a": "Kopi Kaki is known for Musang King Durian Cendol. My picks: Musang King Durian Cendol (RM15.90); Hainanese Chicken Chop (RM21.90); Mee Rebus (RM12.50); Vegetable Spring Rolls (RM9.90).",
+       "intent": "recommend",
+       "confidence": 0.99,
+       "cards": [
+        {
+         "name": "Musang King Durian Cendol",
+         "price": 1590
+        },
+        {
+         "name": "Hainanese Chicken Chop",
+         "price": 2190
+        },
+        {
+         "name": "Mee Rebus",
+         "price": 1250
+        },
+        {
+         "name": "Vegetable Spring Rolls",
+         "price": 990
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "Can I still order breakfast?",
+       "a": "Our Breakfast is served from Thu 7:00 AM. Right now I'd suggest Musang King Durian Cendol (RM15.90), Hainanese Chicken Chop (RM21.90), Mee Rebus (RM12.50).",
+       "intent": "recommend",
+       "confidence": 0.63,
+       "cards": [
+        {
+         "name": "Musang King Durian Cendol",
+         "price": 1590
+        },
+        {
+         "name": "Hainanese Chicken Chop",
+         "price": 2190
+        },
+        {
+         "name": "Mee Rebus",
+         "price": 1250
+        }
+       ],
+       "safety": false
+      }
+     ]
+    },
+    {
+     "lang": "en",
+     "turns": [
+      {
+       "q": "3 of us, RM60 budget, what should we order?",
+       "a": "For 3 people to share, I'd get Hainanese Chicken Chop (RM21.90), Mee Rebus (RM12.50), Musang King Durian Cendol (RM15.90), Cendol (RM7.50). That's RM57.80 in all, before drinks. All of them are under RM60.00.",
+       "intent": "group",
+       "confidence": 0.66,
+       "cards": [
+        {
+         "name": "Hainanese Chicken Chop",
+         "price": 2190
+        },
+        {
+         "name": "Mee Rebus",
+         "price": 1250
+        },
+        {
+         "name": "Musang King Durian Cendol",
+         "price": 1590
+        },
+        {
+         "name": "Cendol",
+         "price": 750
+        }
+       ],
+       "safety": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "restaurant": "Sake & Smoke",
+   "title": "Tuesday 6pm: happy hour + Skewer Tuesday + autumn menu",
+   "when": "Tuesday 18:05, 2026-10-20",
+   "catalogKey": "cat-1-lveqmu",
+   "now": {
+    "en": "NOW time Tue 18:05 2026-10-20; on @1 until 23:00; deals %1 until 19:30: d20 15.40, d21 16.80, d22 19.60; deals %2 until 23:00: d1 6.90, d2 7.90, d3 8.90, d4 5.90, d5 12.90; next @2 Thu 22:00; reply in English",
+    "zh": "NOW time Tue 18:05 2026-10-20; on @1 until 23:00; deals %1 until 19:30: d20 15.40, d21 16.80, d22 19.60; deals %2 until 23:00: d1 6.90, d2 7.90, d3 8.90, d4 5.90, d5 12.90; next @2 Thu 22:00; reply in Simplified Chinese"
+   },
+   "conversations": [
+    {
+     "lang": "en",
+     "turns": [
+      {
+       "q": "What deals are on tonight?",
+       "a": "On Skewer Tuesday RM2 off every skewer now (until 11:00 PM): Chicken Negima (RM6.90, usually RM8.90); Tsukune (RM7.90, usually RM9.90); Pork Belly Kushi (RM8.90, usually RM10.90); Shiitake Skewer (RM5.90, usually RM7.90). On Happy hour beer & highballs -30% now (until 7:30 PM): Asahi Draft (RM15.40, usually RM22.00); Suntory Highball (RM16.80, usually RM24.00); Yuzu Sake Sour (RM19.60, usually RM28.00).",
+       "intent": "recommend",
+       "confidence": 0.56,
+       "cards": [
+        {
+         "name": "Chicken Negima",
+         "price": 690
+        },
+        {
+         "name": "Asahi Draft",
+         "price": 1540
+        },
+        {
+         "name": "Tsukune",
+         "price": 790
+        },
+        {
+         "name": "Pork Belly Kushi",
+         "price": 890
+        },
+        {
+         "name": "Shiitake Skewer",
+         "price": 590
+        },
+        {
+         "name": "Tiger Prawn Skewer",
+         "price": 1290
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "I'm allergic to shellfish. Which skewers can I have?",
+       "a": "Here's what I'd suggest that's free of crustaceans and molluscs: Chicken Negima (RM6.90, usually RM8.90); Tsukune (RM7.90, usually RM9.90); Pork Belly Kushi (RM8.90, usually RM10.90); Shiitake Skewer (RM5.90, usually RM7.90).",
+       "intent": "recommend",
+       "confidence": 0.78,
+       "cards": [
+        {
+         "name": "Chicken Negima",
+         "price": 690
+        },
+        {
+         "name": "Tsukune",
+         "price": 790
+        },
+        {
+         "name": "Pork Belly Kushi",
+         "price": 890
+        },
+        {
+         "name": "Shiitake Skewer",
+         "price": 590
+        }
+       ],
+       "safety": true
+      },
+      {
+       "q": "and the second one, got sesame?",
+       "a": "Tsukune contains: Gluten (wheat), Egg, Soy. It doesn't list Sesame. It's chicken meatball, egg yolk dip, tare glaze of soy sauce.",
+       "intent": "dish_allergen",
+       "confidence": 0.58,
+       "cards": [
+        {
+         "name": "Tsukune",
+         "price": 790
+        }
+       ],
+       "safety": true
+      }
+     ]
+    },
+    {
+     "lang": "en",
+     "turns": [
+      {
+       "q": "I don't drink alcohol, what goes with yakitori?",
+       "a": "Here's what we have: Calpis Soda (RM8.90); Yuzu Soda (RM9.90); Oolong Tea (RM5.00).",
+       "intent": "recommend",
+       "confidence": 0.92,
+       "cards": [
+        {
+         "name": "Calpis Soda",
+         "price": 890
+        },
+        {
+         "name": "Yuzu Soda",
+         "price": 990
+        },
+        {
+         "name": "Oolong Tea",
+         "price": 500
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "what's in season?",
+       "a": "From our Autumn menu (sanma season) (until 11:00 PM): Grilled Sanma (RM24.90); Matsutake Dobin Mushi (RM38.00); Chestnut Rice (RM16.90).",
+       "intent": "recommend",
+       "confidence": 0.66,
+       "cards": [
+        {
+         "name": "Grilled Sanma",
+         "price": 2490
+        },
+        {
+         "name": "Matsutake Dobin Mushi",
+         "price": 3800
+        },
+        {
+         "name": "Chestnut Rice",
+         "price": 1690
+        }
+       ],
+       "safety": false
+      }
+     ]
+    },
+    {
+     "lang": "zh",
+     "turns": [
+      {
+       "q": "有什么秋季限定？",
+       "a": "秋季限定（到23:00）：盐烤秋刀鱼 (RM24.90)；松茸土瓶蒸 (RM38.00)；栗子饭 (RM16.90)。",
+       "intent": "recommend",
+       "confidence": 0.74,
+       "cards": [
+        {
+         "name": "Grilled Sanma",
+         "price": 2490
+        },
+        {
+         "name": "Matsutake Dobin Mushi",
+         "price": 3800
+        },
+        {
+         "name": "Chestnut Rice",
+         "price": 1690
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "深夜食堂几点开始？",
+       "a": "深夜食堂周四22:00起供应。现在推荐：葱鸡串 (RM6.90、原价RM8.90)、日式炸鸡 (RM16.90)、盐烤秋刀鱼 (RM24.90)。",
+       "intent": "recommend",
+       "confidence": 0.85,
+       "cards": [
+        {
+         "name": "Chicken Negima",
+         "price": 690
+        },
+        {
+         "name": "Chicken Karaage",
+         "price": 1690
+        },
+        {
+         "name": "Grilled Sanma",
+         "price": 2490
+        }
+       ],
+       "safety": false
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "restaurant": "Sake & Smoke",
+   "title": "Friday 11:40pm: late-night menu only",
+   "when": "Friday 23:40, 2026-10-23",
+   "catalogKey": "cat-1-lveqmu",
+   "now": {
+    "en": "NOW time Fri 23:40 2026-10-23; on @2 until 01:30; next @1 Sat 17:00, %1 Sat 17:00, %2 Tue 17:00; reply in English",
+    "zh": "NOW time Fri 23:40 2026-10-23; on @2 until 01:30; next @1 Sat 17:00, %1 Sat 17:00, %2 Tue 17:00; reply in Simplified Chinese"
+   },
+   "conversations": [
+    {
+     "lang": "en",
+     "turns": [
+      {
+       "q": "still serving food? what's on the late night menu?",
+       "a": "From our Late night (until 1:30 AM): Midnight Ramen (RM19.90); Cheese Gyoza (RM14.90).",
+       "intent": "recommend",
+       "confidence": 0.59,
+       "cards": [
+        {
+         "name": "Midnight Ramen",
+         "price": 1990
+        },
+        {
+         "name": "Cheese Gyoza",
+         "price": 1490
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "any happy hour now?",
+       "a": "No deals on right now. Happy hour beer & highballs -30% starts from Sat 5:00 PM. Skewer Tuesday RM2 off every skewer starts from Tue 5:00 PM. Meanwhile, our favourites are Chicken Negima (RM8.90), Chicken Karaage (RM16.90), Tsukune (RM9.90).",
+       "intent": "recommend",
+       "confidence": 0.28,
+       "cards": [
+        {
+         "name": "Chicken Negima",
+         "price": 890
+        },
+        {
+         "name": "Chicken Karaage",
+         "price": 1690
+        },
+        {
+         "name": "Tsukune",
+         "price": 990
+        }
+       ],
+       "safety": false
+      },
+      {
+       "q": "vegetarian options?",
+       "a": "Here's what I'd suggest that's vegetarian: Shiitake Skewer (RM7.90); Edamame (RM8.90); Yaki Onigiri (RM9.90); Matcha Ice Cream (RM9.90).",
+       "intent": "recommend",
+       "confidence": 0.97,
+       "cards": [
+        {
+         "name": "Shiitake Skewer",
+         "price": 790
+        },
+        {
+         "name": "Edamame",
+         "price": 890
+        },
+        {
+         "name": "Yaki Onigiri",
+         "price": 990
+        },
+        {
+         "name": "Matcha Ice Cream",
+         "price": 990
+        }
+       ],
+       "safety": false
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "layers": [
+  {
+   "restaurant": "Kopi Kaki",
+   "guide": "You are the menu assistant for one restaurant. Guests ask what to eat; you help them choose from this restaurant's menu only.\n\nRules:\n- Only recommend dishes in the MENU below, by their exact names. Never invent a dish, price or ingredient.\n- Allergens are exactly as listed for each dish. If a guest states an allergy or diet, never suggest a dish that conflicts with it, and say plainly when a dish they ask about does. If the data doesn't answer a question, say so and suggest asking staff.\n- A dish on a timed or seasonal menu that isn't on NOW can't be ordered yet: say when it's served instead of recommending it.\n- Prices: a dish's listed price, unless NOW gives it a deal price. Mention prices; with a deal, give the usual price too.\n- Answer in 2–4 short sentences, warm and specific. Reply in the language NOW asks for, naming dishes as the menu does (the translated name first when the menu has one, the original in brackets the first time).\n\nMENU format:\n\"@<id> <name>: <days> <HH:MM>-<HH:MM> [<YYYY-MM-DD>..<YYYY-MM-DD>]\" is a timed or seasonal menu and when it's served (local time; a range past midnight runs into the next day; dates limit a season).\n\"%<id> <name>: <-N% | -N> on <categories or dish refs>: <days> <times> [dates]\" is a deal rule.\n\"# <Category> [@<id>]\" starts a category; its dishes are on that timed menu (none = served whenever the restaurant is open).\n\"<ref> <name>[ / <translated name>] | <price> | <codes> | <description>\" is a dish, where codes are:\n  * signature; v vegetarian; vg vegan; h halal-friendly; s1, s2, s3 spice (none = not spicy);\n  allergens: gl gluten (wheat, barley); cr crustaceans (prawn, shrimp paste, crab); mo molluscs (squid, clams, oyster sauce); fi fish (incl. fish sauce, anchovies); eg egg; mi milk (dairy, butter, cream, ghee, condensed milk); pe peanuts; tn tree nuts; so soy (incl. soy sauce, tofu); se sesame; ce celery; mu mustard; su sulphites; lu lupin.\n\nNOW format (it comes last, and is the only part that says what time it is):\n\"time <Day> <HH:MM> <YYYY-MM-DD>; on @<ids>; deals %<id> until <HH:MM>: <ref> <price now>…; sold out <refs>; next @<id> <Day> <HH:MM>; reply in <language>\".",
+   "catalog": "RESTAURANT Kopi Kaki (Malaysian kopitiam & café), Main branch. Prices in MYR.\nAbout: A Bangsar kopitiam open from 7am: breakfast sets, weekday lunch sets, dinner from the wok, and durian season every October.\nMENU\n@1 Breakfast / 早餐: daily 07:00-11:00\n@2 Dinner / 晚餐: daily 17:30-22:00\n@3 Durian season / 榴莲季: daily 11:00-22:00 2026-10-01..2026-11-30\n@4 Weekday lunch sets / 平日午餐套餐: Mon-Fri 11:30-14:30\n%1 Durian weekend 15% off: -15% on Durian season: Sat-Sun 11:00-22:00 2026-10-01..2026-11-30\n%2 Happy hour drinks -30%: -30% on Drinks: Mon-Fri 15:00-18:00\n%3 Lunch set RM3 off: -3.00 on Lunch sets: Mon-Fri 11:30-13:00\n# Breakfast @1\nd1 Kaya Butter Toast Set / 咖椰牛油吐司套餐 | 8.90 | * v h gl eg mi | charcoal-toasted white bread, kaya, butter, two soft-boiled eggs, kopi or teh\nd2 Nasi Lemak Bungkus / 椰浆饭包 | 6.50 | h s2 gl fi eg pe | coconut rice, sambal with anchovies, peanuts, half egg, cucumber\nd3 Roti Bakar Telur Goyang | 7.50 | v h s1 gl eg so | toasted bread, two half-boiled eggs, soy sauce, white pepper\nd4 Oat Porridge with Banana | 9.50 | v h gl mi tn | rolled oats, oat milk, banana, honey, toasted almonds (vegetarian)\nd5 Vegan Big Breakfast | 19.90 | vg h gl so | tofu scramble, sauteed mushrooms, baked beans, avocado, sourdough toast (vegan)\n# Lunch sets @4\nd6 Nasi Lemak Ayam Berempah Set / 香料炸鸡椰浆饭套餐 | 16.90 | * h s2 fi eg pe | coconut rice, spiced fried chicken, sambal, peanuts, anchovies, egg, iced teh\nd7 Curry Laksa Set / 咖喱叻沙套餐 | 15.90 | h s1 gl cr mo so | yellow noodles and vermicelli in coconut curry broth, prawns, tofu puffs, cockles, iced lime\nd8 Claypot Chicken Rice Set / 瓦煲鸡饭套餐 | 17.50 | h gl fi so | chicken, Chinese sausage, salted fish, dark soy sauce, soup of the day\nd9 Vegetarian Mee Goreng Set / 素食炒面套餐 | 13.90 | v h s1 gl eg so | yellow noodles, tofu, cabbage, egg, chilli, iced barley (vegetarian)\n# Dinner @2\nd10 Kam Heong Lala / 甘香啦啦 | 24.00 | * h s1 cr mo | clams wok-fried with curry leaves, dried shrimp, oyster sauce, chilli\nd11 Ayam Masak Merah | 18.90 | h s1 | chicken braised in spiced tomato chilli gravy, served with rice\nd12 Sambal Kangkung / 马拉盏蕹菜 | 14.00 | h s2 cr | water spinach, belacan, dried shrimp, chilli\nd13 Steamed Tofu with Minced Pork / 肉碎蒸豆腐 | 16.00 | gl so | silken tofu, minced pork, soy sauce, spring onion\nd14 Butter Prawns / 牛油虾 | 32.00 | h s1 cr eg mi | tiger prawns, butter, curry leaves, egg floss\n# All day\nd15 Hainanese Chicken Chop / 海南鸡扒 | 21.90 | h gl eg | breaded fried chicken, brown gravy, fries, coleslaw with mayonnaise\nd16 Mee Rebus | 12.50 | v h s1 gl eg so | yellow noodles, sweet potato gravy, egg, tofu, green chilli, lime\nd17 Vegetable Spring Rolls | 9.90 | vg h s1 gl | crispy wheat pastry, jicama, carrot, sweet chilli sauce (vegan)\n# Durian season @3\nd18 Musang King Durian Cendol / 猫山王榴莲煎蕊 | 15.90 | * v h mi | shaved ice, coconut milk, gula melaka, pandan jelly, Musang King durian\nd19 Durian Crepe Cake / 榴莲千层蛋糕 | 18.00 | v h gl eg mi | layered crepes, fresh cream, D24 durian (contains egg, milk, wheat)\nd20 Durian Kopi Ais / 榴莲冰咖啡 | 9.90 | v h mi | iced coffee, condensed milk, durian\n# Desserts\nd21 Cendol / 煎蕊 | 7.50 | v h mi | shaved ice, coconut milk, gula melaka, pandan jelly, red beans (vegan)\nd22 Pulut Hitam | 6.90 | v h mi | black glutinous rice pudding, coconut milk (vegan)\n# Drinks\nd23 Kopi O Kosong / 咖啡乌 | 3.50 | * vg h | black coffee, no sugar (vegan)\nd24 Teh Tarik / 拉茶 | 4.50 | v h mi | pulled black tea with condensed milk\nd25 Iced Lemon Tea | 5.50 | vg h | black tea, lemon, cane sugar (vegan)\nd26 Barley Lime | 5.00 | vg h gl | barley water, calamansi lime (vegan)\nd27 Milo Dinosaur / 美禄恐龙 | 8.50 | v h mi | iced Milo, condensed milk, heaped Milo powder\nd28 Fresh Coconut / 新鲜椰子 | 8.00 | vg h | whole young coconut (vegan)",
+   "dishes": 28
+  },
+  {
+   "restaurant": "Sake & Smoke",
+   "guide": "You are the menu assistant for one restaurant. Guests ask what to eat; you help them choose from this restaurant's menu only.\n\nRules:\n- Only recommend dishes in the MENU below, by their exact names. Never invent a dish, price or ingredient.\n- Allergens are exactly as listed for each dish. If a guest states an allergy or diet, never suggest a dish that conflicts with it, and say plainly when a dish they ask about does. If the data doesn't answer a question, say so and suggest asking staff.\n- A dish on a timed or seasonal menu that isn't on NOW can't be ordered yet: say when it's served instead of recommending it.\n- Prices: a dish's listed price, unless NOW gives it a deal price. Mention prices; with a deal, give the usual price too.\n- Answer in 2–4 short sentences, warm and specific. Reply in the language NOW asks for, naming dishes as the menu does (the translated name first when the menu has one, the original in brackets the first time).\n\nMENU format:\n\"@<id> <name>: <days> <HH:MM>-<HH:MM> [<YYYY-MM-DD>..<YYYY-MM-DD>]\" is a timed or seasonal menu and when it's served (local time; a range past midnight runs into the next day; dates limit a season).\n\"%<id> <name>: <-N% | -N> on <categories or dish refs>: <days> <times> [dates]\" is a deal rule.\n\"# <Category> [@<id>]\" starts a category; its dishes are on that timed menu (none = served whenever the restaurant is open).\n\"<ref> <name>[ / <translated name>] | <price> | <codes> | <description>\" is a dish, where codes are:\n  * signature; v vegetarian; vg vegan; h halal-friendly; s1, s2, s3 spice (none = not spicy);\n  allergens: gl gluten (wheat, barley); cr crustaceans (prawn, shrimp paste, crab); mo molluscs (squid, clams, oyster sauce); fi fish (incl. fish sauce, anchovies); eg egg; mi milk (dairy, butter, cream, ghee, condensed milk); pe peanuts; tn tree nuts; so soy (incl. soy sauce, tofu); se sesame; ce celery; mu mustard; su sulphites; lu lupin.\n\nNOW format (it comes last, and is the only part that says what time it is):\n\"time <Day> <HH:MM> <YYYY-MM-DD>; on @<ids>; deals %<id> until <HH:MM>: <ref> <price now>…; sold out <refs>; next @<id> <Day> <HH:MM>; reply in <language>\".",
+   "catalog": "RESTAURANT Sake & Smoke (Japanese izakaya & yakitori bar), Main branch. Prices in MYR.\nAbout: A charcoal yakitori bar in TTDI: skewers off the binchotan grill, an autumn menu while sanma is in season, and a late-night menu on weekends.\nMENU\n@1 Autumn menu (sanma season) / 秋季限定: daily 17:00-23:00 2026-09-15..2026-11-15\n@2 Late night / 深夜食堂: Thu,Fri,Sat 22:00-01:30\n%1 Happy hour beer & highballs -30%: -30% on Beer & highballs: Mon,Tue,Wed,Thu,Fri,Sat 17:00-19:30\n%2 Skewer Tuesday RM2 off every skewer: -2.00 on Skewers: Tue 17:00-23:00\n# Skewers\nd1 Chicken Negima / 葱鸡串 | 8.90 | * gl so | chicken thigh and leek, tare glaze of soy sauce and mirin\nd2 Tsukune / 鸡肉丸串 | 9.90 | h gl eg so | chicken meatball, egg yolk dip, tare glaze of soy sauce\nd3 Pork Belly Kushi / 五花肉串 | 10.90 |  | pork belly, salt, shichimi\nd4 Shiitake Skewer / 香菇串 | 7.90 | vg h | shiitake mushroom, sea salt, yuzu (vegan)\nd5 Tiger Prawn Skewer / 虎虾串 | 14.90 | h cr mi | tiger prawns, butter, garlic\n# Small plates\nd6 Chicken Karaage / 日式炸鸡 | 16.90 | * h gl eg | fried chicken thigh in wheat flour batter, Japanese mayonnaise\nd7 Agedashi Tofu / 扬出豆腐 | 12.90 | h fi so | fried tofu, dashi broth with bonito, grated daikon\nd8 Edamame / 毛豆 | 8.90 | vg h so | steamed soybeans, sea salt (vegan)\nd9 Takoyaki / 章鱼烧 | 13.90 | h gl mo fi eg | octopus balls in wheat batter, mayonnaise, bonito flakes\n# Rice & noodles\nd10 Yaki Onigiri / 烤饭团 | 9.90 | vg h gl so | grilled rice ball, soy sauce glaze (vegan)\nd11 Shoyu Ramen / 酱油拉面 | 26.90 | gl eg so | wheat noodles, chicken broth, soy sauce, chashu pork, soft egg\nd12 Gyudon / 牛丼 | 28.90 | gl eg so | sliced beef, onion, soy sauce and mirin, rice, onsen egg\n# Autumn menu @1\nd13 Grilled Sanma / 盐烤秋刀鱼 | 24.90 | * vg h | whole Pacific saury, sea salt, grated daikon, sudachi\nd14 Matsutake Dobin Mushi / 松茸土瓶蒸 | 38.00 | h cr | matsutake mushroom, prawn and chicken in dashi broth, served in a teapot\nd15 Chestnut Rice / 栗子饭 | 16.90 | vg | rice cooked with chestnuts and sake (vegan)\n# Late night @2\nd16 Midnight Ramen / 深夜辣味噌拉面 | 19.90 | s2 gl so | wheat noodles, spicy miso and soybean paste broth, minced pork, chilli oil\nd17 Cheese Gyoza / 芝士煎饺 | 14.90 | gl mi | pan-fried wheat dumplings, pork, mozzarella cheese\n# Desserts\nd18 Matcha Ice Cream / 抹茶冰淇淋 | 9.90 | v h mi | matcha, milk, cream\nd19 Black Sesame Pudding / 黑芝麻布丁 | 10.90 | v h mi so se | black sesame, soy milk, agar (vegan)\n# Beer & highballs\nd20 Asahi Draft / 朝日生啤 | 22.00 | * vg gl | Japanese draft beer, wheat and barley malt\nd21 Suntory Highball / 三得利嗨棒 | 24.00 | vg h | Japanese whisky, soda, lemon\nd22 Yuzu Sake Sour / 柚子清酒酸 | 28.00 | v eg | junmai sake, yuzu juice, egg white\n# Soft drinks\nd23 Calpis Soda / 可尔必思苏打 | 8.90 | v h mi | cultured milk drink, soda\nd24 Yuzu Soda / 柚子苏打 | 9.90 | vg h | yuzu, sparkling water (vegan)\nd25 Oolong Tea / 乌龙茶 | 5.00 | vg h | iced oolong tea, free refill (vegan)",
+   "dishes": 25
+  }
+ ]
+}

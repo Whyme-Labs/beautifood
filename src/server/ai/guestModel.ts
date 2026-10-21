@@ -7,14 +7,16 @@
 // Off unless ASSISTANT_PROVIDER says otherwise (or an Anthropic key is set, as before): a model goes
 // live only after it has been scored on the guest cases (src/shared/assistantEval.ts, test/eval).
 import type { AssistantContext, AssistantReply } from "./local";
-import { MENU_TOOLS, runTool, systemPrompt } from "./claude";
+import { INLINE_MAX, MENU_TOOLS, runTool } from "./claude";
+import { catalog, catalogKey, GUIDE, now as nowText } from "./menuInput";
 import type { Usage } from "./usage";
 
 export const DEFAULT_WORKERS_MODEL = "@cf/google/gemma-4-26b-a4b-it";
 export const DEFAULT_ANTHROPIC_MODEL = "claude-haiku-5-5";
 
 export interface AiBinding {
-  run: (model: string, input: Record<string, unknown>) => Promise<unknown>;
+  /** `extraHeaders` carries x-session-affinity: requests with the same key reach the instance holding their cached prefix. */
+  run: (model: string, input: Record<string, unknown>, options?: { extraHeaders?: Record<string, string> }) => Promise<unknown>;
 }
 
 export interface GuestModelEnv {
@@ -79,9 +81,9 @@ export function readTurn(raw: unknown): Turn {
   };
 }
 
-async function complete(m: Exclude<GuestModel, { provider: "anthropic" }>, messages: Msg[], inline = false): Promise<Turn> {
+async function complete(m: Exclude<GuestModel, { provider: "anthropic" }>, messages: Msg[], inline = false, affinity?: string): Promise<Turn> {
   const body = { messages, ...(inline ? {} : { tools: TOOLS }), max_tokens: 600, temperature: 0.3 };
-  if (m.provider === "workers-ai") return readTurn(await m.ai.run(m.model, body));
+  if (m.provider === "workers-ai") return readTurn(await m.ai.run(m.model, body, affinity ? { extraHeaders: { "x-session-affinity": affinity } } : undefined));
   const res = await fetch(`${m.baseUrl}/chat/completions`, {
     method: "POST",
     headers: { authorization: `Bearer ${m.apiKey}`, "content-type": "application/json" },
@@ -91,29 +93,7 @@ async function complete(m: Exclude<GuestModel, { provider: "anthropic" }>, messa
   return readTurn(await res.json());
 }
 
-/** The menu as compact lines for the prompt: what's served now, with the facts that matter. */
-export function menuForPrompt(ctx: AssistantContext): string {
-  return ctx.items
-    .filter((i) => i.active && !i.soldOut && i.servedNow !== false)
-    .map((i) =>
-      [
-        i.name,
-        `RM${(i.price / 100).toFixed(2)}`,
-        i.category ?? "",
-        i.isSignature ? "signature" : "",
-        i.spiceLevel ? `spice ${i.spiceLevel}/3` : "not spicy",
-        i.dietary.length ? i.dietary.join(", ") : "",
-        `allergens: ${i.allergens.length ? i.allergens.join(", ") : "none listed"}`,
-        i.description ? `— ${i.description.slice(0, 120)}` : "",
-      ]
-        .filter(Boolean)
-        .join(" | "),
-    )
-    .join("\n");
-}
 
-/** Menus up to this many dishes go into the prompt (one fast call); bigger ones are looked up through tools. */
-const INLINE_MAX = 120;
 
 /**
  * Answer with an OpenAI-style model. A normal menu goes into the prompt so it's one call; a very
@@ -128,13 +108,17 @@ export async function answerWithModel(
   opts: { mode?: "inline" | "tools" } = {},
 ): Promise<AssistantReply> {
   const inline = (opts.mode ?? (ctx.items.length <= INLINE_MAX ? "inline" : "tools")) === "inline";
-  const system = inline
-    ? `${systemPrompt(ctx, locale)}\nThe menu (only these dishes exist; allergens are as listed, never assume more or less):\n${menuForPrompt(ctx)}\nWrite dish names exactly as on the menu.`
-    : systemPrompt(ctx, locale);
-  const messages: Msg[] = [{ role: "system", content: system }, ...history.slice(-10).map((h) => ({ role: h.role, content: h.content }))];
+  // the cached layout (./menuInput): guide + catalog, the same bytes for every guest of the branch;
+  // the conversation; NOW in front of the last question
+  const cat = catalog(inline ? ctx : { ...ctx, items: [] });
+  const system = inline ? `${GUIDE}\n\n${cat}` : `${GUIDE}\n\n${cat}\nThe dishes are too many to list: look them up with the tools.`;
+  const turns = history.slice(-10).map((h) => ({ role: h.role, content: h.content }));
+  if (turns.length) turns[turns.length - 1] = { ...turns[turns.length - 1], content: `${nowText(ctx, locale, ctx.clock ?? { weekday: 0, minutes: 0 })}\n\n${turns[turns.length - 1].content}` };
+  const messages: Msg[] = [{ role: "system", content: system }, ...turns];
+  const affinity = catalogKey(cat);
   const referenced = new Set<string>();
   for (let turn = 0; turn < 5; turn++) {
-    const t = await complete(m, messages, inline);
+    const t = await complete(m, messages, inline, affinity);
     onUsage({ model: m.model, ...t.usage });
     if (t.toolCalls.length && !inline) {
       const calls = t.toolCalls.map((call) => {
@@ -170,13 +154,13 @@ export async function answerWithModel(
 /** A Workers AI binding over the REST API, for scoring models outside a Worker (test/eval). */
 export function workersAiRest(accountId: string, token: string): AiBinding {
   return {
-    run: async (model, input) => {
+    run: async (model, input, options) => {
       let r: Response | null = null;
       // some models allow only a few requests a minute: wait and retry on 429
       for (let attempt = 0; attempt < 6; attempt++) {
         r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${model}`, {
           method: "POST",
-          headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+          headers: { authorization: `Bearer ${token}`, "content-type": "application/json", ...options?.extraHeaders },
           body: JSON.stringify(input),
         });
         if (r.status !== 429) break;

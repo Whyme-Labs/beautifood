@@ -11,6 +11,26 @@ const supper: TimedMenu = { id: "tm_s", name: "Supper", windows: [{ days: [5, 6]
 const happy: PriceRule = { id: "pr_h", name: "Happy hour", kind: "percent", value: 30, categories: ["cat_drinks"], items: [], windows: [{ days: [1, 2, 3, 4, 5], from: "15:00", to: "18:00" }], branches: ["*"], active: true };
 const dish = (p: Partial<MenuItem>) => ({ id: "itm", categoryId: "cat_mains", price: 1290, menuIds: [], ...p });
 
+describe("seasons and promotions with dates", () => {
+  // Durian season: every day 11:00–22:00, 1 Oct – 30 Nov 2026
+  const durian = [{ days: [0, 1, 2, 3, 4, 5, 6], from: "11:00", to: "22:00", start: "2026-10-01", end: "2026-11-30" }];
+  const on = (weekday: number, hhmm: string, date: string) => ({ ...at(weekday, hhmm), date });
+
+  it("runs only between its dates", () => {
+    expect(isOn(durian, on(MON, "12:00", "2026-10-19"))).toBe(true);
+    expect(isOn(durian, on(MON, "12:00", "2026-09-28"))).toBe(false);
+    expect(isOn(durian, on(TUE, "12:00", "2026-12-01"))).toBe(false);
+    // a clock without a date ignores dates (as before)
+    expect(isOn(durian, at(MON, "12:00"))).toBe(true);
+  });
+
+  it("starts on its first day, and is over after its last", () => {
+    // Monday 28 Sep: the season starts Thursday 1 Oct
+    expect(nextStart(durian, on(MON, "12:00", "2026-09-28"))).toEqual({ weekday: 4, time: "11:00", today: false });
+    expect(nextStart(durian, on(MON, "23:00", "2026-11-30"))).toBeNull();
+  });
+});
+
 describe("windows", () => {
   it("are on from the start minute up to (not including) the end", () => {
     expect(isOn(breakfast.windows, at(MON, "06:59"))).toBe(false);
@@ -41,9 +61,9 @@ describe("windows", () => {
   it("read the branch's own clock", () => {
     // 2026-10-19 is a Monday; 07:30 UTC is 15:30 in Kuala Lumpur and 08:30 in London
     const t = Date.UTC(2026, 9, 19, 7, 30);
-    expect(clockAt(t, "Asia/Kuala_Lumpur")).toEqual(at(MON, "15:30"));
-    expect(clockAt(t, "Europe/London")).toEqual(at(MON, "08:30"));
-    expect(clockAt(Date.UTC(2026, 9, 18, 17, 0), "Asia/Kuala_Lumpur")).toEqual(at(MON, "01:00")); // Sunday UTC, Monday local
+    expect(clockAt(t, "Asia/Kuala_Lumpur")).toEqual({ ...at(MON, "15:30"), date: "2026-10-19" });
+    expect(clockAt(t, "Europe/London")).toEqual({ ...at(MON, "08:30"), date: "2026-10-19" });
+    expect(clockAt(Date.UTC(2026, 9, 18, 17, 0), "Asia/Kuala_Lumpur")).toEqual({ ...at(MON, "01:00"), date: "2026-10-19" }); // Sunday UTC, Monday local
   });
 });
 
@@ -101,7 +121,7 @@ describe("the menu now at a branch", () => {
     expect(byId.itm_toast).toMatchObject({ servedNow: false, nextServed: { time: "07:00", weekday: TUE } });
     expect(byId.itm_mee).toBeUndefined(); // its only menu is KLCC's, so it isn't on Bangsar's menu
     expect(byId.itm_teh).toMatchObject({ price: 315, listPrice: 450, deal: { id: "pr_h", name: "Happy hour" } });
-    expect(m.now).toEqual({ menus: [], deals: [{ id: "pr_h", name: "Happy hour", until: "18:00" }] });
+    expect(m.now).toEqual({ menus: [], deals: [{ id: "pr_h", name: "Happy hour", until: "18:00" }], dealsNext: [] });
   });
 
   it("at KLCC on Friday night, supper is on", () => {

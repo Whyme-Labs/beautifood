@@ -2,7 +2,8 @@
 // guard on model answers, and the on-device lab's baseline. Guests are answered by the menu brain
 // (./brain), which builds on it. Every fact comes from structured menu data, never invention.
 import { ALLERGEN_LABELS, ALLERGENS, type Allergen } from "../../shared/allergens";
-import type { MenuItem } from "../../shared/types";
+import type { Menu, MenuItem } from "../../shared/types";
+import type { Clock, PriceRule, TimedMenu } from "../../shared/schedule";
 import { localizeItem } from "../../shared/menuI18n";
 import { formatters, translator, type MessageKey } from "../../i18n/core";
 import type { PlatformPairs } from "./brain/concepts";
@@ -12,6 +13,14 @@ export interface AssistantContext {
   branchName: string;
   currency: string;
   items: (MenuItem & { category?: string; popularity?: number })[];
+  /** What's on now: the timed menus and deals running, and when the others start (schedule.menuNow). */
+  now?: Menu["now"];
+  /** The timed menus at this branch (Breakfast, Happy hour bites, Durian season…). */
+  menus?: TimedMenu[];
+  /** The branch-local time the menu was read at (what NOW tells a model). */
+  clock?: Clock;
+  /** The price rules (deals) at this branch, on now or not. */
+  rules?: PriceRule[];
   /** The menu's own language (dish names as written). */
   menuLanguage?: string;
   /** Recent orders: how many held each dish, how many held each pair, and how many there were. */

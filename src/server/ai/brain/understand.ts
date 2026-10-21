@@ -59,6 +59,12 @@ export interface Understanding {
   superlative: Superlative | null;
   /** The question as read (instruction-like text taken out). */
   text: string;
+  /** "any promo?", "happy hour?", "优惠", "ada diskaun?": what's on a deal. */
+  asksDeals: boolean;
+  /** "anything seasonal?", "limited edition", "新品", "musim durian": the seasonal or limited menu. */
+  asksSeasonal: boolean;
+  /** "just tell me one drink", "give me two dishes", "推荐一杯": how many they want shown. */
+  howMany: number | null;
   /** "allergic to everything": no menu data answers that safely; staff can. */
   manyAllergies: boolean;
   /** "no alcohol", "不要酒", "x minum arak". */
@@ -239,6 +245,10 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     if (!(all || ((coverage >= 0.6 || unique || adjacentNamed) && strong)) || spread > name.length + 2) return;
     found.push({ dish, at: Math.min(...covered), covered, score: (all ? 1 : coverage) + covered.length * 0.01 });
   });
+  // a match that covers more of the question wins over one inside it: "durian cendol" is the Musang
+  // King Durian Cendol, not the plain Cendol whose one word it also contains
+  const inside = (a: Mention, b: Mention) => a.covered.length > 0 && b.covered.length > a.covered.length && a.covered.every((i) => b.covered.includes(i));
+  for (let k = found.length - 1; k >= 0; k--) if (found.some((b) => inside(found[k], b))) found.splice(k, 1);
   // two dishes claiming the same words: the better match keeps them
   found.sort((a, b) => b.score - a.score);
   const claimed = new Set<number>();
@@ -382,8 +392,14 @@ export function courseDishes(items: Dish[], course: Course): Dish[] {
 
 const DRINK = COURSES[0].category;
 const DESSERT = COURSES[1].category;
-export const isDrink = (i: Dish) => DRINK.test(i.category ?? "");
-export const isDessert = (i: Dish) => DESSERT.test(i.category ?? "");
+// a bar's courses are drinks too ("Beer & highballs", "Wine", "Cocktails")
+export const isDrink = (i: Dish) =>
+  DRINK.test(i.category ?? "") ||
+  /\b(beers?|wines?|sake|highballs?|cocktails?|spirits|liquor|soft drinks?)\b/i.test(i.category ?? "") ||
+  // a drink on a seasonal or promo menu ("Durian Kopi Ais" on "Durian season")
+  /\b(kopi|coffee|latte|teh|tea|juice|jus|soda|smoothie|shake|milo|frappe)\b/i.test(i.name) && !/\b(ais kacang|cake|pudding|ice cream|tea.smoked|rice|noodles?|mee)\b/i.test(i.name);
+// a sweet on a seasonal or promo menu is still a dessert (Durian Cendol on "Durian season")
+export const isDessert = (i: Dish) => DESSERT.test(i.category ?? "") || (!isDrink(i) && /\b(cendol|ais kacang|pudding|crepe cake|cheesecake|ice cream|gelato|mochi|tong sui|bubur cha cha|pulut hitam|tart|brownie)\b/i.test(i.name));
 
 const ASKS_CONTENTS = /\b(allerg\w*|alergi|contain\w*|ingredients?|inside|safe|ada .{0,20}(tak|ke)|got .{0,20}(or not|inside)|does .{0,40}(have|got|use|come with)|is there|any .{0,15} in (it|this|that|the)|made with|cooked (in|with)|boleh makan|free from|\w+ free)\b/;
 const AVOID_CUE = /\b(allerg\w*|alergi|no|without|tanpa|avoid|cant eat|cannot eat|can t eat|cant have|dont eat|don t eat|not eat|tak boleh makan|tak makan|tak nak|jangan|intolerant|intolerance|free|tak tahan|sensitive|no more|hate|exclude|except|minus|kecuali|tak boleh)\b/;
@@ -474,6 +490,11 @@ const FOOD_NOUN = /^(tofu|tauhu|taukua|tempeh|prawns?|shrimps?|udang|crabs?|keta
 const REQUEST = /\b(what|which|any|anything|got|have|has|do you|ada|apa|mana|want|wanna|nak|mau|give|show|recommend|suggest|like|love|suka|craving|order|get|serve|best|good|sedap)\b/i;
 const REQUEST_ZH = /有什么|有哪些|有没有|推荐|想要|想吃|想喝|来个|来一|要一|哪个|哪些|什么好/;
 
+/** "not sweet", "tak manis", "no dessert": the word at `k` is negated by the one or two before it. */
+const negatedAt = (toks: string[], k: number) =>
+  // "...or not? small plates": "or not" ends a question, it negates nothing after it
+  (/^(not|no|tak|x|bukan|without|less|kurang)$/.test(toks[k - 1] ?? "") && !/^(or|ke|atau)$/.test(toks[k - 2] ?? "")) || (/^(too|so|very|terlalu|sangat|that)$/.test(toks[k - 1] ?? "") && /^(not|no|tak|x|bukan)$/.test(toks[k - 2] ?? ""));
+
 /** Whether the guest plainly asks for allergen `a`'s food ("what seafood should we get?", "奶茶有哪些？"). */
 function requested(question: string, a: Allergen): boolean {
   // a food typed on its own ("tofu", "udang?", "豆腐") is a search for it; a class word ("peanuts",
@@ -535,7 +556,10 @@ export function read(items: Dish[], asked: string): Reading {
   const spice = spiceByClause(question, new Set(mentions.flatMap((m) => m.covered.map((i) => toks[i]))), restRaw);
   const party = partyOf(restText, restRaw);
   const budget = budgetOf(restText, restRaw);
-  const courses = COURSES.filter((c) => c.ask.test(restText) || c.askZh.test(restRaw)).map((c) => c.course);
+  // "not sweet", "tak manis", "no dessert" doesn't ask for the course
+  const courseText = restText.replace(/\b(not|no|tak|x|bukan|without|less|kurang|dont want|don t want)\s+(too |so |very |terlalu |sangat |that )?\w+/g, " ");
+  const courseZh = restRaw.replace(/(不要|不太|不|别|少)[\u4e00-\u9fff]{1,2}/g, " ");
+  const courses = COURSES.filter((c) => c.ask.test(courseText) || c.askZh.test(courseZh)).map((c) => c.course);
 
   const light = /\b(light|lighter|not (very |that |so |too )?hungry|tak (berapa |begitu |sangat )?lapar|x lapar|peckish|small bite|something small|snack|ringan|tak nak kenyang|kecil|healthy|healthier|on a diet|diet)\b/.test(restText) || /清淡|不饿|不太饿|小份|轻食|健康/.test(restRaw);
   const hearty = !light && (/\b(hungry|starving|starved|famished|filling|heavy|big meal|lapar|kebulur|kenyang|hearty|full meal|very hungry)\b/.test(restText) || /很饿|饿死|吃饱|大份|饱/.test(restRaw));
@@ -560,7 +584,7 @@ export function read(items: Dish[], asked: string): Reading {
   const ordWord = restText.match(/\b(?:the|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|4th|last|pertama|kedua|ketiga|keempat|terakhir)\b/);
   const ordZh = restRaw.match(/第([一二三四1-4])|最后一/);
   const ordinal = ordWord ? ORD[ordWord[1]] : ordZh ? (ordZh[1] ? "一二三四".indexOf(ordZh[1]) + 1 || Number(ordZh[1]) : 0) - 1 : null;
-  const choosing = /\b(which one|which ones|which of (those|these|them)|any of (those|these|them)|out of (those|these)|yang mana|yg mana|mana satu|mana yang|mana yg)\b/.test(restText) || /哪个|哪一|哪些|其中/.test(restRaw);
+  const choosing = /\b(any \w+ ones?|which \w+ ones?|which one|which ones|which of (those|these|them)|any of (those|these|them)|out of (those|these)|yang mana|yg mana|mana satu|mana yang|mana yg)\b/.test(restText) || /哪个|哪一|哪些|其中/.test(restRaw);
 
   const delexicalized: string[] = [];
   toks.forEach((t, i) => {
@@ -590,12 +614,21 @@ export function read(items: Dish[], asked: string): Reading {
     party,
     courses,
     // a word naming what they avoid ("no milk") doesn't ask for its category ("Milk teas")
-    categories: askedCategories(items, rest.filter((t) => !mentionedAllergens(t).some((a) => avoid.includes(a))), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? "" : restRaw),
+    categories: askedCategories(items, rest.filter((t, k) => !mentionedAllergens(t).some((a) => avoid.includes(a)) && !negatedAt(rest, k)), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? "" : restRaw),
     appetite: light ? "light" : hearty ? "hearty" : null,
     superlative,
     refersBack: refersBack || ordinal !== null || choosing,
     ordinal,
     choosing,
+    // "what deals are on?", not "give me 50% off" or "print a discount code" (that's for staff)
+    asksDeals: !/\b(code|codes|voucher|coupon|pretend|give me \d+|print|generate|kod)\b/.test(restText) && /\b(promo|promos|promotion|promotions|deal|deals|discount|discounts|discounted|offer|offers|happy hour|happy hours|special price|on sale|diskaun|promosi|tawaran|potongan harga)\b/.test(restText) || /优惠|特价|折扣|打折|促销|欢乐时光|活动价/.test(restRaw),
+    howMany: (() => {
+      const m = restText.match(/\b(?:just |only )?(one|1|a single|two|2|three|3|satu|dua|tiga)\s+(?:\w+\s+)?(drinks?|dish(?:es)?|things?|items?|options?|picks?|suggestions?|recommendations?|mains?|desserts?)\b/);
+      const z = restRaw.match(/(?:推荐|来|给我)?([一二两三1-3])(?:杯|个|道|样|款)/);
+      const n = m ? ({ one: 1, "1": 1, "a single": 1, satu: 1, two: 2, "2": 2, dua: 2, three: 3, "3": 3, tiga: 3 } as Record<string, number>)[m[1]] : z ? ("一二两三".indexOf(z[1]) >= 0 ? [1, 2, 2, 3]["一二两三".indexOf(z[1])] : Number(z[1])) : null;
+      return n ?? null;
+    })(),
+    asksSeasonal: /\b(seasonal|season|limited|limited time|limited edition|festive|whats new|what s new|new items?|musim|edisi terhad|bermusim)\b/.test(restText) || /季节|限定|限时|新品|应季|当季/.test(restRaw),
     manyAllergies: !allergens.length && (/\b(allergic|allergies|alergi)\b.*\b(everything|all|lots|so many|many things|semua)\b/.test(restText) || /什么都过敏|很多过敏|好多过敏/.test(restRaw)),
     noAlcohol: /\b(no|not|without|tak|x|tak nak|dont|don t|non|cannot|cant|tidak|no more)\s+(minum\s+)?(alcohol|alcoholic|arak|alkohol|beer|booze|liquor|drinking)\b|\b(alcohol free|non alcoholic|nonalcoholic|mocktail|mocktails)\b/.test(restText) || /不要酒|不喝酒|无酒精|不含酒|没有酒精|不能喝酒/.test(restRaw),
     signatures: /\b(known for|famous for|famous|signature|signatures|specials|speciality|specialty|specialities|starred|must try|must tries|terkenal|istimewa|paling terkenal|house special)\b/.test(restText) || /招牌|拿手|必点|特色菜|最有名|镇店/.test(restRaw),

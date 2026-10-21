@@ -73,7 +73,7 @@ describe("the small model", () => {
     expect(sent).toHaveLength(1);
     expect(sent[0].tools).toBeUndefined();
     const system = (sent[0].messages as { content: string }[])[0].content;
-    expect(system).toContain("Penang Assam Laksa | RM15.50");
+    expect(system).toContain("Penang Assam Laksa | 15.50");
     expect(system).toMatch(/allergens: /);
     expect(r.items.map((i) => i.name)).toEqual(expect.arrayContaining(["Curry Mee", "Penang Assam Laksa"]));
   });

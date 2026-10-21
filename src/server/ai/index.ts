@@ -6,6 +6,7 @@ import { formatMoney } from "../../shared/format";
 import { parseFloorText, parseMenuText, stationFor } from "../../shared/menuParser";
 import type { BranchCtx } from "../domain/context";
 import { menuAt, type ImportItem } from "../domain/menu";
+import { clockAt } from "../../shared/schedule";
 import type { TableInput } from "../domain/floor";
 import { localParts } from "../ids";
 import { answerWithClaude, claudeEnabled, extractWithClaude, narrateWithClaude, type ClaudeEnv } from "./claude";
@@ -52,7 +53,8 @@ async function baskets(db: D1Database, branchId: string): Promise<Pick<Assistant
 }
 
 export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<AssistantContext> {
-  const menu = await menuAt(db, ctx);
+  const at = Date.now();
+  const menu = await menuAt(db, ctx, at);
   const since = Date.now() - 7 * 86_400_000;
   const [pop, basket, platform, chat] = await Promise.all([
     db
@@ -70,6 +72,10 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
     branchName: ctx.branch.name,
     currency: ctx.config.currency,
     menuLanguage: menu.language,
+    now: menu.now,
+    menus: menu.menus,
+    rules: menu.rules,
+    clock: clockAt(at, ctx.config.timezone),
     items: menu.items.map((i) => ({ ...i, category: catName.get(i.categoryId), popularity: popularity.get(i.id) ?? 0 })),
     ...basket,
     ...chat,

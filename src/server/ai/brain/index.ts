@@ -6,6 +6,7 @@
 import { ALLERGEN_LABELS, type Allergen } from "../../../shared/allergens";
 import { localizeItem } from "../../../shared/menuI18n";
 import type { MenuItem } from "../../../shared/types";
+import { clockLabel, scheduleName, weekdayNames, type TimedMenu } from "../../../shared/schedule";
 import { formatters, translator, type MessageKey } from "../../../i18n/core";
 import { normalize } from "../../../shared/brain/text";
 import type { Intent } from "../../../shared/brain/intentModel";
@@ -256,7 +257,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const stop = en ? "." : "。";
   const sp = en ? " " : "";
   const brief = (i: Item, reason?: string) => ({ id: i.id, name: i.name, price: i.price, reason });
-  const line = (i: Item) => `${name(i)} (${money(i.price)})`;
+  // a dish on a deal says so: "Teh Tarik (RM3.50, usually RM5.00)"
+  const line = (i: Item) => `${name(i)} (${money(i.price)}${i.listPrice && i.listPrice > i.price ? `${t("assistantReply.listSep")}${t("assistantReply.usually", { price: money(i.listPrice) })}` : ""})`;
+  // "from 3:00 pm today", "from Sat 7:00 am"
+  const when = (n: { weekday: number; time: string; today: boolean }) =>
+    n.today ? t("assistantReply.fromToday", { time: clockLabel(n.time, locale) }) : t("assistantReply.fromDay", { day: weekdayNames(locale)[n.weekday], time: clockLabel(n.time, locale) });
+  const until = (time: string | null | undefined) => (time ? t("assistantReply.untilTime", { time: clockLabel(time, locale) }) : "");
+  const menuName = (m: { name: string; translations?: TimedMenu["translations"] }) => scheduleName(m, locale);
 
   const live = ctx.items.filter((i) => i.active && !i.soldOut && i.servedNow !== false);
   const mentioned = u.dishes.map((d) => ctx.items.find((i) => i.id === d.id)!).filter(Boolean);
@@ -273,7 +280,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // a card is an "add to order" button: never one for a dish that breaks an allergy or diet the guest
   // stated, even when the text is warning them about it
   const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet])] };
-  const safeCard = (i: Item) => allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
+  // ...and none for a dish that isn't served right now (it can't be ordered yet)
+  const safeCard = (i: Item) => i.servedNow !== false && allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
   const reply = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
     answer,
     items: items.filter(safeCard).slice(0, 6).map((i) => brief(i, reasonFor(i))),
@@ -353,6 +361,55 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
 
   // "what are you known for?", "chef's specials": the signatures, not the story
   if (u.signatures && !mentioned.length && ["about", "out_of_scope", "greeting", "recommend", "dish_info", "dish_allergen", "compare"].includes(intent)) intent = "recommend";
+  // ---- what's on when: deals, timed and seasonal menus, a dish not served now ----
+  const rank = (pool: Item[]) => [...pool].sort((a, b) => baseScore(b, ctx) - baseScore(a, ctx));
+  const notNowNote = (i: Item) => {
+    const n = i.nextServed;
+    if (i.servedNow !== false || !n) return "";
+    const m = ctx.menus?.find((x) => x.id === n.menuId);
+    return t("assistantReply.notNow", { dish: name(i), menu: m ? menuName(m) : n.menu, when: when(n) });
+  };
+  // "any promo?", "happy hour?", "优惠": the dishes on a deal now, or when the next one starts
+  if (u.asksDeals && !mentioned.length) {
+    const course = u.categories.length ? live.filter((i) => u.categories.includes(i.category ?? "")) : u.courses.length ? live.filter((i) => u.courses.some((k) => courseDishes(ctx.items as Dish[], k).some((d) => d.id === i.id))) : live;
+    const dealt = course.filter((i) => i.deal && allowed(i, c));
+    if (dealt.length) {
+      const byDeal = new Map<string, Item[]>();
+      for (const i of dealt) byDeal.set(i.deal!.id, [...(byDeal.get(i.deal!.id) ?? []), i]);
+      const parts = [...byDeal].map(([id, xs]) => {
+        const d = ctx.now?.deals.find((x) => x.id === id);
+        return `${t("assistantReply.dealsNow", { deal: d?.name ?? xs[0].deal!.name, until: until(d?.until) })}${sp}${rank(xs).slice(0, 4).map(line).join(t("assistantReply.itemSep"))}${stop}`;
+      });
+      return reply("recommend", parts.join(sp), rank(dealt).slice(0, 6));
+    }
+    const next = [...(ctx.now?.dealsNext ?? [])].sort((a, b) => Number(b.today) - Number(a.today));
+    const sig = rank(live.filter((i) => !isDrink(i) && allowed(i, c))).slice(0, 3);
+    const ahead = next.length ? `${sp}${next.slice(0, 2).map((d) => t("assistantReply.dealsNext", { deal: d.name, when: when(d) })).join(sp)}` : "";
+    return reply("recommend", `${t("assistantReply.dealsNone")}${ahead}${sp}${t("assistantReply.meanwhile", { list: list(sig.map(line)) })}`, sig);
+  }
+  // "breakfast?", "what's for supper?", "anything seasonal?", "早餐": a timed menu of this restaurant
+  const timed = (ctx.menus ?? []).filter((m) => {
+    if (u.asksSeasonal && /season|limited|festive|special|musim|raya|cny|durian|mooncake|季|限|节/i.test(m.name)) return true;
+    const words = normalize(m.name).split(" ").filter((w) => w.length >= 4 && !/^(menu|hour|hours|time|bites|specials?|items?|daily)$/.test(w));
+    const zh = Object.values(m.translations ?? {}).map((x) => x?.name ?? "").filter((x) => x.length >= 2);
+    const text = normalize(u.text);
+    const syn = (w: string) => ({ breakfast: /sarapan|早餐|早饭|morning/, lunch: /tengah ?hari|午餐|午饭/, dinner: /makan malam|晚餐|晚饭/, supper: /late night|lewat malam|宵夜|夜宵/ } as Record<string, RegExp>)[w];
+    return words.some((w) => new RegExp(`\\b${w}s?\\b`).test(text) || syn(w)?.test(`${text} ${u.text}`)) || zh.some((z) => u.text.includes(z));
+  });
+  if (timed.length && !mentioned.length && !u.asksDeals) {
+    const on = timed.filter((m) => ctx.now?.menus.some((x) => x.id === m.id));
+    if (on.length) {
+      const pool = rank(live.filter((i) => on.some((m) => (i.menuIds ?? []).includes(m.id)) && allowed(i, c)));
+      if (!pool.length) return reply("recommend", t("assistantReply.noneFound", { filters: filterWords() || t("assistantReply.whatYouAsked") }), []);
+      const m = on[0];
+      const picks = pool.slice(0, Math.min(4, u.howMany ?? 4));
+      return reply("recommend", `${t("assistantReply.fromMenu", { menu: menuName(m), until: until(ctx.now?.menus.find((x) => x.id === m.id)?.until) })}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
+    }
+    const m = timed[0];
+    const later = ctx.items.find((i) => (i.menuIds ?? []).includes(m.id) && i.nextServed?.menuId === m.id)?.nextServed;
+    const sig = rank(live.filter((i) => !isDrink(i) && allowed(i, c))).slice(0, 3);
+    if (later) return reply("recommend", t("assistantReply.menuLater", { menu: menuName(m), when: when(later), list: list(sig.map(line)) }), sig);
+  }
   // a plain search of the menu ("chicken", "有没有披萨？"): what matches, or an honest "we don't have it"
   const searchable = !mentioned.length && !nth && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null) &&
     // "有没有云吞面？" names a dish more exactly than its course (面) does
@@ -424,6 +481,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         if (desc(item)) s += `${sp}${t("assistantReply.madeWith", { description: desc(item).replace(/[.。]+$/, "") })}`;
         return s;
       });
+      for (const item of focus) if (notNowNote(item)) parts.push(notNowNote(item));
       // and, when they're avoiding it, what they can have instead
       const unsafe = focus.filter((i) => avoid.some((a) => i.allergens.includes(a)));
       if (unsafe.length) {
@@ -446,6 +504,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       parts.push(`${money(item.price)}${stop}`);
       parts.push(item.spiceLevel ? t("assistantReply.spiceLevel", { level: item.spiceLevel }) : t("assistantReply.notSpicySentence"));
       if (item.allergens.length) parts.push(t("assistantReply.allergensLabel", { list: list(item.allergens.map(allergen)) }).trim());
+      if (notNowNote(item)) parts.push(notNowNote(item));
       return { ...reply(intent, parts.join(sp), [item]), safetyNote: item.allergens.length || safety ? allyNote(locale) : undefined };
     }
 
@@ -546,7 +605,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         const key = `assistantReply.${s}Of` as MessageKey;
         return reply(intent, t(key, { dish: name(top), price: money(top.price), level: top.spiceLevel }), [top]);
       }
-      const picks = ranked(pool).slice(0, 4);
+      const picks = ranked(pool).slice(0, Math.min(4, u.howMany ?? 4));
       return reply(intent, `${t("assistantReply.ofThose", { filters: filterWords() || t("assistantReply.whatYouAsked") })}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
     }
 
@@ -583,7 +642,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const wantsDrinks = u.courses.includes("drinks") || (u.categories.length > 0 && pool.every(isDrink));
       // "the cheapest thing", "the priciest": the whole menu, drinks too
       const literal = u.superlative === "cheapest" || u.superlative === "priciest";
-      const picks = (wantsDrinks || literal || u.signatures ? order : [...order.filter((i) => !isDrink(i)), ...order.filter(isDrink).slice(0, 1)]).slice(0, 4);
+      const picks = (wantsDrinks || literal || u.signatures ? order : [...order.filter((i) => !isDrink(i)), ...order.filter(isDrink).slice(0, 1)]).slice(0, Math.min(4, u.howMany ?? 4));
       const filters = filterWords();
       const signatures = picks.filter((p) => p.isSignature);
       const intro = filters

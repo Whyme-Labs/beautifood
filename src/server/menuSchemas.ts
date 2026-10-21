@@ -29,7 +29,11 @@ export const ItemInput = z.object({
 });
 
 const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Use HH:MM");
-export const Window = z.object({ days: z.array(z.number().int().min(0).max(6)).min(1).max(7), from: hhmm, to: hhmm }).strict();
+const ymd = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/, "Use YYYY-MM-DD");
+export const Window = z
+  .object({ days: z.array(z.number().int().min(0).max(6)).min(1).max(7), from: hhmm, to: hhmm, start: ymd.optional(), end: ymd.optional() })
+  .strict()
+  .refine((w) => !w.start || !w.end || w.start <= w.end, "start must be on or before end");
 const Branches = z.array(z.string().max(40)).max(50);
 
 export const TimedMenuInput = z

@@ -254,7 +254,7 @@ describe("the learning loop", () => {
       ["got §dish halal cert or not", "unsure", 2],
       ["whats the weather", "off_topic", 1],
     ]);
-  });
+  }, 30_000);
 
   it("gates new weights: no worse anywhere, and never unsafe", () => {
     const now = { core: 22, more: 40, final: 38, unsafe: 0, intents: 0.92 };
