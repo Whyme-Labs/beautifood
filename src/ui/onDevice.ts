@@ -55,13 +55,16 @@ export const TJS_MODELS: ModelChoice[] = [
   { id: "gemma-4-E2B-it", repo: "onnx-community/gemma-4-E2B-it-ONNX", rev: "6f21c99d7e18237f8d2ce92aadfdbfeba877f63a", label: "Gemma 4 E2B it (text only)", mb: 3158, mbCpu: null, memMB: 3800, note: "strongest; laptops with 4 GB+ GPU memory", thinks: true },
 ];
 
-// WebLLM: its three smallest useful prebuilt chat models. Sizes: the sum of each model's
+// WebLLM: the small prebuilt chat models worth trying on a phone, oldest to newest. Sizes: the sum of each model's
 // tensor-cache.json records on Hugging Face (mlc-ai/<id>), plus the model library (~5.5 MB) and
 // web-llm itself (~6 MB). Memory: vram_required_MB from web-llm's prebuiltAppConfig (f16 build).
 export const WEBLLM_MODELS: ModelChoice[] = [
-  { id: "Qwen2.5-0.5B-Instruct-q4f16_1-MLC", idF32: "Qwen2.5-0.5B-Instruct-q4f32_1-MLC", label: "Qwen2.5 0.5B Instruct", mb: 290, memMB: 945, note: "tiny; reads Chinese" },
-  { id: "Llama-3.2-1B-Instruct-q4f16_1-MLC", idF32: "Llama-3.2-1B-Instruct-q4f32_1-MLC", label: "Llama 3.2 1B Instruct", mb: 707, memMB: 879, note: "1B; English first" },
-  { id: "Qwen2.5-1.5B-Instruct-q4f16_1-MLC", idF32: "Qwen2.5-1.5B-Instruct-q4f32_1-MLC", label: "Qwen2.5 1.5B Instruct", mb: 880, memMB: 1630, note: "small; better Chinese" },
+  { id: "Qwen2.5-0.5B-Instruct-q4f16_1-MLC", idF32: "Qwen2.5-0.5B-Instruct-q4f32_1-MLC", label: "Qwen2.5 0.5B Instruct", mb: 290, memMB: 945, note: "tiny and old; runs on iPhone, weak answers" },
+  { id: "Llama-3.2-1B-Instruct-q4f16_1-MLC", idF32: "Llama-3.2-1B-Instruct-q4f32_1-MLC", label: "Llama 3.2 1B Instruct", mb: 707, memMB: 879, note: "1B; less GPU memory than Qwen2.5 0.5B" },
+  { id: "Qwen3-0.6B-q4f16_1-MLC", idF32: "Qwen3-0.6B-q4f32_1-MLC", label: "Qwen3 0.6B", mb: 347, memMB: 1403, note: "newer Qwen; reads Chinese", thinks: true },
+  { id: "Qwen3.5-0.8B-q4f16_1-MLC", idF32: "Qwen3.5-0.8B-q4f32_1-MLC", label: "Qwen3.5 0.8B", mb: 436, memMB: 1629, note: "newest small Qwen", thinks: true },
+  { id: "Qwen3-1.7B-q4f16_1-MLC", idF32: "Qwen3-1.7B-q4f32_1-MLC", label: "Qwen3 1.7B", mb: 980, memMB: 2037, note: "stronger; newer phones", thinks: true },
+  { id: "Qwen3.5-2B-q4f16_1-MLC", idF32: "Qwen3.5-2B-q4f32_1-MLC", label: "Qwen3.5 2B", mb: 1071, memMB: 2245, note: "strongest that may fit a phone", thinks: true },
 ];
 
 // bartowski/Qwen2.5-0.5B-Instruct-GGUF at a fixed commit: Q4_K_M is 397,808,192 bytes, plus the
@@ -427,8 +430,8 @@ interface WebLLMEngine {
   unload(): Promise<void>;
 }
 interface WebLLMLib {
-  CreateWebWorkerMLCEngine(worker: Worker, model: string, cfg: Record<string, unknown>): Promise<WebLLMEngine>;
-  CreateMLCEngine(model: string, cfg: Record<string, unknown>): Promise<WebLLMEngine>;
+  CreateWebWorkerMLCEngine(worker: Worker, model: string, cfg: Record<string, unknown>, chat?: Record<string, unknown>): Promise<WebLLMEngine>;
+  CreateMLCEngine(model: string, cfg: Record<string, unknown>, chat?: Record<string, unknown>): Promise<WebLLMEngine>;
   hasModelInCache(model: string): Promise<boolean>;
 }
 
@@ -447,6 +450,9 @@ export async function loadWebLLM(choice: ModelChoice, o: LoadOptions): Promise<E
     o.onProgress({ frac: r.progress, text: r.text });
   };
   const cfg = { initProgressCallback, logLevel: "WARN" };
+  // the menu prompt is ~1k tokens and answers 200: a 2k context keeps the KV cache (and the tab's
+  // memory, which iPhone Safari watches closely) well under the models' 4k defaults
+  const chatOpts = { context_window_size: 2048 };
   let worker: Worker | null = null;
   let engine: WebLLMEngine;
   let inWorker = true;
@@ -459,7 +465,7 @@ export async function loadWebLLM(choice: ModelChoice, o: LoadOptions): Promise<E
     const stop = () => w.terminate();
     o.signal.addEventListener("abort", stop, { once: true });
     try {
-      engine = await untilAbort(Promise.race([lib.CreateWebWorkerMLCEngine(w, model, cfg), failed]), o.signal);
+      engine = await untilAbort(Promise.race([lib.CreateWebWorkerMLCEngine(w, model, cfg, chatOpts), failed]), o.signal);
     } finally {
       o.signal.removeEventListener("abort", stop);
       URL.revokeObjectURL(url);
@@ -470,16 +476,16 @@ export async function loadWebLLM(choice: ModelChoice, o: LoadOptions): Promise<E
     if (o.signal.aborted || !/worker/i.test(errText(e))) throw e;
     // some browsers cannot start module workers from a blob: run on the page instead
     inWorker = false;
-    engine = await untilAbort(lib.CreateMLCEngine(model, cfg), o.signal);
+    engine = await untilAbort(lib.CreateMLCEngine(model, cfg, chatOpts), o.signal);
   }
   const loadEnd = performance.now();
   const downloadMs = lastFetch === null ? (cached ? 0 : null) : (lastFetch as number) - t0;
   return {
-    report: { model, cached, downloadMB: fetchedMB ?? (cached ? 0 : choice.mb), downloadMs, loadMs: downloadMs === null ? loadEnd - t0 : loadEnd - t0 - downloadMs, detail: { library: `@mlc-ai/web-llm@${WEBLLM_VERSION}`, f16: model === choice.id, inWorker } },
+    report: { model, cached, downloadMB: fetchedMB ?? (cached ? 0 : choice.mb), downloadMs, loadMs: downloadMs === null ? loadEnd - t0 : loadEnd - t0 - downloadMs, detail: { library: `@mlc-ai/web-llm@${WEBLLM_VERSION}`, f16: model === choice.id, inWorker, contextWindow: chatOpts.context_window_size } },
     generate: (messages, g) =>
       timed(async (onDelta) => {
         let usage: WebLLMChunk["usage"] = null;
-        const stream = await engine.chat.completions.create({ messages, stream: true, max_tokens: g.maxTokens, temperature: 0.2, stream_options: { include_usage: true } });
+        const stream = await engine.chat.completions.create({ messages, stream: true, max_tokens: g.maxTokens, temperature: 0.2, stream_options: { include_usage: true }, ...(choice.thinks ? { extra_body: { enable_thinking: false } } : {}) });
         const stop = () => void engine.interruptGenerate();
         g.signal.addEventListener("abort", stop, { once: true });
         try {
