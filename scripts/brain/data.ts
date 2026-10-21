@@ -4,6 +4,7 @@
 // Placeholders: {d} {d2} a dish, {a} an allergen, {c} a course, {diet}, {n} {n2} a number, {p} a price.
 import type { Intent } from "../../src/shared/brain/intentModel";
 import type { Dish } from "../../src/server/ai/brain/understand";
+import { readFileSync } from "node:fs";
 import { hash } from "../../src/shared/brain/text";
 import { trainingMenus } from "./menus";
 
@@ -209,7 +210,21 @@ export interface Example {
   text: string;
   intent: Intent;
   items: Dish[];
+  /** Already as the model reads it (§dish, §num): harvested from real guests, labelled offline. */
+  delex?: boolean;
 }
+
+/** Real guest questions the brain misread, labelled offline (scripts/brain/label.ts). */
+export interface Harvested {
+  /** As the intent model read it: dish names as §dish, numbers as §num. */
+  text: string;
+  intent: Intent;
+}
+
+export const HARVESTED: Harvested[] = JSON.parse(readFileSync(new URL("./harvested.json", import.meta.url), "utf8"));
+
+/** Each real question counts this many times: there are few of them next to the templates. */
+const HARVEST_WEIGHT = 3;
 
 export function generate(perIntent: number, seed = 7): Example[] {
   const r = rng(seed);
@@ -245,6 +260,7 @@ export function generate(perIntent: number, seed = 7): Example[] {
     const text = x < 0.25 ? gibberish(r) : x < 0.4 ? pick(OFF_TOPIC.zh) : `${pick(OFF_TOPIC.ask)} ${pick(OFF_TOPIC.thing)}`;
     out.push({ text, intent: "out_of_scope", items: pick(menus).items });
   }
+  for (const h of HARVESTED) for (let k = 0; k < HARVEST_WEIGHT; k++) out.push({ text: h.text, intent: h.intent, items: [], delex: true });
   // shuffle
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(r() * (i + 1));
@@ -254,4 +270,4 @@ export function generate(perIntent: number, seed = 7): Example[] {
 }
 
 /** Changes whenever the templates, fillers or training menus do: the weights must be retrained then. */
-export const dataHash = () => hash(JSON.stringify([TEMPLATES, FILLERS, OFF_TOPIC, trainingMenus()])).toString(16);
+export const dataHash = () => hash(JSON.stringify([TEMPLATES, FILLERS, OFF_TOPIC, trainingMenus(), HARVESTED])).toString(16);

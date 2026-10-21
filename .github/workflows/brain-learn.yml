@@ -1,0 +1,74 @@
+name: Menu brain learning run
+
+# The learning loop (docs/menu-brain.md), on demand: harvest the guest questions the brain was
+# unsure of from the last 30 days of the assistant's log, label them with a large model (only if
+# an ANTHROPIC_API_KEY secret exists; otherwise a dry run), retrain the intent model, and gate it
+# against every eval set. Nothing is committed or deployed: the proposed weights and data are
+# uploaded as the brain-learn artifact for a person to review and commit.
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: Days of the assistant log to learn from
+        default: "30"
+
+permissions:
+  contents: read
+
+jobs:
+  learn:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 30
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: npx void prepare
+      - name: Dump the assistant log
+        # questions are stored only as the model read them (dish names as §dish, no emails or phone numbers)
+        run: |
+          days=$(echo "${{ inputs.days }}" | tr -cd '0-9'); days=${days:-30}
+          mkdir -p brain-learn
+          npx wrangler d1 execute beautifood-app-db --remote --json \
+            --command "SELECT question, lang, intent, confidence, confident, shown, added FROM assistant_turns WHERE created_at > (strftime('%s','now') - $days*86400) * 1000" > brain-learn/turns.json
+          jq '[.[].results | length] | add' brain-learn/turns.json
+      - name: Harvest
+        run: npx tsx scripts/brain/harvest.ts brain-learn/turns.json brain-learn/to-label.json
+      - name: Label
+        run: npx tsx scripts/brain/label.ts brain-learn/to-label.json
+      - name: Train and gate
+        # writes the proposed weights only if they do no worse on every eval set, with nothing unsafe
+        run: |
+          npx tsx scripts/brain/train.ts --out brain-learn/weights.gen.ts | tee brain-learn/train.log
+          cp scripts/brain/harvested.json brain-learn/harvested.json
+          {
+            echo "## Menu brain learning run"
+            echo
+            echo '```'
+            grep -E "shipped|candidate|wrote" brain-learn/train.log
+            echo '```'
+            echo
+            echo "To ship: copy harvested.json to scripts/brain/ and weights.gen.ts to src/shared/brain/ from the brain-learn artifact, then commit."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: brain-learn
+          # turns.json stays out: the artifact carries only what training needs
+          path: |
+            brain-learn/to-label.json
+            brain-learn/harvested.json
+            brain-learn/weights.gen.ts
+            brain-learn/train.log
+          if-no-files-found: ignore

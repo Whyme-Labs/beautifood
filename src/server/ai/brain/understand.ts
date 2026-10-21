@@ -4,7 +4,7 @@
 // pedas", "不辣"), and what it refers back to ("those", "that one"). The intent comes from the
 // neural model, reading the question with the dishes replaced by §dish so it works for any menu.
 import type { Allergen } from "../../../shared/allergens";
-import { classify, loadModel, type Intent, type IntentGuess, type IntentModel } from "../../../shared/brain/intentModel";
+import { classify, loadModel, type Intent, type IntentGuess, type IntentModel, type IntentWeights } from "../../../shared/brain/intentModel";
 import { editDistance, normalize, tokens } from "../../../shared/brain/text";
 import { WEIGHTS } from "../../../shared/brain/weights.gen";
 import { mentionedAllergens } from "../local";
@@ -57,6 +57,11 @@ export interface Understanding {
 
 let model: IntentModel | null = null;
 export const intentModel = () => (model ??= loadModel(WEIGHTS));
+
+/** Swap the intent model (the training gate scores candidate weights against the shipped ones). */
+export function useWeights(w: IntentWeights) {
+  model = loadModel(w);
+}
 
 // ---- dishes ----
 

@@ -42,11 +42,18 @@ conversation, answers).
   about that dish's allergens, whatever the model says. Allergies and diets the guest mentioned
   earlier stay in force for the rest of the chat. "Those", "it" and "which one" refer to the dishes
   the last answer showed.
-- **Picking dishes** ranks by signature and smoothed popularity. Pairings use lift from the branch's
-  last 60 days of orders (how much more often guests order B with A than at all). Without that
-  data, they fall back to a content prior: something cold and refreshing for a rich or spicy dish. Group plans spread
-  dishes across courses and keep within a stated total. "Something light" ranks by how filling
-  each dish looks.
+- **Picking dishes** ranks by signature, smoothed popularity and, once a dish has been shown in
+  the chat at least 10 times, how often guests add it from there (a small, smoothed boost).
+  Group plans spread dishes across courses and keep within a stated total. "Something light"
+  ranks by how filling each dish looks.
+- **Pairings** use the most specific evidence there is, with each level shrunk towards the next
+  (see "Learning across restaurants" below):
+  1. this branch's own orders over the last 60 days;
+  2. what guests order together across every restaurant, by dish concept;
+  3. a hand-written prior of classic pairings.
+
+  The answer says which one decided: "guests here often order them together", "guests at many
+  restaurants order these together", or "a classic pairing".
 - **Answers** are templates in each language (`assistantReply.*` in `src/i18n/locales`).
 
 A language model is optional, and off unless `ASSISTANT_PROVIDER` is set. When it's on, it gets
@@ -78,21 +85,52 @@ templates.
   npx tsx scripts/brain/train.ts
   ```
 
-  Training takes about 6 seconds and is deterministic. A unit test fails if the weights are older
-  than the data. Don't copy questions from the held-out or final sets into the templates; that
+  Training takes about 6 seconds and is deterministic. It writes the weights only if they pass
+  the gate (see the learning loop below). A unit test fails if the weights are older than the data. Don't copy questions from the held-out or final sets into the templates; that
   would only make the scores lie.
 - **New constraint words** (a diet, a course, a spice word) go in `understand.ts`. New answer
-  wording goes in the locale files.
+  wording goes in the locale files. New dish concepts and classic pairings go in `concepts.ts`.
 - **Run the checks:** `npx vitest run test/unit/brain.test.ts`.
 
-## What's next
+## Learning across restaurants
 
-1. **Cross-restaurant pairings.** Map dishes to shared concepts (curry, iced lime, nasi lemak,
-   teh tarik), so a new restaurant gets pairings learnt from every other one on day one.
-2. **The learning loop.** Questions the brain rejected or answered badly (no order followed)
-   become new training examples. A large model labels them offline, and each retrained model
-   ships only if it passes the eval sets above.
-3. **Learning to rank** from which suggested dishes guests actually add to their cart.
+Each dish maps to shared concepts (`src/server/ai/brain/concepts.ts`): curry noodles, coconut rice,
+milk tea, iced citrus, dim sum, cake and so on, read from its name, description and course, in English,
+Malay and Chinese. A daily cron (`crons/daily.ts`) rebuilds a platform table of which concepts guests order
+together, from every restaurant's last 90 days (`src/server/ai/brain/platform.ts`).
+
+Only aggregates leave a restaurant. A concept or pair is stored only once at least **3 restaurants
+and 20 orders** back it, and the total order count is withheld until the platform has 3
+restaurants, so no restaurant's sales can be read back from the table.
+
+Lift is smoothed at every level. The platform's concept lift counts the prior as 30 pseudo-orders,
+so real orders overrule it within a few dozen. A branch's lift counts the platform's as 8
+pseudo-orders, so a busy branch's own habits win. That way a restaurant's first day gets pairings
+that guests elsewhere have shown work, and its own data takes over as it comes in.
+
+## The learning loop
+
+1. **Log.** Every assistant answer is logged in `assistant_turns`: the question only as the
+   model read it (dish names as `§dish`, emails and phone numbers removed), the intent, its
+   confidence, the dishes shown, and which of them the guest added from the chat card (the
+   chat posts to `/api/public/branches/:ref/assistant/added`). Kept 90 days; the daily cron
+   purges older entries.
+2. **Harvest.** `scripts/brain/harvest.ts` picks out the questions worth teaching: ones the
+   brain was unsure of, called off-topic, or answered with dishes nobody added. The most-asked
+   come first, and eval questions are never picked. Its header shows how to dump the log
+   with `wrangler d1 execute` (production) or `void db execute` (local).
+3. **Label.** `scripts/brain/label.ts` has a large model label them offline, 40 to a request.
+   Only labels it is sure of are added to `scripts/brain/harvested.json`. The large model
+   is the teacher here and never answers guests. Without `ANTHROPIC_API_KEY` it does a dry run.
+4. **Train and gate.** `scripts/brain/train.ts` trains on the templates plus the harvested
+   questions (each counted 3 times), then scores the new weights and the shipped ones on every
+   eval set (core, more, the café, held-out intents). It writes the new weights only if they
+   are no worse on each and give no unsafe answer. It refuses to train at all if a harvested
+   question is an eval question.
+
+The **Menu brain learning run** workflow (manual only) runs steps 2–4 on production's log and
+uploads the proposed `harvested.json` and weights as an artifact. It commits nothing; a person
+reviews the artifact and commits it.
 
 Research behind the design: few-shot intent classification with small models
 ([SetFit](https://www.alphaxiv.org/abs/2209.11055),

@@ -10,7 +10,9 @@ import type { AssistantContext } from "../../src/server/ai/local";
 import { conceptsOf, type PlatformPairs } from "../../src/server/ai/brain/concepts";
 import { aggregateConcepts, MIN_TENANTS } from "../../src/server/ai/brain/platform";
 import { scrub } from "../../src/server/ai/brain/log";
-import { dataHash, TEMPLATES } from "../../scripts/brain/data";
+import { dataHash, HARVESTED, TEMPLATES } from "../../scripts/brain/data";
+import { asReadText, evaluate, passesGate, protectedQuestions } from "../../scripts/brain/evalsets";
+import { harvest, rowsOf } from "../../scripts/brain/harvest";
 import { HELD_OUT } from "./brainIntents";
 import { CAFE_MENU, FINAL_CASES } from "./brainFinal";
 
@@ -224,5 +226,47 @@ describe("the learning loop's log", () => {
     const before = answerGuest(ctx, [{ role: "user", content: "anything vegetarian?" }]).items.map((i) => i.name);
     const after = answerGuest(learnt, [{ role: "user", content: "anything vegetarian?" }]).items.map((i) => i.name);
     expect(after.indexOf("Garden Salad")).toBeLessThan(before.indexOf("Garden Salad"));
+  });
+});
+
+describe("the learning loop", () => {
+  it("never trains on an eval or held-out question", () => {
+    const guarded = protectedQuestions();
+    expect(HARVESTED.filter((h) => guarded.has(asReadText(h.text)))).toEqual([]);
+  });
+
+  it("harvests what the brain was unsure of, most asked first, and leaves eval questions out", () => {
+    const row = (question: string, intent: string, confidence: number, shown = "[]", added = "[]") => ({ question, lang: "en", intent, confidence, confident: 1, shown, added });
+    const picked = harvest(
+      rowsOf([
+        {
+          results: [
+            row("got §dish halal cert or not", "dish_allergen", 400),
+            row("got §dish halal cert or not", "dish_allergen", 400),
+            row("whats the weather", "out_of_scope", 990),
+            row("what's your signature dish", "recommend", 990, '["d1"]'),
+            row("anything §dish", "recommend", 990, '["d1"]', '["d1"]'),
+          ],
+        },
+      ]),
+    );
+    expect(picked.map((p) => [p.question, p.reason, p.count])).toEqual([
+      ["got §dish halal cert or not", "unsure", 2],
+      ["whats the weather", "off_topic", 1],
+    ]);
+  });
+
+  it("gates new weights: no worse anywhere, and never unsafe", () => {
+    const now = { core: 22, more: 40, final: 38, unsafe: 0, intents: 0.92 };
+    expect(passesGate(now, now).ok).toBe(true);
+    expect(passesGate({ ...now, intents: 0.95 }, now).ok).toBe(true);
+    expect(passesGate({ ...now, final: 37, intents: 0.99 }, now)).toEqual({ ok: false, why: ["final: 37 < 38"] });
+    expect(passesGate({ ...now, unsafe: 1 }, now).ok).toBe(false);
+  });
+
+  it("the shipped weights pass their own gate", () => {
+    const s = evaluate();
+    expect(s.unsafe).toBe(0);
+    expect(s).toMatchObject({ core: EVAL_CASES.length, more: MORE_CASES.length });
   });
 });
