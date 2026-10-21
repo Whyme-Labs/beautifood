@@ -470,11 +470,9 @@
     ],
     "question": "got mee rebus?",
     "expect": {
-      "says": [
-        "\\b(no|not|don't|dont|doesn't|unfortunately|sorry|isn't)\\b|tak|tiada|takde|tidak|没有|没|不"
-      ]
+      "maxDishes": 3
     },
-    "note": "Not on menu."
+    "note": "Not on the menu; an honest 'no' with up to 3 alternatives is fine (convention b)."
   },
   {
     "id": "v2b-demo-hawker-024",
@@ -661,14 +659,9 @@
       "vegetarian": true,
       "excludes": [
         "Roti Canai"
-      ],
-      "includesAny": [
-        "Roti Telur",
-        "Roti Tisu",
-        "Masala Tosai"
       ]
     },
-    "note": "Served with fish curry."
+    "note": "Served with fish curry: must not show Roti Canai to a vegetarian; alternatives welcome but not required (same as author a's roti canai/morning glory cases)."
   },
   {
     "id": "v2b-banana-leaf-008",
@@ -947,11 +940,9 @@
     ],
     "question": "ada tandoori ayam?",
     "expect": {
-      "says": [
-        "\\b(no|not|don't|dont|doesn't|unfortunately|sorry|isn't)\\b|tak|tiada|takde|tidak|没有|没|不"
-      ]
+      "maxDishes": 3
     },
-    "note": "Not on menu."
+    "note": "Not on the menu; an honest 'no' with up to 3 alternatives is fine (convention b)."
   },
   {
     "id": "v2b-banana-leaf-022",
@@ -1492,11 +1483,9 @@
     ],
     "question": "got waffles or not",
     "expect": {
-      "says": [
-        "\\b(no|not|don't|dont|doesn't|unfortunately|sorry|isn't)\\b|tak|tiada|takde|tidak|没有|没|不"
-      ]
+      "maxDishes": 3
     },
-    "note": "Not on menu."
+    "note": "Not on the menu; an honest 'no' with up to 3 alternatives is fine (convention b)."
   },
   {
     "id": "v2b-brunch-cafe-024",

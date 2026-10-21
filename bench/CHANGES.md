@@ -35,3 +35,16 @@ The `test` split is frozen. It changes only to fix a wrong label, recorded here 
   them, though. From iteration 3b on, any generated training question of three or more words that
   reads like an eval or benchmark question is dropped before training.
 - Test fingerprint: `1e7283da2d8e1f0f` (404 cases), unchanged.
+
+## v2 held-out set (bench/heldout/): 2026-10-21
+
+- 510 cases, all `test`, written by two new blind authors who read only the README, the schema and
+  the menus: 4 new menus (thai-kitchen, mamak-corner, dim-sum-house, burger-bar, with gold files) at
+  180 cases each author, plus 75 fresh cases each on the 6 v1 menus.
+- Reviewed by a third blind reviewer (`heldout/REVIEW.md`): all 510 cases and the 4 new gold files
+  checked; 17 labels changed for fairness or consistency, no unsafe label, no gold error.
+- Frozen before any engine was scored on it. No engine change may be judged on it until a further
+  set exists to replace it; it is run once per reported version.
+- Overlap with training: 23 of its questions read exactly like a template the current intent model
+  was trained on (common phrasings; `scripts/brain/leaks.ts`). Results are also given without them.
+- Fingerprint: `e9169a6edf0e3d33` (510 cases).

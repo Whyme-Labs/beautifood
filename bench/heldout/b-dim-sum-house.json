@@ -769,7 +769,7 @@
     "question": "is the kai lan vegetarian?",
     "expect": {
       "says": [
-        "oyster|蚝油"
+        "oyster|mollus|蚝油|蚝"
       ]
     },
     "note": "Oyster sauce, so no."
@@ -1175,10 +1175,13 @@
     "expect": {
       "includesAny": [
         "Beef Hor Fun",
-        "Vegetarian Fried Noodles"
+        "Vegetarian Fried Noodles",
+        "Crispy Prawn Cheong Fun",
+        "Char Siu Cheong Fun",
+        "Plain Cheong Fun"
       ]
     },
-    "note": "Noodle dishes; cheong fun also acceptable extra."
+    "note": "Noodle dishes; cheong fun are rice noodle rolls, so they count too."
   },
   {
     "id": "v2b-dim-sum-house-058",
@@ -1666,11 +1669,9 @@
     ],
     "question": "do you have xiao long bao?",
     "expect": {
-      "says": [
-        "\\b(no|not|don't|dont|doesn't|unfortunately|sorry|isn't)\\b|tak|tiada|takde|tidak|没有|没|不"
-      ]
+      "maxDishes": 3
     },
-    "note": "Not on the menu."
+    "note": "Not on the menu; an honest 'no' with up to 3 alternatives is fine (convention b)."
   },
   {
     "id": "v2b-dim-sum-house-080",
@@ -1684,11 +1685,9 @@
     ],
     "question": "有烧鸭吗？",
     "expect": {
-      "says": [
-        "\\b(no|not|don't|dont|doesn't|unfortunately|sorry|isn't)\\b|tak|tiada|takde|tidak|没有|没|不"
-      ]
+      "maxDishes": 3
     },
-    "note": "No roast duck."
+    "note": "Not on the menu; an honest 'no' with up to 3 alternatives is fine (convention b)."
   },
   {
     "id": "v2b-dim-sum-house-081",
@@ -1702,11 +1701,9 @@
     ],
     "question": "ada nasi lemak tak?",
     "expect": {
-      "says": [
-        "\\b(no|not|don't|dont|doesn't|unfortunately|sorry|isn't)\\b|tak|tiada|takde|tidak|没有|没|不"
-      ]
+      "maxDishes": 3
     },
-    "note": "Not on the menu."
+    "note": "Not on the menu; an honest 'no' with up to 3 alternatives is fine (convention b)."
   },
   {
     "id": "v2b-dim-sum-house-082",

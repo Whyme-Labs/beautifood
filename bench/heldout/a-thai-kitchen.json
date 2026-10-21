@@ -343,11 +343,14 @@
     ],
     "question": "does the tom yum have dairy in it?",
     "expect": {
+      "includes": [
+        "Tom Yum Goong"
+      ],
       "says": [
-        "milk"
+        "milk|dairy"
       ]
     },
-    "note": "Tom Yum Goong has evaporated milk."
+    "note": "No allergy stated: show the dish and state the fact (convention c). Tom Yum Goong has evaporated milk."
   },
   {
     "id": "v2a-thai-kitchen-018",
@@ -605,7 +608,8 @@
         "fish"
       ],
       "vegetarian": true,
-      "minDishes": 2
+      "minDishes": 2,
+      "safetyNote": true
     },
     "note": "Shared dishes must suit both."
   },
@@ -635,7 +639,7 @@
       ],
       "safetyNote": true
     },
-    "note": "Both Pad Thais have egg; no egg-free noodle dish (Jasmine Rice is fine)."
+    "note": "Egg allergy from earlier turn: both Pad Thais have egg; Yam Woon Sen (glass noodle salad) and Jasmine Rice are egg-free."
   },
   {
     "id": "v2a-thai-kitchen-030",
@@ -1171,10 +1175,11 @@
     "expect": {
       "includesAny": [
         "Pla Rad Prik",
-        "Pla Neung Manao"
+        "Pla Neung Manao",
+        "Tod Mun Pla"
       ]
     },
-    "note": "Whole seabass dishes."
+    "note": "Whole seabass dishes; Tod Mun Pla (fish cakes) is also a fish dish."
   },
   {
     "id": "v2a-thai-kitchen-059",

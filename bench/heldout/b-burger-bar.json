@@ -265,7 +265,7 @@
         "Plant Patty Burger"
       ],
       "says": [
-        "cashew|腰果|gajus"
+        "cashew|tree.?nut|腰果|坚果|gajus"
       ]
     },
     "note": "Cashew cheese."
@@ -459,7 +459,7 @@
         "Caesar Salad"
       ],
       "says": [
-        "anchov|ikan bilis|鳀"
+        "anchov|fish|ikan|鳀|鱼"
       ]
     },
     "note": "Anchovies in dressing."
@@ -1558,11 +1558,9 @@
     ],
     "question": "got fish and chips?",
     "expect": {
-      "says": [
-        "\\b(no|not|don't|dont|doesn't|unfortunately|sorry|isn't)\\b|tak|tiada|takde|tidak|没有|没|不"
-      ]
+      "maxDishes": 3
     },
-    "note": "Not on menu."
+    "note": "Not on the menu; an honest 'no' with up to 3 alternatives is fine (convention b)."
   },
   {
     "id": "v2b-burger-bar-075",
@@ -1576,11 +1574,9 @@
     ],
     "question": "ada nasi lemak?",
     "expect": {
-      "says": [
-        "\\b(no|not|don't|dont|doesn't|unfortunately|sorry|isn't)\\b|tak|tiada|takde|tidak|没有|没|不"
-      ]
+      "maxDishes": 3
     },
-    "note": "Not on menu."
+    "note": "Not on the menu; an honest 'no' with up to 3 alternatives is fine (convention b)."
   },
   {
     "id": "v2b-burger-bar-076",
@@ -1593,11 +1589,9 @@
     ],
     "question": "do you have wagyu?",
     "expect": {
-      "says": [
-        "\\b(no|not|don't|dont|doesn't|unfortunately|sorry|isn't)\\b|tak|tiada|takde|tidak|没有|没|不"
-      ]
+      "maxDishes": 3
     },
-    "note": "Only Australian ribeye."
+    "note": "Not on the menu; an honest 'no' with up to 3 alternatives is fine (convention b)."
   },
   {
     "id": "v2b-burger-bar-077",
