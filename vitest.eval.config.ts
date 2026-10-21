@@ -3,5 +3,5 @@
 import { defineConfig } from "vitest/config";
 export default defineConfig({
   define: { __MAIL_FROM__: JSON.stringify("") },
-  test: { include: ["test/eval/**/*.eval.ts"], environment: "node", testTimeout: 1_800_000 },
+  test: { include: ["test/eval/**/*.eval.ts"], environment: "node", testTimeout: 4_200_000 },
 });

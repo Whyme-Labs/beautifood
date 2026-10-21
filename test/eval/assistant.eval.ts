@@ -73,7 +73,10 @@ it("scores the models", async () => {
   const out: Record<string, unknown>[] = [];
   const md = ["| Model | Model alone | As deployed | Unsafe (alone / deployed) | Avg seconds | Cost per model answer |", "|---|---|---|---|---|---|"];
   const modes = (process.env.EVAL_MODES ?? "inline,tools").split(",").map((m) => m.trim()) as Mode[];
-  for (const model of models) for (const mode of modes) {
+  // models in parallel (Workers AI limits each model separately), modes and cases in order
+  const runs = await Promise.all(models.map(async (model) => {
+    const mine: { row: Record<string, unknown>; md: string; log: string[] }[] = [];
+    for (const mode of modes) {
     const alone: { c: (typeof EVAL_CASES)[number]; r: EvalReply }[] = [];
     const deployed: typeof alone = [];
     let secs = 0;
@@ -91,11 +94,20 @@ it("scores the models", async () => {
     }
     const a = score(alone);
     const d = score(deployed);
-    out.push({ model, mode, alone: a, deployed: d, avgSeconds: +(secs / calls).toFixed(2), avgCostUsd: micros / calls / 1e6, errors });
-    md.push(`| \`${model}\` (${mode}) | ${a.passed}/${a.total} | ${d.passed}/${d.total} | ${a.unsafe.length} / ${d.unsafe.length} | ${(secs / calls).toFixed(1)} | $${(micros / calls / 1e6).toFixed(5)} |`);
-    console.log(`\n=== ${model} (${mode}): alone ${a.passed}/${a.total} (unsafe ${a.unsafe.length}), deployed ${d.passed}/${d.total} (unsafe ${d.unsafe.length})`);
-    for (const x of a.results) console.log(`${x.pass ? "PASS" : "FAIL"} [${x.kind}] ${x.question}\n      → ${x.answer.replace(/\s+/g, " ").slice(0, 160)}`);
-    if (errors.length) console.log("errors:", errors.slice(0, 5));
+    const log: string[] = [];
+    const row = { model, mode, alone: a, deployed: d, avgSeconds: +(secs / calls).toFixed(2), avgCostUsd: micros / calls / 1e6, errors };
+    const line = `| \`${model}\` (${mode}) | ${a.passed}/${a.total} | ${d.passed}/${d.total} | ${a.unsafe.length} / ${d.unsafe.length} | ${(secs / calls).toFixed(1)} | $${(micros / calls / 1e6).toFixed(5)} |`;
+    log.push(`\n=== ${model} (${mode}): alone ${a.passed}/${a.total} (unsafe ${a.unsafe.length}), deployed ${d.passed}/${d.total} (unsafe ${d.unsafe.length})`);
+    for (const x of a.results) log.push(`${x.pass ? "PASS" : "FAIL"} [${x.kind}] ${x.question}\n      → ${x.answer.replace(/\s+/g, " ").slice(0, 160)}`);
+    if (errors.length) log.push(`errors: ${errors.slice(0, 5).join(" / ")}`);
+    mine.push({ row, md: line, log });
+    }
+    return mine;
+  }));
+  for (const r of runs.flat()) {
+    out.push(r.row);
+    md.push(r.md);
+    console.log(r.log.join("\n"));
   }
   const unreachable = out.filter((m) => (m.errors as string[]).length === EVAL_CASES.length).map((m) => `${m.model} (${m.mode})`);
   if (unreachable.length) console.log(`\nNo answers at all from: ${unreachable.join(", ")} (check the token has Workers AI permission)`);

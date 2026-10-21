@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: read
+  actions: read # to wait for this commit's deploy
 
 # one at a time: each run owns the Worker's EVAL_KEY while it runs
 concurrency:
@@ -26,7 +27,7 @@ concurrency:
 jobs:
   eval:
     runs-on: blacksmith-4vcpu-ubuntu-2404
-    timeout-minutes: 60
+    timeout-minutes: 90
     environment: production
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -45,6 +46,21 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # generated config (.void/tsconfig.json) the TypeScript transform reads
       - run: npx void prepare
+      - name: Wait for this commit's deploy
+        # the eval must score the code it ships with, not the version still live before the deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 90); do
+            state=$(gh api "repos/${{ github.repository }}/actions/runs?head_sha=${{ github.sha }}" --jq '[.workflow_runs[] | select(.name == "CI & Deploy")][0] | "\(.status) \(.conclusion)"')
+            case "$state" in
+              "completed success") echo "deployed"; exit 0 ;;
+              completed*) echo "::error::The deploy for this commit didn't succeed ($state)"; exit 1 ;;
+              "null null"|"") if [ "$i" -gt 6 ]; then echo "No deploy runs for this commit (nothing to wait for)"; exit 0; fi ;;
+            esac
+            sleep 20
+          done
+          echo "::error::The deploy didn't finish in 30 minutes"; exit 1
       - name: One-off key on the Worker
         run: |
           set -euo pipefail
