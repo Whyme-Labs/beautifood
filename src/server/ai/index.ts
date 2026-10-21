@@ -9,21 +9,54 @@ import { menuAt, type ImportItem } from "../domain/menu";
 import type { TableInput } from "../domain/floor";
 import { localParts } from "../ids";
 import { answerWithClaude, claudeEnabled, extractWithClaude, narrateWithClaude, type ClaudeEnv } from "./claude";
-import { answerLocally, guard, type AssistantContext, type AssistantReply } from "./local";
+import { guard, type AssistantContext, type AssistantReply } from "./local";
+import { answerGuest } from "./brain";
 import { answerWithModel, guestModel, type AiBinding } from "./guestModel";
 import { limitsFrom, mayUseModel, recordUsage, type Usage } from "./usage";
 import type { AssistantSettings } from "../appenv";
 
+/** What guests order together at a branch (last 60 days), per isolate for ten minutes: it moves slowly. */
+const basketCache = new Map<string, { at: number; value: Pick<AssistantContext, "orderCounts" | "together" | "totalOrders"> }>();
+
+async function baskets(db: D1Database, branchId: string): Promise<Pick<AssistantContext, "orderCounts" | "together" | "totalOrders">> {
+  const hit = basketCache.get(branchId);
+  if (hit && Date.now() - hit.at < 600_000) return hit.value;
+  const since = Date.now() - 60 * 86_400_000;
+  const [counts, pairs] = await db.batch([
+    db.prepare("SELECT item_id, COUNT(DISTINCT order_id) AS n FROM order_items WHERE branch_id = ? AND created_at > ? AND status <> 'void' GROUP BY item_id").bind(branchId, since),
+    db
+      .prepare(
+        `SELECT a.item_id AS a, b.item_id AS b, COUNT(DISTINCT a.order_id) AS n FROM order_items a
+         JOIN order_items b ON b.order_id = a.order_id AND b.item_id <> a.item_id AND b.status <> 'void'
+         WHERE a.branch_id = ? AND a.created_at > ? AND a.status <> 'void'
+         GROUP BY a.item_id, b.item_id HAVING n >= 2 ORDER BY n DESC LIMIT 3000`,
+      )
+      .bind(branchId, since),
+  ]);
+  const orders = await db.prepare("SELECT COUNT(DISTINCT order_id) AS n FROM order_items WHERE branch_id = ? AND created_at > ? AND status <> 'void'").bind(branchId, since).first<{ n: number }>();
+  const together: Record<string, Record<string, number>> = {};
+  for (const p of pairs.results as { a: string; b: string; n: number }[]) (together[p.a] ??= {})[p.b] = p.n;
+  const value = {
+    orderCounts: Object.fromEntries((counts.results as { item_id: string; n: number }[]).map((r) => [r.item_id, r.n])),
+    together,
+    totalOrders: orders?.n ?? 0,
+  };
+  if (basketCache.size > 500) basketCache.clear();
+  basketCache.set(branchId, { at: Date.now(), value });
+  return value;
+}
+
 export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<AssistantContext> {
   const menu = await menuAt(db, ctx);
   const since = Date.now() - 7 * 86_400_000;
-  const pop = (
-    await db
+  const [pop, basket] = await Promise.all([
+    db
       .prepare("SELECT item_id, SUM(qty) AS n FROM order_items WHERE branch_id = ? AND created_at > ? AND status <> 'void' GROUP BY item_id")
       .bind(ctx.branch.id, since)
-      .all<{ item_id: string; n: number }>()
-  ).results;
-  const popularity = new Map(pop.map((p) => [p.item_id, p.n]));
+      .all<{ item_id: string; n: number }>(),
+    baskets(db, ctx.branch.id).catch((e) => (console.warn("baskets", e), {})),
+  ]);
+  const popularity = new Map(pop.results.map((p) => [p.item_id, p.n]));
   const catName = new Map(menu.categories.map((c) => [c.id, c.name]));
   return {
     restaurant: { name: ctx.tenant.name, cuisine: ctx.tenant.cuisine, story: ctx.tenant.story, description: ctx.tenant.description },
@@ -31,14 +64,16 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
     currency: ctx.config.currency,
     menuLanguage: menu.language,
     items: menu.items.map((i) => ({ ...i, category: catName.get(i.categoryId), popularity: popularity.get(i.id) ?? 0 })),
+    ...basket,
   };
 }
 
 /**
- * The guest menu assistant. The free rules engine answers first; only what it can't really answer
- * (comparisons, pairings, moods, follow-ups) goes to the configured small model, within each
- * branch's daily allowance and the platform's monthly budget. Any failure, or a model answer that
- * puts an allergen the guest named in front of them, falls back to the engine's answer.
+ * The guest menu assistant: the menu brain (./brain) answers, on our own Worker at no cost. Only
+ * what it can't place (off-topic, or too unsure) may go to a configured language model, within
+ * each branch's daily allowance and the platform's budgets; that is off unless ASSISTANT_PROVIDER
+ * is set. Any model failure, or a model answer that puts an allergen the guest named in front of
+ * them, falls back to the brain's answer.
  */
 export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & { AI?: AiBinding }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply> {
   const actx = await assistantContext(db, ctx);
@@ -51,8 +86,8 @@ export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSet
       return item ? { ...it, label: localizeItem(item, locale, actx.menuLanguage ?? "en").name } : it;
     }),
   });
-  const local = answerLocally(actx, question, locale);
-  if (local.confident) return label(local);
+  const local = answerGuest(actx, history, locale);
+  if (local.confident !== false) return label(local);
   const m = guestModel(env);
   if (!m) return label(local);
   const scope = { tenantId: ctx.tenant.id, branchId: ctx.branch.id };
@@ -62,7 +97,7 @@ export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSet
     const r = m.provider === "anthropic" ? await answerWithClaude(env, actx, history, locale, { model: m.model, onUsage: (u) => uses.push(u) }) : await answerWithModel(m, actx, history, locale, (u) => uses.push(u));
     return label(guard(actx, question, r, local, locale));
   } catch (e) {
-    console.warn("guest model failed, using the rules engine", e);
+    console.warn("guest model failed, using the menu brain", e);
     return label(local);
   } finally {
     await recordUsage(db, { ...scope, kind: "assistant" }, uses, env.ASSISTANT_PRICE).catch((e) => console.error("ai usage", e));

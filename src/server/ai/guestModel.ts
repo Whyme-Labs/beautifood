@@ -1,5 +1,5 @@
-// The small language model behind the guest assistant, for what the rules engine can't answer
-// (comparisons, pairings, "something light", follow-ups). Any provider with an OpenAI-style chat
+// An optional language model behind the guest assistant, for what the menu brain (./brain) can't
+// place (off-topic or unclear questions). Any provider with an OpenAI-style chat
 // API works: Workers AI (a binding on our own Cloudflare account, e.g. Gemma 4), DeepSeek,
 // OpenRouter, and so on; Anthropic goes through ./claude. It sees only the restaurant's menu: in
 // the prompt for a normal menu (one call), or through the menu tools for a very large one.
@@ -31,7 +31,7 @@ export type GuestModel =
   | { provider: "openai"; model: string; baseUrl: string; apiKey: string }
   | { provider: "anthropic"; model: string };
 
-/** The configured model, or null (the rules engine answers alone). */
+/** The configured model, or null (the menu brain answers alone). */
 export function guestModel(env: GuestModelEnv): GuestModel | null {
   const p = env.ASSISTANT_PROVIDER?.trim().toLowerCase();
   const model = env.ASSISTANT_MODEL?.trim();

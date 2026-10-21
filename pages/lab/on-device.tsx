@@ -31,7 +31,8 @@ import { useToast } from "../../src/ui/components";
 import { GuestBar } from "../../src/ui/guest";
 import { EVAL_CASES, sampleDishes, score, type EvalScore } from "../../src/shared/assistantEval";
 import { caseMessages, cleanAnswer, replyFromText } from "../../src/shared/onDeviceEval";
-import { answerLocally, guard } from "../../src/server/ai/local";
+import { guard } from "../../src/server/ai/local";
+import { answerGuest } from "../../src/server/ai/brain";
 import { sampleContext } from "../../src/server/ai/evalFixture";
 import {
   asyncCapabilities,
@@ -80,7 +81,7 @@ interface CaseRow {
   tokensApprox: boolean;
   tokPerSec: number | null;
   ms: number;
-  /** As deployed: who answered (the rules engine first; the model only when it can't), and whether that passes. */
+  /** As deployed: who answered (the menu brain first; the model only when it can't), and whether that passes. */
   deployedBy: "engine" | "model" | "engine (guard)";
   deployedPass: boolean;
 }
@@ -103,7 +104,7 @@ interface Run {
   /** The tab was killed mid-run (found after the reload). */
   crashed?: boolean;
   score: Pick<EvalScore, "passed" | "total" | "unsafe"> | null;
-  /** The assistant as guests would get it: rules engine first, this model for the rest, the allergen guard. */
+  /** The assistant as guests would get it: menu brain first, this model for the rest, the allergen guard. */
   deployedScore?: Pick<EvalScore, "passed" | "total" | "unsafe"> | null;
   cases: CaseRow[];
 }
@@ -284,10 +285,12 @@ export default function OnDeviceLab() {
         const text = cleanAnswer(g.text);
         const r = replyFromText(c, text, dishes);
         results.push({ c, r });
-        // as deployed: the rules engine answers what it understands; this model the rest, through the guard
-        const local = answerLocally(ctx, c.question, c.lang);
-        const used = local.confident ? local : guard(ctx, c.question, { answer: text, items: [], engine: "model" }, local, c.lang);
-        const deployedBy: CaseRow["deployedBy"] = local.confident ? "engine" : used === local ? "engine (guard)" : "model";
+        // as deployed: the menu brain answers what it understands; this model the rest, through the guard
+        const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.question }, { role: "assistant" as const, content: b.answer }]), { role: "user" as const, content: c.question }];
+        const local = answerGuest(ctx, history, c.lang);
+        const sure = local.confident !== false;
+        const used = sure ? local : guard(ctx, c.question, { answer: text, items: [], engine: "model" }, local, c.lang);
+        const deployedBy: CaseRow["deployedBy"] = sure ? "engine" : used === local ? "engine (guard)" : "model";
         const dr =
           deployedBy === "model"
             ? { ...replyFromText(c, used.answer, dishes), ...(used.safetyNote ? { safetyNote: used.safetyNote } : {}) }
@@ -619,7 +622,7 @@ function RunCard({ run, live }: { run: Run; live: boolean }) {
         <div className="alert bad" data-testid="lab-unsafe">
           <AlertTriangle size={18} />
           <span>
-            <b>Safety failures of the model alone ({s.unsafe.length}){run.deployedScore && !run.deployedScore.unsafe.length ? "; none as deployed, where the rules engine answers these" : ""}:</b>
+            <b>Safety failures of the model alone ({s.unsafe.length}){run.deployedScore && !run.deployedScore.unsafe.length ? "; none as deployed, where the menu brain answers these" : ""}:</b>
             <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
               {s.unsafe.map((q) => (
                 <li key={q}>{q}</li>

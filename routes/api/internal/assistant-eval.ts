@@ -1,13 +1,14 @@
 // Scoring models on the guest cases with the Worker's own Workers AI binding (no extra token).
-// Answers one question about the sample restaurant with the given model, and what the rules engine
-// and the deployed assistant (engine first, model for the rest, allergen guard) would say. Only
+// Answers one question about the sample restaurant with the given model, and what the menu brain
+// and the deployed assistant (brain first, model for the rest, allergen guard) would say. Only
 // with the one-off key the eval workflow sets (EVAL_KEY); without it this route doesn't exist.
 import { z } from "zod";
 import { env } from "void/env";
 import { api, body } from "../../../src/server/http";
 import { fail } from "../../../src/server/errors";
 import { answerWithModel, type AiBinding } from "../../../src/server/ai/guestModel";
-import { answerLocally, type AssistantReply } from "../../../src/server/ai/local";
+import type { AssistantReply } from "../../../src/server/ai/local";
+import { answerGuest } from "../../../src/server/ai/brain";
 import { guard } from "../../../src/server/ai";
 import { sampleContext } from "../../../src/server/ai/evalFixture";
 import type { Usage } from "../../../src/server/ai/usage";
@@ -47,7 +48,7 @@ export const POST = api(async (c) => {
     model = { answer: `(error) ${error}`, items: [], engine: "model" };
   }
   const ms = Date.now() - t0;
-  const local = answerLocally(ctx, input.question, input.lang);
-  const deployed = local.confident || error ? local : guard(ctx, input.question, model, local, input.lang);
+  const local = answerGuest(ctx, history, input.lang);
+  const deployed = local.confident !== false || error ? local : guard(ctx, input.question, model, local, input.lang);
   return { model, deployed, uses, ms, error };
 });

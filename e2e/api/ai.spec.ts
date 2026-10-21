@@ -40,6 +40,27 @@ test.describe("AI for guests and merchants", () => {
     expect((await errorOf((await guestClient()).post(`/api/public/branches/${s.bangsar.ref}/assistant`, { data: { messages: [{ role: "user", content: "hi" }] } }), 409)).code).toBe("assistant_off");
   });
 
+  test("menu brain: remembers an allergy across the chat, pairs a drink, plans for a group, follows up", async () => {
+    const s = await seed();
+    const m = await menuItems(s.owner);
+    const chat = async (messages: { role: "user" | "assistant"; content: string }[]) => json((await guestClient()).post(`/api/public/branches/${s.klcc.ref}/assistant`, { data: { messages } }));
+    const first = "my son is allergic to peanuts";
+    const opener = await chat([{ role: "user", content: first }]);
+    const group = await chat([{ role: "user", content: first }, { role: "assistant", content: opener.answer }, { role: "user", content: "we are 4, what should we share?" }]);
+    expect(group.items.length).toBeGreaterThanOrEqual(3);
+    for (const it of group.items) expect(m.items.find((x) => x.id === it.id)!.allergens).not.toContain("peanuts");
+    expect(group.safetyNote).toMatch(/confirm with staff/);
+
+    const pair = await chat([{ role: "user", content: "what drink goes well with curry mee?" }]);
+    expect(pair.items.some((it: any) => /drink/i.test(m.categories.find((c) => c.id === (m.items.find((x) => x.id === it.id) as any).categoryId)?.name ?? ""))).toBe(true);
+
+    const noodles = await chat([{ role: "user", content: "what noodles do you have?" }]);
+    const cheapest = await chat([{ role: "user", content: "what noodles do you have?" }, { role: "assistant", content: noodles.answer }, { role: "user", content: "which of those is the cheapest?" }]);
+    expect(cheapest.items).toHaveLength(1);
+    const shown = noodles.items.map((i: any) => i.price);
+    expect(cheapest.items[0].price).toBe(Math.min(...shown));
+  });
+
   test("merchant onboarding copilot: paste a menu and describe the floor → reviewable draft → apply → checklist progresses", async () => {
     const owner = await staffClient(`${uid("new")}@test.co`, "New Owner");
     const t = await json(owner.api.post("/api/m/tenants", { data: { name: `Kopi Corner ${uid("")}`, branchName: "Main" } }), 201);

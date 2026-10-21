@@ -139,8 +139,9 @@ A **fairness bound** (`maxSkips`) counts how often a party was passed over. Once
 ## 7. AI for guests, merchants and their agents
 
 - **Guest menu assistant** (`/api/public/branches/:ref/assistant`):
-  - Covers signatures, budget, diet, the allergens in a dish, and the story behind a dish.
-  - Uses Claude with tool use over the live menu; the local engine is the fallback.
+  - Covers signatures, budget, diet, the allergens in a dish, the story behind a dish, comparisons, pairings, group plans and follow-ups ("which of those is cheapest?").
+  - Answered by the **menu brain** (`src/server/ai/brain`), which runs on our own Worker at no cost: a small neural intent model, a fuzzy dish gazetteer, constraint extraction with negation, dialogue state, and pairings learnt from what guests order together. See [menu-brain.md](menu-brain.md).
+  - A language model (Workers AI, Claude or any OpenAI-style API) is optional and off by default. When it's configured, it gets only the questions the brain can't place, within per-branch and platform budgets, and its answers go through the allergen guard.
   - Answers about allergens always carry a "confirm with staff" safety note.
   - The UI shows suggested dishes as add-to-cart cards.
 - **Merchant onboarding copilot** (`/api/m/ai/onboarding`):

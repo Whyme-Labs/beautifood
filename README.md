@@ -9,7 +9,7 @@ A restaurant platform covering walk-in queues, ordering and the front of house. 
 - Get a Web Push or email when the table is ready, and preorder while waiting.
 - Order with friends from a shared cart: scan the table QR (static or dynamic) and each diner adds from their own phone.
 - Book a table with a preorder, collect and redeem loyalty points, and receive e-receipts.
-- Ask an AI menu assistant about signatures, allergens, a dish's story, budget or diet.
+- Ask the menu assistant about signatures, allergens, a dish's story, budget or diet, what goes well together, or what a group should share. It runs on the restaurant's own data, at no AI cost ([how it works](docs/menu-brain.md)).
 - See what's served now (breakfast, lunch, a branch's supper menu) and happy-hour prices, on the restaurant's own storefront page at `/at/<restaurant>`, its subdomain, or its own domain.
 
 **For merchants**
@@ -62,7 +62,7 @@ Put these in `.env`; never commit it.
 
 | Variable | Effect |
 |---|---|
-| `ANTHROPIC_API_KEY` | Claude answers the assistant, onboarding and insights. Without it, a deterministic local engine does |
+| `ANTHROPIC_API_KEY` | Claude helps with onboarding and insights (and, if you choose, guest questions the menu brain can't place). Without it, local engines do |
 | `ANTHROPIC_MODEL` | Model to use (default `claude-opus-5-5`) |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Web Push. Generate them with `node scripts/vapid-keys.mjs` |
 | `BETTER_AUTH_SECRET` | Signs sessions. `void deploy` generates one for you |

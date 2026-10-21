@@ -1,6 +1,6 @@
-// Deterministic, offline menu assistant. Used when no LLM key is configured and
-// as the grounding layer for the LLM path: every fact comes from structured
-// menu data, never invention. Allergen answers always carry a safety note.
+// The first, regex-based menu assistant, kept as the allergen vocabulary (mentionedAllergens), the
+// guard on model answers, and the on-device lab's baseline. Guests are answered by the menu brain
+// (./brain), which builds on it. Every fact comes from structured menu data, never invention.
 import { ALLERGEN_LABELS, ALLERGENS, type Allergen } from "../../shared/allergens";
 import type { MenuItem } from "../../shared/types";
 import { localizeItem } from "../../shared/menuI18n";
@@ -13,6 +13,10 @@ export interface AssistantContext {
   items: (MenuItem & { category?: string; popularity?: number })[];
   /** The menu's own language (dish names as written). */
   menuLanguage?: string;
+  /** Recent orders: how many held each dish, how many held each pair, and how many there were. */
+  orderCounts?: Record<string, number>;
+  together?: Record<string, Record<string, number>>;
+  totalOrders?: number;
 }
 
 export interface AssistantReply {
@@ -57,7 +61,7 @@ const ALLERGEN_WORDS: Record<Allergen, RegExp> = {
 const ALLERGEN_WORDS_MS: Partial<Record<Allergen, RegExp>> = {
   crustaceans: /\b(udang|ketam|makanan laut)\b/i,
   molluscs: /\b(sotong|kerang|siput|lala|tiram|makanan laut)\b/i,
-  fish: /\bikan\b/i,
+  fish: /\bikan\b|makanan laut/i,
   egg: /\btelur\b/i,
   milk: /\bsusu\b|\btenusu\b/i,
   peanuts: /\bkacang tanah\b/i,
@@ -70,7 +74,7 @@ const ALLERGEN_WORDS_ZH: Partial<Record<Allergen, RegExp>> = {
   gluten: /麸质|麦/,
   crustaceans: /虾|蟹|甲壳|海鲜/,
   molluscs: /鱿鱼|蚝|贝|蛤|软体|海鲜/,
-  fish: /鱼/,
+  fish: /鱼|海鲜/,
   egg: /蛋/,
   milk: /奶|乳/,
   peanuts: /花生/,
