@@ -5,7 +5,7 @@
 // neural model, reading the question with the dishes replaced by §dish so it works for any menu.
 import type { Allergen } from "../../../shared/allergens";
 import { classify, loadModel, type Intent, type IntentGuess, type IntentModel, type IntentWeights } from "../../../shared/brain/intentModel";
-import { editDistance, normalize, tokens } from "../../../shared/brain/text";
+import { editDistance, normalize, osaDistance, tokens } from "../../../shared/brain/text";
 import { WEIGHTS } from "../../../shared/brain/weights.gen";
 import { mentionedAllergens } from "../local";
 
@@ -51,6 +51,10 @@ export interface Understanding {
   courses: Course[];
   appetite: "light" | "hearty" | null;
   superlative: Superlative | null;
+  /** An allergy said, but no allergen the brain can name ("allergic to the thing in curries"). */
+  allergyUnread: boolean;
+  /** Text made to look like instructions was taken out of the question. */
+  injected: boolean;
   /** "those", "that one", "it", "那个": the question is about what was just said. */
   refersBack: boolean;
 }
@@ -99,17 +103,48 @@ const KEYWORDS = (
 /** Real words that are one letter off a keyword ("there" and "these", "daily" and "dairy"): never "corrected". */
 const REAL = new Set("there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter".split(" "));
 
-/** A misspelt word put right, when it is one or two letters off a keyword (SymSpell-style, on a small lexicon). */
+/**
+ * Allergen words, which are worth correcting even when short ("egs", "nutz"): missing one is the
+ * dangerous kind of mistake.
+ */
+const ALLERGEN_TERMS = "peanut peanuts nut nuts egg eggs milk dairy lactose gluten wheat soy soya sesame shellfish prawn prawns shrimp crab fish seafood squid oyster cashew cashews almond almonds walnut walnuts celery mustard".split(" ");
+
+/**
+ * A misspelt word put right, when it is a slip or two off a keyword (SymSpell-style, on a small
+ * lexicon; a swap of two letters is one slip). A word the intent model learnt is never "corrected".
+ */
 export function correct(word: string): string {
-  if (word.length < 5 || KEYWORDS.includes(word) || REAL.has(word)) return word;
-  const max = word.length >= 8 ? 2 : 1;
-  let best: [string, number] | null = null;
-  for (const k of KEYWORDS) {
-    if (k[0] !== word[0]) continue;
-    const d = editDistance(word, k, max);
-    if (d <= max && (!best || d < best[1])) best = [k, d];
+  if (KEYWORDS.includes(word) || ALLERGEN_TERMS.includes(word) || REAL.has(word) || intentModel().vocab?.has(word)) return word;
+  const pick = (lexicon: string[], max: number) => {
+    let best: [string, number] | null = null;
+    for (const k of lexicon) {
+      if (k[0] !== word[0]) continue;
+      const d = osaDistance(word, k, max);
+      if (d <= max && (!best || d < best[1])) best = [k, d];
+    }
+    return best?.[0];
+  };
+  if (word.length >= 3 && word.length <= 9) {
+    const a = pick(ALLERGEN_TERMS, word.length >= 6 ? 2 : 1);
+    if (a) return a;
   }
-  return best?.[0] ?? word;
+  if (word.length < 5) return word;
+  return pick(KEYWORDS, word.length >= 8 ? 2 : 1) ?? word;
+}
+
+/**
+ * The guest's own words, without text made to look like instructions to the assistant: a
+ * "[SYSTEM: …]" block, an "ADMIN NOTE: …" or an "ignore previous instructions" sentence. A guest
+ * can't turn the allergy filter off by typing that.
+ */
+export function stripInjection(question: string): { text: string; injected: boolean } {
+  const text = question
+    .replace(/[[(<{]\s*(system|admin|developer|assistant|instruction|prompt|note|override)\b[^\])>}]*[\])>}]/gi, " ")
+    .replace(/\b(system|admin|developer)\s*(note|message|override|prompt)?\s*:[^.!?\n]*[.!?]?/gi, " ")
+    .replace(/\b(ignore|disregard|forget)\b[^.!?\n]{0,40}\b(instructions?|rules?|prompt|filters?)\b[^.!?\n]*[.!?]?/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return { text, injected: text !== question.replace(/\s+/g, " ").trim() };
 }
 
 /**
@@ -281,7 +316,8 @@ const AVOID_CUE = /\b(allerg\w*|alergi|no|without|tanpa|avoid|cant eat|cannot ea
 export type Reading = Omit<Understanding, "intent" | "confidence" | "guess">;
 
 /** Everything but the intent: the slots, and the question as the intent model reads it. */
-export function read(items: Dish[], question: string): Reading {
+export function read(items: Dish[], asked: string): Reading {
+  const { text: question, injected } = stripInjection(asked);
   const raw = question.normalize("NFKC").toLowerCase();
   const ix = dishIndex(items);
   // fix typos in the words we read constraints from, but never in a word of a dish's name
@@ -366,6 +402,8 @@ export function read(items: Dish[], question: string): Reading {
     appetite: light ? "light" : hearty ? "hearty" : null,
     superlative,
     refersBack,
+    allergyUnread: /\b(allerg\w*|alergi|intoleran\w*|coeliac|celiac)\b/.test(restText) || /过敏/.test(restRaw) ? !allergens.length && !/\b(everything|all|semua)\b/.test(restText) : false,
+    injected,
   };
 }
 

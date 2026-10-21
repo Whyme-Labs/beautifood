@@ -444,6 +444,7 @@ const en = {
     tasteIntro: "Fans of {liked} around here lean towards {because}. From our menu:",
     tasteIntroPlain: "Fans of {liked} around here lean towards dishes like these:",
     tasteNote: "(From Qloo: what fans of {liked} tend to like, in aggregate. It's not a guess about you.)",
+    whichAllergen: "To keep you safe: which ingredient are you allergic to? For example peanuts, shellfish, egg, milk or gluten. Our staff can also check any dish with the kitchen.",
     staffHelp: "That one's for our staff, and they'll be glad to help. Meanwhile, I can help you choose from the menu.",
     orderHelp: "Tap a dish to see it and add it to your order, then send the order from your cart. For anything else (paying, the bill, a high chair), our staff are happy to help.",
     outOfScope: "I can only help with our menu: dishes, ingredients and what to order. For anything else, please ask our staff. Meanwhile, our favourites are {list}.",

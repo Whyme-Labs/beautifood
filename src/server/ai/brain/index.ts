@@ -251,6 +251,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "I love BTS, what should I get?": a taste Qloo could place on this menu is a recommendation
   if (taste && ["out_of_scope", "about", "greeting"].includes(intent)) intent = "recommend";
 
+  // an allergy we can't name: never a confident recommendation, ask which ingredient instead
+  if (u.allergyUnread && !focus.length && !avoid.length) return { ...reply("recommend", t("assistantReply.whichAllergen"), []), safetyNote: allyNote(locale) };
+
   const ranked = (pool: Item[]) => [...pool].sort((a, b) => baseScore(b, ctx) - baseScore(a, ctx));
   const sorted = (pool: Item[], s: Understanding["superlative"]) =>
     s === "cheapest" ? [...pool].sort((a, b) => a.price - b.price)
