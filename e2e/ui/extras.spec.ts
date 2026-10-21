@@ -215,3 +215,22 @@ test.describe("on-device AI lab (browser)", () => {
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem("bf-lab-runs") ?? "[]")[0]?.crashed)).toBe(true);
   });
 });
+
+test.describe("taste insights (browser)", () => {
+  test("the owner's Taste page shows things to try, each with its reason and Qloo source", async ({ page }) => {
+    const s = await seed();
+    await open(page, "/m/login");
+    await page.getByLabel("Email").fill(s.ownerEmail);
+    await page.getByLabel("Password").fill("password-123456");
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.waitForURL(/\/m(\/|$)/);
+    await page.getByRole("link", { name: "Taste" }).click();
+    await expect(page.getByRole("heading", { name: "Taste" })).toBeVisible();
+    const tryIt = page.getByTestId("taste-actions");
+    await expect(tryIt).toContainText("Indian Muslim");
+    await expect(tryIt).toContainText("Yuna");
+    await expect(page.getByTestId("taste-nearby")).toContainText("Nasi Kandar Pelita");
+    await expect(page.getByTestId("taste-nearby")).toContainText("Source: Qloo");
+    if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT, fullPage: true });
+  });
+});

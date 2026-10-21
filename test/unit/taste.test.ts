@@ -1,0 +1,113 @@
+import { describe, expect, it } from "vitest";
+import { actionsFor, tasteBrief, tasteLocation, type BriefInput } from "../../src/server/taste/brief";
+import { items, tasteRunner, type Envelope, type Runner } from "../../src/server/taste/client";
+
+const ok = (results: unknown[]): Envelope => ({ status: "ok", results, result_count: results.length });
+const input: BriefInput = {
+  restaurant: "Ah Seng",
+  cuisine: "Malaysian",
+  location: "Bangsar, Kuala Lumpur",
+  menu: [{ name: "Curry Mee", description: "coconut curry noodles", category: "Noodles" }, { name: "Teh Tarik", category: "Drinks" }],
+  bestSellers: [{ name: "Curry Mee", qty: 120 }],
+};
+
+/** A fake taste service: answers by workflow and target, and records what it was asked. */
+function fakeRunner(known: boolean) {
+  const asked: { tool: string; args: Record<string, unknown> }[] = [];
+  const run: Runner = async (tool, args) => {
+    asked.push({ tool, args });
+    if (tool === "qloo_find_tags") return ok([{ id: "urn:tag:genre:place:restaurant:malaysian", name: "Malaysian" }]);
+    if (tool === "qloo_describe") return known ? ok([{ entity_id: "E-AHSENG", name: "Ah Seng Kopitiam" }]) : { status: "empty", results: [] };
+    if (tool === "qloo_entity_tags") return ok([{ name: "Late night" }, { name: "Family friendly" }]);
+    if (args.target_type === "place")
+      return ok([
+        { entity_id: "P1", name: "Nasi Kandar Pelita", tags: [{ id: "urn:tag:genre:place:restaurant:indian_muslim", name: "Indian Muslim" }, { id: "urn:tag:amenity:place:late_night", name: "Late night" }], affinity: 0.91 },
+        { entity_id: "P2", name: "Village Park", tags: [{ id: "urn:tag:genre:place:restaurant:nasi_lemak", name: "Nasi Lemak" }, { id: "urn:tag:genre:place:restaurant:indian_muslim", name: "Indian Muslim" }, { id: "urn:tag:amenity:place:late_night", name: "Late night" }], affinity: 0.88 },
+        { entity_id: "P3", name: "Sri Nirwana Maju", tags: ["Banana leaf rice", "Indian Muslim"], affinity: 0.8 },
+      ]);
+    if (args.target_type === "artist") return ok([{ name: "Yuna" }, { name: "Siti Nurhaliza" }, { name: "Joe Flizzow" }]);
+    if (args.target_type === "tv_show") return ok([{ name: "Upin & Ipin" }]);
+    return { status: "empty", results: [] };
+  };
+  return { run, asked };
+}
+
+describe("where Qloo should look", () => {
+  it("reads the area from a branch's address", () => {
+    expect(tasteLocation("Lot G-12, Jalan Telawi 3, Bangsar, 59100 Kuala Lumpur")).toBe("Bangsar, Kuala Lumpur");
+    expect(tasteLocation("23 Jalan Sultan, Petaling Jaya, Selangor")).toBe("Petaling Jaya, Selangor");
+    expect(tasteLocation("")).toBe("Kuala Lumpur");
+  });
+});
+
+describe("the taste brief", () => {
+  it("chains the Qloo workflows: the cuisine as a tag, then the area's restaurants, music and TV", async () => {
+    const { run, asked } = fakeRunner(false);
+    const b = await tasteBrief(run, input);
+    expect(asked.map((a) => a.tool)).toEqual(expect.arrayContaining(["qloo_find_tags", "qloo_describe", "qloo_recommend"]));
+    const cuisine = asked.find((a) => a.args.include_tags)!;
+    expect(cuisine.args).toMatchObject({ target_type: "place", filter_location: "Bangsar, Kuala Lumpur", include_tags: ["urn:tag:genre:place:restaurant:malaysian"] });
+    expect(b.findings.map((f) => f.key)).toEqual(["nearby", "cuisine", "music", "tv"]);
+    // every finding says where it came from
+    for (const f of b.findings) expect(f.source.asked).toBeTruthy();
+    expect(b.limits.length).toBeGreaterThan(0);
+  });
+
+  it("uses the restaurant itself as the signal when Qloo knows it", async () => {
+    const { run, asked } = fakeRunner(true);
+    const b = await tasteBrief(run, input);
+    expect(asked.find((a) => a.args.target_type === "artist")!.args).toMatchObject({ signals: ["E-AHSENG"] });
+    expect(b.findings.map((f) => f.key)).toContain("audience");
+  });
+
+  it("turns findings into things to try, each with its reason", async () => {
+    const { run } = fakeRunner(false);
+    const b = await tasteBrief(run, input);
+    const kinds = b.actions.map((a) => a.kind);
+    expect(kinds).toEqual(expect.arrayContaining(["special", "promo", "playlist", "theme_night"]));
+    // a tag the area's favourites share that the menu doesn't serve
+    expect(b.actions.find((a) => a.kind === "special")!.vars.tag).toBe("Indian Muslim");
+    // each place counts once, though it's in two findings; "late night" is about hours, not a dish
+    expect(b.actions.find((a) => a.kind === "special")!.vars.count).toBe(3);
+    expect(b.actions.filter((a) => a.kind === "special").map((a) => a.vars.tag)).not.toContain("Late night");
+    expect(b.actions.find((a) => a.kind === "hours")!.vars.tag).toBe("Late night");
+    expect(b.actions.find((a) => a.kind === "playlist")!.text).toContain("Yuna");
+    for (const a of b.actions) expect(a.why).toBeTruthy();
+  });
+
+  it("doesn't suggest a special for what the menu already serves", () => {
+    const actions = actionsFor({ ...input, menu: [{ name: "Indian Muslim mee goreng" }] }, [
+      { key: "nearby", items: items(ok([{ name: "A", tags: ["Indian Muslim"] }, { name: "B", tags: ["Indian Muslim"] }])), source: { tool: "qloo_recommend", asked: "x" } },
+    ]);
+    expect(actions.some((a) => a.kind === "special")).toBe(false);
+  });
+
+  it("says what it couldn't find instead of failing", async () => {
+    const b = await tasteBrief(async () => ({ status: "error", summary: "down", error: { code: "TASTE_UNREACHABLE", retryable: true, recovery: "" } }), input);
+    expect(b.findings).toEqual([]);
+    expect(b.gaps.length).toBeGreaterThan(0);
+  });
+});
+
+describe("the taste service client", () => {
+  it("is off without its address and secret", async () => {
+    expect((await tasteRunner({})("qloo_recommend", {})).error?.code).toBe("TASTE_OFF");
+  });
+
+  it("calls the service with the secret and passes the envelope back", async () => {
+    let seen: { url: string; auth: string | null; body: unknown } | null = null;
+    const fetcher = (async (url: string, init: RequestInit) => {
+      seen = { url, auth: new Headers(init.headers).get("authorization"), body: JSON.parse(String(init.body)) };
+      return new Response(JSON.stringify(ok([{ name: "Yuna" }])));
+    }) as unknown as typeof fetch;
+    const e = await tasteRunner({ TASTE_URL: "https://taste.example/", TASTE_SECRET: "s3cret" }, fetcher)("qloo_recommend", { target_type: "artist" });
+    expect(seen).toEqual({ url: "https://taste.example/v1/run", auth: "Bearer s3cret", body: { tool: "qloo_recommend", args: { target_type: "artist" } } });
+    expect(items(e)[0].name).toBe("Yuna");
+  });
+
+  it("reads results tolerantly", () => {
+    expect(items(ok([{ entity_id: "x", name: "N", tags: [{ name: "t" }, "u"], affinity: 0.5, properties: { address: "KL" } }, { nope: 1 }]))).toEqual([
+      { id: "x", name: "N", type: undefined, score: 0.5, popularity: undefined, tags: ["t", "u"], tagIds: [undefined, undefined], place: "KL", description: undefined },
+    ]);
+  });
+});

@@ -20,6 +20,11 @@ import { sign, verify } from "./sign";
 import { ALLERGEN_LABELS } from "../shared/allergens";
 import { formatMoney } from "../shared/format";
 import { isTenantWide } from "../shared/rbac";
+import { env as voidEnv } from "void/env";
+import { branchTasteBrief } from "./taste";
+import { TASTE_TOOLS, tasteEnabled, tasteRunner, type TasteTool } from "./taste/client";
+
+const tasteEnv = () => ({ TASTE_URL: voidEnv.TASTE_URL, TASTE_SECRET: voidEnv.TASTE_SECRET });
 
 const PROTOCOLS = ["2025-11-25", "2025-06-18", "2025-03-26"];
 
@@ -224,6 +229,38 @@ const TOOLS: Tool[] = [
     run: async (c, a, s) => {
       const ctx = await merchantBranch(c, s, a.branch, "report.view");
       return branchReport(c.env.DB, ctx, a.date ? String(a.date) : localParts(Date.now(), ctx.config.timezone).day);
+    },
+  },
+  {
+    name: "merchant_taste_brief",
+    title: "Taste brief for a branch (Qloo)",
+    description:
+      "Merchant: what the people around a branch love (restaurants, the branch's cuisine, music, TV) from Qloo's taste graph, set against the branch's menu and best sellers, with suggested actions (a special to trial, a playlist, a themed night) and the Qloo source of each. Aggregate tastes, not predictions about any guest.",
+    inputSchema: obj({ branch: branchArg, location: str("Optional area to read instead of the branch's address, e.g. 'Bangsar, Kuala Lumpur'"), refresh: { type: "boolean", description: "Skip the 12-hour cache" } }, ["branch"]),
+    annotations: { readOnlyHint: true, openWorldHint: true },
+    merchant: true,
+    run: async (c, a, s) => {
+      const ctx = await merchantBranch(c, s, a.branch, "report.view");
+      const e = tasteEnv();
+      if (!tasteEnabled(e)) throw new AppError(409, "taste_off", "Taste insights aren't set up on this deployment");
+      return branchTasteBrief(c.env.DB, e, ctx, { location: a.location ? String(a.location).slice(0, 120) : undefined, refresh: !!a.refresh });
+    },
+  },
+  {
+    name: "merchant_taste_query",
+    title: "Ask Qloo's taste graph",
+    description:
+      "Merchant: run one read-only Qloo workflow for your own research (e.g. qloo_find_tags to resolve a concept, qloo_recommend for 'fans of X also like', qloo_where_popular for where an entity is loved, qloo_compare_audiences, qloo_trends). Arguments follow Qloo's harness workflows; resolve vague words with qloo_find_tags or qloo_describe first and confirm the match. Never pass personal data.",
+    inputSchema: obj({ branch: branchArg, workflow: { type: "string", enum: TASTE_TOOLS }, args: { type: "object", description: "The workflow's arguments" } }, ["branch", "workflow", "args"]),
+    annotations: { readOnlyHint: true, openWorldHint: true },
+    merchant: true,
+    run: async (c, a, s) => {
+      await merchantBranch(c, s, a.branch, "report.view");
+      const e = tasteEnv();
+      if (!tasteEnabled(e)) throw new AppError(409, "taste_off", "Taste insights aren't set up on this deployment");
+      if (!TASTE_TOOLS.includes(a.workflow as TasteTool)) throw new AppError(400, "invalid_input", "Unknown workflow");
+      if (!a.args || typeof a.args !== "object" || JSON.stringify(a.args).length > 4000) throw new AppError(400, "invalid_input", "args must be a small object");
+      return tasteRunner(e)(a.workflow as TasteTool, a.args as Record<string, unknown>);
     },
   },
   {

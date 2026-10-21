@@ -37,6 +37,8 @@ jobs:
         run: pnpm test:unit
       - name: Typecheck
         run: pnpm typecheck
+      - name: Taste service tests (Qloo harness behind HTTPS)
+        run: npm ci --prefix services/taste --no-audit --no-fund && npm test --prefix services/taste
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
       - name: End-to-end (production build, fresh D1)

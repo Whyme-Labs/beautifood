@@ -15,6 +15,7 @@ import * as setup from "./setup";
 import * as storefront from "./storefront";
 import * as shell from "./shell";
 import * as tables from "./tables";
+import * as taste from "./taste";
 import * as team from "./team";
 
 export const staffEn = {
@@ -35,6 +36,7 @@ export const staffEn = {
   storefront: storefront.en,
   fields: fields.en,
   inventory: inventory.en,
+  taste: taste.en,
 } as const;
 
 export const staffZh = {
@@ -55,4 +57,5 @@ export const staffZh = {
   storefront: storefront.zh,
   fields: fields.zh,
   inventory: inventory.zh,
+  taste: taste.zh,
 };

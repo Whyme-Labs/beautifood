@@ -33,6 +33,9 @@ export default defineEnv({
   AI_MONTHLY_BUDGET_USD: string().optional(),
   /** The platform's daily AI budget in US dollars (default 0.09: inside Workers AI's free 10,000 neurons a day). */
   AI_DAILY_BUDGET_USD: string().optional(),
+  /** The taste service (services/taste: Qloo's harness in a container) and the secret it expects. */
+  TASTE_URL: string().optional(),
+  TASTE_SECRET: string().optional(),
   /** One-off key the assistant eval workflow sets to score models through this Worker's AI binding. */
   EVAL_KEY: string().optional(),
   /** Lets a trusted caller (e2e runner) bypass auth rate limits. Never expose to browsers. */
