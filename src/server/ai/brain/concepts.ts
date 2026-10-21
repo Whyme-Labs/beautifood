@@ -48,6 +48,16 @@ const DRINKS: [ConceptId, RegExp][] = [
 
 export const isDrinkCourse = (category = "") => /drink|beverage|minum|饮|juice|coffee|\btea\b|kopi|teh/i.test(category);
 
+/** The concepts a guest's words name, with the words that named them ("pizza", "iced lime"). */
+export function conceptTerms(text: string): { id: ConceptId; term: string }[] {
+  const out: { id: ConceptId; term: string }[] = [];
+  for (const [id, re] of [...FOOD, ...DRINKS]) {
+    const m = text.match(re);
+    if (m && !out.some((o) => o.id === id)) out.push({ id, term: m[0] });
+  }
+  return out;
+}
+
 /** The concepts a dish belongs to (at most three, most specific first). */
 export function conceptsOf(d: { name: string; description?: string; category?: string }): ConceptId[] {
   const drink = isDrinkCourse(d.category);

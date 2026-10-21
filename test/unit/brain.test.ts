@@ -325,8 +325,9 @@ describe("safety reading (benchmark iteration 1)", () => {
 describe("allergen polarity and the menu's own categories (benchmark iteration 2)", () => {
   const items = hawker as unknown as Dish[];
   it("avoids an allergen when a cue governs it, and by default; wants it only when plainly asked for", () => {
-    for (const q of ["no seafood please", "我对虾过敏", "哪个没有虾？我过敏", "tak boleh makan udang", "gluten-free?", "我对芝麻过民", "tofu"]) expect(read(items, q).avoid.length, q).toBeGreaterThan(0);
-    for (const q of ["奶茶有哪些？", "what seafood should we get tonight?", "我不吃辣，海鲜推荐哪个？"]) expect(read(items, q).avoid, q).toEqual([]);
+    for (const q of ["no seafood please", "我对虾过敏", "哪个没有虾？我过敏", "tak boleh makan udang", "gluten-free?", "我对芝麻过民", "peanuts", "no tofu"]) expect(read(items, q).avoid.length, q).toBeGreaterThan(0);
+    // a food typed on its own is a search for it (iteration 3); a class word on its own stays avoided
+    for (const q of ["奶茶有哪些？", "what seafood should we get tonight?", "我不吃辣，海鲜推荐哪个？", "tofu", "udang?"]) expect(read(items, q).avoid, q).toEqual([]);
   });
 
   it("matches the menu's own category names, with a guest's synonyms", async () => {

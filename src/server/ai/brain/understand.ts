@@ -53,12 +53,24 @@ export interface Understanding {
   categories: string[];
   appetite: "light" | "hearty" | null;
   superlative: Superlative | null;
+  /** The question as read (instruction-like text taken out). */
+  text: string;
+  /** "allergic to everything": no menu data answers that safely; staff can. */
+  manyAllergies: boolean;
+  /** "no alcohol", "不要酒", "x minum arak". */
+  noAlcohol: boolean;
+  /** "what are you known for?", "chef's specials", "招牌": the signature dishes. */
+  signatures: boolean;
   /** An allergy said, but no allergen the brain can name ("allergic to the thing in curries"). */
   allergyUnread: boolean;
   /** Text made to look like instructions was taken out of the question. */
   injected: boolean;
   /** "those", "that one", "it", "那个": the question is about what was just said. */
   refersBack: boolean;
+  /** "the second one", "yang ketiga", "第一个": which of the dishes just shown (0-based, -1 the last). */
+  ordinal: number | null;
+  /** "which one…", "any of those…", "yg mana…", "哪个…": choosing among the dishes just shown. */
+  choosing: boolean;
 }
 
 let model: IntentModel | null = null;
@@ -237,20 +249,39 @@ function partyOf(text: string, raw: string): number | null {
   return n && n >= 2 && n <= 40 ? n : null;
 }
 
+/** Chinese numerals to digits, for budgets ("十块", "二十五块"). */
+function hanNumbers(s: string): string {
+  return s.replace(/[一二两三四五六七八九十百]+/g, (m) => {
+    const d: Record<string, number> = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+    let total = 0;
+    let cur = 0;
+    for (const ch of m) {
+      if (ch === "百") (total += (cur || 1) * 100), (cur = 0);
+      else if (ch === "十") (total += (cur || 1) * 10), (cur = 0);
+      else cur = d[ch] ?? 0;
+    }
+    return String(total + cur);
+  });
+}
+
 function budgetOf(text: string, raw: string): number | null {
+  raw = hanNumbers(raw);
   const amount = "(?:rm|myr|\\$|s\\$)?\\s*(\\d+(?:\\.\\d+)?)\\s*(?:rm|ringgit|bucks|dollars?|myr)?";
   const m =
     text.match(new RegExp(`\\b(?:under|below|less than|lower than|max|maximum|budget|budget of|within|not more than|no more than|up to|at most|cheaper than|bawah|kurang dari|tak lebih|tak sampai|limit)\\s*${amount}`)) ??
     text.match(new RegExp(`${amount}\\s*(?:and below|or less|and under|or below|ke bawah|kebawah|max|budget)\\b`)) ??
+    // "got RM5 only", "only have RM15", "ada rm10 je": what they have to spend on one thing
+    text.match(/\b(?:only have|only got|i have|i got|i ve got|got only|with only|budget is)\s*(?:rm|myr|\$)\s*(\d+(?:\.\d+)?)/) ??
+    text.match(/(?:rm|myr|\$)\s*(\d+(?:\.\d+)?)\s*(?:only|je|sahaja|saja)\b/) ??
     raw.match(/(?:不超过|低于|少于|预算)\s*(?:rm|马币)?\s*(\d+(?:\.\d+)?)/) ??
-    raw.match(/(?:rm|马币)?\s*(\d+(?:\.\d+)?)\s*(?:块|令吉|元|马币)?\s*(?:以下|以内|之内)/);
+    raw.match(/(?:rm|马币)?\s*(\d+(?:\.\d+)?)\s*(?:块钱|块|令吉|元|马币)?\s*(?:以下|以内|之内)/);
   return m ? Math.round(parseFloat(m[1]) * 100) : null;
 }
 
 /** A total to spend for a group ("RM100 for 4 of us"), when no "under" says it's per dish. */
-function groupBudgetOf(text: string): number | null {
-  const m = text.match(/(?:rm|myr|\$)\s*(\d+(?:\.\d+)?)|(\d+(?:\.\d+)?)\s*(?:ringgit|rm\b)/);
-  return m ? Math.round(parseFloat(m[1] ?? m[2]) * 100) : null;
+function groupBudgetOf(text: string, raw: string): number | null {
+  const m = text.match(/(?:rm|myr|\$)\s*(\d+(?:\.\d+)?)|(\d+(?:\.\d+)?)\s*(?:ringgit|rm\b)/) ?? hanNumbers(raw).match(/()(\d+(?:\.\d+)?)\s*(?:块|令吉|元|马币)/);
+  return m ? Math.round(parseFloat(m[1] || m[2]) * 100) : null;
 }
 
 const NEG = /^(not|no|non|less|without|tak|takde|kurang|bukan|jangan|tanpa|dont|cant|never|avoid|mild|cannot|nothing|zero|minus|hate)$/;
@@ -393,11 +424,17 @@ export function askedCategories(items: Dish[], words: string[], raw: string): st
   return out.length === cats.length ? [] : out;
 }
 
+const FOOD_NOUN = /^(tofu|tauhu|taukua|tempeh|prawns?|shrimps?|udang|crabs?|ketam|squid|sotong|calamari|fish|ikan|salmon|tuna|cheese|keju|oysters?|clams?|lala|mussels?)$/;
 const REQUEST = /\b(what|which|any|anything|got|have|has|do you|ada|apa|mana|want|wanna|nak|mau|give|show|recommend|suggest|like|love|suka|craving|order|get|serve|best|good|sedap)\b/i;
 const REQUEST_ZH = /有什么|有哪些|有没有|推荐|想要|想吃|想喝|来个|来一|要一|哪个|哪些|什么好/;
 
 /** Whether the guest plainly asks for allergen `a`'s food ("what seafood should we get?", "奶茶有哪些？"). */
 function requested(question: string, a: Allergen): boolean {
+  // a food typed on its own ("tofu", "udang?", "豆腐") is a search for it; a class word ("peanuts",
+  // "gluten") on its own may be an allergy being said, so it stays avoided
+  const bare = normalize(question).split(" ").filter((w) => w && !/^(got|ada|any|ah|lah|pls|please|the|some)$/.test(w));
+  if (bare.length <= 2 && bare.some((w) => FOOD_NOUN.test(w)) && mentionedAllergens(question).includes(a)) return true;
+  if (/^[\s?？!！]*(有没有)?\s*(豆腐|虾|蟹|鱼|芝士|鸡蛋)\s*(吗)?[\s?？!！]*$/.test(question)) return true;
   return question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && (REQUEST.test(clause) || REQUEST_ZH.test(clause)));
 }
 
@@ -428,7 +465,9 @@ export function read(items: Dish[], asked: string): Reading {
   let restRaw = raw;
   for (const m of mentions) for (const tr of Object.values(m.dish.translations ?? {})) if (tr?.name) restRaw = restRaw.split(tr.name).join(" ");
 
-  const allergens = mentionedAllergens(`${restText} ${restRaw}`);
+  // English is read from the tokens left after the dish names ("Hokkaido Milk Tea" asks nothing
+  // about milk); only the CJK text, with translated names taken out, is read from the raw string
+  const allergens = mentionedAllergens(`${restText} ${restRaw.replace(/[a-z][a-z'-]*/g, " ")}`);
   const hasDish = mentions.length > 0;
   // "kacang" is nuts when they're avoiding it or asking about a dish ("satay ada kacang tak?")
   if (/\bkacang\b/.test(restText) && !allergens.includes("peanuts") && (AVOID_CUE.test(restText) || hasDish)) allergens.push("peanuts", "tree_nuts");
@@ -471,6 +510,12 @@ export function read(items: Dish[], asked: string): Reading {
 
   const refersBack = /\b(those|these|them|that one|this one|the first|the second|the last one|it|yang tu|yang itu|yang ini|yang mana|out of)\b/.test(restText) || /那个|这个|那些|这些|它|哪个|哪一个/.test(restRaw);
 
+  const ORD: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, fourth: 3, "4th": 3, last: -1, pertama: 0, kedua: 1, ketiga: 2, keempat: 3, terakhir: -1 };
+  const ordWord = restText.match(/\b(?:the|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|4th|last|pertama|kedua|ketiga|keempat|terakhir)\b/);
+  const ordZh = restRaw.match(/第([一二三四1-4])|最后一/);
+  const ordinal = ordWord ? ORD[ordWord[1]] : ordZh ? (ordZh[1] ? "一二三四".indexOf(ordZh[1]) + 1 || Number(ordZh[1]) : 0) - 1 : null;
+  const choosing = /\b(which one|which ones|which of (those|these|them)|any of (those|these|them)|out of (those|these)|yang mana|yg mana|mana satu|mana yang|mana yg)\b/.test(restText) || /哪个|哪一|哪些|其中/.test(restRaw);
+
   const delexicalized: string[] = [];
   toks.forEach((t, i) => {
     if (dishWords.has(i)) {
@@ -480,6 +525,7 @@ export function read(items: Dish[], asked: string): Reading {
   // a translated dish name found by substring: mark it too
   if (mentions.some((m) => !m.covered.length)) delexicalized.unshift("§dish");
   return {
+    text: question,
     delexicalized,
     dishes: mentions.map((m) => m.dish),
     avoid: [...new Set(avoid)],
@@ -489,14 +535,19 @@ export function read(items: Dish[], asked: string): Reading {
     maxSpice: spice.max,
     minSpice: spice.min,
     budget,
-    amount: groupBudgetOf(restText),
+    amount: groupBudgetOf(restText, restRaw),
     party,
     courses,
     // a word naming what they avoid ("no milk") doesn't ask for its category ("Milk teas")
     categories: askedCategories(items, rest.filter((t) => !mentionedAllergens(t).some((a) => avoid.includes(a))), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? "" : restRaw),
     appetite: light ? "light" : hearty ? "hearty" : null,
     superlative,
-    refersBack,
+    refersBack: refersBack || ordinal !== null || choosing,
+    ordinal,
+    choosing,
+    manyAllergies: !allergens.length && (/\b(allergic|allergies|alergi)\b.*\b(everything|all|lots|so many|many things|semua)\b/.test(restText) || /什么都过敏|很多过敏|好多过敏/.test(restRaw)),
+    noAlcohol: /\b(no|not|without|tak|x|tak nak|dont|don t|non|cannot|cant|tidak|no more)\s+(minum\s+)?(alcohol|alcoholic|arak|alkohol|beer|booze|liquor|drinking)\b|\b(alcohol free|non alcoholic|nonalcoholic|mocktail|mocktails)\b/.test(restText) || /不要酒|不喝酒|无酒精|不含酒|没有酒精|不能喝酒/.test(restRaw),
+    signatures: /\b(known for|famous for|famous|signature|signatures|specials|speciality|specialty|specialities|starred|must try|must tries|terkenal|istimewa|paling terkenal|house special)\b/.test(restText) || /招牌|拿手|必点|特色菜|最有名|镇店/.test(restRaw),
     allergyUnread: /\b(allerg\w*|alergi|intoleran\w*|coeliac|celiac)\b/.test(restText) || /过敏/.test(restRaw) ? !allergens.length && !/\b(everything|all|semua)\b/.test(restText) : false,
     injected,
   };

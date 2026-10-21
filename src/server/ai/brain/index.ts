@@ -11,8 +11,8 @@ import { normalize } from "../../../shared/brain/text";
 import type { Intent } from "../../../shared/brain/intentModel";
 import { allergyNote, type AssistantContext, type AssistantReply } from "../local";
 import type { TasteHint } from "../../taste/bridge";
-import { conceptsOf, dishConceptLift, type ConceptId } from "./concepts";
-import { courseDishes, isDessert, isDrink, read, understand, type Course, type Diet, type Dish, type Understanding } from "./understand";
+import { conceptsOf, conceptTerms, dishConceptLift, type ConceptId } from "./concepts";
+import { courseDishes, intentModel, isDessert, isDrink, read, understand, type Course, type Diet, type Dish, type Understanding } from "./understand";
 
 type Item = AssistantContext["items"][number];
 
@@ -28,6 +28,8 @@ export interface DialogueState {
   avoid: Allergen[];
   diet: Diet[];
   maxSpice: number | null;
+  /** "no alcohol" said earlier. */
+  noAlcohol: boolean;
   /** Dishes the last answer named, in its order. */
   shown: Item[];
   /** The dish being talked about. */
@@ -50,13 +52,14 @@ export function dishesIn(ctx: AssistantContext, text: string): Item[] {
 }
 
 export function dialogueState(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[]): DialogueState {
-  const s: DialogueState = { avoid: [], diet: [], maxSpice: null, shown: [], focus: null };
+  const s: DialogueState = { avoid: [], diet: [], maxSpice: null, noAlcohol: false, shown: [], focus: null };
   for (const h of history) {
     if (h.role === "user") {
       const u = read(ctx.items as Dish[], h.content);
       s.avoid = [...new Set([...s.avoid, ...u.avoid])];
       s.diet = [...new Set([...s.diet, ...u.diet])];
       if (u.maxSpice !== null) s.maxSpice = u.maxSpice;
+      if (u.noAlcohol) s.noAlcohol = true;
       if (u.minSpice !== null) s.maxSpice = null;
       if (u.dishes.length === 1) s.focus = u.dishes[0] as Item;
     } else {
@@ -101,7 +104,11 @@ interface Constraints {
   maxSpice: number | null;
   minSpice: number | null;
   budget: number | null;
+  noAlcohol?: boolean;
 }
+
+const ALCOHOL = /\b(beer|lager|stout|ale|sake|soju|wine|whisky|whiskey|highball|cocktail|gin|vodka|rum|tequila|shochu|umeshu|cider|alcohol|alcoholic)\b|啤酒|清酒|烧酒|葡萄酒|鸡尾酒|威士忌|梅酒/i;
+export const isAlcoholic = (i: Dish) => ALCOHOL.test(`${i.name} ${i.description ?? ""} ${i.category ?? ""}`) || Object.values(i.translations ?? {}).some((x) => /酒/.test(x?.name ?? ""));
 
 function allowed(i: Item, c: Constraints) {
   if (c.avoid.some((a) => i.allergens.includes(a))) return false;
@@ -111,6 +118,7 @@ function allowed(i: Item, c: Constraints) {
   if (c.maxSpice !== null && i.spiceLevel > c.maxSpice) return false;
   if (c.minSpice !== null && i.spiceLevel < c.minSpice) return false;
   if (c.budget !== null && i.price > c.budget) return false;
+  if (c.noAlcohol && isAlcoholic(i)) return false;
   return true;
 }
 
@@ -151,6 +159,68 @@ function chatBoost(ctx: AssistantContext, i: Item): number {
   const k = 20;
   const rate = ((ctx.chatAdded?.[i.id] ?? 0) + k * base) / (shown + k);
   return Math.max(-0.3, Math.min(0.3, (rate - base) * 3));
+}
+
+// ---- searching ----
+
+// Words that never make a search ("what", "please", "do you have"): a search word is what's left
+const NOT_SEARCH = new Set(
+  "a an the of to for in on at and or with is are was be it its i im me my we our you your u do does did can could would should will have has had got get any anything something some what which who how when where why there here this that these those one ones please pls thanks thank ok okay ah lah leh la ya yeah hi hello hey eh so just only also really very much more menu food dish dishes eat drink serve sell selling sold today now available ada tak x ke ni tu apa mana boleh nak mau yang yg dan atau ka kah tak ada punya jual tiada takde whats what's good best nice great tasty delicious yummy sedap popular famous recommend recommendation suggest suggestion try tried want wanna like love need give show tell about else other another kat sini ini itu should must let lets us them they he she".split(" "),
+);
+// the words a guest searches by, in the menu's language
+const SYNONYMS: Record<string, string[]> = {
+  ayam: ["chicken"], chicken: ["ayam"], ikan: ["fish"], fish: ["ikan"], udang: ["prawn", "shrimp"], prawn: ["udang", "shrimp"], shrimp: ["prawn", "udang"],
+  sotong: ["squid", "calamari"], squid: ["sotong", "calamari"], daging: ["beef"], beef: ["daging"], kambing: ["mutton", "lamb"], mutton: ["kambing", "lamb"], lamb: ["kambing", "mutton"],
+  telur: ["egg"], egg: ["telur"], sayur: ["vegetable", "vegetables", "greens"], tauhu: ["tofu"], tofu: ["tauhu"], mee: ["noodle", "noodles", "mi"], mi: ["mee", "noodle"], noodle: ["mee", "mi"],
+  nasi: ["rice"], rice: ["nasi"], keju: ["cheese"], cheese: ["keju"], keledek: ["sweet potato"], babi: ["pork"], pork: ["babi"], ketam: ["crab"], crab: ["ketam"], kopi: ["coffee"], coffee: ["kopi"],
+  teh: ["tea"], tea: ["teh"], kelapa: ["coconut"], coconut: ["kelapa"], mangga: ["mango"], mango: ["mangga"], pisang: ["banana"], banana: ["pisang"],
+};
+const ZH_WORDS: [RegExp, string[]][] = [[/鸡/, ["chicken", "ayam"]], [/鱼/, ["fish", "ikan"]], [/虾/, ["prawn", "shrimp", "udang"]], [/豆腐/, ["tofu", "tauhu"]], [/牛/, ["beef"]], [/猪/, ["pork"]], [/羊/, ["mutton", "lamb"]], [/蛋/, ["egg"]], [/芒果/, ["mango"]], [/咖啡/, ["coffee", "kopi"]], [/椰/, ["coconut"]]];
+
+const words = (i: Item) => new Set(normalize(`${i.name} ${i.description ?? ""} ${i.category ?? ""}`).split(" ").flatMap((w) => [w, w.replace(/(es|s)$/, "")]));
+const hasTerm = (i: Item, w: string) => {
+  const ws = words(i);
+  return [w, ...(SYNONYMS[w] ?? [])].some((x) => (x.includes(" ") ? normalize(`${i.name} ${i.description ?? ""}`).includes(x) : ws.has(x) || ws.has(x.replace(/(es|s)$/, ""))));
+};
+const zhName = (i: Item) => Object.values(i.translations ?? {}).map((x) => x?.name ?? "").join(" ");
+
+/**
+ * A plain search of the menu: "chicken", "ayam", "do you have frappuccino?", "有没有披萨？".
+ * Returns the dishes that have what was asked, and what of it the menu doesn't have.
+ */
+function search(question: string, live: Item[], knownWord: (w: string) => boolean, base: (i: Item) => number): { hits: Item[]; missing: string | null } | null {
+  const zh = /[\u4e00-\u9fff]/.test(question);
+  if (zh) {
+    const m = question.match(/有没有(?:卖)?([^?？!！，。,]+?)[吗呢]?[?？!！。]*$/) ?? question.match(/^(?:有)?([^?？!！，。,]+?)有(?:没有|吗)[?？]*$/) ?? question.match(/^有([^?？!！，。,]+?)吗[?？]*$/);
+    if (!m) return null;
+    const thing = m[1].trim();
+    if (!thing || /什么|哪|推荐/.test(thing)) return null;
+    const byName = live.filter((i) => zhName(i).includes(thing) || i.name.includes(thing));
+    if (byName.length) return { hits: byName.sort((a, b) => base(b) - base(a)), missing: null };
+    // a kind of food ("鸡", "鱼") by its ingredient words
+    const kind = ZH_WORDS.filter(([re]) => re.test(thing) && thing.length <= 2).flatMap(([, ws]) => ws);
+    const hits = kind.length ? live.filter((i) => kind.some((w) => hasTerm(i, w))) : [];
+    return { hits: hits.sort((a, b) => base(b) - base(a)), missing: hits.length ? null : thing };
+  }
+  const toks = normalize(question).split(" ").filter(Boolean);
+  const content = toks.filter((w) => !NOT_SEARCH.has(w) && !/^\d/.test(w) && w.length > 1);
+  if (!content.length || content.length > 4) return null;
+  // a search is a short question or one that asks for something by name ("do you have", "got", "ada")
+  const cue = /\b(do you have|have you got|got|ada|any|serve|sell|jual)\b/.test(toks.join(" "));
+  if (toks.length > 3 && !cue) return null;
+  const found = content.filter((w) => w.length >= 3 && live.some((i) => hasTerm(i, w)));
+  // a word the menu doesn't have counts as asked for only if it names a food ("pizza") or is
+  // unknown to the brain ("frappuccino"); "whats", "good" are just words
+  const missing = content.filter((w) => !found.includes(w) && (conceptTerms(w).length || !knownWord(w)));
+  if (!found.length && !missing.length) return null;
+  // the dish's own name says it best, then its description, then its course
+  const score = (i: Item) => found.reduce((s, w) => s + (hasTerm({ ...i, description: "", category: "" }, w) ? 2 : hasTerm({ ...i, category: "" }, w) ? 1 : 0.5 * Number(hasTerm(i, w))), 0);
+  const hits = found.length ? live.filter((i) => score(i) > 0).sort((a, b) => score(b) - score(a) || base(b) - base(a)) : [];
+  if (!missing.length) return { hits, missing: null };
+  // "coffee frappuccino with caramel drizzle": say what isn't on the menu, in their words
+  const from = toks.indexOf(content[0]);
+  const to = toks.lastIndexOf(content[content.length - 1]);
+  return { hits: hits.filter((i) => score(i) === Math.max(...hits.map(score))), missing: toks.slice(from, to + 1).join(" ") };
 }
 
 // ---- answering ----
@@ -197,6 +267,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     maxSpice: u.minSpice !== null ? null : (u.maxSpice ?? state.maxSpice),
     minSpice: u.minSpice,
     budget: u.budget,
+    noAlcohol: u.noAlcohol || state.noAlcohol,
   };
   const safety = avoid.length || u.allergens.length ? allyNote(locale) : undefined;
   const reply = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
@@ -232,14 +303,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   };
 
   // what the question is about: named dishes, else the one we were talking about
-  const focus = mentioned.length ? mentioned : u.refersBack && state.focus ? [state.focus] : [];
+  const nth = u.ordinal !== null && state.shown.length ? state.shown.at(u.ordinal) : undefined;
+  const focus = mentioned.length ? mentioned : nth ? [nth] : u.refersBack && state.focus ? [state.focus] : [];
 
   // ---- decide ----
   let intent = u.intent;
   const unsure = u.confidence < 0.4;
-  const hasFilters = !!(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null || u.courses.length || u.categories.length || u.appetite);
+  const hasFilters = !!(u.noAlcohol || u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null || u.courses.length || u.categories.length || u.appetite);
   // safety first: a dish and an allergen (or "is it safe", "does it contain") is a question about that dish
   if (focus.length && (u.allergens.length || u.asksContents) && !["compare", "pairing", "group"].includes(intent)) intent = "dish_allergen";
+  // "is the second one spicy?": a question about that dish
+  if (nth && !["dish_allergen", "compare", "pairing"].includes(intent)) intent = "dish_info";
   if (intent === "compare" && focus.length + (mentioned.length ? 0 : state.shown.length) < 2) intent = focus.length ? "dish_info" : "recommend";
   if (intent === "pairing" && !focus.length) intent = state.focus && !mentioned.length ? "pairing" : "recommend";
   if ((intent === "dish_allergen" || intent === "dish_info") && !focus.length) intent = state.focus && u.refersBack ? intent : "recommend";
@@ -248,9 +322,26 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (u.party && intent !== "dish_allergen") intent = "group";
   if (unsure && !["greeting", "thanks"].includes(intent)) intent = focus.length && !hasFilters ? "dish_info" : hasFilters || u.superlative ? "recommend" : intent;
   if ((intent === "out_of_scope" || intent === "about" || intent === "greeting") && hasFilters) intent = "recommend";
+  // "which one has no peanuts?", "any of those without dairy?", "哪个没有虾": narrow what was just shown
+  if (u.choosing && !mentioned.length && !nth && state.shown.length >= 2 && hasFilters && !["compare", "pairing", "group"].includes(intent)) intent = "refine";
   // "I love BTS, what should I get?": a taste Qloo could place on this menu is a recommendation
   if (taste && ["out_of_scope", "about", "greeting"].includes(intent)) intent = "recommend";
 
+  // "what are you known for?", "chef's specials": the signatures, not the story
+  if (u.signatures && !mentioned.length && ["about", "out_of_scope", "greeting", "recommend", "dish_info", "dish_allergen", "compare"].includes(intent)) intent = "recommend";
+  // a plain search of the menu ("chicken", "有没有披萨？"): what matches, or an honest "we don't have it"
+  const searchable = !mentioned.length && !nth && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null || u.courses.length || u.categories.length) && !["thanks", "order_help", "compare", "pairing", "refine", "group"].includes(intent);
+  // constraints said earlier still hold ("no peanuts" two questions ago)
+  const found = searchable ? search(u.text, live.filter((i) => allowed(i, c)), (w) => !!intentModel().vocab?.has(w), (i) => baseScore(i, ctx)) : null;
+  if (found && (found.hits.length || found.missing)) {
+    const top = found.hits.slice(0, found.missing ? 2 : 4);
+    if (!found.missing) return reply("recommend", `${t("assistantReply.weHave")}${sp}${top.map(line).join(t("assistantReply.itemSep"))}${stop}`, top);
+    if (top.length) return reply("recommend", `${t("assistantReply.noHaveClosest", { thing: found.missing })}${sp}${top.map(line).join(t("assistantReply.itemSep"))}${stop}`, top);
+    const sig = [...live.filter((i) => !isDrink(i) && allowed(i, c))].sort((a, b) => baseScore(b, ctx) - baseScore(a, ctx)).slice(0, 3);
+    return reply("recommend", t("assistantReply.noHave", { thing: found.missing, list: list(sig.map(name)) }), sig);
+  }
+  // "allergic to everything": no menu data can answer that safely, so staff do
+  if (u.manyAllergies) return { ...reply("recommend", t("assistantReply.allergyStaff"), []), safetyNote: allyNote(locale) };
   // an allergy we can't name: never a confident recommendation, ask which ingredient instead
   if (u.allergyUnread && !focus.length && !avoid.length) return { ...reply("recommend", t("assistantReply.whichAllergen"), []), safetyNote: allyNote(locale) };
 
@@ -279,7 +370,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const sig = ranked(live).slice(0, 3);
       const ordering = /\b(order|cart|add|pesan|checkout|send)\b/.test(normalize(u.delexicalized.join(" "))) || /点餐|下单|加单/.test(u.delexicalized.join(""));
       const key = intent === "greeting" ? "assistantReply.help" : intent === "order_help" ? (ordering ? "assistantReply.orderHelp" : "assistantReply.staffHelp") : "assistantReply.outOfScope";
-      return reply(intent, t(key, { list: list(sig.map(name)) }), intent === "order_help" ? [] : sig, { confident: intent !== "out_of_scope" });
+      // the favourites are named, not shown as cards: a hello or an off-topic question isn't a request for dishes
+      return reply(intent, t(key, { list: list(sig.map(name)) }), [], { confident: intent !== "out_of_scope" });
     }
     case "thanks":
       return reply(intent, t("assistantReply.thanks"), []);
@@ -426,6 +518,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     default: {
       let pool = live.filter((i) => allowed(i, c));
       pool = byCourse(pool, u.courses);
+      if (u.signatures && pool.some((i) => i.isSignature)) pool = pool.filter((i) => i.isSignature);
       if (u.appetite === "light" && !u.courses.length && !u.categories.length) {
         const food = pool.filter((i) => !isDrink(i));
         const median = [...food].map((i) => i.price).sort((a, b) => a - b)[Math.floor(food.length / 2)] ?? Infinity;
@@ -452,7 +545,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const order = u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : ranked(pool);
       // food first: drinks are ordered most, but "anything vegetarian?" means a dish (one drink at most)
       const wantsDrinks = u.courses.includes("drinks") || (u.categories.length > 0 && pool.every(isDrink));
-      const picks = (wantsDrinks ? order : [...order.filter((i) => !isDrink(i)), ...order.filter(isDrink).slice(0, 1)]).slice(0, 4);
+      // "the cheapest thing", "the priciest": the whole menu, drinks too
+      const literal = u.superlative === "cheapest" || u.superlative === "priciest";
+      const picks = (wantsDrinks || literal || u.signatures ? order : [...order.filter((i) => !isDrink(i)), ...order.filter(isDrink).slice(0, 1)]).slice(0, 4);
       const filters = filterWords();
       const signatures = picks.filter((p) => p.isSignature);
       const intro = filters

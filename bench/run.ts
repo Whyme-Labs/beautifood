@@ -14,7 +14,8 @@ import type { Case, Expect } from "./schema";
 const DIR = new URL(".", import.meta.url).pathname;
 const arg = (k: string, d: string) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : d);
 const ENGINE = arg("--engine", "brain");
-const SPLIT = arg("--split", "test");
+// no default split: the test split is run once, on purpose, never by accident
+const SPLIT = arg("--split", "");
 const DATA = arg("--data", "gold") as "gold" | "parser";
 
 type Item = AssistantContext["items"][number];
@@ -245,6 +246,10 @@ export function summarise(rows: Row[]) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
+  if (!["dev", "test", "all"].includes(SPLIT)) {
+    console.error("usage: npx tsx bench/run.ts --split dev|test|all [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
+    process.exit(1);
+  }
   const cases = loadCases(SPLIT);
   const rows = runEngine(ENGINE, cases, DATA);
   const s = summarise(rows);
