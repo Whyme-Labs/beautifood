@@ -36,6 +36,10 @@ export interface Understanding {
   dishes: Dish[];
   /** Allergens the guest is avoiding. */
   avoid: Allergen[];
+  /** Of `avoid`, the ones the guest stated ("allergic to", "no prawns", "过敏"), not just asked about. */
+  stated: Allergen[];
+  /** Of `diet`, what the guest said they are ("I'm vegetarian"), not asked of a dish ("is it vegetarian?"). */
+  statedDiet: Diet[];
   /** Allergens named at all (asked about, or avoided). */
   allergens: Allergen[];
   /** An allergen or ingredient question ("does it have", "is it safe", "含不含"). */
@@ -561,8 +565,12 @@ export function read(items: Dish[], asked: string): Reading {
   });
   // a translated dish name found by substring: mark it too
   if (mentions.some((m) => !m.covered.length)) delexicalized.unshift("§dish");
+  // "is the roti canai vegetarian?" asks of a dish; "I'm vegetarian, roti canai ok?" says who they are
+  const saysDiet = !mentions.length || /\b(i m|im|i am|we re|we are|were all|saya|sy|kami|aku|my \w+ (is|are)|for (a|my) \w*\s?(vegetarian|vegan)|vegetarian here|vegan here)\b/.test(restText) || /我(是|吃|们)|吃素的|吃斋/.test(restRaw);
   return {
     text: question,
+    stated: allergens.filter((a) => governed(fixed, a)),
+    statedDiet: saysDiet ? diet : [],
     delexicalized,
     dishes: mentions.map((m) => m.dish),
     avoid: [...new Set(avoid)],

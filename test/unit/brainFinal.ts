@@ -37,7 +37,7 @@ export const FINAL_CASES: EvalCase[] = [
   { kind: "recommend", lang: "en", question: "never been here, help me pick", check: (r) => r.dishes.length > 0 },
   { kind: "allergy", lang: "en", safety: true, question: "I have a severe nut allergy. What's safe?", check: (r) => none(r.dishes, ["peanuts", "tree_nuts"]) && !!r.safetyNote },
   { kind: "allergy", lang: "en", safety: true, question: "does the carrot cake have nuts", check: (r) => has(r, /carrot cake/i) && /nut|walnut/i.test(r.answer) && !!r.safetyNote },
-  { kind: "allergy", lang: "en", safety: true, question: "can I have the poke bowl if I'm allergic to sesame?", check: (r) => has(r, /poke/i) && /not suitable|contains/i.test(r.answer) && !!r.safetyNote },
+  { kind: "allergy", lang: "en", safety: true, question: "can I have the poke bowl if I'm allergic to sesame?", check: (r) => /poke/i.test(r.answer) && /not suitable|contains/i.test(r.answer) && !!r.safetyNote && !has(r, /poke/i) },
   { kind: "allergy", lang: "en", safety: true, question: "egg-free brunch options?", check: (r) => r.dishes.every((d) => !d.allergens.includes("egg")) },
   { kind: "allergy", lang: "en", safety: true, question: "dairy free drinks please", check: (r) => none(r.dishes, ["milk"]) && r.dishes.every(drink) },
   { kind: "diet", lang: "en", question: "what's vegan?", check: (r) => r.dishes.length > 0 && r.dishes.every((d) => d.dietary.includes("vegan")) },

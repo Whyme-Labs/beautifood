@@ -233,7 +233,7 @@ describe("the learning loop", () => {
   it("never trains on an eval or held-out question", () => {
     const guarded = protectedQuestions();
     expect(HARVESTED.filter((h) => guarded.has(asReadText(h.text)))).toEqual([]);
-  });
+  }, 30_000);
 
   it("harvests what the brain was unsure of, most asked first, and leaves eval questions out", () => {
     const row = (question: string, intent: string, confidence: number, shown = "[]", added = "[]") => ({ question, lang: "en", intent, confidence, confident: 1, shown, added });

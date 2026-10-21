@@ -270,9 +270,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     noAlcohol: u.noAlcohol || state.noAlcohol,
   };
   const safety = avoid.length || u.allergens.length ? allyNote(locale) : undefined;
+  // a card is an "add to order" button: never one for a dish that breaks an allergy or diet the guest
+  // stated, even when the text is warning them about it
+  const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet])] };
+  const safeCard = (i: Item) => allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
   const reply = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
     answer,
-    items: items.slice(0, 6).map((i) => brief(i, reasonFor(i))),
+    items: items.filter(safeCard).slice(0, 6).map((i) => brief(i, reasonFor(i))),
     safetyNote: safety,
     engine: "local",
     confident: true,
