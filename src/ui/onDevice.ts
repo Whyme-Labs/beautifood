@@ -46,6 +46,8 @@ export interface ModelChoice {
 // Gemma 4 E2B loads text-only (Transformers.js skips its vision and audio encoders for a causal-LM
 // load), but its per-layer embedding table is as big as the decoder: ~3.1 GB, not ~1 GB.
 export const TJS_MODELS: ModelChoice[] = [
+  // the smallest that still follows instructions: for finding what a phone (iPhone Safari above all) can hold at all
+  { id: "SmolLM2-135M-Instruct", repo: "onnx-community/SmolLM2-135M-Instruct-ONNX", rev: "b8a5c0f183b78c55955a5364f610c36668b5e681", label: "SmolLM2 135M Instruct", mb: 145, mbCpu: 209, memMB: 250, note: "tiniest of all; English only; tests what fits" },
   { id: "LFM2.5-350M", repo: "onnx-community/LFM2.5-350M-ONNX", rev: "7dd4999565b0342c381ba90a3d8fc467d6df19c4", label: "Liquid LFM2.5 350M", mb: 287, mbCpu: 325, memMB: 400, note: "tiniest; built for phones" },
   { id: "Qwen3-0.6B", repo: "onnx-community/Qwen3-0.6B-ONNX", rev: "58ca03a5e7b354b480b1a82b34bde8dc7b854cc0", label: "Qwen3 0.6B", mb: 607, mbCpu: 955, memMB: 750, note: "good Chinese", thinks: true },
   { id: "LFM2.5-1.2B-Instruct", repo: "LiquidAI/LFM2.5-1.2B-Instruct-ONNX", rev: "10f72e70abf67ac0fd7ebf15bc5854726891d864", label: "Liquid LFM2.5 1.2B Instruct", mb: 792, mbCpu: 881, memMB: 1000, note: "on-device model; reads Chinese" },

@@ -95,6 +95,8 @@ interface Run {
   peakJsHeapMB: number | null;
   stopped: boolean;
   error: string | null;
+  /** The tab was killed mid-run (found after the reload). */
+  crashed?: boolean;
   score: Pick<EvalScore, "passed" | "total" | "unsafe"> | null;
   cases: CaseRow[];
 }
@@ -113,6 +115,42 @@ function summarize(rows: CaseRow[]) {
   };
 }
 
+// A tab the browser kills (iPhone Safari does when memory runs out) can't report anything, so each
+// step is written down first: after a crash the page says where the last run stopped. Finished runs
+// are kept too, so a crash doesn't lose the ones before it.
+const LAST = "bf-lab-last-run";
+const RUNS = "bf-lab-runs";
+const store = {
+  get: <T,>(k: string): T | null => {
+    try {
+      const v = localStorage.getItem(k);
+      return v ? (JSON.parse(v) as T) : null;
+    } catch {
+      return null;
+    }
+  },
+  set: (k: string, v: unknown) => {
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+    } catch {
+      /* private mode or full: nothing to keep */
+    }
+  },
+  drop: (k: string) => {
+    try {
+      localStorage.removeItem(k);
+    } catch {
+      /* nothing to drop */
+    }
+  },
+};
+
+interface Breadcrumb {
+  run: Run;
+  stage: string;
+  at: string;
+}
+
 export default function OnDeviceLab() {
   const toast = useToast();
   const dishes = useMemo(() => sampleDishes(), []);
@@ -126,6 +164,21 @@ export default function OnDeviceLab() {
   const [live, setLive] = useState<Run | null>(null);
   const [runs, setRuns] = useState<Run[]>([]);
   const abort = useRef<AbortController | null>(null);
+  const [crashed, setCrashed] = useState<Breadcrumb | null>(null);
+
+  // a run that never finished: the tab was killed while it ran
+  useEffect(() => {
+    const kept = store.get<Run[]>(RUNS) ?? [];
+    const last = store.get<Breadcrumb>(LAST);
+    store.drop(LAST);
+    if (last) {
+      const lost: Run = { ...last.run, error: `The browser closed the page during: ${last.stage} (most likely it ran out of memory)`, crashed: true };
+      kept.push(lost);
+      store.set(RUNS, kept);
+      setCrashed(last);
+    }
+    setRuns(kept);
+  }, []);
 
   useEffect(() => {
     const base = syncCapabilities();
@@ -184,21 +237,39 @@ export default function OnDeviceLab() {
       score: null,
       cases: [],
     };
+    let stage = "starting";
+    const crumb = (s: string) => {
+      stage = s;
+      store.set(LAST, { run, stage, at: new Date().toISOString() } satisfies Breadcrumb);
+    };
     const update = (patch: Partial<Run>) => {
       run = { ...run, ...patch, totalMs: performance.now() - t0 };
       setLive(run);
+      crumb(stage);
+    };
+    // the loader's own steps ("Downloading model: 120 / 287 MB", "Compiling…"), at most every 5%
+    let lastFrac = -1;
+    const onProgress = (p: Progress) => {
+      setProgress(p);
+      if (p.frac === null || p.frac - lastFrac >= 0.05 || p.frac >= 1) {
+        lastFrac = p.frac ?? lastFrac;
+        crumb(`loading — ${p.text}`);
+      }
     };
     setRunning(true);
+    setCrashed(null);
     setProgress({ frac: null, text: "Starting…" });
     update({});
+    crumb("starting the engine");
     let loaded: Engine | null = null;
     try {
-      loaded = await LOADERS[engine](model, { onProgress: setProgress, signal: ac.signal, f16, device: dev ?? "webgpu" });
+      loaded = await LOADERS[engine](model, { onProgress, signal: ac.signal, f16, device: dev ?? "webgpu" });
       update({ load: loaded.report, weightsFromCache: loaded.report.cached });
       const results: Parameters<typeof score>[0] = [];
       for (const [i, c] of EVAL_CASES.entries()) {
         if (ac.signal.aborted) break;
         setProgress({ frac: i / EVAL_CASES.length, text: `Case ${i + 1} of ${EVAL_CASES.length}: ${c.question}` });
+        crumb(`answering case ${i + 1} of ${EVAL_CASES.length} ("${c.question}")`);
         const g = await loaded.generate(caseMessages(c, dishes), { maxTokens: MAX_TOKENS, signal: ac.signal });
         if (g.stopped && ac.signal.aborted) break;
         const r = replyFromText(c, g.text.trim(), dishes);
@@ -227,9 +298,15 @@ export default function OnDeviceLab() {
       update({ error: ac.signal.aborted ? null : errText(e), stopped: ac.signal.aborted });
     } finally {
       setProgress({ frac: null, text: "Unloading the model…" });
+      crumb("unloading the model");
       await loaded?.unload().catch(() => {});
       update({ peakJsHeapMB: heap.stop() });
-      setRuns((rs) => [...rs, run]);
+      setRuns((rs) => {
+        const next = [...rs, run];
+        store.set(RUNS, next);
+        return next;
+      });
+      store.drop(LAST);
       setLive(null);
       setProgress(null);
       setRunning(false);
@@ -389,12 +466,20 @@ export default function OnDeviceLab() {
           )}
         </section>
 
+        {crashed && (
+          <div className="alert bad" role="alert" data-testid="lab-crashed">
+            <span>
+              <b>The last run didn't finish.</b> The browser closed the page while it was {crashed.stage} ({crashed.run.model.label}, {crashed.run.engine}
+              {crashed.run.device ? `, ${crashed.run.device === "webgpu" ? "GPU" : "CPU"}` : ""}). On iPhone this almost always means it ran out of memory. It's kept in the results below; try a smaller model, or the other device option.
+            </span>
+          </div>
+        )}
         {shown && <RunCard run={shown} live={!!live} />}
 
         <section className="card col">
           <h2 style={{ margin: 0 }}>Results</h2>
           <p className="muted" style={{ margin: 0, fontSize: 14 }}>
-            {runs.length ? `${runs.length} run${runs.length > 1 ? "s" : ""} on this visit.` : "No runs yet."} Copy sends the device details and every run as JSON.
+            {runs.length ? `${runs.length} run${runs.length > 1 ? "s" : ""} kept on this device.` : "No runs yet."} Copy sends the device details and every run as JSON.
           </p>
           {runs.length > 1 && (
             <div className="list">
@@ -415,6 +500,11 @@ export default function OnDeviceLab() {
             <button className="btn danger" data-testid="lab-clear" onClick={clear} disabled={running}>
               <Trash2 size={16} /> Clear downloaded models
             </button>
+            {runs.length > 0 && (
+              <button className="btn ghost" disabled={running} onClick={() => window.confirm("Forget the results kept on this device?") && (store.drop(RUNS), setRuns([]), setCrashed(null))}>
+                Forget results
+              </button>
+            )}
           </div>
           <details>
             <summary className="hint">Show the JSON</summary>

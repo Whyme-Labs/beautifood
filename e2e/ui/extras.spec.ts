@@ -186,7 +186,7 @@ test.describe("on-device AI lab (browser)", () => {
     await expect(caps.getByText("checking…")).toHaveCount(0);
     await expect(page.getByTestId("lab-verdict").locator(".badge")).toHaveCount(3);
     // the smallest model is picked, and its size is shown before anything downloads
-    await expect(page.getByRole("radio", { name: /LFM2\.5 350M/ })).toBeChecked();
+    await expect(page.getByRole("radio", { name: /SmolLM2 135M/ })).toBeChecked();
     await expect(page.getByTestId("lab-size")).toContainText("MB");
     await expect(page.getByTestId("lab-download")).toContainText("Download & test");
     await page.waitForLoadState("networkidle");
@@ -196,5 +196,22 @@ test.describe("on-device AI lab (browser)", () => {
       await page.screenshot({ path: `${process.env.SHOTS}/lab-phone.png`, fullPage: true });
       await page.setViewportSize({ width: 1280, height: 720 });
     }
+  });
+
+  test("after the browser kills the page mid-run, it says where the run stopped and keeps it", async ({ page }) => {
+    // what the page writes down before each step, as a killed tab leaves it
+    await page.addInitScript(() => {
+      if (sessionStorage.getItem("seeded")) return;
+      sessionStorage.setItem("seeded", "1");
+      const run = { at: new Date().toISOString(), engine: "transformers", library: "t", device: "webgpu", model: { choice: "LFM2.5-350M", label: "Liquid LFM2.5 350M", expectedMB: 287 }, load: null, weightsFromCache: null, firstTokenMedianMs: null, tokensPerSec: null, totalMs: 0, peakJsHeapMB: null, stopped: false, error: null, score: null, cases: [] };
+      localStorage.setItem("bf-lab-last-run", JSON.stringify({ run, stage: "loading — Downloading model: 120 / 287 MB", at: new Date().toISOString() }));
+    });
+    await open(page, "/lab/on-device");
+    await expect(page.getByTestId("lab-crashed")).toContainText("Downloading model: 120 / 287 MB");
+    await expect(page.getByTestId("lab-crashed")).toContainText("Liquid LFM2.5 350M");
+    // kept for "Copy results", and still there after a reload
+    await page.reload();
+    await expect(page.getByText("1 run kept on this device.")).toBeVisible();
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem("bf-lab-runs") ?? "[]")[0]?.crashed)).toBe(true);
   });
 });
