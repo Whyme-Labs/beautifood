@@ -1,0 +1,301 @@
+{
+  "Tonkotsu Ramen": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork. Wheat noodles; egg; sesame oil."
+  },
+  "Spicy Miso Ramen": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Minced pork. Miso = soy; wheat noodles; butter = milk."
+  },
+  "Shoyu Chicken Ramen": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy sauce = soy and wheat; egg. Nori is seaweed, not fish."
+  },
+  "Vegan Shio Ramen": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat noodles; tofu; sesame oil."
+  },
+  "Chicken Negima": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Mirin (rice wine) in the tare, so not halal."
+  },
+  "Tsukune": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Raw egg yolk dip; soy tare = soy and wheat. No mirin listed."
+  },
+  "Pork Belly Kushiyaki": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork. Yuzu kosho chilli paste = mild."
+  },
+  "Shiitake & Shishito Skewers": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Shishito described as mild peppers, not spicy."
+  },
+  "Chicken Karaage": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy sauce; Japanese mayonnaise = egg."
+  },
+  "Pork Gyoza": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork. Wheat wrappers; sesame oil; soy dipping sauce."
+  },
+  "Agedashi Tofu": {
+    "allergens": [
+      "soy",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dashi made with bonito = fish, so not vegetarian."
+  },
+  "Edamame": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Salmon Sashimi": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy sauce = soy and wheat. Wasabi treated as not chilli-spicy."
+  },
+  "Takoyaki": {
+    "allergens": [
+      "molluscs",
+      "fish",
+      "egg",
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Octopus = molluscs; bonito = fish; egg batter and mayonnaise; okonomi sauce assumed to contain soy."
+  },
+  "Ebi Tempura": {
+    "allergens": [
+      "crustaceans",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tentsuyu usually contains soy and dashi, but it is not described, so not listed."
+  },
+  "Hiyayakko": {
+    "allergens": [
+      "soy",
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu; sesame oil; soy sauce = soy and wheat."
+  },
+  "Unagi Don": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Eel = fish; sweet soy sauce. No mirin listed."
+  },
+  "Pork Katsu Curry": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork. Panko = wheat; egg; mild curry."
+  },
+  "Chirashi Don": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "molluscs",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salmon and tuna = fish; prawn = crustaceans; scallop = molluscs; tamago = egg."
+  },
+  "Matcha Ice Cream": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0
+  },
+  "Black Sesame Panna Cotta": {
+    "allergens": [
+      "milk",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Gelatin: not vegetarian; gelatin source unstated (commonly pork), so not halal."
+  },
+  "Warabi Mochi": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Kinako = roasted soybean flour."
+  },
+  "Asahi Draft Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol; beer = barley/wheat gluten."
+  },
+  "Hot Sake": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol."
+  },
+  "Yuzu Soda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan."
+  },
+  "Iced Hojicha Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0
+  },
+  "Calpis Soda": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cultured milk drink."
+  },
+  "Oolong Tea (free refill)": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  }
+}

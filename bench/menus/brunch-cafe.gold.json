@@ -1,0 +1,271 @@
+{
+  "The Big Breakfast": {
+    "allergens": [
+      "egg",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Beef bacon and chicken sausage, no pork. Sourdough = wheat; butter."
+  },
+  "Eggs Benedict": {
+    "allergens": [
+      "egg",
+      "milk",
+      "gluten",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "English muffin = wheat; hollandaise = egg yolk and butter; smoked salmon = fish."
+  },
+  "Nasi Lemak Benedict": {
+    "allergens": [
+      "egg",
+      "milk",
+      "fish",
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Hollandaise = egg and butter; anchovies = fish; peanuts; sambal = spicy. Coconut rice patty, no wheat."
+  },
+  "Shakshuka": {
+    "allergens": [
+      "egg",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Spicy tomato sauce with chilli; feta = milk; sourdough = wheat."
+  },
+  "Buttermilk Pancakes": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0
+  },
+  "Kaya French Toast": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Brioche = wheat; egg; salted butter; kaya coconut jam."
+  },
+  "Smashed Avocado Toast": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Sourdough = wheat; chilli flakes = mild. Pumpkin seeds are not a listed allergen."
+  },
+  "Mushroom on Toast": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Parmesan = milk; sourdough = wheat."
+  },
+  "Acai Bowl": {
+    "allergens": [
+      "tree_nuts",
+      "peanuts",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Almonds = tree nuts; peanut butter; granola oats treated as gluten."
+  },
+  "Rendang Chicken Croissant": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Butter croissant = wheat and milk; spicy rendang."
+  },
+  "Quinoa Power Bowl": {
+    "allergens": [
+      "sesame",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tahini = sesame; cashews. No wheat."
+  },
+  "Truffle Mushroom Pasta": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fettuccine with wheat and egg; cream; parmesan."
+  },
+  "Laksa Pasta with Prawns": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "soy",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Spaghetti = wheat; prawns and belacan = crustaceans; tofu puffs = soy; fish balls = fish; spicy. Coconut curry is not dairy."
+  },
+  "Fish and Chips": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer batter = alcohol, so not halal. Tartar sauce = egg mayonnaise."
+  },
+  "Grilled Chicken Chop": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Coleslaw mayonnaise = egg; black pepper sauce = mild. Sauce ingredients otherwise unstated."
+  },
+  "Beef Burger": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Brioche bun with egg and butter; cheddar."
+  },
+  "Pandan Basque Cheesecake": {
+    "allergens": [
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Described as flourless, so no gluten."
+  },
+  "Banana Walnut Bread": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0
+  },
+  "Coconut Chia Pudding": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut milk is not dairy."
+  },
+  "Gula Melaka Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0
+  },
+  "Flat White": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0
+  },
+  "Oat Latte": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oat milk, no dairy; oats treated as gluten."
+  },
+  "Iced Long Black": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Cold-Pressed Green Juice": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  }
+}

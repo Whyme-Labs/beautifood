@@ -1,0 +1,297 @@
+{
+  "Chilli Crab": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Mud crab; egg in sauce; mantou = wheat; sweet and spicy."
+  },
+  "Salted Egg Yolk Prawns": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Butter = milk; chilli padi = mild."
+  },
+  "Steamed Fish Hong Kong Style": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy sauce = soy and wheat; sesame oil."
+  },
+  "Kam Heong Lala": {
+    "allergens": [
+      "molluscs",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Clams and oyster sauce = molluscs; dried shrimp = crustaceans; chilli."
+  },
+  "Sambal Sotong": {
+    "allergens": [
+      "molluscs",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Squid = molluscs; belacan = crustaceans; spicy."
+  },
+  "Butter Cereal Prawns": {
+    "allergens": [
+      "crustaceans",
+      "milk",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter; egg floss; oat cereal treated as gluten. No chilli listed."
+  },
+  "Marmite Pork Ribs": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork. Marmite (yeast extract, barley) = gluten; soy sauce."
+  },
+  "Sweet and Sour Pork": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork. Wheat flour and egg batter."
+  },
+  "Kung Pao Chicken": {
+    "allergens": [
+      "tree_nuts",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Cashews = tree nuts; dark soy sauce; Shaoxing wine = alcohol, so not halal; dried chilli."
+  },
+  "Prawn Paste Chicken": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fermented shrimp paste = crustaceans."
+  },
+  "Ginger Spring Onion Beef": {
+    "allergens": [
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs."
+  },
+  "Sambal Kangkung": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan and dried shrimp = crustaceans, so not vegetarian."
+  },
+  "Garlic Broccoli": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Claypot Egg Tofu": {
+    "allergens": [
+      "egg",
+      "soy",
+      "crustaceans",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg tofu; prawns; oyster sauce = molluscs."
+  },
+  "Four Heavenly Kings": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Sambal belacan and dried shrimp = crustaceans."
+  },
+  "Buddha's Delight": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu skin = soy. Glass vermicelli assumed mung bean (no wheat)."
+  },
+  "Yang Chow Fried Rice": {
+    "allergens": [
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Char siu pork."
+  },
+  "Cantonese Hor Fun": {
+    "allergens": [
+      "egg",
+      "crustaceans",
+      "molluscs",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice noodles; egg gravy; prawns; squid; fish cake."
+  },
+  "Hokkien Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "crustaceans",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork and pork lard. Yellow egg noodles; dark soy sauce; prawns; squid."
+  },
+  "Vegetable Fried Rice": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg; light soy sauce = soy and wheat. Vegetarian (egg), not vegan."
+  },
+  "Mango Pudding": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Evaporated milk. Gelatin: not vegetarian; gelatin source unstated (commonly pork), so not halal."
+  },
+  "Orh Nee": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Shallot oil, not lard; coconut milk is not dairy. Gingko nuts are seeds, not counted as tree nuts here."
+  },
+  "Cheng Teng": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Barley = gluten."
+  },
+  "Chinese Tea (per pax)": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Fresh Coconut": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Homemade Barley": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Barley = gluten."
+  },
+  "Tiger Beer (bottle)": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol; barley malt = gluten."
+  },
+  "Lime Plum Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  }
+}

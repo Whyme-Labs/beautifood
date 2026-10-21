@@ -1,0 +1,293 @@
+{
+  "Banana Leaf Rice Set": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Tagged vegetarian; no allergen listed (papadum assumed lentil-based). Not claimed vegan: ghee may be used but is not stated. Rasam/sambar = mild."
+  },
+  "Banana Leaf Rice with Fried Chicken": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Spicy masala fried chicken. No allergen listed."
+  },
+  "Mutton Biryani": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ghee and yoghurt raita = milk; cashews = tree nuts."
+  },
+  "Vegetable Biryani": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ghee = milk; cashews = tree nuts."
+  },
+  "Fish Head Curry": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Red snapper; coconut milk is not dairy."
+  },
+  "Mutton Varuval": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Described as very spicy."
+  },
+  "Chicken Masala": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Ghee = milk; chilli."
+  },
+  "Sotong Sambal": {
+    "allergens": [
+      "molluscs",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Squid = molluscs; belacan = crustaceans; described as fiery."
+  },
+  "Prawn Masala": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2
+  },
+  "Paneer Butter Masala": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Described as mild; paneer, butter, cream = milk; cashew paste = tree nuts."
+  },
+  "Dhal Curry": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Mustard seeds; no chilli listed."
+  },
+  "Roti Canai": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat; ghee = milk; served with fish curry, so not vegetarian and contains fish as served."
+  },
+  "Roti Telur": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ghee = milk; egg. Vegetarian (egg), not vegan."
+  },
+  "Roti Tisu": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ghee and condensed milk."
+  },
+  "Masala Tosai": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Rice and lentil crepe, no wheat; spiced potato and sambar = mild."
+  },
+  "Murtabak Chicken": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat pancake; egg; fried in ghee = milk."
+  },
+  "Mee Goreng Mamak": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Yellow egg noodles = wheat and egg; prawns; tofu and soy sauce = soy."
+  },
+  "Maggi Goreng": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Instant wheat noodles; egg; oyster sauce = molluscs (soy not stated)."
+  },
+  "Pasembur": {
+    "allergens": [
+      "peanuts",
+      "crustaceans",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Peanut sauce; prawn fritter; boiled egg; flour fritters = wheat. Sauce assumed mildly spicy."
+  },
+  "Chicken Sixty-Five": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Yoghurt marinade = milk; spicy."
+  },
+  "Payasam": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat vermicelli; milk and ghee; cashews."
+  },
+  "Kesari": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Semolina = wheat; ghee; cashews."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0
+  },
+  "Masala Chai": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ginger and cardamom, not chilli."
+  },
+  "Mango Lassi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt."
+  },
+  "Bandung": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk."
+  },
+  "Lime Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Milo Dinosaur": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milo is a malt (barley) drink = gluten; condensed milk."
+  }
+}
