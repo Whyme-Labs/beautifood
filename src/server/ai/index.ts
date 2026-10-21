@@ -11,6 +11,8 @@ import { localParts } from "../ids";
 import { answerWithClaude, claudeEnabled, extractWithClaude, narrateWithClaude, type ClaudeEnv } from "./claude";
 import { guard, type AssistantContext, type AssistantReply } from "./local";
 import { answerGuest } from "./brain";
+import { chatStats, logTurn } from "./brain/log";
+import { platformPairs } from "./brain/platform";
 import { answerWithModel, guestModel, type AiBinding } from "./guestModel";
 import { limitsFrom, mayUseModel, recordUsage, type Usage } from "./usage";
 import type { AssistantSettings } from "../appenv";
@@ -49,12 +51,14 @@ async function baskets(db: D1Database, branchId: string): Promise<Pick<Assistant
 export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<AssistantContext> {
   const menu = await menuAt(db, ctx);
   const since = Date.now() - 7 * 86_400_000;
-  const [pop, basket] = await Promise.all([
+  const [pop, basket, platform, chat] = await Promise.all([
     db
       .prepare("SELECT item_id, SUM(qty) AS n FROM order_items WHERE branch_id = ? AND created_at > ? AND status <> 'void' GROUP BY item_id")
       .bind(ctx.branch.id, since)
       .all<{ item_id: string; n: number }>(),
     baskets(db, ctx.branch.id).catch((e) => (console.warn("baskets", e), {})),
+    platformPairs(db).catch((e) => (console.warn("platform pairs", e), undefined)),
+    chatStats(db, ctx.branch.id).catch((e) => (console.warn("chat stats", e), {})),
   ]);
   const popularity = new Map(pop.results.map((p) => [p.item_id, p.n]));
   const catName = new Map(menu.categories.map((c) => [c.id, c.name]));
@@ -65,6 +69,8 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
     menuLanguage: menu.language,
     items: menu.items.map((i) => ({ ...i, category: catName.get(i.categoryId), popularity: popularity.get(i.id) ?? 0 })),
     ...basket,
+    ...chat,
+    platform,
   };
 }
 
@@ -75,30 +81,44 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
  * is set. Any model failure, or a model answer that puts an allergen the guest named in front of
  * them, falls back to the brain's answer.
  */
-export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & { AI?: AiBinding }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply> {
+export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & { AI?: AiBinding }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply & { turn?: string }> {
   const actx = await assistantContext(db, ctx);
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
+  const brain = answerGuest(actx, history, locale);
+  const r = await answer(db, env, ctx, actx, history, question, brain, locale);
   // Dish cards read in the guest's language; `name` stays the original for matching and ordering.
-  const label = (r: AssistantReply): AssistantReply => ({
-    ...r,
-    items: r.items.map((it) => {
-      const item = actx.items.find((i) => i.id === it.id);
-      return item ? { ...it, label: localizeItem(item, locale, actx.menuLanguage ?? "en").name } : it;
-    }),
+  const items = r.items.map((it) => {
+    const item = actx.items.find((i) => i.id === it.id);
+    return item ? { ...it, label: localizeItem(item, locale, actx.menuLanguage ?? "en").name } : it;
   });
-  const local = answerGuest(actx, history, locale);
-  if (local.confident !== false) return label(local);
+  const turn = await logTurn(db, {
+    tenantId: ctx.tenant.id,
+    branchId: ctx.branch.id,
+    lang: locale,
+    question: brain.delexicalized ?? "",
+    intent: brain.intent,
+    confidence: brain.confidence ?? 0,
+    confident: brain.confident !== false,
+    engine: r.engine,
+    shown: items.map((i) => i.id),
+  }).catch((e) => (console.warn("assistant log", e), undefined));
+  return { answer: r.answer, items, safetyNote: r.safetyNote, engine: r.engine, confident: r.confident, turn };
+}
+
+/** The brain's answer, or (only for what it can't place, and only when one is configured) a model's. */
+async function answer(db: D1Database, env: ClaudeEnv & AssistantSettings & { AI?: AiBinding }, ctx: BranchCtx, actx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], question: string, local: AssistantReply, locale: string): Promise<AssistantReply> {
+  if (local.confident !== false) return local;
   const m = guestModel(env);
-  if (!m) return label(local);
+  if (!m) return local;
   const scope = { tenantId: ctx.tenant.id, branchId: ctx.branch.id };
-  if (!(await mayUseModel(db, scope, limitsFrom(env)).catch(() => ({ ok: false }))).ok) return label(local);
+  if (!(await mayUseModel(db, scope, limitsFrom(env)).catch(() => ({ ok: false }))).ok) return local;
   const uses: Usage[] = [];
   try {
     const r = m.provider === "anthropic" ? await answerWithClaude(env, actx, history, locale, { model: m.model, onUsage: (u) => uses.push(u) }) : await answerWithModel(m, actx, history, locale, (u) => uses.push(u));
-    return label(guard(actx, question, r, local, locale));
+    return guard(actx, question, r, local, locale);
   } catch (e) {
     console.warn("guest model failed, using the menu brain", e);
-    return label(local);
+    return local;
   } finally {
     await recordUsage(db, { ...scope, kind: "assistant" }, uses, env.ASSISTANT_PRICE).catch((e) => console.error("ai usage", e));
   }

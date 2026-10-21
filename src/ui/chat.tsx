@@ -10,6 +10,8 @@ interface Reply {
   items: { id: string; name: string; price: number; reason?: string; /** The dish name in the guest's language. */ label?: string }[];
   safetyNote?: string;
   engine: string;
+  /** The answer's id in the assistant's log, to count what guests add from it. */
+  turn?: string;
 }
 
 export function AssistantChat({ branch, currency, onAdd }: { branch: string; currency: string; onAdd?: (itemId: string) => void }) {
@@ -56,7 +58,13 @@ export function AssistantChat({ branch, currency, onAdd }: { branch: string; cur
                       {it.reason ? <div className="muted" style={{ fontSize: 12.5 }}>{it.reason}</div> : null}
                     </span>
                     {onAdd && (
-                      <button className="btn small primary" onClick={() => onAdd(it.id)}>
+                      <button
+                        className="btn small primary"
+                        onClick={() => {
+                          onAdd(it.id);
+                          if (m.reply?.turn) void api(`/api/public/branches/${branch}/assistant/added`, { body: { turn: m.reply.turn, item: it.id } }).catch(() => {});
+                        }}
+                      >
                         <Plus size={14} /> {t("menu.add")}
                       </button>
                     )}

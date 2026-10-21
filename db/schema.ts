@@ -717,6 +717,55 @@ export const aiUsage = sqliteTable(
   (t) => [primaryKey({ columns: [t.day, t.tenantId, t.branchId, t.kind] }), index("ai_usage_day").on(t.day)],
 );
 
+/**
+ * What guests order together across every restaurant, by dish concept (src/server/ai/brain/concepts).
+ * Rebuilt daily; a pair is kept only once at least 3 restaurants and 20 orders back it, so no
+ * restaurant's own sales can be read from it. concept "*" holds the total order count.
+ */
+export const conceptOrders = sqliteTable("concept_orders", {
+  concept: text("concept").primaryKey(),
+  orders: integer("orders").notNull(),
+  tenants: integer("tenants").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+});
+
+export const conceptPairs = sqliteTable(
+  "concept_pairs",
+  {
+    a: text("a").notNull(),
+    b: text("b").notNull(),
+    orders: integer("orders").notNull(),
+    tenants: integer("tenants").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.a, t.b] })],
+);
+
+/**
+ * The guest assistant's turns, for learning what it misreads: the question as the intent model read
+ * it (dish names as §dish, emails and phone numbers removed), what it decided, the dishes it showed
+ * and which of them the guest added from the chat. Kept 90 days.
+ */
+export const assistantTurns = sqliteTable(
+  "assistant_turns",
+  {
+    id: text("id").primaryKey(),
+    tenantId: text("tenant_id").notNull(),
+    branchId: text("branch_id").notNull(),
+    createdAt: integer("created_at").notNull(),
+    lang: text("lang").notNull(),
+    question: text("question").notNull(),
+    intent: text("intent").notNull(),
+    /** The intent model's confidence × 1000. */
+    confidence: integer("confidence").notNull(),
+    confident: integer("confident").notNull(),
+    engine: text("engine").notNull(),
+    /** JSON arrays of menu item ids. */
+    shown: text("shown").notNull().default("[]"),
+    added: text("added").notNull().default("[]"),
+  },
+  (t) => [index("assistant_turns_branch").on(t.branchId, t.createdAt), index("assistant_turns_created").on(t.createdAt)],
+);
+
 export const consumerCursors = sqliteTable("consumer_cursors", {
   name: text("name").primaryKey(),
   lastId: integer("last_id").notNull().default(0),

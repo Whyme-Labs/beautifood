@@ -10,12 +10,16 @@ import { formatters, translator, type MessageKey } from "../../../i18n/core";
 import { normalize } from "../../../shared/brain/text";
 import type { Intent } from "../../../shared/brain/intentModel";
 import { allergyNote, type AssistantContext, type AssistantReply } from "../local";
+import { conceptsOf, dishConceptLift, type ConceptId } from "./concepts";
 import { courseDishes, isDessert, isDrink, read, understand, type Course, type Diet, type Dish, type Understanding } from "./understand";
 
 type Item = AssistantContext["items"][number];
 
 export interface BrainReply extends AssistantReply {
   intent: Intent;
+  /** For the log: the intent model's confidence and the question as it read it. */
+  confidence?: number;
+  delexicalized?: string;
 }
 
 /** What the guest has told us so far, and what we last showed them. */
@@ -88,7 +92,7 @@ const popularityScore = (i: Item) => {
   // smoothed: a dish ordered twice isn't twice as good as one ordered once
   return p / (p + 5);
 };
-const baseScore = (i: Item) => (i.isSignature ? 1 : 0) + popularityScore(i) - i.sort * 0.001;
+const baseScore = (i: Item, ctx?: AssistantContext) => (i.isSignature ? 1 : 0) + popularityScore(i) + (ctx ? chatBoost(ctx, i) : 0) - i.sort * 0.001;
 
 interface Constraints {
   avoid: Allergen[];
@@ -109,16 +113,43 @@ function allowed(i: Item, c: Constraints) {
   return true;
 }
 
-/** How often guests here order `b` with `a`, against how often they order `b` at all (lift, smoothed). */
-function lift(ctx: AssistantContext, a: string, b: string): { lift: number; together: number } {
-  const together = ctx.together?.[a]?.[b] ?? 0;
-  const na = ctx.orderCounts?.[a] ?? 0;
-  const nb = ctx.orderCounts?.[b] ?? 0;
+const conceptMemo = new WeakMap<object, ConceptId[]>();
+const conceptsFor = (i: Item) => {
+  let c = conceptMemo.get(i);
+  if (!c) conceptMemo.set(i, (c = conceptsOf(i)));
+  return c;
+};
+
+/**
+ * How much likelier guests are to order `b` with `a` than at all (lift), from the most specific
+ * evidence there is: this branch's orders, shrunk towards what guests do across every restaurant
+ * (by dish concept), which is itself shrunk towards the teacher's prior. With no orders anywhere,
+ * the prior decides; as orders build up, they take over.
+ */
+export function pairLift(ctx: AssistantContext, a: Item, b: Item): { lift: number; together: number; source: "branch" | "platform" | "prior" | "none" } {
+  const concept = dishConceptLift(conceptsFor(a), conceptsFor(b), ctx.platform);
+  const together = ctx.together?.[a.id]?.[b.id] ?? 0;
+  const na = ctx.orderCounts?.[a.id] ?? 0;
+  const nb = ctx.orderCounts?.[b.id] ?? 0;
   const total = ctx.totalOrders ?? 0;
-  if (!total || !na || !nb) return { lift: 1, together };
+  const fallback = { lift: concept.lift, together, source: concept.lift > 1 ? (concept.learnt ? "platform" : "prior") : "none" } as const;
+  if (!total || !na || !nb) return fallback;
   const pb = nb / total;
-  const alpha = 5;
-  return { lift: (together + alpha * pb) / (na + alpha) / pb, together };
+  const alpha = 8;
+  const lift = (together + alpha * concept.lift * pb) / (na + alpha) / pb;
+  return { lift, together, source: together >= 3 ? "branch" : fallback.source };
+}
+
+/** A small, smoothed boost for dishes guests add from the chat more often than most (learning to rank). */
+function chatBoost(ctx: AssistantContext, i: Item): number {
+  const shown = ctx.chatShown?.[i.id] ?? 0;
+  if (shown < 10) return 0;
+  const shownAll = Object.values(ctx.chatShown ?? {}).reduce((s, n) => s + n, 0);
+  const addedAll = Object.values(ctx.chatAdded ?? {}).reduce((s, n) => s + n, 0);
+  const base = shownAll ? addedAll / shownAll : 0;
+  const k = 20;
+  const rate = ((ctx.chatAdded?.[i.id] ?? 0) + k * base) / (shown + k);
+  return Math.max(-0.3, Math.min(0.3, (rate - base) * 3));
 }
 
 // ---- answering ----
@@ -128,7 +159,7 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
   const earlier = history.slice(0, history.map((h) => h.content).lastIndexOf(question));
   const state = dialogueState(ctx, earlier);
   const u = understand(ctx.items as Dish[], question);
-  return respond(ctx, u, state, locale);
+  return { ...respond(ctx, u, state, locale), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
 }
 
 export function respond(ctx: AssistantContext, u: Understanding, state: DialogueState, locale: string): BrainReply {
@@ -213,13 +244,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (unsure && !["greeting", "thanks"].includes(intent)) intent = focus.length && !hasFilters ? "dish_info" : hasFilters || u.superlative ? "recommend" : intent;
   if ((intent === "out_of_scope" || intent === "about" || intent === "greeting") && hasFilters) intent = "recommend";
 
-  const ranked = (pool: Item[]) => [...pool].sort((a, b) => baseScore(b) - baseScore(a));
+  const ranked = (pool: Item[]) => [...pool].sort((a, b) => baseScore(b, ctx) - baseScore(a, ctx));
   const sorted = (pool: Item[], s: Understanding["superlative"]) =>
     s === "cheapest" ? [...pool].sort((a, b) => a.price - b.price)
     : s === "priciest" ? [...pool].sort((a, b) => b.price - a.price)
-    : s === "spiciest" ? [...pool].sort((a, b) => b.spiceLevel - a.spiceLevel || baseScore(b) - baseScore(a))
-    : s === "mildest" ? [...pool].sort((a, b) => a.spiceLevel - b.spiceLevel || baseScore(b) - baseScore(a))
-    : s === "popular" ? [...pool].sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0) || baseScore(b) - baseScore(a))
+    : s === "spiciest" ? [...pool].sort((a, b) => b.spiceLevel - a.spiceLevel || baseScore(b, ctx) - baseScore(a, ctx))
+    : s === "mildest" ? [...pool].sort((a, b) => a.spiceLevel - b.spiceLevel || baseScore(b, ctx) - baseScore(a, ctx))
+    : s === "popular" ? [...pool].sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0) || baseScore(b, ctx) - baseScore(a, ctx))
     : ranked(pool);
   // the course on this menu (so "desserts" with nothing dairy-free left is an honest "none", not mains)
   const byCourse = (pool: Item[], courses: Course[]) => {
@@ -313,11 +344,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       if (!pool.length) return none();
       const richAnchor = anchors.some((a) => RICH.test(`${a.name} ${a.description}`) || a.spiceLevel > 0);
       const scored = pool.map((i) => {
-        const l = Math.max(...anchors.map((a) => lift(ctx, a.id, i.id).lift));
-        const together = Math.max(...anchors.map((a) => lift(ctx, a.id, i.id).together));
+        const best = anchors.map((a) => pairLift(ctx, a, i)).sort((x, y) => y.lift - x.lift)[0];
         const refreshing = REFRESHING.test(`${i.name} ${i.description}`) && richAnchor;
-        const score = Math.log(l) * 2 + (refreshing ? 1.2 : 0) + (isDrink(i) ? 0.3 : 0) + baseScore(i) * 0.5;
-        return { i, score, often: together >= 3 && l > 1.3, refreshing };
+        const score = Math.log(best.lift) * 2 + (refreshing ? 0.6 : 0) + (isDrink(i) ? 0.3 : 0) + baseScore(i, ctx) * 0.5;
+        return { i, score, source: best.lift > 1.3 ? best.source : "none", refreshing };
       });
       scored.sort((x, y) => y.score - x.score);
       // one of each course at most when the guest didn't ask for one
@@ -328,8 +358,12 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         picks.push(s);
       }
       let answer = t("assistantReply.pairWith", { dish: list(anchors.map(name)), list: list(picks.map((p) => line(p.i))) });
-      if (picks.some((p) => p.often)) answer += `${sp}${t("assistantReply.pairOften")}`;
-      else if (picks.some((p) => p.refreshing)) answer += `${sp}${t("assistantReply.pairCool")}`;
+      // say why, from the strongest evidence behind the picks
+      const why = picks.some((p) => p.source === "branch") ? "assistantReply.pairOften"
+        : picks.some((p) => p.source === "platform") ? "assistantReply.pairPlatform"
+        : picks.some((p) => p.source === "prior") ? "assistantReply.pairClassic"
+        : picks.some((p) => p.refreshing) ? "assistantReply.pairCool" : null;
+      if (why) answer += `${sp}${t(why)}`;
       return reply(intent, answer, [...picks.map((p) => p.i), ...anchors]);
     }
 
@@ -387,7 +421,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         if (!picks.length) return none();
         return reply("recommend", `${t("assistantReply.lightPicks")}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
       }
-      if (u.appetite === "hearty" && !u.courses.length) pool = pool.filter((i) => !isDrink(i) && !isDessert(i)).sort((a, b) => heaviness(b) - heaviness(a) || baseScore(b) - baseScore(a));
+      if (u.appetite === "hearty" && !u.courses.length) pool = pool.filter((i) => !isDrink(i) && !isDessert(i)).sort((a, b) => heaviness(b) - heaviness(a) || baseScore(b, ctx) - baseScore(a, ctx));
       if (!pool.length) return none();
       const picks = (u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : ranked(pool)).slice(0, 4);
       const filters = filterWords();

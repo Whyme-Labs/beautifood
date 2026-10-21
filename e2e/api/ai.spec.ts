@@ -59,6 +59,13 @@ test.describe("AI for guests and merchants", () => {
     expect(cheapest.items).toHaveLength(1);
     const shown = noodles.items.map((i: any) => i.price);
     expect(cheapest.items[0].price).toBe(Math.min(...shown));
+
+    // the learning loop: each answer is logged, and adding a dish it showed is counted once
+    expect(cheapest.turn).toBeTruthy();
+    const added = async (item: string) => json((await guestClient()).post(`/api/public/branches/${s.klcc.ref}/assistant/added`, { data: { turn: cheapest.turn, item } }));
+    expect((await added(cheapest.items[0].id)).counted).toBe(true);
+    expect((await added(cheapest.items[0].id)).counted).toBe(false);
+    expect((await added(m.items.find((x) => x.id !== cheapest.items[0].id)!.id)).counted).toBe(false);
   });
 
   test("merchant onboarding copilot: paste a menu and describe the floor → reviewable draft → apply → checklist progresses", async () => {

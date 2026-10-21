@@ -5,6 +5,7 @@ import { ALLERGEN_LABELS, ALLERGENS, type Allergen } from "../../shared/allergen
 import type { MenuItem } from "../../shared/types";
 import { localizeItem } from "../../shared/menuI18n";
 import { formatters, translator, type MessageKey } from "../../i18n/core";
+import type { PlatformPairs } from "./brain/concepts";
 
 export interface AssistantContext {
   restaurant: { name: string; cuisine: string; story: string; description: string };
@@ -17,6 +18,11 @@ export interface AssistantContext {
   orderCounts?: Record<string, number>;
   together?: Record<string, Record<string, number>>;
   totalOrders?: number;
+  /** What guests order together across every restaurant, by dish concept. */
+  platform?: PlatformPairs;
+  /** From the assistant's own log: how often each dish was shown in the chat, and added from it. */
+  chatShown?: Record<string, number>;
+  chatAdded?: Record<string, number>;
 }
 
 export interface AssistantReply {

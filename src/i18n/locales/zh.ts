@@ -452,6 +452,8 @@ const zh = {
     onlyContains: "{dish}含有{list}，{other}没有。",
     pairWith: "配{dish}，我推荐{list}。",
     pairOften: "这里的客人常常一起点。",
+    pairPlatform: "很多餐厅的客人都这样搭配。",
+    pairClassic: "经典搭配。",
     pairCool: "冰凉清爽的饮品能中和辣味和浓郁感。",
     groupPlan: "{count} 位一起分享，我推荐{list}。一共{total}，饮料另计。",
     groupPlanNoCount: "一起分享的话，我推荐{list}。一共{total}，饮料另计。",

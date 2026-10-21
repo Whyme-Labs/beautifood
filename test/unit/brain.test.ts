@@ -7,6 +7,9 @@ import { normalize } from "../../src/shared/brain/text";
 import { answerGuest } from "../../src/server/ai/brain";
 import { correct, read, understand, type Dish } from "../../src/server/ai/brain/understand";
 import type { AssistantContext } from "../../src/server/ai/local";
+import { conceptsOf, type PlatformPairs } from "../../src/server/ai/brain/concepts";
+import { aggregateConcepts, MIN_TENANTS } from "../../src/server/ai/brain/platform";
+import { scrub } from "../../src/server/ai/brain/log";
 import { dataHash, TEMPLATES } from "../../scripts/brain/data";
 import { HELD_OUT } from "./brainIntents";
 import { CAFE_MENU, FINAL_CASES } from "./brainFinal";
@@ -156,5 +159,70 @@ describe("conversation", () => {
     expect(r.items[0].name).toBe("Char Kway Teow");
     expect(r.answer).toContain("炒粿条");
     expect(r.answer).toContain("甲壳");
+  });
+});
+
+describe("pairings across restaurants", () => {
+  it("knows what a dish is, whatever the restaurant calls it", () => {
+    expect(conceptsOf({ name: "Curry Mee", category: "Noodles" })[0]).toBe("curry_noodles");
+    expect(conceptsOf({ name: "Nasi Lemak Ayam Rempah", category: "Rice" })).toContain("coconut_rice");
+    expect(conceptsOf({ name: "Teh Tarik", category: "Drinks" })).toEqual(["milk_tea"]);
+    expect(conceptsOf({ name: "Limau Ais", category: "Drinks" })).toContain("iced_citrus");
+    expect(conceptsOf({ name: "Turnip Cake", category: "Dim Sum" })).not.toContain("cake");
+  });
+
+  const line = (orderId: string, tenantId: string, name: string, category: string) => ({ orderId, tenantId, name, category, description: "" });
+  const orders = (tenants: string[], perTenant: number) =>
+    tenants.flatMap((t) => Array.from({ length: perTenant }, (_, n) => [line(`${t}o${n}`, t, "Curry Mee", "Noodles"), line(`${t}o${n}`, t, "Teh Tarik", "Drinks")]).flat());
+
+  it("keeps only what at least 3 restaurants and 20 orders share", () => {
+    expect(MIN_TENANTS).toBe(3);
+    const two = aggregateConcepts(orders(["t1", "t2"], 50));
+    expect(two.pairs).toEqual([]);
+    // with fewer than 3 restaurants, even the total would describe one of them
+    expect(two.totalOrders).toBe(0);
+    const thin = aggregateConcepts(orders(["t1", "t2", "t3"], 5));
+    expect(thin.pairs).toEqual([]);
+    const shared = aggregateConcepts(orders(["t1", "t2", "t3"], 10));
+    expect(shared.pairs).toContainEqual({ a: "curry_noodles", b: "milk_tea", orders: 30, tenants: 3 });
+    expect(shared.totalOrders).toBe(30);
+  });
+
+  it("gives a branch with no orders yet the pairings guests make everywhere else", () => {
+    const platform: PlatformPairs = { totalOrders: 1000, orders: { curry_noodles: 200, milk_tea: 300, iced_citrus: 300, herbal_cooler: 300 }, pairs: { "curry_noodles|milk_tea": 160, "milk_tea|curry_noodles": 160 } };
+    const r = answerGuest({ ...ctx, platform } as AssistantContext, [{ role: "user", content: "what drink goes with curry mee?" }]);
+    expect(r.items[0].name).toBe("Teh Tarik");
+    expect(r.answer).toMatch(/many restaurants/);
+    // with nothing learnt anywhere, the teacher's prior: something citrus with curry
+    const cold = answerGuest(ctx, [{ role: "user", content: "what drink goes with curry mee?" }]);
+    expect(cold.items[0].name).toBe("Fresh Lime Juice");
+    expect(cold.answer).toMatch(/classic pairing/);
+  });
+
+  it("lets this branch's own orders outweigh the platform", () => {
+    const platform: PlatformPairs = { totalOrders: 1000, orders: { curry_noodles: 200, milk_tea: 300 }, pairs: { "curry_noodles|milk_tea": 160, "milk_tea|curry_noodles": 160 } };
+    const curry = ctx.items.find((i) => i.name === "Curry Mee")!;
+    const barley = ctx.items.find((i) => i.name === "Iced Barley")!;
+    const counts = Object.fromEntries(ctx.items.map((i) => [i.id, 30]));
+    const here = { ...ctx, platform, totalOrders: 300, orderCounts: { ...counts, [curry.id]: 60 }, together: { [curry.id]: { [barley.id]: 45 } } } as AssistantContext;
+    const r = answerGuest(here, [{ role: "user", content: "what drink goes with curry mee?" }]);
+    expect(r.items[0].name).toBe("Iced Barley");
+    expect(r.answer).toMatch(/Guests here/);
+  });
+});
+
+describe("the learning loop's log", () => {
+  it("keeps no emails or phone numbers", () => {
+    expect(scrub("call me at +60 12-345 6789 or a.b@c.com, is §dish spicy")).toBe("call me at §phone or §email, is §dish spicy");
+  });
+
+  it("ranks up dishes guests add from the chat more than most (once there's enough to go on)", () => {
+    const salad = ctx.items.find((i) => i.name === "Garden Salad")!;
+    const shown = Object.fromEntries(ctx.items.map((i) => [i.id, 40]));
+    const added = Object.fromEntries(ctx.items.map((i) => [i.id, 2]));
+    const learnt = { ...ctx, chatShown: shown, chatAdded: { ...added, [salad.id]: 30 } } as AssistantContext;
+    const before = answerGuest(ctx, [{ role: "user", content: "anything vegetarian?" }]).items.map((i) => i.name);
+    const after = answerGuest(learnt, [{ role: "user", content: "anything vegetarian?" }]).items.map((i) => i.name);
+    expect(after.indexOf("Garden Salad")).toBeLessThan(before.indexOf("Garden Salad"));
   });
 });

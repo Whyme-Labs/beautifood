@@ -454,6 +454,8 @@ const en = {
     onlyContains: "{dish} contains {list}; {other} doesn't.",
     pairWith: "With {dish}, I'd go for {list}.",
     pairOften: "Guests here often order them together.",
+    pairPlatform: "Guests at many restaurants order these together.",
+    pairClassic: "A classic pairing.",
     pairCool: "Something cold and refreshing balances the spice and richness.",
     groupPlan: "For {count} people to share, I'd get {list}. That's {total} in all, before drinks.",
     groupPlanNoCount: "To share, I'd get {list}. That's {total} in all, before drinks.",
