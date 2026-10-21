@@ -1,0 +1,314 @@
+{
+  "Buffalo Wings (8 pcs)": {
+    "allergens": [
+      "milk",
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Butter in sauce and blue cheese dip = milk; celery sticks = celery; hot sauce = spicy. No batter listed."
+  },
+  "Beer-Battered Onion Rings": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Tagged vegetarian. Lager batter = alcohol, not halal; wheat flour; mayonnaise = egg; chipotle = mild."
+  },
+  "Loaded Nachos": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Corn chips (no wheat); cheddar and sour cream = milk; chilli con carne and jalapeños = spicy."
+  },
+  "Calamari Rings": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Squid = molluscs; wheat batter; aioli with egg."
+  },
+  "Hummus & Pita": {
+    "allergens": [
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tahini = sesame; wheat pita. Paprika treated as not spicy."
+  },
+  "Classic Smash Burger": {
+    "allergens": [
+      "milk",
+      "egg",
+      "mustard",
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cheese and butter = milk; mayonnaise and egg bun = egg; mustard; sesame bun; wheat. Beef, no pork listed."
+  },
+  "BBQ Bacon Cheeseburger": {
+    "allergens": [
+      "milk",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork bacon = not halal; cheddar and butter; egg brioche bun."
+  },
+  "Nashville Hot Chicken Burger": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Buttermilk = milk; wheat coating and bun; mayonnaise coleslaw = egg; fiery cayenne = very spicy."
+  },
+  "Sambal Lamb Burger": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Sambal belacan = shrimp paste = crustaceans, spicy; fried egg; wheat bun."
+  },
+  "Portobello Mushroom Burger": {
+    "allergens": [
+      "milk",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tagged vegetarian. Swiss cheese = milk; aioli with egg; wheat bun."
+  },
+  "Plant Patty Burger": {
+    "allergens": [
+      "soy",
+      "tree_nuts",
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tagged vegan. Soy protein; cashew cheese = tree nuts; sesame wheat bun. Vegan mayo is eggless."
+  },
+  "Ribeye Steak 250g": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Herb butter = milk; black pepper sauce = mild."
+  },
+  "BBQ Pork Ribs (half rack)": {
+    "allergens": [
+      "egg",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork and bourbon glaze = not halal; mayonnaise coleslaw = egg; cornbread with wheat, milk, egg."
+  },
+  "Peri-Peri Half Chicken": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Hot bird's eye chilli = spicy; butter on corn = milk."
+  },
+  "Truffle Fries": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Parmesan = milk."
+  },
+  "Sweet Potato Fries": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Smoked paprika salt treated as not spicy."
+  },
+  "Mac & Cheese": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0
+  },
+  "Caesar Salad": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "fish",
+      "egg",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Parmesan; croutons = wheat; anchovies = fish; egg yolk; mustard. Beef bacon, so no pork; not vegetarian."
+  },
+  "Sizzling Brownie": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Walnuts = tree nuts; wheat; egg; butter and ice cream."
+  },
+  "New York Cheesecake": {
+    "allergens": [
+      "milk",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat biscuit base."
+  },
+  "Affogato with Baileys": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Baileys = alcohol, not halal; ice cream and cream liqueur = milk."
+  },
+  "Coconut Sorbet": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut milk is not dairy."
+  },
+  "Draft Lager (pint)": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol; barley malt = gluten."
+  },
+  "Craft IPA (pint)": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol; barley malt = gluten."
+  },
+  "Classic Mojito": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Rum = alcohol."
+  },
+  "Whisky Sour": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol; egg white, so vegetarian not vegan. Distilled whisky not counted as gluten."
+  },
+  "Espresso Martini": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Vodka and liqueur = alcohol."
+  },
+  "Virgin Mojito": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No alcohol."
+  },
+  "Cookies & Cream Milkshake": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ice cream and milk; wheat cookies."
+  }
+}
