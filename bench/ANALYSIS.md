@@ -122,3 +122,40 @@ answer on dev. Test was then run once.
    accuracy work.
 3. The menu parser's own safety errors (`bench/menu-data.ts`: allergens missed, non-vegan dishes
    called vegan) are a separate benchmark. On parser data the brain scores 84.7%.
+
+## The v2 held-out set, and the safety pass (commit after 296a0e3)
+
+All numbers on v1.2 labels (one convention for allergen questions about one dish, `CHANGES.md`).
+
+| | v1 dev (201) | v1 test (404) | v2 held-out (510) |
+|---|---|---|---|
+| Rules engine | 37.8%, unsafe 21 | 36.9%, unsafe 40 | 42.7%, unsafe 68 |
+| Original baseline (b548b1b) | 62.7%, unsafe 10 | 68.8%, unsafe 14 | 63.9%, unsafe 54 |
+| Live on main (iteration 2, 45402af) | 71.6%, unsafe 7 | 73.3%, unsafe 16 | 67.1%, unsafe 50 |
+| Iteration 3 (a8d9426) | 95.0%, unsafe 7 | 83.4%, unsafe 18 | 75.3% (71.6–79.0), unsafe 51 |
+| + no card for a dish against a stated allergy (296a0e3) | 97.5%, unsafe 2 | 86.4%, unsafe 6 | 82.7%, unsafe 10 |
+| + the safety fixes below | **98.5%, unsafe 0** | **87.9%, unsafe 0** | **84.3% (81.0–87.5), unsafe 2** |
+
+- **The held-out set is the honest number.** It was written by two new blind authors (4 of its 10
+  menus are new) and reviewed by a third, then frozen before any engine ran on it.
+  - Iteration 3 scored 75.3% on its first run, against 67.1% for what's live. On the new menus
+    alone, 76.1% against 68.3%: the gains carry to menus never tuned on.
+- **Its first run found the main safety failure.** 42 of iteration 3's 51 unsafe answers warned "not
+  suitable" in text while still showing that dish as an add-to-order card.
+  - That fix was chosen from those aggregate counts, without reading a held-out case, so the
+    held-out runs after it are not fully blind.
+  - The safety fixes after it came from reading the 8 remaining unsafe cases on v1 dev and v1 test
+    (v1 test is now spent):
+    - "shellfish" covers molluscs (oyster sauce), not just prawns;
+    - "intolarent" and 乳糖不耐 are allergy statements;
+    - "ada udang x? sy alergi" attaches the bare allergy to what was asked;
+    - "vegetarian curry to go with rice?" is a diet request, not a question about a dish;
+    - a course word ("breakfast") alone doesn't name a dish.
+  - Those fixes took held-out unsafe answers from 10 to 2 (fixed 8, broke 0) with no held-out case
+    read, which is evidence they generalise.
+- **Against what's live, on the held-out set:** fixed 90, broke 2 (McNemar p < 0.001), and unsafe
+  answers 50 → 2.
+- **What's left:** the 2 held-out unsafe answers are both allergen answers about one dish. Chinese is
+  the weakest language (78.4%, n=111).
+- **Next:** v2 has been run several times now. Further tuning needs a v3 held-out set from fresh
+  authors.

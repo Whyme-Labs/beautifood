@@ -222,11 +222,14 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       if (df(w) === 1 && !GENERIC.has(w) && !ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, "")) && w.length >= 4 && w !== "kacang" && !mentionedAllergens(w).length) unique = true;
     }
     if (!covered.length) return;
+    // only the course's own words ("breakfast" of The Big Breakfast in "vegetarian breakfast?") don't name it
+    if (covered.length < name.length && covered.every((i) => ix.courseWords.has(toks[i]) || ix.courseWords.has(toks[i].replace(/s$/, "")))) return;
     // two or more of its words side by side ("steamed fish", "mee goreng") name it, generic or not
     const inOrder = [...covered].sort((a, b) => a - b);
     const adjacent = inOrder.length >= 2 && inOrder.every((c, i) => i === 0 || c === inOrder[i - 1] + 1);
     // ...unless they're the course's own words ("fruit teas" asks for the Fruit teas)
-    const adjacentNamed = adjacent && !covered.every((i) => ix.courseWords.has(toks[i]) || ix.courseWords.has(toks[i].replace(/s$/, "")));
+    const FUNCTION = /^(the|and|with|of|a|an|in|on|n|dan|style)$/;
+    const adjacentNamed = adjacent && covered.filter((i) => !FUNCTION.test(toks[i])).length >= 2 && !covered.every((i) => ix.courseWords.has(toks[i]) || ix.courseWords.has(toks[i].replace(/s$/, "")));
     if (adjacentNamed) strong = true;
     const coverage = weight / total;
     const all = covered.length === name.length;
@@ -385,13 +388,15 @@ export const isDessert = (i: Dish) => DESSERT.test(i.category ?? "");
 const ASKS_CONTENTS = /\b(allerg\w*|alergi|contain\w*|ingredients?|inside|safe|ada .{0,20}(tak|ke)|got .{0,20}(or not|inside)|does .{0,40}(have|got|use|come with)|is there|any .{0,15} in (it|this|that|the)|made with|cooked (in|with)|boleh makan|free from|\w+ free)\b/;
 const AVOID_CUE = /\b(allerg\w*|alergi|no|without|tanpa|avoid|cant eat|cannot eat|can t eat|cant have|dont eat|don t eat|not eat|tak boleh makan|tak makan|tak nak|jangan|intolerant|intolerance|free|tak tahan|sensitive|no more|hate|exclude|except|minus|kecuali|tak boleh)\b/;
 
-const ALLERGY_WORD = /\b(allerg\w*|alergi\w*|alahan|intoleran\w*|coeliac|celiac|sensitive)\b|过[敏民闵抿]|过敏/i;
+const ALLERGY_WORD = /\b(allerg\w*|alergi\w*|alahan|intol\w*|coeliac|celiac|sensitive)\b|过[敏民闵抿]|过敏|不耐/i;
 const NEG_CUE = /^(no|not|non|without|tanpa|tak|takde|bukan|jangan|cannot|cant|dont|doesnt|never|avoid|except|kecuali|minus|hate|exclude|skip|free|less|zero|nothing|nak|boleh)$/;
 const ZH_CUE = /不要|不能|不吃|不可以|吃不了|没有|没|无|不含|别|免|戒|避免|不加|走/;
 
 /** Whether allergen `a` is governed by an avoid cue in its clause of `question`. */
 function governed(question: string, a: Allergen): boolean {
   const clauses = question.split(/[,;.!?，。；、]+|\b(?:but|tapi|then)\b/i);
+  // "ada udang x? sy alergi", "我过敏": an allergy said with nothing named is to what they asked about
+  if (mentionedAllergens(question).includes(a) && clauses.some((c) => ALLERGY_WORD.test(c) && !mentionedAllergens(c).length)) return true;
   return clauses.some((clause) => {
     if (!mentionedAllergens(clause).includes(a)) return false;
     if (ALLERGY_WORD.test(clause)) return true;
@@ -566,7 +571,8 @@ export function read(items: Dish[], asked: string): Reading {
   // a translated dish name found by substring: mark it too
   if (mentions.some((m) => !m.covered.length)) delexicalized.unshift("§dish");
   // "is the roti canai vegetarian?" asks of a dish; "I'm vegetarian, roti canai ok?" says who they are
-  const saysDiet = !mentions.length || /\b(i m|im|i am|we re|we are|were all|saya|sy|kami|aku|my \w+ (is|are)|for (a|my) \w*\s?(vegetarian|vegan)|vegetarian here|vegan here)\b/.test(restText) || /我(是|吃|们)|吃素的|吃斋/.test(restRaw);
+  const asksDiet = /\b(is|are|got|ada|any)\b[^?]*\b(vegetarian|vegan|veg)\b|\b(vegetarian|vegan)\s*(or not|tak|x|ke|kah|ah|\?|$)/.test(restText) || /素(的|吗|不)|是不是素/.test(restRaw);
+  const saysDiet = !mentions.length || !asksDiet || /\b(i m|im|i am|we re|we are|were all|saya|sy|kami|aku|my \w+ (is|are)|for (a|my) \w*\s?(vegetarian|vegan)|vegetarian here|vegan here)\b/.test(restText) || /我(是|吃|们)|吃素的|吃斋/.test(restRaw);
   return {
     text: question,
     stated: allergens.filter((a) => governed(fixed, a)),
