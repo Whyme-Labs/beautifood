@@ -31,10 +31,14 @@ if (leaked.length) {
   process.exit(1);
 }
 
-const examples = generate(PER_INTENT).map((e) => {
+const generated = generate(PER_INTENT).map((e) => {
   const toks = e.delex ? asReadText(e.text).split(" ") : modelTokens(read(e.items, e.text).delexicalized);
   return { ...e, toks, feats: features(toks, BUCKETS), y: INTENTS.indexOf(e.intent) };
 });
+// a template that happens to read exactly like an eval question is dropped too; a phrase of one or
+// two words ("hi", "你好", "thank you") is everyone's, and leaks nothing
+const examples = generated.filter((e) => e.toks.length <= 2 || !guarded.has(e.toks.join(" ")));
+console.log(`${generated.length - examples.length} generated examples dropped as eval questions`);
 // the words of on-topic questions (seen at least twice), for open-set rejection
 const counts = new Map<string, number>();
 for (const e of examples) if (e.intent !== "out_of_scope") for (const t of new Set(e.toks)) counts.set(t, (counts.get(t) ?? 0) + 1);

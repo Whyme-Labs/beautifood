@@ -8,6 +8,20 @@ import { readFileSync } from "node:fs";
 import { hash } from "../../src/shared/brain/text";
 import { trainingMenus } from "./menus";
 
+/** Thanks and compliments, alone and together ("so good, thank you", "好吃，谢谢"): the meal is over, not a request. */
+function compliments(): string[] {
+  const thanks = ["thanks", "thank you", "tq", "thx", "terima kasih", "ok tq", "cheers", "thanks so much", "tq boss"];
+  const nice = ["sedap", "sedap gila", "best la", "so good", "delicious", "it was great", "the food was amazing", "love it", "loved it", "yummy", "nice food", "mantap", "superb", "really good", "great food", "enjoyed it", "it was lovely", "everything was nice", "the laksa was good", "very tasty", "power la", "sedap sangat"];
+  const thanksZh = ["谢谢", "多谢", "谢啦"];
+  const niceZh = ["好吃", "很好吃", "太好吃了", "真好吃", "味道很好", "很满意"];
+  return [
+    ...nice,
+    ...thanks.flatMap((t, i) => [`${t}, ${nice[i % nice.length]}`, `${nice[(i + 5) % nice.length]}, ${t}`, `${nice[(i + 11) % nice.length]} ${t}`]),
+    ...niceZh,
+    ...thanksZh.flatMap((t, i) => [`${niceZh[i]}，${t}`, `${t}，${niceZh[i + 3]}`]),
+  ];
+}
+
 export const TEMPLATES: Record<Intent, string[]> = {
   recommend: [
     "what are your best sellers", "your favourites?", "what do the regulars get", "what's the crowd favourite", "anything you'd recommend for a first visit", "what's the one dish i shouldn't miss",
@@ -112,6 +126,7 @@ export const TEMPLATES: Record<Intent, string[]> = {
     "谢谢啦", "感谢", "好的谢谢", "cheers", "thanks mate", "appreciate it", "much appreciated", "ok i'll try that", "i'll go with that", "ok tq", "noted thanks",
     "thanks", "thank you", "thx", "tq", "terima kasih", "ok thanks", "great thanks", "perfect, thank you", "谢谢", "多谢", "cool", "ok", "okay got it", "awesome", "that's all",
     "nice one", "sounds good", "ok lah", "baik", "好的", "ok noted", "alright", "great", "perfect", "thanks a lot", "terima kasih banyak", "thank you so much", "谢啦", "no more questions", "got it",
+    ...compliments(),
   ],
   order_help: [
     "where is the washroom", "bathroom?", "wifi?", "can a waiter come over", "please send someone",

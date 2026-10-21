@@ -346,3 +346,71 @@ describe("allergen polarity and the menu's own categories (benchmark iteration 2
     expect(askedCategories(menu, ["what", "seafood"], "")).toEqual(["Seafood"]);
   });
 });
+
+describe("benchmark iteration 3: follow-ups, searches, budgets, small talk", () => {
+  const items = hawker as unknown as Dish[];
+  const ask = (...qs: string[]) => {
+    const history: { role: "user" | "assistant"; content: string }[] = [];
+    let r = answerGuest(ctx, [{ role: "user", content: qs[0] }]);
+    for (const q of qs.slice(1)) {
+      history.push({ role: "user", content: qs[history.length / 2] }, { role: "assistant", content: r.answer });
+      r = answerGuest(ctx, [...history, { role: "user", content: q }]);
+    }
+    return { ...r, names: r.items.map((i) => i.name) };
+  };
+
+  it("doesn't read an allergen out of a dish's own name", () => {
+    expect(read(items, "how much is the teh tarik?").allergens).toEqual([]);
+    expect(ask("how much is the teh tarik?").answer).toMatch(/5\.50/);
+  });
+
+  it("narrows the dishes just shown, and knows which one 'the second' is", () => {
+    const narrowed = ask("any sides?", "which ones have no peanuts? I'm allergic");
+    expect(narrowed.names).toEqual(["Garden Salad"]);
+    expect(narrowed.safetyNote).toBeTruthy();
+    expect(read(items, "is the second one spicy?").ordinal).toBe(1);
+    expect(read(items, "第一个辣吗？").ordinal).toBe(0);
+  });
+
+  it("reads budgets said as what they have, and in Chinese numerals", () => {
+    expect(read(items, "only have RM10, what can I eat?").budget).toBe(1000);
+    expect(read(items, "rm8 je, makan apa?").budget).toBe(800);
+    expect(read(items, "二十块以下有什么？").budget).toBe(2000);
+    expect(read(items, "三个人，一百块").amount).toBe(10000);
+  });
+
+  it("searches the menu for a plain word, and says honestly what it doesn't have", () => {
+    expect(ask("ayam").names).toContain("Nasi Lemak Ayam Rempah");
+    expect(ask("ayam").names).not.toContain("Teh Tarik");
+    const pizza = ask("do you have pizza?");
+    expect(pizza.answer).toMatch(/don't have pizza/);
+    expect(pizza.names.length).toBeLessThanOrEqual(3);
+    expect(ask("有没有寿司？").answer).toMatch(/don't have 寿司/);
+    // what they said earlier still holds
+    expect(ask("I'm allergic to peanuts", "rice").names).not.toContain("Nasi Lemak Ayam Rempah");
+  });
+
+  it("sends 'allergic to everything' to staff, and keeps 'all nuts' as nuts", () => {
+    const r = ask("I'm allergic to almost everything");
+    expect(r.names).toEqual([]);
+    expect(r.safetyNote).toBeTruthy();
+    expect(read(items, "allergic to all nuts").manyAllergies).toBe(false);
+  });
+
+  it("thanks, greetings and off-topic questions don't push dish cards", () => {
+    for (const q of ["thank you, so good!", "hello", "what's the capital of France?"]) expect(ask(q).names, q).toEqual([]);
+  });
+
+  it("shows the signatures for 'known for', the whole menu for 'cheapest thing', and no alcohol when asked", () => {
+    expect(ask("what is this place famous for?").names.every((n) => hawker.find((d) => d.name === n)?.isSignature)).toBe(true);
+    expect(ask("what's the cheapest thing you have?").names[0]).toBe("Kopi O");
+    expect(read(items, "不要酒，有什么喝的？").noAlcohol).toBe(true);
+    expect(read(items, "x minum arak").noAlcohol).toBe(true);
+  });
+
+  it("compares two dishes named with 'ke' or 'vs'", () => {
+    const r = ask("satay ke rojak, mana lagi murah?");
+    expect(r.intent).toBe("compare");
+    expect(r.names).toEqual(expect.arrayContaining(["Satay (6 sticks)", "Rojak"]));
+  });
+});

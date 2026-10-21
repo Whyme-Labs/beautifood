@@ -92,6 +92,8 @@ interface DishIndex {
   items: Dish[];
   names: string[][];
   df: Map<string, number>;
+  /** Words of the menu's course names ("yakitori", "skewers"). */
+  courseWords: Set<string>;
 }
 
 const indexes = new WeakMap<Dish[], DishIndex>();
@@ -102,7 +104,8 @@ function dishIndex(items: Dish[]): DishIndex {
   const names = items.map((i) => tokens(normalize(i.name.replace(/\(.*?\)/g, " ")), true));
   const df = new Map<string, number>();
   for (const n of names) for (const w of new Set(n)) df.set(w, (df.get(w) ?? 0) + 1);
-  ix = { items, names, df };
+  const courseWords = new Set(items.flatMap((i) => tokens(normalize(i.category ?? ""), true)).flatMap((w) => [w, w.replace(/s$/, "")]));
+  ix = { items, names, df, courseWords };
   indexes.set(items, ix);
   return ix;
 }
@@ -115,7 +118,7 @@ const KEYWORDS = (
 ).split(" ");
 
 /** Real words that are one letter off a keyword ("there" and "these", "daily" and "dairy"): never "corrected". */
-const REAL = new Set("there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter".split(" "));
+const REAL = new Set("there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram".split(" "));
 
 /**
  * Allergen words, which are worth correcting even when short ("egs", "nutz"): missing one is the
@@ -187,32 +190,46 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
       if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2 });
-    const name = ix.names[n].filter((w) => w.length > 1 || /\d/.test(w));
+    let name = ix.names[n].filter((w) => w.length > 1 || /\d/.test(w));
     if (!name.length) return;
+    // two of its words typed as one ("kungpao" for Kung Pao): one word, as rare as the rarer
+    const df = (w: string) => ix.df.get(w) ?? Math.min(...name.filter((x) => w.startsWith(x) || w.endsWith(x)).map((x) => ix.df.get(x) ?? 1), 1);
+    for (let k = 0; k + 1 < name.length; k++) if (toks.includes(name[k] + name[k + 1])) name = [...name.slice(0, k), name[k] + name[k + 1], ...name.slice(k + 2)];
     const covered: number[] = [];
     let weight = 0;
     let total = 0;
     let unique = false;
     let strong = false;
-    for (const w of name) {
-      const idf = 1 / (ix.df.get(w) ?? 1);
+    // distinctive words first; then each generic word at the occurrence nearest those (the "bowl"
+    // of "quinoa bowl", not of "acai bowl" earlier in the question)
+    for (const w of [...name].sort((a, b) => Number(GENERIC.has(a)) - Number(GENERIC.has(b)))) {
+      const idf = 1 / df(w);
       const g = GENERIC.has(w) ? 0.3 : 1;
       total += idf * g;
-      const at = toks.findIndex((t, i) => !skip.has(i) && !covered.includes(i) && same(t, w));
-      if (at < 0) continue;
+      const spots = toks.map((_, i) => i).filter((i) => !skip.has(i) && !covered.includes(i) && same(toks[i], w));
+      if (!spots.length) continue;
+      const near = (i: number) => Math.min(...covered.map((c) => Math.abs(c - i)));
+      const at = covered.length ? spots.sort((a, b) => near(a) - near(b))[0] : spots[0];
       covered.push(at);
       weight += idf * g;
       if (!GENERIC.has(w) && w !== "kacang" && !mentionedAllergens(w).length) strong = true;
       // an allergen word ("kacang" in Ais Kacang) alone names the allergen, not the dish
-      if (ix.df.get(w) === 1 && !GENERIC.has(w) && w.length >= 4 && w !== "kacang" && !mentionedAllergens(w).length) unique = true;
+      // a word the menu's courses use ("skewers" in Yakitori & skewers) asks for the course, not one dish
+      if (df(w) === 1 && !GENERIC.has(w) && !ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, "")) && w.length >= 4 && w !== "kacang" && !mentionedAllergens(w).length) unique = true;
     }
     if (!covered.length) return;
+    // two or more of its words side by side ("steamed fish", "mee goreng") name it, generic or not
+    const inOrder = [...covered].sort((a, b) => a - b);
+    const adjacent = inOrder.length >= 2 && inOrder.every((c, i) => i === 0 || c === inOrder[i - 1] + 1);
+    // ...unless they're the course's own words ("fruit teas" asks for the Fruit teas)
+    const adjacentNamed = adjacent && !covered.every((i) => ix.courseWords.has(toks[i]) || ix.courseWords.has(toks[i].replace(/s$/, "")));
+    if (adjacentNamed) strong = true;
     const coverage = weight / total;
     const all = covered.length === name.length;
     // a long name needs its words close together, not scattered across the question
     const spread = Math.max(...covered) - Math.min(...covered) + 1;
     // a partial match needs a word that names this dish, not just "ais" or an allergen like "kacang"
-    if (!(all || ((coverage >= 0.6 || unique) && strong)) || spread > name.length + 2) return;
+    if (!(all || ((coverage >= 0.6 || unique || adjacentNamed) && strong)) || spread > name.length + 2) return;
     found.push({ dish, at: Math.min(...covered), covered, score: (all ? 1 : coverage) + covered.length * 0.01 });
   });
   // two dishes claiming the same words: the better match keeps them
@@ -268,7 +285,7 @@ function budgetOf(text: string, raw: string): number | null {
   raw = hanNumbers(raw);
   const amount = "(?:rm|myr|\\$|s\\$)?\\s*(\\d+(?:\\.\\d+)?)\\s*(?:rm|ringgit|bucks|dollars?|myr)?";
   const m =
-    text.match(new RegExp(`\\b(?:under|below|less than|lower than|max|maximum|budget|budget of|within|not more than|no more than|up to|at most|cheaper than|bawah|kurang dari|tak lebih|tak sampai|limit)\\s*${amount}`)) ??
+    text.match(new RegExp(`\\b(?:under|below|less than|lower than|max|maximum|budget|bajet|budget of|within|not more than|no more than|up to|at most|cheaper than|bawah|kurang dari|tak lebih|tak sampai|limit)\\s*${amount}`)) ??
     text.match(new RegExp(`${amount}\\s*(?:and below|or less|and under|or below|ke bawah|kebawah|max|budget)\\b`)) ??
     // "got RM5 only", "only have RM15", "ada rm10 je": what they have to spend on one thing
     text.match(/\b(?:only have|only got|i have|i got|i ve got|got only|with only|budget is)\s*(?:rm|myr|\$)\s*(\d+(?:\.\d+)?)/) ??
@@ -284,7 +301,25 @@ function groupBudgetOf(text: string, raw: string): number | null {
   return m ? Math.round(parseFloat(m[1] || m[2]) * 100) : null;
 }
 
-const NEG = /^(not|no|non|less|without|tak|takde|kurang|bukan|jangan|tanpa|dont|cant|never|avoid|mild|cannot|nothing|zero|minus|hate)$/;
+const NEG = /^(not|no|non|less|without|tak|takde|kurang|bukan|jangan|tanpa|dont|doesnt|isnt|arent|wasnt|cant|never|avoid|mild|cannot|nothing|zero|minus|hate)$/;
+
+/**
+ * Spice limits clause by clause: "ada snek pedas x? suka pedas" is a question then a liking, and
+ * "no peanuts, spicy please" negates the peanuts, not the spice. A limit beats a liking.
+ */
+function spiceByClause(question: string, dishWords: Set<string>, raw: string) {
+  const clauses = question.split(/[,;.!?，。；、]+|\b(?:and|but|also|plus|dan|tapi)\b/i).map((c) => tokens(normalize(c), true).filter((t) => !dishWords.has(t)).map((t) => correct(t)));
+  let res: { max: number | null; min: number | null } = { max: null, min: null };
+  for (const c of clauses) {
+    // "pedas tak?", "pedas x?": a question tag at the end of a clause asks, it doesn't negate
+    const r = spiceOf(c.length >= 2 && /^(tak|x|ke)$/.test(c[c.length - 1]) ? c.slice(0, -1) : c, "");
+    if (r.max !== null) res = { max: res.max === null ? r.max : Math.min(res.max, r.max), min: null };
+    else if (r.min !== null && res.max === null) res = { max: null, min: Math.max(res.min ?? 0, r.min) };
+  }
+  // the Chinese rules read the whole question
+  if (res.max === null && res.min === null) res = spiceOf([], raw);
+  return res;
+}
 
 /** Spice limits from the question, with the negation in front of a spice word taken into account. */
 function spiceOf(toks: string[], raw: string): { max: number | null; min: number | null } {
@@ -415,11 +450,13 @@ export function askedCategories(items: Dish[], words: string[], raw: string): st
     wanted.add(w);
   }
   for (const [re, stems] of CATEGORY_ZH) if (re.test(raw)) stems.forEach((x) => wanted.add(x));
-  const hit = (c: string) => {
+  const hits = (c: string) => {
     const n = normalize(c);
-    return [...wanted].some((x) => (x.includes(" ") ? n.includes(x) : catWords(c).some((cw) => cw === x || cw.startsWith(x))));
+    return [...wanted].filter((x) => (x.includes(" ") ? n.includes(x) : catWords(c).some((cw) => cw === x || cw.startsWith(x)))).length;
   };
-  const out = cats.filter(hit);
+  // the categories that match the most of their words ("fruit teas" is Fruit teas, not Milk teas)
+  const best = Math.max(0, ...cats.map(hits));
+  const out = best ? cats.filter((c) => hits(c) === best) : [];
   // a word every category shares says nothing
   return out.length === cats.length ? [] : out;
 }
@@ -486,7 +523,7 @@ export function read(items: Dish[], asked: string): Reading {
   else if (/\b(vegetarian|veggie|vegetarians|vege|veg|no meat|meatless|meat free|tak makan daging|sayur sayuran|sayuran|vegetarian food)\b/.test(restText) || /素|斋/.test(restRaw)) diet.push("vegetarian");
   if (/\b(halal|no pork|tak makan babi|takde babi|muslim|muslims|pork free|non pork)\b/.test(restText) || /清真|无猪|不吃猪|没有猪/.test(restRaw)) diet.push("halal");
 
-  const spice = spiceOf(rest, restRaw);
+  const spice = spiceByClause(question, new Set(mentions.flatMap((m) => m.covered.map((i) => toks[i]))), restRaw);
   const party = partyOf(restText, restRaw);
   const budget = budgetOf(restText, restRaw);
   const courses = COURSES.filter((c) => c.ask.test(restText) || c.askZh.test(restRaw)).map((c) => c.course);

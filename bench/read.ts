@@ -1,3 +1,5 @@
+// How the brain reads questions on a benchmark menu, for diagnosing a dev failure:
+//   npx tsx bench/read.ts <menu> "question one || question two"
 import { loadMenu } from "./run";
 import { read } from "../src/server/ai/brain/understand";
 const [menu, ...q] = process.argv.slice(2);
