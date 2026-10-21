@@ -16,6 +16,7 @@ const arg = (k: string, d: string) => (process.argv.includes(k) ? process.argv[p
 const ENGINE = arg("--engine", "brain");
 // no default split: the test split is run once, on purpose, never by accident
 const SPLIT = arg("--split", "");
+const SET = arg("--set", "v1") as "v1" | "heldout";
 const DATA = arg("--data", "gold") as "gold" | "parser";
 
 type Item = AssistantContext["items"][number];
@@ -84,10 +85,13 @@ export function loadMenu(menu: string, source: "gold" | "parser" = "gold"): Assi
   return { restaurant: { name: "Test Kitchen", cuisine: "", story: "", description: "" }, branchName: "Main", currency: "MYR", menuLanguage: "en", items } as unknown as AssistantContext;
 }
 
-export function loadCases(split = "all"): Case[] {
-  return readdirSync(`${DIR}cases`)
+/** `set`: "v1" (cases/, dev and test) or "heldout" (heldout/, v2: new authors and menus, all test). */
+export function loadCases(split = "all", set: "v1" | "heldout" = "v1"): Case[] {
+  const dir = `${DIR}${set === "v1" ? "cases" : "heldout"}`;
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
     .filter((f) => f.endsWith(".json"))
-    .flatMap((f) => JSON.parse(readFileSync(`${DIR}cases/${f}`, "utf8")) as Case[])
+    .flatMap((f) => JSON.parse(readFileSync(`${dir}/${f}`, "utf8")) as Case[])
     .filter((c) => split === "all" || c.split === split);
 }
 
@@ -247,10 +251,10 @@ export function summarise(rows: Row[]) {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   if (!["dev", "test", "all"].includes(SPLIT)) {
-    console.error("usage: npx tsx bench/run.ts --split dev|test|all [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
+    console.error("usage: npx tsx bench/run.ts --split dev|test|all [--set v1|heldout] [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
     process.exit(1);
   }
-  const cases = loadCases(SPLIT);
+  const cases = loadCases(SPLIT, SET);
   const rows = runEngine(ENGINE, cases, DATA);
   const s = summarise(rows);
   const sha = (() => {
@@ -260,9 +264,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       return "unknown";
     }
   })();
-  const label = arg("--label", `${ENGINE}-${SPLIT}-${DATA}-${sha}`);
+  const label = arg("--label", `${ENGINE}-${SET === "v1" ? "" : `${SET}-`}${SPLIT}-${DATA}-${sha}`);
   mkdirSync(`${DIR}results`, { recursive: true });
-  writeFileSync(`${DIR}results/${label}.json`, JSON.stringify({ engine: ENGINE, split: SPLIT, data: DATA, sha, at: new Date().toISOString(), summary: s, rows }, null, 1));
+  writeFileSync(`${DIR}results/${label}.json`, JSON.stringify({ engine: ENGINE, set: SET, split: SPLIT, data: DATA, sha, at: new Date().toISOString(), summary: s, rows }, null, 1));
   if (process.argv.includes("--fail"))
     for (const r of rows.filter((x) => !x.pass)) console.log(`✗ [${r.stage}] ${r.id} (${r.lang}) ${r.question.slice(0, 80)}\n    → ${r.failed.join("; ")}\n    intent ${r.trace.modelIntent} ${r.trace.confidence} (margin ${r.trace.margin}) → ${r.trace.decided} | ${r.answer.slice(0, 140)}`);
   console.log(JSON.stringify({ label, n: s.n, pass: s.pass, unsafe: s.unsafe, p50ms: s.p50ms, p99ms: s.p99ms, failuresByStage: s.failuresByStage, intentConfidence: s.intentConfidence, byLang: s.byLang }, null, 1));
