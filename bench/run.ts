@@ -2,8 +2,8 @@
 // the stage that caused it: the intent model (with its probabilities), dish finding, constraint
 // reading, the decision rules, ranking or wording.
 //
-//   npx tsx bench/run.ts [--engine brain|rules] [--split test|dev|all] [--label name] [--fail]
-import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+//   npx tsx bench/run.ts [--engine brain|rules] [--split test|dev|all] [--data gold|parser] [--label name] [--fail]
+import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { parseMenuText } from "../src/shared/menuParser";
 import { answerGuest } from "../src/server/ai/brain";
@@ -15,10 +15,31 @@ const DIR = new URL(".", import.meta.url).pathname;
 const arg = (k: string, d: string) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : d);
 const ENGINE = arg("--engine", "brain");
 const SPLIT = arg("--split", "test");
+const DATA = arg("--data", "gold") as "gold" | "parser";
 
 type Item = AssistantContext["items"][number];
 
-export function loadMenu(menu: string): AssistantContext {
+/** The benchmark's own reading of each dish (bench/menus/<menu>.gold.json), independent of any parser. */
+export interface Gold {
+  allergens: string[];
+  vegetarian: boolean;
+  vegan: boolean;
+  halal: boolean;
+  spice: number;
+  note?: string;
+}
+
+export function loadGold(menu: string): Record<string, Gold> | null {
+  const f = `${DIR}menus/${menu}.gold.json`;
+  return existsSync(f) ? (JSON.parse(readFileSync(f, "utf8")) as Record<string, Gold>) : null;
+}
+
+/**
+ * A menu as the assistant sees it. With `source: "gold"` (the default) each dish carries the
+ * benchmark's ground truth, so the assistant is scored on its own mistakes, not the parser's; with
+ * "parser" it carries what the onboarding parser inferred, as a merchant who never reviewed it would.
+ */
+export function loadMenu(menu: string, source: "gold" | "parser" = "gold"): AssistantContext {
   const zh = new Map<string, string>();
   const text = readFileSync(`${DIR}menus/${menu}.txt`, "utf8")
     .split("\n")
@@ -50,6 +71,15 @@ export function loadMenu(menu: string): AssistantContext {
     popularity: 0,
     translations: zh.has(p.name) ? { zh: { name: zh.get(p.name)! } } : undefined,
   }));
+  const gold = source === "gold" ? loadGold(menu) : null;
+  if (gold)
+    for (const i of items) {
+      const g = gold[i.name];
+      if (!g) throw new Error(`${menu}: no gold entry for "${i.name}"`);
+      i.allergens = g.allergens as typeof i.allergens;
+      i.dietary = [...(g.vegan ? ["vegan", "vegetarian"] : g.vegetarian ? ["vegetarian"] : []), ...(g.halal ? ["halal_friendly"] : [])] as typeof i.dietary;
+      i.spiceLevel = g.spice;
+    }
   return { restaurant: { name: "Test Kitchen", cuisine: "", story: "", description: "" }, branchName: "Main", currency: "MYR", menuLanguage: "en", items } as unknown as AssistantContext;
 }
 
@@ -133,10 +163,10 @@ interface Trace {
   delexicalized: string;
 }
 
-export function runEngine(engine: string, cases: Case[]) {
+export function runEngine(engine: string, cases: Case[], data: "gold" | "parser" = "gold") {
   const menus = new Map<string, AssistantContext>();
   return cases.map((c) => {
-    const ctx = menus.get(c.menu) ?? menus.set(c.menu, loadMenu(c.menu)).get(c.menu)!;
+    const ctx = menus.get(c.menu) ?? menus.set(c.menu, loadMenu(c.menu, data)).get(c.menu)!;
     const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.user }, { role: "assistant" as const, content: b.assistant }]), { role: "user" as const, content: c.question }];
     const t0 = performance.now();
     let answer = "";
@@ -216,7 +246,7 @@ export function summarise(rows: Row[]) {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const cases = loadCases(SPLIT);
-  const rows = runEngine(ENGINE, cases);
+  const rows = runEngine(ENGINE, cases, DATA);
   const s = summarise(rows);
   const sha = (() => {
     try {
@@ -225,9 +255,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       return "unknown";
     }
   })();
-  const label = arg("--label", `${ENGINE}-${SPLIT}-${sha}`);
+  const label = arg("--label", `${ENGINE}-${SPLIT}-${DATA}-${sha}`);
   mkdirSync(`${DIR}results`, { recursive: true });
-  writeFileSync(`${DIR}results/${label}.json`, JSON.stringify({ engine: ENGINE, split: SPLIT, sha, at: new Date().toISOString(), summary: s, rows }, null, 1));
+  writeFileSync(`${DIR}results/${label}.json`, JSON.stringify({ engine: ENGINE, split: SPLIT, data: DATA, sha, at: new Date().toISOString(), summary: s, rows }, null, 1));
   if (process.argv.includes("--fail"))
     for (const r of rows.filter((x) => !x.pass)) console.log(`✗ [${r.stage}] ${r.id} (${r.lang}) ${r.question.slice(0, 80)}\n    → ${r.failed.join("; ")}\n    intent ${r.trace.modelIntent} ${r.trace.confidence} (margin ${r.trace.margin}) → ${r.trace.decided} | ${r.answer.slice(0, 140)}`);
   console.log(JSON.stringify({ label, n: s.n, pass: s.pass, unsafe: s.unsafe, p50ms: s.p50ms, p99ms: s.p99ms, failuresByStage: s.failuresByStage, intentConfidence: s.intentConfidence, byLang: s.byLang }, null, 1));
