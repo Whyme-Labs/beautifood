@@ -1,0 +1,307 @@
+{
+  "Som Tam": {
+    "allergens": [
+      "peanuts",
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Roasted peanuts; dried shrimp = crustaceans; fish sauce = fish; described as spicy."
+  },
+  "Yam Woon Sen": {
+    "allergens": [
+      "crustaceans",
+      "fish",
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns; fish sauce; Chinese celery. Glass noodles assumed mung bean (no wheat). Fresh chilli."
+  },
+  "Tod Mun Pla": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish cakes; red curry paste contains shrimp paste = crustaceans; egg. Sweet chilli dip = mild."
+  },
+  "Chicken Satay": {
+    "allergens": [
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanut sauce. Coconut milk is not dairy. Described as not spicy."
+  },
+  "Fresh Spring Rolls": {
+    "allergens": [
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu = soy; tamarind peanut dip = peanuts. Rice paper and rice vermicelli, no wheat."
+  },
+  "Pandan Chicken": {
+    "allergens": [
+      "molluscs",
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs; soy sauce = soy and wheat; sesame oil."
+  },
+  "Crispy Tofu": {
+    "allergens": [
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Tofu; crushed peanuts; sweet chilli sauce = mild."
+  },
+  "Tom Yum Goong": {
+    "allergens": [
+      "crustaceans",
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "River prawns; fish sauce; evaporated milk = milk; very spicy."
+  },
+  "Tom Kha Gai": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish sauce. Coconut milk is not dairy. No chilli."
+  },
+  "Green Curry Chicken": {
+    "allergens": [
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Curry paste contains shrimp paste = crustaceans; fish sauce; spicy."
+  },
+  "Massaman Beef": {
+    "allergens": [
+      "peanuts",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Roasted peanuts; fish sauce; described as mild."
+  },
+  "Vegetable Red Curry": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Made without shrimp paste or fish sauce; tofu = soy; spicy."
+  },
+  "Cashew Chicken": {
+    "allergens": [
+      "tree_nuts",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Cashews = tree nuts; oyster sauce = molluscs; described as mild."
+  },
+  "Pla Rad Prik": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Seabass = fish; sweet, sour and spicy chilli sauce."
+  },
+  "Pla Neung Manao": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Seabass and fish sauce; bird's eye chilli broth, very spicy."
+  },
+  "Stir-fried Morning Glory": {
+    "allergens": [
+      "soy",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fermented soybean paste = soy; oyster sauce = molluscs, so not vegetarian. Chilli = mild."
+  },
+  "Pad Kra Pao Gai": {
+    "allergens": [
+      "molluscs",
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Oyster sauce = molluscs; soy sauce = soy and wheat; fried egg; very spicy."
+  },
+  "Pad Thai Goong": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "soy",
+      "fish",
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawns; egg; tofu; fish sauce; crushed peanuts. Rice noodles, no wheat."
+  },
+  "Vegetarian Pad Thai": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu and soy sauce = soy and wheat; egg; peanuts. Vegetarian (egg), not vegan."
+  },
+  "Pineapple Fried Rice": {
+    "allergens": [
+      "crustaceans",
+      "tree_nuts",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawns; cashews = tree nuts; egg. Chicken floss ingredients not described."
+  },
+  "Jasmine Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Mango Sticky Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice contains no gluten; coconut cream is not dairy; mung beans are legumes."
+  },
+  "Tub Tim Grob": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Water chestnut, tapioca, coconut milk (not dairy)."
+  },
+  "Coconut Ice Cream": {
+    "allergens": [
+      "milk",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Made with milk; roasted peanuts."
+  },
+  "Thai Iced Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed and evaporated milk."
+  },
+  "Lemongrass Pandan Cooler": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Butterfly Pea Lime Soda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan."
+  },
+  "Fresh Coconut": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Singha Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol; barley malt = gluten."
+  }
+}
