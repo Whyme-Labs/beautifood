@@ -237,7 +237,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ---- decide ----
   let intent = u.intent;
   const unsure = u.confidence < 0.4;
-  const hasFilters = !!(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null || u.courses.length || u.appetite);
+  const hasFilters = !!(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null || u.courses.length || u.categories.length || u.appetite);
   // safety first: a dish and an allergen (or "is it safe", "does it contain") is a question about that dish
   if (focus.length && (u.allergens.length || u.asksContents) && !["compare", "pairing", "group"].includes(intent)) intent = "dish_allergen";
   if (intent === "compare" && focus.length + (mentioned.length ? 0 : state.shown.length) < 2) intent = focus.length ? "dish_info" : "recommend";
@@ -264,6 +264,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     : ranked(pool);
   // the course on this menu (so "desserts" with nothing dairy-free left is an honest "none", not mains)
   const byCourse = (pool: Item[], courses: Course[]) => {
+    // the menu's own categories first ("bowls", "skewers", 奶茶): they say exactly what's meant
+    if (u.categories.length) return pool.filter((i) => u.categories.includes(i.category ?? ""));
     if (!courses.length) return pool;
     const ids = new Set(courses.flatMap((k) => courseDishes(ctx.items as Dish[], k).map((d) => d.id)));
     return ids.size ? pool.filter((i) => ids.has(i.id)) : pool;
@@ -346,8 +348,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const anchors = focus.length ? focus : state.focus ? [state.focus] : [];
       const anchor = anchors[0];
       const wanted = u.courses.filter((k) => k !== "food");
+      const wantedCats = u.categories.filter((c) => !anchors.some((a) => a.category === c));
       let pool = live.filter((i) => !anchors.includes(i) && allowed(i, c));
-      if (wanted.length) pool = byCourse(pool, wanted);
+      if (wantedCats.length) pool = pool.filter((i) => wantedCats.includes(i.category ?? ""));
+      else if (wanted.length) pool = byCourse(pool, wanted);
       else if (anchors.every(isDrink)) pool = pool.filter((i) => !isDrink(i));
       else if (u.courses.includes("food")) pool = pool.filter((i) => !isDrink(i) && !isDessert(i) && i.category !== anchor.category);
       else pool = pool.filter((i) => isDrink(i) || (isDessert(i) && !anchors.some(isDessert)));
@@ -422,7 +426,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     default: {
       let pool = live.filter((i) => allowed(i, c));
       pool = byCourse(pool, u.courses);
-      if (u.appetite === "light" && !u.courses.length) {
+      if (u.appetite === "light" && !u.courses.length && !u.categories.length) {
         const food = pool.filter((i) => !isDrink(i));
         const median = [...food].map((i) => i.price).sort((a, b) => a - b)[Math.floor(food.length / 2)] ?? Infinity;
         const light = food.filter((i) => heaviness(i) <= 0.5 && i.price <= median * 1.15);
@@ -431,7 +435,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         if (!picks.length) return none();
         return reply("recommend", `${t("assistantReply.lightPicks")}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
       }
-      if (u.appetite === "hearty" && !u.courses.length) pool = pool.filter((i) => !isDrink(i) && !isDessert(i)).sort((a, b) => heaviness(b) - heaviness(a) || baseScore(b, ctx) - baseScore(a, ctx));
+      if (u.appetite === "hearty" && !u.courses.length && !u.categories.length) pool = pool.filter((i) => !isDrink(i) && !isDessert(i)).sort((a, b) => heaviness(b) - heaviness(a) || baseScore(b, ctx) - baseScore(a, ctx));
       if (!pool.length) return none();
       if (taste) {
         const boosted = pool.filter((i) => taste.boost[i.id]).sort((a, b) => taste.boost[b.id] - taste.boost[a.id] || baseScore(b, ctx) - baseScore(a, ctx));
@@ -447,7 +451,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       }
       const order = u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : ranked(pool);
       // food first: drinks are ordered most, but "anything vegetarian?" means a dish (one drink at most)
-      const wantsDrinks = u.courses.includes("drinks");
+      const wantsDrinks = u.courses.includes("drinks") || (u.categories.length > 0 && pool.every(isDrink));
       const picks = (wantsDrinks ? order : [...order.filter((i) => !isDrink(i)), ...order.filter(isDrink).slice(0, 1)]).slice(0, 4);
       const filters = filterWords();
       const signatures = picks.filter((p) => p.isSignature);
@@ -455,7 +459,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         ? t("assistantReply.suggestFiltered", { filters })
         : u.superlative
           ? t(`assistantReply.${u.superlative}Intro` as MessageKey)
-          : u.courses.length && u.courses[0] !== "food"
+          : u.categories.length || (u.courses.length && u.courses[0] !== "food")
             ? t("assistantReply.courseIntro")
             : t("assistantReply.knownFor", { restaurant: ctx.restaurant.name, list: list((signatures.length ? signatures : picks.slice(0, 1)).map(name)) });
       return reply("recommend", `${intro}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks, { confident: !unsure || hasFilters });

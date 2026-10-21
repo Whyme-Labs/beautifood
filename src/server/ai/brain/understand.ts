@@ -49,6 +49,8 @@ export interface Understanding {
   amount: number | null;
   party: number | null;
   courses: Course[];
+  /** This menu's own categories the question asks for ("bowls" → "Toasts & bowls", 奶茶 → "Milk teas"). */
+  categories: string[];
   appetite: "light" | "hearty" | null;
   superlative: Superlative | null;
   /** An allergy said, but no allergen the brain can name ("allergic to the thing in curries"). */
@@ -313,6 +315,92 @@ export const isDessert = (i: Dish) => DESSERT.test(i.category ?? "");
 const ASKS_CONTENTS = /\b(allerg\w*|alergi|contain\w*|ingredients?|inside|safe|ada .{0,20}(tak|ke)|got .{0,20}(or not|inside)|does .{0,40}(have|got|use|come with)|is there|any .{0,15} in (it|this|that|the)|made with|cooked (in|with)|boleh makan|free from|\w+ free)\b/;
 const AVOID_CUE = /\b(allerg\w*|alergi|no|without|tanpa|avoid|cant eat|cannot eat|can t eat|cant have|dont eat|don t eat|not eat|tak boleh makan|tak makan|tak nak|jangan|intolerant|intolerance|free|tak tahan|sensitive|no more|hate|exclude|except|minus|kecuali|tak boleh)\b/;
 
+const ALLERGY_WORD = /\b(allerg\w*|alergi\w*|alahan|intoleran\w*|coeliac|celiac|sensitive)\b|过[敏民闵抿]|过敏/i;
+const NEG_CUE = /^(no|not|non|without|tanpa|tak|takde|bukan|jangan|cannot|cant|dont|doesnt|never|avoid|except|kecuali|minus|hate|exclude|skip|free|less|zero|nothing|nak|boleh)$/;
+const ZH_CUE = /不要|不能|不吃|不可以|吃不了|没有|没|无|不含|别|免|戒|避免|不加|走/;
+
+/** Whether allergen `a` is governed by an avoid cue in its clause of `question`. */
+function governed(question: string, a: Allergen): boolean {
+  const clauses = question.split(/[,;.!?，。；、]+|\b(?:but|tapi|then)\b/i);
+  return clauses.some((clause) => {
+    if (!mentionedAllergens(clause).includes(a)) return false;
+    if (ALLERGY_WORD.test(clause)) return true;
+    // Chinese: a cue just before the allergen word, or 过敏 after it
+    const zh = clause.match(/[\u4e00-\u9fff]/) ? clause : "";
+    if (zh) {
+      for (let i = 0; i < zh.length; i++) {
+        if (!mentionedAllergens(zh.slice(i, i + 2)).includes(a) && !mentionedAllergens(zh[i]).includes(a)) continue;
+        if (ZH_CUE.test(zh.slice(Math.max(0, i - 6), i)) || /过敏/.test(zh.slice(i))) return true;
+      }
+    }
+    // the Latin words: a cue up to four words before, or "free"/"-less" right after ("nut free")
+    const toks = tokens(normalize(clause), true);
+    return toks.some((t, i) => {
+      const here = mentionedAllergens(t).includes(a) || mentionedAllergens(`${t} ${toks[i + 1] ?? ""}`).includes(a);
+      if (!here) return false;
+      if (toks.slice(Math.max(0, i - 4), i).some((w) => NEG_CUE.test(w))) return true;
+      return /^(free|less|allergy|allergies|alahan)$/.test(toks[i + 1] ?? "");
+    });
+  });
+}
+
+/** Words a guest uses for a kind of dish, and the words a menu's category may use for it. */
+const CATEGORY_SYNONYMS: [RegExp, string[]][] = [
+  [/^(skewers?|satay|sate|kushi|yakitori|grill|grilled)$/, ["skewer", "yakitori", "kushiyaki", "grill", "satay"]],
+  [/^(donburi|don|dons|rice bowls?)$/, ["donburi", "don", "rice"]],
+  [/^(bowls?)$/, ["bowl"]],
+  [/^(mains?|main course|meals?)$/, ["main"]],
+  [/^(snacks?|snek|sneks|starters?|appeti[sz]ers?|small plates?|bites?|sides?)$/, ["snack", "small plate", "side", "starter", "bite"]],
+  [/^(vegetables?|veggies?|sayur|sayuran|greens)$/, ["vegetable", "veg"]],
+  [/^(meats?|daging)$/, ["meat"]],
+  [/^(seafood|ikan)$/, ["seafood", "fish"]],
+  [/^(coffees?|kopi)$/, ["coffee"]],
+  [/^(teas?|teh)$/, ["tea"]],
+  [/^(drinks?|beverages?|minuman|minum|air)$/, ["drink", "beverage"]],
+  [/^(desserts?|sweets?|manis|pencuci|kuih|cakes?)$/, ["dessert", "sweet", "kuih", "cake"]],
+  [/^(curry|curries|kari)$/, ["curr"]],
+  [/^(roti|breads?|toasts?)$/, ["roti", "bread", "toast"]],
+  [/^(noodles?|mee|mi|ramen)$/, ["noodle", "mee", "ramen"]],
+  [/^(rice|nasi)$/, ["rice"]],
+  [/^(breakfast|brunch|sarapan)$/, ["breakfast", "brunch"]],
+  [/^(soups?|sup)$/, ["soup"]],
+];
+const CATEGORY_ZH: [RegExp, string[]][] = [
+  [/奶茶/, ["milk tea"]], [/果茶/, ["fruit tea"]], [/小吃|零食/, ["snack", "small plate", "side"]], [/海鲜/, ["seafood"]], [/肉类|肉菜/, ["meat"]],
+  [/蔬菜|青菜|素菜/, ["vegetable"]], [/咖啡/, ["coffee"]], [/甜品|甜点|糖水/, ["dessert", "sweet"]], [/饮料|饮品|喝的/, ["drink", "beverage"]],
+  [/串烧|烤串|串/, ["skewer", "yakitori"]], [/丼|盖饭/, ["donburi", "don"]], [/拉面|面/, ["noodle", "ramen"]], [/饭/, ["rice"]], [/咖喱/, ["curr"]],
+  [/早餐|早午餐/, ["breakfast", "brunch"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]],
+];
+const singular = (w: string) => w.replace(/(ies)$/, "y").replace(/(es|s)$/, (m, _x, i, str) => (str.length > 4 && !/ss$/.test(str) ? "" : m));
+
+/** The menu's categories a question asks for, by their own words or a guest's synonym. */
+export function askedCategories(items: Dish[], words: string[], raw: string): string[] {
+  const cats = [...new Set(items.map((i) => i.category).filter((c): c is string => !!c))];
+  const catWords = (c: string) => normalize(c).split(" ").filter((w) => w.length > 2 && !/^(and|the|our|house|dishes|dish|menu|all|day|plates?)$/.test(w)).map(singular);
+  const wanted = new Set<string>();
+  for (const w of words.map(singular)) {
+    if (w.length < 3) continue;
+    for (const [re, stems] of CATEGORY_SYNONYMS) if (re.test(w)) stems.forEach((x) => wanted.add(x));
+    wanted.add(w);
+  }
+  for (const [re, stems] of CATEGORY_ZH) if (re.test(raw)) stems.forEach((x) => wanted.add(x));
+  const hit = (c: string) => {
+    const n = normalize(c);
+    return [...wanted].some((x) => (x.includes(" ") ? n.includes(x) : catWords(c).some((cw) => cw === x || cw.startsWith(x))));
+  };
+  const out = cats.filter(hit);
+  // a word every category shares says nothing
+  return out.length === cats.length ? [] : out;
+}
+
+const REQUEST = /\b(what|which|any|anything|got|have|has|do you|ada|apa|mana|want|wanna|nak|mau|give|show|recommend|suggest|like|love|suka|craving|order|get|serve|best|good|sedap)\b/i;
+const REQUEST_ZH = /有什么|有哪些|有没有|推荐|想要|想吃|想喝|来个|来一|要一|哪个|哪些|什么好/;
+
+/** Whether the guest plainly asks for allergen `a`'s food ("what seafood should we get?", "奶茶有哪些？"). */
+function requested(question: string, a: Allergen): boolean {
+  return question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && (REQUEST.test(clause) || REQUEST_ZH.test(clause)));
+}
+
 export type Reading = Omit<Understanding, "intent" | "confidence" | "guess">;
 
 /** Everything but the intent: the slots, and the question as the intent model reads it. */
@@ -345,9 +433,14 @@ export function read(items: Dish[], asked: string): Reading {
   // "kacang" is nuts when they're avoiding it or asking about a dish ("satay ada kacang tak?")
   if (/\bkacang\b/.test(restText) && !allergens.includes("peanuts") && (AVOID_CUE.test(restText) || hasDish)) allergens.push("peanuts", "tree_nuts");
   const asksContents = ASKS_CONTENTS.test(restText) || /过敏|含有|含不含|有没有|成分|可以吃|能吃|有.{0,6}吗/.test(restRaw);
-  const avoidCue = AVOID_CUE.test(restText) || /过敏|不要|不能吃|不吃|不含|无|戒|避免/.test(restRaw);
-  // with no dish, any allergen named is one to avoid (the safe reading); with a dish, only when they say so
-  const avoid = !hasDish || avoidCue ? allergens : [];
+  // an allergen is avoided when a cue governs it in its own clause ("no seafood", "allergic to
+  // prawns", "哪个没有虾", "nut free"); without one the guest is asking for it ("milk tea",
+  // "what seafood should we get?", "我不吃辣，海鲜推荐哪个" negates the spice, not the seafood)
+  // read with the typos put right ("alergic to egs"), punctuation kept for the clauses
+  const fixed = question.replace(/[A-Za-z']+/g, (w) => (ix.df.has(w.toLowerCase()) ? w : correct(w.toLowerCase().replace(/'/g, ""))));
+  // the errors aren't equal: wrongly avoiding hides a dish, wrongly wanting can harm someone. So an
+  // allergen is avoided unless the guest plainly asks for it (a request word, and no cue governing it)
+  const avoid = allergens.filter((a) => governed(fixed, a) || !requested(fixed, a));
 
   const diet: Diet[] = [];
   if (/\b(vegan|plant based|plantbased)\b/.test(restText) || /纯素|全素/.test(restRaw)) diet.push("vegan");
@@ -399,6 +492,8 @@ export function read(items: Dish[], asked: string): Reading {
     amount: groupBudgetOf(restText),
     party,
     courses,
+    // a word naming what they avoid ("no milk") doesn't ask for its category ("Milk teas")
+    categories: askedCategories(items, rest.filter((t) => !mentionedAllergens(t).some((a) => avoid.includes(a))), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? "" : restRaw),
     appetite: light ? "light" : hearty ? "hearty" : null,
     superlative,
     refersBack,

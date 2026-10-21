@@ -321,3 +321,27 @@ describe("safety reading (benchmark iteration 1)", () => {
     expect(r.safetyNote).toBeTruthy();
   });
 });
+
+describe("allergen polarity and the menu's own categories (benchmark iteration 2)", () => {
+  const items = hawker as unknown as Dish[];
+  it("avoids an allergen when a cue governs it, and by default; wants it only when plainly asked for", () => {
+    for (const q of ["no seafood please", "我对虾过敏", "哪个没有虾？我过敏", "tak boleh makan udang", "gluten-free?", "我对芝麻过民", "tofu"]) expect(read(items, q).avoid.length, q).toBeGreaterThan(0);
+    for (const q of ["奶茶有哪些？", "what seafood should we get tonight?", "我不吃辣，海鲜推荐哪个？"]) expect(read(items, q).avoid, q).toEqual([]);
+  });
+
+  it("matches the menu's own category names, with a guest's synonyms", async () => {
+    const { askedCategories } = await import("../../src/server/ai/brain/understand");
+    const menu = [
+      { name: "A", category: "Toasts & bowls" },
+      { name: "B", category: "Yakitori & skewers" },
+      { name: "C", category: "Rice & donburi" },
+      { name: "D", category: "Milk teas" },
+      { name: "E", category: "Seafood" },
+    ] as unknown as Dish[];
+    expect(askedCategories(menu, ["which", "bowls"], "")).toEqual(["Toasts & bowls"]);
+    expect(askedCategories(menu, ["skewers"], "")).toEqual(["Yakitori & skewers"]);
+    expect(askedCategories(menu, ["donburi"], "")).toEqual(["Rice & donburi"]);
+    expect(askedCategories(menu, [], "奶茶有哪些")).toEqual(["Milk teas"]);
+    expect(askedCategories(menu, ["what", "seafood"], "")).toEqual(["Seafood"]);
+  });
+});
