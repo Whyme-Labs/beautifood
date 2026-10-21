@@ -243,7 +243,7 @@
   ],
   "question": "Is the honey calamansi vegan? I don't take honey.",
   "expect": {
-   "includes": [
+   "excludes": [
     "Calamansi Honey Green Tea"
    ]
   },
@@ -576,8 +576,8 @@
   ],
   "question": "芝士乌龙有奶吗？我乳糖不耐",
   "expect": {
-   "includes": [
-    "Oolong Cheese Foam Tea"
+   "avoid": [
+    "milk"
    ],
    "says": [
     "奶|milk|cream|cheese|芝士"
@@ -618,8 +618,8 @@
   ],
   "question": "Strawberry yakult got dairy or not? My son allergic to milk",
   "expect": {
-   "includes": [
-    "Strawberry Yakult"
+   "avoid": [
+    "milk"
    ],
    "says": [
     "milk|dairy|susu"
@@ -638,6 +638,9 @@
   ],
   "question": "Is the oat milk hojicha latte ok for someone with a milk allergy?",
   "expect": {
+   "avoid": [
+    "milk"
+   ],
    "includes": [
     "Oat Milk Hojicha Latte"
    ],

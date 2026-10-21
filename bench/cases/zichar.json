@@ -392,9 +392,8 @@
   ],
   "question": "anak sy alergi telur, nasi goreng ok x?",
   "expect": {
-   "includes": [
-    "Vegetable Fried Rice",
-    "Yang Chow Fried Rice"
+   "avoid": [
+    "egg"
    ],
    "says": [
     "egg|telur"
@@ -624,8 +623,8 @@
   ],
   "question": "ayam prawn paste tu ada udang x? sy alergi",
   "expect": {
-   "includes": [
-    "Prawn Paste Chicken"
+   "avoid": [
+    "crustaceans"
    ],
    "says": [
     "shrimp|udang|prawn"
@@ -645,8 +644,9 @@
   ],
   "question": "Ginger beef got oyster sauce or not? My wife allergic to shellfish",
   "expect": {
-   "includes": [
-    "Ginger Spring Onion Beef"
+   "avoid": [
+    "crustaceans",
+    "molluscs"
    ],
    "says": [
     "oyster"
@@ -665,8 +665,8 @@
   ],
   "question": "Is the cheng teng gluten free? Coeliac",
   "expect": {
-   "includes": [
-    "Cheng Teng"
+   "avoid": [
+    "gluten"
    ],
    "says": [
     "barley"

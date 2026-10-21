@@ -600,8 +600,8 @@
   ],
   "question": "散寿司饭里有虾吗？我过敏",
   "expect": {
-   "includes": [
-    "Chirashi Don"
+   "avoid": [
+    "crustaceans"
    ],
    "says": [
     "虾|prawn"
@@ -642,8 +642,8 @@
   ],
   "question": "Edamame got soy or not? My son soy allergy",
   "expect": {
-   "includes": [
-    "Edamame"
+   "avoid": [
+    "soy"
    ],
    "says": [
     "soy"
@@ -662,8 +662,9 @@
   ],
   "question": "Is the chirashi ok for someone allergic to shellfish?",
   "expect": {
-   "includes": [
-    "Chirashi Don"
+   "avoid": [
+    "crustaceans",
+    "molluscs"
    ],
    "says": [
     "prawn|scallop"

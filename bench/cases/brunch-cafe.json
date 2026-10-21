@@ -608,8 +608,8 @@
   ],
   "question": "叻沙意面有虾吗？我过敏",
   "expect": {
-   "includes": [
-    "Laksa Pasta with Prawns"
+   "avoid": [
+    "crustaceans"
    ],
    "says": [
     "虾|prawn"
@@ -650,6 +650,9 @@
   ],
   "question": "Chia pudding got dairy or not? Lactose intolerant",
   "expect": {
+   "avoid": [
+    "milk"
+   ],
    "includes": [
     "Coconut Chia Pudding"
    ],
@@ -668,6 +671,9 @@
   ],
   "question": "Is the oat latte okay for someone with a cows milk allergy?",
   "expect": {
+   "avoid": [
+    "milk"
+   ],
    "includes": [
     "Oat Latte"
    ],
@@ -686,8 +692,10 @@
   ],
   "question": "does the avacado toast have any nuts or seeds? alergic",
   "expect": {
-   "includes": [
-    "Smashed Avocado Toast"
+   "avoid": [
+    "peanuts",
+    "tree_nuts",
+    "sesame"
    ],
    "says": [
     "pumpkin seed"

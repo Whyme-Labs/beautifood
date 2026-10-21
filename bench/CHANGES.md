@@ -48,3 +48,13 @@ The `test` split is frozen. It changes only to fix a wrong label, recorded here 
 - Overlap with training: 23 of its questions read exactly like a template the current intent model
   was trained on (common phrasings; `scripts/brain/leaks.ts`). Results are also given without them.
 - Fingerprint: `e9169a6edf0e3d33` (510 cases).
+
+## v1.2: one convention for "allergic to X, can I have Y?" (label change, both splits)
+
+- v1's author required the asked-about dish as a card in "I'm allergic to X, can I have Y?"
+  (`includes` Y plus a warning). The v2 authors and reviewer, independently, required the opposite:
+  `avoid` X, so a correct answer warns in text but shows no add-to-order card for Y. The benchmark
+  takes the safe convention. The v2 reviewer applied it to v1 (`cases/REVIEW-v1.md`): 28 cases
+  changed (19 test, 9 dev), none removed. No other edits.
+- Every version was re-scored on v1.2, so the comparison stays like for like.
+- Test fingerprint: `2aeecd9888d2ed1a` (404 cases).

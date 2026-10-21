@@ -553,8 +553,8 @@
   ],
   "question": "Is the char kway teow safe for someone with a prawn allergy?",
   "expect": {
-   "includes": [
-    "Char Kway Teow"
+   "avoid": [
+    "crustaceans"
    ],
    "says": [
     "prawn"
@@ -595,6 +595,9 @@
   ],
   "question": "Is the cendol dairy-free? I react to cow's milk.",
   "expect": {
+   "avoid": [
+    "milk"
+   ],
    "includes": [
     "Cendol"
    ],
@@ -614,8 +617,9 @@
   ],
   "question": "咖喱面有没有海鲜？我对贝类过敏",
   "expect": {
-   "includes": [
-    "Curry Mee"
+   "avoid": [
+    "crustaceans",
+    "molluscs"
    ],
    "says": [
     "cockle|蚶|蛤|贝"
@@ -635,8 +639,8 @@
   ],
   "question": "rojak ada belacan x? sy alergi udang",
   "expect": {
-   "includes": [
-    "Rojak"
+   "avoid": [
+    "crustaceans"
    ],
    "says": [
     "belacan|shrimp|udang|虾"
@@ -655,8 +659,8 @@
   ],
   "question": "Can someone allergic to fish eat the assam laksa?",
   "expect": {
-   "includes": [
-    "Penang Assam Laksa"
+   "avoid": [
+    "fish"
    ],
    "says": [
     "mackerel|fish|ikan"
@@ -718,6 +722,10 @@
   ],
   "question": "is the garden salad nut fre? my daugter has a nut alergy",
   "expect": {
+   "avoid": [
+    "peanuts",
+    "tree_nuts"
+   ],
    "includes": [
     "Garden Salad"
    ],

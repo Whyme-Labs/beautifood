@@ -322,9 +322,8 @@
   ],
   "question": "I'm allergic to cashews and other tree nuts. Can I have biryani?",
   "expect": {
-   "includesAny": [
-    "Mutton Biryani",
-    "Vegetable Biryani"
+   "avoid": [
+    "tree_nuts"
    ],
    "says": [
     "cashew"
@@ -467,8 +466,8 @@
   ],
   "question": "My wife cannot eat fish, allergic. Roti canai can or not?",
   "expect": {
-   "includes": [
-    "Roti Canai"
+   "avoid": [
+    "fish"
    ],
    "says": [
     "fish"
@@ -511,8 +510,8 @@
   ],
   "question": "不要虾，我过敏，炒面可以吃吗？",
   "expect": {
-   "includes": [
-    "Mee Goreng Mamak"
+   "avoid": [
+    "crustaceans"
    ],
    "says": [
     "虾|prawn"
@@ -573,8 +572,9 @@
   ],
   "question": "Does the maggi goreng have seafood? Shellfish allergy",
   "expect": {
-   "includes": [
-    "Maggi Goreng"
+   "avoid": [
+    "crustaceans",
+    "molluscs"
    ],
    "says": [
     "oyster"
@@ -614,8 +614,8 @@
   ],
   "question": "sotong sambal ada belacan x? sy alergi udang",
   "expect": {
-   "includes": [
-    "Sotong Sambal"
+   "avoid": [
+    "crustaceans"
    ],
    "says": [
     "belacan|shrimp|udang"
@@ -635,8 +635,8 @@
   ],
   "question": "Roti telur got egg right? Can my son eat, he allergic to egg",
   "expect": {
-   "includes": [
-    "Roti Telur"
+   "avoid": [
+    "egg"
    ],
    "says": [
     "egg|telur"
@@ -676,8 +676,8 @@
   ],
   "question": "Milo dinosaur - is it ok for coeliac?",
   "expect": {
-   "includes": [
-    "Milo Dinosaur"
+   "avoid": [
+    "gluten"
    ],
    "says": [
     "malt|gluten"
