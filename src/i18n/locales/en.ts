@@ -219,6 +219,7 @@ const en = {
     addWithPrice: "Add · {price}",
   },
   assistant: {
+    tasteSource: "Picked with Qloo, from what fans of {liked} tend to love",
     title: "Menu assistant",
     open: "Ask what to eat",
     openShort: "Ask",
@@ -440,6 +441,9 @@ const en = {
     filterSep: ", ",
     mild: "only mildly spicy",
     whatYouAsked: "what you asked for",
+    tasteIntro: "Fans of {liked} around here lean towards {because}. From our menu:",
+    tasteIntroPlain: "Fans of {liked} around here lean towards dishes like these:",
+    tasteNote: "(From Qloo: what fans of {liked} tend to like, in aggregate. It's not a guess about you.)",
     staffHelp: "That one's for our staff, and they'll be glad to help. Meanwhile, I can help you choose from the menu.",
     orderHelp: "Tap a dish to see it and add it to your order, then send the order from your cart. For anything else (paying, the bill, a high chair), our staff are happy to help.",
     outOfScope: "I can only help with our menu: dishes, ingredients and what to order. For anything else, please ask our staff. Meanwhile, our favourites are {list}.",

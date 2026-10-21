@@ -11,6 +11,9 @@ import { localParts } from "../ids";
 import { answerWithClaude, claudeEnabled, extractWithClaude, narrateWithClaude, type ClaudeEnv } from "./claude";
 import { guard, type AssistantContext, type AssistantReply } from "./local";
 import { answerGuest } from "./brain";
+import { likedThing, tasteHint } from "../taste/bridge";
+import { tasteEnabled, tasteRunner, type TasteEnv } from "../taste/client";
+import { tasteLocation } from "../taste/brief";
 import { chatStats, logTurn } from "./brain/log";
 import { platformPairs } from "./brain/platform";
 import { answerWithModel, guestModel, type AiBinding } from "./guestModel";
@@ -81,10 +84,15 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
  * is set. Any model failure, or a model answer that puts an allergen the guest named in front of
  * them, falls back to the brain's answer.
  */
-export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & { AI?: AiBinding }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply & { turn?: string }> {
+export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & TasteEnv & { AI?: AiBinding }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply & { turn?: string }> {
   const actx = await assistantContext(db, ctx);
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
-  const brain = answerGuest(actx, history, locale);
+  // "I love BTS…": what fans of it love near this branch, from Qloo, as a boost on the menu's dishes
+  const liked = tasteEnabled(env) ? likedThing(question, actx.items.map((i) => i.name)) : null;
+  const hint = liked
+    ? await tasteHint(tasteRunner(env, fetch, 6000), actx.items, liked, tasteLocation(ctx.branch.address)).catch((e) => (console.warn("taste hint", e), null))
+    : null;
+  const brain = answerGuest(actx, history, locale, hint);
   const r = await answer(db, env, ctx, actx, history, question, brain, locale);
   // Dish cards read in the guest's language; `name` stays the original for matching and ordering.
   const items = r.items.map((it) => {
@@ -102,7 +110,7 @@ export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSet
     engine: r.engine,
     shown: items.map((i) => i.id),
   }).catch((e) => (console.warn("assistant log", e), undefined));
-  return { answer: r.answer, items, safetyNote: r.safetyNote, engine: r.engine, confident: r.confident, turn };
+  return { answer: r.answer, items, safetyNote: r.safetyNote, engine: r.engine, confident: r.confident, taste: r.taste, turn };
 }
 
 /** The brain's answer, or (only for what it can't place, and only when one is configured) a model's. */

@@ -30,6 +30,8 @@ export interface AssistantReply {
   items: { id: string; name: string; price: number; reason?: string; /** The dish name in the guest's language. */ label?: string }[];
   safetyNote?: string;
   engine: "local" | "claude" | "model";
+  /** When Qloo shaped the picks: whose fans' tastes, through which tags. */
+  taste?: { liked: string; because: string[]; source: "Qloo" };
   /**
    * The rules engine's own view of its answer: false when it fell back to a generic reply or the
    * question is conversational (a comparison, a pairing, "those", "something light"), which a

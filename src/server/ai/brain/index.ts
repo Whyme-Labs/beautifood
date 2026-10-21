@@ -10,6 +10,7 @@ import { formatters, translator, type MessageKey } from "../../../i18n/core";
 import { normalize } from "../../../shared/brain/text";
 import type { Intent } from "../../../shared/brain/intentModel";
 import { allergyNote, type AssistantContext, type AssistantReply } from "../local";
+import type { TasteHint } from "../../taste/bridge";
 import { conceptsOf, dishConceptLift, type ConceptId } from "./concepts";
 import { courseDishes, isDessert, isDrink, read, understand, type Course, type Diet, type Dish, type Understanding } from "./understand";
 
@@ -154,15 +155,19 @@ function chatBoost(ctx: AssistantContext, i: Item): number {
 
 // ---- answering ----
 
-export function answerGuest(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale = "en"): BrainReply {
+export function answerGuest(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale = "en", taste?: TasteHint | null): BrainReply {
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
   const earlier = history.slice(0, history.map((h) => h.content).lastIndexOf(question));
   const state = dialogueState(ctx, earlier);
   const u = understand(ctx.items as Dish[], question);
-  return { ...respond(ctx, u, state, locale), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
+  return { ...respond(ctx, u, state, locale, taste ?? undefined), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
 }
 
-export function respond(ctx: AssistantContext, u: Understanding, state: DialogueState, locale: string): BrainReply {
+/**
+ * `taste` is what fans of something the guest loves tend to like (from Qloo, ../../taste/bridge):
+ * a boost on dishes, applied after every filter, so it changes the order, never what's safe.
+ */
+export function respond(ctx: AssistantContext, u: Understanding, state: DialogueState, locale: string, taste?: TasteHint): BrainReply {
   const t = translator(locale);
   const f = formatters(locale);
   const en = locale === "en";
@@ -243,6 +248,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (u.party && intent !== "dish_allergen") intent = "group";
   if (unsure && !["greeting", "thanks"].includes(intent)) intent = focus.length && !hasFilters ? "dish_info" : hasFilters || u.superlative ? "recommend" : intent;
   if ((intent === "out_of_scope" || intent === "about" || intent === "greeting") && hasFilters) intent = "recommend";
+  // "I love BTS, what should I get?": a taste Qloo could place on this menu is a recommendation
+  if (taste && ["out_of_scope", "about", "greeting"].includes(intent)) intent = "recommend";
 
   const ranked = (pool: Item[]) => [...pool].sort((a, b) => baseScore(b, ctx) - baseScore(a, ctx));
   const sorted = (pool: Item[], s: Understanding["superlative"]) =>
@@ -423,6 +430,18 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       }
       if (u.appetite === "hearty" && !u.courses.length) pool = pool.filter((i) => !isDrink(i) && !isDessert(i)).sort((a, b) => heaviness(b) - heaviness(a) || baseScore(b, ctx) - baseScore(a, ctx));
       if (!pool.length) return none();
+      if (taste) {
+        const boosted = pool.filter((i) => taste.boost[i.id]).sort((a, b) => taste.boost[b.id] - taste.boost[a.id] || baseScore(b, ctx) - baseScore(a, ctx));
+        if (boosted.length) {
+          // a meal's worth and a drink, when fans' places point at both
+          const food = boosted.filter((i) => !isDrink(i)).slice(0, 3);
+          const drink = boosted.find((i) => isDrink(i));
+          const picks = [...food, ...(drink ? [drink] : [])].slice(0, 4);
+          const filters = filterWords();
+          const intro = taste.because.length ? t("assistantReply.tasteIntro", { liked: taste.liked, because: list(taste.because) }) : t("assistantReply.tasteIntroPlain", { liked: taste.liked });
+          return reply("recommend", `${intro}${filters ? `${sp}${t("assistantReply.allAre", { filters })}` : ""}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}${sp}${t("assistantReply.tasteNote", { liked: taste.liked })}`, picks, { taste: { liked: taste.liked, because: taste.because, source: "Qloo" } });
+        }
+      }
       const picks = (u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : ranked(pool)).slice(0, 4);
       const filters = filterWords();
       const signatures = picks.filter((p) => p.isSignature);

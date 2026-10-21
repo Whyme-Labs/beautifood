@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { actionsFor, tasteBrief, tasteLocation, type BriefInput } from "../../src/server/taste/brief";
 import { items, tasteRunner, type Envelope, type Runner } from "../../src/server/taste/client";
+import { likedThing, tasteHint } from "../../src/server/taste/bridge";
+import { answerGuest } from "../../src/server/ai/brain";
+import { sampleDishes } from "../../src/shared/assistantEval";
+import type { AssistantContext } from "../../src/server/ai/local";
 
 const ok = (results: unknown[]): Envelope => ({ status: "ok", results, result_count: results.length });
 const input: BriefInput = {
@@ -109,5 +113,59 @@ describe("the taste service client", () => {
     expect(items(ok([{ entity_id: "x", name: "N", tags: [{ name: "t" }, "u"], affinity: 0.5, properties: { address: "KL" } }, { nope: 1 }]))).toEqual([
       { id: "x", name: "N", type: undefined, score: 0.5, popularity: undefined, tags: ["t", "u"], tagIds: [undefined, undefined], place: "KL", description: undefined },
     ]);
+  });
+});
+
+describe("the taste bridge for guests", () => {
+  const dishes = sampleDishes();
+  const ctx = {
+    restaurant: { name: "Ah Seng", cuisine: "Malaysian", story: "", description: "" },
+    branchName: "KLCC",
+    currency: "MYR",
+    menuLanguage: "en",
+    items: dishes.map((d, n) => ({ ...d, categoryId: d.category, imageUrl: null, story: "", tags: [], modifiers: [], active: true, sort: n, soldOut: false, popularity: 0 })),
+  } as never as AssistantContext;
+  // fans of a K-pop group near KLCC: fried chicken and milk-tea places
+  const kpop: Runner = async (tool, args) =>
+    tool === "qloo_recommend" && Array.isArray(args.signals)
+      ? ok([
+          { entity_id: "K1", name: "Chicken Hof", tags: [{ name: "Korean Fried Chicken" }, { name: "Late night" }] },
+          { entity_id: "K2", name: "Tealive", tags: [{ name: "Bubble Tea" }, { name: "Milk Tea" }] },
+          { entity_id: "K3", name: "Seoul Garden", tags: [{ name: "Korean Fried Chicken" }] },
+        ])
+      : { status: "empty", results: [] };
+
+  it("hears a taste in what guests say, but not a dish or a flavour", () => {
+    expect(likedThing("I love BTS, what should I eat?")).toBe("BTS");
+    expect(likedThing("big fan of Studio Ghibli, anything for me?")).toBe("Studio Ghibli");
+    expect(likedThing("I'm really into K-pop")).toBe("K-pop");
+    expect(likedThing("saya suka Siti Nurhaliza, cadangkan makanan")).toBe("Siti Nurhaliza");
+    expect(likedThing("我喜欢周杰伦，推荐什么？")).toBe("周杰伦");
+    expect(likedThing("I love spicy food")).toBeNull();
+    expect(likedThing("I like the curry mee", ["Curry Mee"])).toBeNull();
+    expect(likedThing("what's good here?")).toBeNull();
+  });
+
+  it("asks Qloo with only the name the guest typed, and boosts the dishes fans' places are known for", async () => {
+    const asked: Record<string, unknown>[] = [];
+    const h = await tasteHint(async (t, a) => (asked.push(a), kpop(t, a)), ctx.items, "BTS", "Kuala Lumpur");
+    expect(asked[0]).toEqual({ target_type: "place", signals: ["BTS"], filter_location: "Kuala Lumpur", limit: 10 });
+    const boosted = Object.keys(h!.boost).map((id) => dishes.find((d) => d.id === id)!.name);
+    expect(boosted).toEqual(expect.arrayContaining(["Nasi Lemak Ayam Rempah", "Teh Tarik"]));
+    expect(h!.because[0]).toBe("Korean Fried Chicken");
+  });
+
+  it("shapes the brain's picks, says where it came from, and never overrides an allergy", async () => {
+    const h = await tasteHint(kpop, ctx.items, "BTS", "Kuala Lumpur");
+    const r = answerGuest(ctx, [{ role: "user", content: "I love BTS, what should I get?" }], "en", h);
+    expect(r.answer).toMatch(/Fans of BTS around here lean towards Korean Fried Chicken/);
+    expect(r.answer).toMatch(/not a guess about you/);
+    expect(r.taste).toMatchObject({ liked: "BTS", source: "Qloo" });
+    expect(r.items.map((i) => i.name)).toContain("Nasi Lemak Ayam Rempah");
+    // nasi lemak has peanuts: a guest who said so never gets it, Qloo or not
+    const safe = answerGuest(ctx, [{ role: "user", content: "I'm allergic to peanuts" }, { role: "assistant", content: "Noted." }, { role: "user", content: "I love BTS, what should I get?" }], "en", h);
+    expect(safe.items.map((i) => i.name)).not.toContain("Nasi Lemak Ayam Rempah");
+    for (const x of safe.items) expect(dishes.find((d) => d.id === x.id)!.allergens).not.toContain("peanuts");
+    expect(safe.safetyNote).toBeTruthy();
   });
 });

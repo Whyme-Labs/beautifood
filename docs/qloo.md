@@ -31,6 +31,19 @@ what to try next, and why.
   The agent can then act with Beautifood's other merchant tools. This is "your app in my AI": the
   owner's Claude or ChatGPT gets Qloo through Beautifood, within Beautifood's quota and permissions.
 
+- **The taste bridge for guests** (the menu assistant):
+  - A guest says "I love BTS, what should I get?" or "我喜欢周杰伦，推荐什么？".
+  - The assistant asks Qloo which places fans of that love around the branch, and what those places
+    are known for ("Korean fried chicken", "bubble tea").
+  - The menu brain's dish concepts map those tags onto this menu's own dishes: fried chicken in the
+    nasi lemak ayam rempah, milk tea in the teh tarik. The matching dishes get a boost in the
+    ranking.
+  - Because it's only a boost, applied after every filter, an allergy or diet the guest mentioned
+    still holds.
+  - The answer says the taste is fans' in aggregate, not a guess about the guest, and the chat
+    shows "Picked with Qloo".
+  - Only the name the guest typed goes to Qloo.
+
 ## How a brief is made
 
 ```
@@ -52,7 +65,7 @@ compare with the menu and best sellers ─► actions, each with its reason and 
 (cached 12 hours per branch, area and day)
 ```
 
-Code: `src/server/taste/` (client, brief, branch glue), `services/taste/` (the container),
+Code: `src/server/taste/` (client, brief, branch glue, `bridge.ts` for guests), `services/taste/` (the container),
 `routes/api/m/branches/[branch]/taste.ts`, the two tools in `src/server/mcp.ts`, `pages/m/taste.tsx`.
 
 ### Request to result, redacted
@@ -68,7 +81,7 @@ neither.
 ## Data handling
 
 - Nothing about a guest is sent to Qloo. A brief sends the restaurant's public name, its area and
-  its cuisine.
+  its cuisine. The guest bridge sends only the public name a guest typed ("BTS") and the branch's area.
 - The Qloo key lives only in the container, as a secret. The Worker holds only the taste service's
   address and its bearer secret. Nothing reaches a browser.
 - Calls are cached (a day per question in the service, 12 hours per brief in the Worker) and capped

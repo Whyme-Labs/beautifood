@@ -62,7 +62,7 @@ export type Runner = (tool: TasteTool, args: Record<string, unknown>) => Promise
 
 export const tasteEnabled = (env: TasteEnv) => !!(env.TASTE_URL && env.TASTE_SECRET);
 
-export function tasteRunner(env: TasteEnv, fetcher: typeof fetch = fetch): Runner {
+export function tasteRunner(env: TasteEnv, fetcher: typeof fetch = fetch, timeoutMs = 30_000): Runner {
   return async (tool, args) => {
     if (!tasteEnabled(env)) return { status: "error", summary: "Taste insights are not set up", error: { code: "TASTE_OFF", retryable: false, recovery: "Set TASTE_URL and TASTE_SECRET" } };
     try {
@@ -70,7 +70,7 @@ export function tasteRunner(env: TasteEnv, fetcher: typeof fetch = fetch): Runne
         method: "POST",
         headers: { authorization: `Bearer ${env.TASTE_SECRET}`, "content-type": "application/json" },
         body: JSON.stringify({ tool, args }),
-        signal: AbortSignal.timeout(30_000),
+        signal: AbortSignal.timeout(timeoutMs),
       });
       const body = (await r.json().catch(() => null)) as (Envelope & { error?: unknown }) | null;
       if (body && typeof body.status === "string") return body;

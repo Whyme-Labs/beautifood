@@ -10,6 +10,11 @@ const calls = {};
 function canned(tool, args) {
   if (tool === "qloo_find_tags") return [{ id: "urn:tag:genre:place:restaurant:malaysian", name: "Malaysian" }];
   if (tool === "qloo_describe") return [];
+  if (args.target_type === "place" && Array.isArray(args.signals))
+    return [
+      { entity_id: "K1", name: "Chicken Hof", tags: [{ name: "Korean Fried Chicken" }] },
+      { entity_id: "K2", name: "Tealive", tags: [{ name: "Bubble Tea" }, { name: "Milk Tea" }] },
+    ];
   if (args.target_type === "place")
     return [
       { entity_id: "P1", name: "Nasi Kandar Pelita", tags: [{ id: "urn:tag:genre:place:restaurant:indian_muslim", name: "Indian Muslim" }, { id: "urn:tag:amenity:place:late_night", name: "Late night" }] },

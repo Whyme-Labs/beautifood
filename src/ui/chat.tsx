@@ -10,6 +10,8 @@ interface Reply {
   items: { id: string; name: string; price: number; reason?: string; /** The dish name in the guest's language. */ label?: string }[];
   safetyNote?: string;
   engine: string;
+  /** When Qloo shaped the picks: whose fans' tastes, through which tags. */
+  taste?: { liked: string; because: string[]; source: string };
   /** The answer's id in the assistant's log, to count what guests add from it. */
   turn?: string;
 }
@@ -70,6 +72,11 @@ export function AssistantChat({ branch, currency, onAdd }: { branch: string; cur
                     )}
                   </div>
                 ))}
+              </div>
+            ) : null}
+            {m.reply?.taste ? (
+              <div className="hint" style={{ marginTop: 8 }} data-testid="taste-source">
+                <Sparkles size={12} /> {t("assistant.tasteSource", { liked: m.reply.taste.liked })}
               </div>
             ) : null}
             {m.reply?.safetyNote ? (

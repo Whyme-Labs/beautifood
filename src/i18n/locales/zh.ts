@@ -217,6 +217,7 @@ const zh = {
     addWithPrice: "加入 · {price}",
   },
   assistant: {
+    tasteSource: "由 Qloo 根据{liked}粉丝的口味挑选",
     title: "菜单助手",
     open: "问问吃什么",
     openShort: "提问",
@@ -438,6 +439,9 @@ const zh = {
     filterSep: "、",
     mild: "微辣",
     whatYouAsked: "符合你要求",
+    tasteIntro: "这一带{liked}的粉丝偏爱{because}。我们菜单上的推荐：",
+    tasteIntroPlain: "这一带{liked}的粉丝偏爱这类菜：",
+    tasteNote: "（来自 Qloo：{liked}粉丝整体的口味倾向，不是对你个人的推测。）",
     staffHelp: "这个问题请找店员，他们很乐意帮忙。我可以先帮你挑菜。",
     orderHelp: "点一下菜式即可查看并加入订单，然后在购物车里送出订单。其他事情（付款、账单、儿童椅等）请找店员，我们很乐意帮忙。",
     outOfScope: "我只能帮你了解菜单：菜式、成分和点什么。其他问题请问店员。先推荐大家最爱的：{list}。",

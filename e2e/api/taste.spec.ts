@@ -44,4 +44,17 @@ test.describe("taste insights (Qloo)", () => {
     const bad = await mcp({ jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "merchant_taste_query", arguments: { branch: s.klcc.ref, workflow: "qloo_build", args: {} } } }, token);
     expect(bad.result.isError).toBe(true);
   });
+
+  test("a guest who says what they love gets dishes fans of it go for, with Qloo named, and their allergy kept", async () => {
+    const s = await seed();
+    const g = await guestClient();
+    const ask = async (messages: { role: string; content: string }[]) => json(g.post(`/api/public/branches/${s.klcc.ref}/assistant`, { data: { messages } }));
+    const r = await ask([{ role: "user", content: "I love BTS, what should I get?" }]);
+    expect(r.answer).toContain("Fans of BTS");
+    expect(r.taste).toMatchObject({ liked: "BTS", source: "Qloo" });
+    expect(r.items.map((i: any) => i.name)).toEqual(expect.arrayContaining(["Teh Tarik"]));
+    const safe = await ask([{ role: "user", content: "I'm allergic to peanuts" }, { role: "assistant", content: "Noted." }, { role: "user", content: "I love BTS, what should I get?" }]);
+    expect(safe.items.map((i: any) => i.name)).not.toContain("Nasi Lemak Ayam Rempah");
+    expect(safe.safetyNote).toBeTruthy();
+  });
 });
