@@ -114,7 +114,9 @@ describe("what it costs", () => {
   });
 
   it("has sensible limits unless set", () => {
-    expect(limitsFrom({})).toEqual({ perBranchDaily: 100, monthlyUsd: 20 });
-    expect(limitsFrom({ ASSISTANT_DAILY_PER_BRANCH: "0", AI_MONTHLY_BUDGET_USD: "50" })).toEqual({ perBranchDaily: 0, monthlyUsd: 50 });
+    // the daily default stays inside Workers AI's free 10,000 neurons ($0.011 per 1,000 beyond them)
+    expect(limitsFrom({})).toEqual({ perBranchDaily: 100, dailyUsd: 0.09, monthlyUsd: 3 });
+    expect(limitsFrom({}).dailyUsd).toBeLessThan((10_000 / 1000) * 0.011);
+    expect(limitsFrom({ ASSISTANT_DAILY_PER_BRANCH: "0", AI_DAILY_BUDGET_USD: "1", AI_MONTHLY_BUDGET_USD: "50" })).toEqual({ perBranchDaily: 0, dailyUsd: 1, monthlyUsd: 50 });
   });
 });

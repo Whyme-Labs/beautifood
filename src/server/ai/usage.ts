@@ -1,6 +1,7 @@
-// What AI costs us, and the limits that keep it free for restaurants without surprises: each branch
-// gets a daily allowance of model answers for guests, and the whole platform has a monthly budget.
-// Past either, the free rules engine answers instead, so guests never see an error.
+// What AI costs us, and the limits that keep it free: each branch gets a daily allowance of model
+// answers for guests, and the whole platform a daily budget (by default just under Workers AI's free
+// 10,000 neurons a day, so it costs nothing) and a monthly one. Past any of them, the free rules
+// engine answers instead, so guests never see an error.
 
 /** US dollars per million tokens (input, output), for the models we may run. */
 const PRICES: Record<string, [number, number]> = {
@@ -29,26 +30,32 @@ export function costMicros(u: Usage, fallback?: string): number {
 export interface Limits {
   /** Model answers per branch per day for guests. */
   perBranchDaily: number;
+  /** The platform's daily AI budget in US dollars (0.09 ≈ 8,000 of Workers AI's 10,000 free neurons a day). */
+  dailyUsd: number;
   /** The platform's monthly AI budget in US dollars. */
   monthlyUsd: number;
 }
 
-export function limitsFrom(env: { ASSISTANT_DAILY_PER_BRANCH?: string; AI_MONTHLY_BUDGET_USD?: string }): Limits {
+export function limitsFrom(env: { ASSISTANT_DAILY_PER_BRANCH?: string; AI_DAILY_BUDGET_USD?: string; AI_MONTHLY_BUDGET_USD?: string }): Limits {
   const n = (v: string | undefined, d: number) => (v !== undefined && v.trim() !== "" && Number.isFinite(Number(v)) ? Number(v) : d);
-  return { perBranchDaily: n(env.ASSISTANT_DAILY_PER_BRANCH, 100), monthlyUsd: n(env.AI_MONTHLY_BUDGET_USD, 20) };
+  return { perBranchDaily: n(env.ASSISTANT_DAILY_PER_BRANCH, 100), dailyUsd: n(env.AI_DAILY_BUDGET_USD, 0.09), monthlyUsd: n(env.AI_MONTHLY_BUDGET_USD, 3) };
 }
 
 const utcDay = (at: number) => new Date(at).toISOString().slice(0, 10);
 
 /** Whether a guest question at this branch may go to a model now. */
-export async function mayUseModel(db: D1Database, branch: { tenantId: string; branchId: string }, limits: Limits, at = Date.now()): Promise<{ ok: boolean; reason?: "branch_daily" | "platform_budget" }> {
-  if (limits.perBranchDaily <= 0 || limits.monthlyUsd <= 0) return { ok: false, reason: limits.perBranchDaily <= 0 ? "branch_daily" : "platform_budget" };
+export async function mayUseModel(db: D1Database, branch: { tenantId: string; branchId: string }, limits: Limits, at = Date.now()): Promise<{ ok: boolean; reason?: "branch_daily" | "platform_daily" | "platform_budget" }> {
+  if (limits.perBranchDaily <= 0) return { ok: false, reason: "branch_daily" };
+  if (limits.dailyUsd <= 0 || limits.monthlyUsd <= 0) return { ok: false, reason: limits.dailyUsd <= 0 ? "platform_daily" : "platform_budget" };
+  // Workers AI's free allowance resets at 00:00 UTC, so days here are UTC days
   const day = utcDay(at);
-  const [today, month] = await db.batch([
+  const [mine, today, month] = await db.batch([
     db.prepare("SELECT calls FROM ai_usage WHERE day = ? AND tenant_id = ? AND branch_id = ? AND kind = 'assistant'").bind(day, branch.tenantId, branch.branchId),
+    db.prepare("SELECT COALESCE(SUM(cost_micros), 0) AS c FROM ai_usage WHERE day = ?").bind(day),
     db.prepare("SELECT COALESCE(SUM(cost_micros), 0) AS c FROM ai_usage WHERE day >= ?").bind(`${day.slice(0, 7)}-01`),
   ]);
-  if (((today.results[0] as { calls?: number } | undefined)?.calls ?? 0) >= limits.perBranchDaily) return { ok: false, reason: "branch_daily" };
+  if (((mine.results[0] as { calls?: number } | undefined)?.calls ?? 0) >= limits.perBranchDaily) return { ok: false, reason: "branch_daily" };
+  if (((today.results[0] as { c: number }).c ?? 0) >= limits.dailyUsd * 1_000_000) return { ok: false, reason: "platform_daily" };
   if (((month.results[0] as { c: number }).c ?? 0) >= limits.monthlyUsd * 1_000_000) return { ok: false, reason: "platform_budget" };
   return { ok: true };
 }

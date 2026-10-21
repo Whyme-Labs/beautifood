@@ -10,6 +10,7 @@ export interface AssistantSettings {
   ASSISTANT_PRICE?: string;
   ASSISTANT_DAILY_PER_BRANCH?: string;
   AI_MONTHLY_BUDGET_USD?: string;
+  AI_DAILY_BUDGET_USD?: string;
 }
 
 const DEV_TOKEN_SECRET = "dev-only-token-secret-not-for-production";
@@ -47,5 +48,6 @@ export function appEnv(): PipelineEnv & { TOKEN_SECRET: string; APP_ENV: string;
     ASSISTANT_PRICE: env.ASSISTANT_PRICE,
     ASSISTANT_DAILY_PER_BRANCH: env.ASSISTANT_DAILY_PER_BRANCH,
     AI_MONTHLY_BUDGET_USD: env.AI_MONTHLY_BUDGET_USD,
+    AI_DAILY_BUDGET_USD: env.AI_DAILY_BUDGET_USD,
   };
 }

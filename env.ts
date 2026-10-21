@@ -28,9 +28,11 @@ export default defineEnv({
   ASSISTANT_API_KEY: string().optional(),
   /** US dollars per million tokens "in,out", for a model the price list doesn't know. */
   ASSISTANT_PRICE: string().optional(),
-  /** Model answers per branch per day for guests (default 100), and the platform's monthly AI budget in US dollars (default 20). */
+  /** Model answers per branch per day for guests (default 100), and the platform's monthly AI budget in US dollars (default 3). */
   ASSISTANT_DAILY_PER_BRANCH: string().optional(),
   AI_MONTHLY_BUDGET_USD: string().optional(),
+  /** The platform's daily AI budget in US dollars (default 0.09: inside Workers AI's free 10,000 neurons a day). */
+  AI_DAILY_BUDGET_USD: string().optional(),
   /** One-off key the assistant eval workflow sets to score models through this Worker's AI binding. */
   EVAL_KEY: string().optional(),
   /** Lets a trusted caller (e2e runner) bypass auth rate limits. Never expose to browsers. */
