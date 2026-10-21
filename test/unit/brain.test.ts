@@ -270,3 +270,28 @@ describe("the learning loop", () => {
     expect(s).toMatchObject({ core: EVAL_CASES.length, more: MORE_CASES.length });
   });
 });
+
+describe("what live guests found (regressions)", () => {
+  // the demo menu has breakfast toast, and its drinks sell the most
+  const toast = { id: "toast", name: "Kaya Butter Toast", category: "Breakfast", description: "charcoal-toasted bread, kaya, cold butter", price: 650, allergens: ["gluten", "milk"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: false };
+  const live = {
+    ...ctx,
+    items: [...asItems([...hawker, toast])].map((i) => (/drink/i.test(i.category ?? "") ? { ...i, popularity: 500 } : i)),
+  } as unknown as AssistantContext;
+
+  it("never reads a real word as a typo of a dish word ('better' is not 'butter')", () => {
+    const r = answerGuest(live, [{ role: "user", content: "laksa or curry mee, which is better?" }]);
+    expect(r.items.map((i) => i.name).sort()).toEqual(["Curry Mee", "Penang Assam Laksa"]);
+  });
+
+  it("suggests food first, however well the drinks sell", () => {
+    for (const q of ["anything vegetarian?", "I'm allergic to shellfish, something not spicy under RM15"]) {
+      const names = answerGuest(live, [{ role: "user", content: q }]).items.map((i) => live.items.find((x) => x.id === i.id)!);
+      expect(names.filter((i) => /drink/i.test(i.category ?? "")).length, q).toBeLessThanOrEqual(1);
+      expect(/drink/i.test(names[0].category ?? ""), q).toBe(false);
+    }
+    // unless drinks are what they asked for
+    const drinks = answerGuest(live, [{ role: "user", content: "what drinks do you have?" }]).items;
+    expect(drinks.length).toBeGreaterThan(1);
+  });
+});

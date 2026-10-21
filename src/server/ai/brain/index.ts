@@ -442,7 +442,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
           return reply("recommend", `${intro}${filters ? `${sp}${t("assistantReply.allAre", { filters })}` : ""}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}${sp}${t("assistantReply.tasteNote", { liked: taste.liked })}`, picks, { taste: { liked: taste.liked, because: taste.because, source: "Qloo" } });
         }
       }
-      const picks = (u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : ranked(pool)).slice(0, 4);
+      const order = u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : ranked(pool);
+      // food first: drinks are ordered most, but "anything vegetarian?" means a dish (one drink at most)
+      const wantsDrinks = u.courses.includes("drinks");
+      const picks = (wantsDrinks ? order : [...order.filter((i) => !isDrink(i)), ...order.filter(isDrink).slice(0, 1)]).slice(0, 4);
       const filters = filterWords();
       const signatures = picks.filter((p) => p.isSignature);
       const intro = filters

@@ -112,7 +112,12 @@ export function correct(word: string): string {
   return best?.[0] ?? word;
 }
 
-const same = (a: string, b: string) => a === b || a === `${b}s` || b === `${a}s` || (a.length >= 5 && b.length >= 5 && a[0] === b[0] && editDistance(a, b, 1) <= 1);
+/**
+ * A question word `a` naming dish word `b`: the same, a plural, or one letter off. A word the
+ * intent model already knows ("better") is never a typo of a dish word ("butter").
+ */
+const same = (a: string, b: string) =>
+  a === b || a === `${b}s` || b === `${a}s` || (a.length >= 5 && b.length >= 5 && a[0] === b[0] && !intentModel().vocab?.has(a) && editDistance(a, b, 1) <= 1);
 
 interface Mention {
   dish: Dish;
