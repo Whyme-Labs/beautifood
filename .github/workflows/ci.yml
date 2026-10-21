@@ -149,6 +149,19 @@ jobs:
           curl -fsS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/beautifood-app/secrets" \
             -d "$(jq -n --arg v "${{ steps.url.outputs.public }}" '{name:"PUBLIC_URL", text:$v, type:"secret_text"}')" | jq -c '{success, errors}'
+      - name: Guest assistant model
+        # The small model behind the guest assistant, for what the rules engine can't answer
+        # (scored by the "Guest assistant eval" workflow). Override with the ASSISTANT_PROVIDER /
+        # ASSISTANT_MODEL repository variables; ASSISTANT_PROVIDER=off turns it off.
+        env:
+          PROVIDER: ${{ vars.ASSISTANT_PROVIDER || 'workers-ai' }}
+          MODEL: ${{ vars.ASSISTANT_MODEL || '@cf/meta/llama-3.1-8b-instruct-fp8-fast' }}
+        run: |
+          for kv in "ASSISTANT_PROVIDER=$PROVIDER" "ASSISTANT_MODEL=$MODEL"; do
+            curl -fsS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/beautifood-app/secrets" \
+              -d "$(jq -n --arg n "${kv%%=*}" --arg v "${kv#*=}" '{name:$n, text:$v, type:"secret_text"}')" | jq -c '{success, errors}'
+          done
       - name: Smoke test
         run: |
           for i in $(seq 1 20); do
