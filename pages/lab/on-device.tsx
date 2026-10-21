@@ -30,7 +30,9 @@ import { AlertTriangle, ClipboardCopy, Download, Square, Trash2, Wifi } from "lu
 import { useToast } from "../../src/ui/components";
 import { GuestBar } from "../../src/ui/guest";
 import { EVAL_CASES, sampleDishes, score, type EvalScore } from "../../src/shared/assistantEval";
-import { caseMessages, replyFromText } from "../../src/shared/onDeviceEval";
+import { caseMessages, cleanAnswer, replyFromText } from "../../src/shared/onDeviceEval";
+import { answerLocally, guard } from "../../src/server/ai/local";
+import { sampleContext } from "../../src/server/ai/evalFixture";
 import {
   asyncCapabilities,
   clearModels,
@@ -78,6 +80,9 @@ interface CaseRow {
   tokensApprox: boolean;
   tokPerSec: number | null;
   ms: number;
+  /** As deployed: who answered (the rules engine first; the model only when it can't), and whether that passes. */
+  deployedBy: "engine" | "model" | "engine (guard)";
+  deployedPass: boolean;
 }
 
 interface Run {
@@ -98,6 +103,8 @@ interface Run {
   /** The tab was killed mid-run (found after the reload). */
   crashed?: boolean;
   score: Pick<EvalScore, "passed" | "total" | "unsafe"> | null;
+  /** The assistant as guests would get it: rules engine first, this model for the rest, the allergen guard. */
+  deployedScore?: Pick<EvalScore, "passed" | "total" | "unsafe"> | null;
   cases: CaseRow[];
 }
 
@@ -266,14 +273,26 @@ export default function OnDeviceLab() {
       loaded = await LOADERS[engine](model, { onProgress, signal: ac.signal, f16, device: dev ?? "webgpu" });
       update({ load: loaded.report, weightsFromCache: loaded.report.cached });
       const results: Parameters<typeof score>[0] = [];
+      const deployed: Parameters<typeof score>[0] = [];
+      const ctx = sampleContext();
       for (const [i, c] of EVAL_CASES.entries()) {
         if (ac.signal.aborted) break;
         setProgress({ frac: i / EVAL_CASES.length, text: `Case ${i + 1} of ${EVAL_CASES.length}: ${c.question}` });
         crumb(`answering case ${i + 1} of ${EVAL_CASES.length} ("${c.question}")`);
         const g = await loaded.generate(caseMessages(c, dishes), { maxTokens: MAX_TOKENS, signal: ac.signal });
         if (g.stopped && ac.signal.aborted) break;
-        const r = replyFromText(c, g.text.trim(), dishes);
+        const text = cleanAnswer(g.text);
+        const r = replyFromText(c, text, dishes);
         results.push({ c, r });
+        // as deployed: the rules engine answers what it understands; this model the rest, through the guard
+        const local = answerLocally(ctx, c.question, c.lang);
+        const used = local.confident ? local : guard(ctx, c.question, { answer: text, items: [], engine: "model" }, local, c.lang);
+        const deployedBy: CaseRow["deployedBy"] = local.confident ? "engine" : used === local ? "engine (guard)" : "model";
+        const dr =
+          deployedBy === "model"
+            ? { ...replyFromText(c, used.answer, dishes), ...(used.safetyNote ? { safetyNote: used.safetyNote } : {}) }
+            : { answer: used.answer, safetyNote: used.safetyNote, dishes: used.items.map((x) => dishes.find((d) => d.id === x.id)!).filter(Boolean) };
+        deployed.push({ c, r: dr });
         const row: CaseRow = {
           question: c.question,
           kind: c.kind,
@@ -288,10 +307,13 @@ export default function OnDeviceLab() {
           tokensApprox: g.tokensApprox,
           tokPerSec: g.ttftMs !== null && g.tokens > 1 && g.totalMs > g.ttftMs ? +((g.tokens - 1) / ((g.totalMs - g.ttftMs) / 1000)).toFixed(1) : null,
           ms: Math.round(g.totalMs),
+          deployedBy,
+          deployedPass: c.check(dr),
         };
         const cases = [...run.cases, row];
         const s = score(results);
-        update({ cases, ...summarize(cases), score: { passed: s.passed, total: s.total, unsafe: s.unsafe } });
+        const d = score(deployed);
+        update({ cases, ...summarize(cases), score: { passed: s.passed, total: s.total, unsafe: s.unsafe }, deployedScore: { passed: d.passed, total: d.total, unsafe: d.unsafe } });
       }
       update({ stopped: ac.signal.aborted });
     } catch (e) {
@@ -559,7 +581,12 @@ function RunCard({ run, live }: { run: Run; live: boolean }) {
     <section className="card col" data-testid="lab-results">
       <div className="row between">
         <h2 style={{ margin: 0 }}>{run.model.label}</h2>
-        {s && <span className={`badge ${s.unsafe.length ? "bad" : s.passed === s.total ? "ok" : "warn"}`}>{s.passed}/{s.total} passed</span>}
+        {s && <span className={`badge ${s.unsafe.length ? "bad" : s.passed === s.total ? "ok" : "warn"}`}>model alone {s.passed}/{s.total}</span>}
+        {run.deployedScore && (
+          <span className={`badge ${run.deployedScore.unsafe.length ? "bad" : "ok"}`} data-testid="lab-deployed" title="Rules engine first, this model for the rest, the allergen guard">
+            as deployed {run.deployedScore.passed}/{run.deployedScore.total}
+          </span>
+        )}
       </div>
       <div className="hint">
         {run.library}
@@ -592,7 +619,7 @@ function RunCard({ run, live }: { run: Run; live: boolean }) {
         <div className="alert bad" data-testid="lab-unsafe">
           <AlertTriangle size={18} />
           <span>
-            <b>Safety failures ({s.unsafe.length}):</b>
+            <b>Safety failures of the model alone ({s.unsafe.length}){run.deployedScore && !run.deployedScore.unsafe.length ? "; none as deployed, where the rules engine answers these" : ""}:</b>
             <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
               {s.unsafe.map((q) => (
                 <li key={q}>{q}</li>
@@ -607,6 +634,7 @@ function RunCard({ run, live }: { run: Run; live: boolean }) {
             <div key={i} className="col tight">
               <div className="row nowrap" style={{ alignItems: "flex-start" }}>
                 <span className={`badge ${c.pass ? "ok" : "bad"}`}>{c.pass ? "pass" : "fail"}</span>
+                {c.deployedBy && <span className={`badge ${c.deployedPass ? "ok" : "bad"}`} title="As deployed">{c.deployedBy === "model" ? "model" : "engine"} {c.deployedPass ? "✓" : "✗"}</span>}
                 <span className="grow" style={{ fontWeight: 650 }}>
                   {c.question} {c.safety && <span className="badge warn">safety</span>}
                 </span>

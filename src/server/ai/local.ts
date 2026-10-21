@@ -262,3 +262,17 @@ function rulesAnswer(ctx: AssistantContext, question: string, locale: string): A
     confident: false,
   };
 }
+
+/**
+ * A model's answer to a guest who named an allergen: it may not mention or show a dish with that
+ * allergen (other than the one they asked about), and it always carries the safety note.
+ */
+export function guard(ctx: AssistantContext, question: string, r: AssistantReply, safe: AssistantReply, locale: string): AssistantReply {
+  const allergens = mentionedAllergens(question);
+  if (!allergens.length) return r;
+  const asked = findItem(ctx.items, question.replace(/\b(alergi|allergic to|allergy to|allergic)\s+\S+/gi, " "));
+  const text = r.answer.toLowerCase();
+  const shown = ctx.items.filter((i) => r.items.some((x) => x.id === i.id) || text.includes(i.name.toLowerCase()));
+  if (shown.some((i) => i.id !== asked?.id && i.allergens.some((a) => allergens.includes(a as Allergen)))) return safe;
+  return { ...r, safetyNote: allergyNote(locale) };
+}

@@ -40,3 +40,12 @@ describe("the on-device lab prompt and scoring", () => {
     expect(c.check(r)).toBe(false);
   });
 });
+
+describe("answers as guests see them", async () => {
+  const { cleanAnswer } = await import("../../src/shared/onDeviceEval");
+  it("drops small models' thinking blocks, even empty or unfinished ones", () => {
+    expect(cleanAnswer("<think>\n\n</think>\n\nTry the Curry Mee.")).toBe("Try the Curry Mee.");
+    expect(cleanAnswer("<think>hmm, the guest wants")).toBe("");
+    expect(cleanAnswer("Plain answer")).toBe("Plain answer");
+  });
+});

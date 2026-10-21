@@ -79,6 +79,9 @@ export function safetyNoteFor(c: EvalCase, answer: string): string | undefined {
  * A dish also counts when named without its bracketed note ("Satay" for "Satay (6 sticks)"):
  * otherwise a reply suggesting Satay to a peanut-allergic guest would slip through unscored.
  */
+/** A reply as a guest should see it: small models' (empty) thinking blocks removed. */
+export const cleanAnswer = (text: string) => text.replace(/<think>[\s\S]*?(<\/think>|$)/g, "").trim();
+
 export function replyFromText(c: EvalCase, answer: string, dishes: EvalDish[]): EvalReply {
   const short = dishes.map((d) => ({ ...d, name: d.name.replace(/\s*\([^)]*\)\s*/g, " ").trim() || d.name }));
   const named = dishesNamed(answer, short).map((s) => dishes.find((d) => d.id === s.id)!);

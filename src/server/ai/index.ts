@@ -9,7 +9,7 @@ import { menuAt, type ImportItem } from "../domain/menu";
 import type { TableInput } from "../domain/floor";
 import { localParts } from "../ids";
 import { answerWithClaude, claudeEnabled, extractWithClaude, narrateWithClaude, type ClaudeEnv } from "./claude";
-import { allergyNote, answerLocally, findItem, mentionedAllergens, type AssistantContext, type AssistantReply } from "./local";
+import { answerLocally, guard, type AssistantContext, type AssistantReply } from "./local";
 import { answerWithModel, guestModel, type AiBinding } from "./guestModel";
 import { limitsFrom, mayUseModel, recordUsage, type Usage } from "./usage";
 import type { AssistantSettings } from "../appenv";
@@ -69,19 +69,7 @@ export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSet
   }
 }
 
-/**
- * A model's answer to a guest who named an allergen: it may not mention or show a dish with that
- * allergen (other than the one they asked about), and it always carries the safety note.
- */
-export function guard(ctx: AssistantContext, question: string, r: AssistantReply, safe: AssistantReply, locale: string): AssistantReply {
-  const allergens = mentionedAllergens(question);
-  if (!allergens.length) return r;
-  const asked = findItem(ctx.items, question.replace(/\b(alergi|allergic to|allergy to|allergic)\s+\S+/gi, " "));
-  const text = r.answer.toLowerCase();
-  const shown = ctx.items.filter((i) => r.items.some((x) => x.id === i.id) || text.includes(i.name.toLowerCase()));
-  if (shown.some((i) => i.id !== asked?.id && i.allergens.some((a) => allergens.includes(a as never)))) return safe;
-  return { ...r, safetyNote: allergyNote(locale) };
-}
+export { guard };
 
 export interface OnboardingInput {
   restaurantName: string;
