@@ -1,0 +1,18 @@
+{
+  "name": "beautifood-taste-cloudflare",
+  "private": true,
+  "type": "module",
+  "description": "Runs the taste service on Cloudflare Containers, on demand: it wakes on a request and sleeps when idle.",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@cloudflare/containers": "0.3.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261016.1",
+    "typescript": "^6.0.3",
+    "wrangler": "4.151.3"
+  }
+}

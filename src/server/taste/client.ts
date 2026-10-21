@@ -62,9 +62,31 @@ export type Runner = (tool: TasteTool, args: Record<string, unknown>) => Promise
 
 export const tasteEnabled = (env: TasteEnv) => !!(env.TASTE_URL && env.TASTE_SECRET);
 
+/** Answers worth keeping: anything but an error or a question back. */
+const KEEP = new Set(["ok", "empty", "partial", "degraded"]);
+
+/** JSON with sorted keys, so the same question is the same cache entry. */
+export function stable(v: unknown): string {
+  if (Array.isArray(v)) return `[${v.map(stable).join(",")}]`;
+  if (v && typeof v === "object") return `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${stable((v as Record<string, unknown>)[k])}`).join(",")}}`;
+  return JSON.stringify(v);
+}
+
+const edge = () => (typeof caches !== "undefined" ? (caches as unknown as { default: Cache }).default : null);
+
+/**
+ * Calls to the taste service, with each answer kept for a day in the Worker's own cache. The
+ * service runs on demand and sleeps when idle, losing its memory, so this cache is what lets a
+ * sleeping container stay asleep for any question someone asked in the last day.
+ */
 export function tasteRunner(env: TasteEnv, fetcher: typeof fetch = fetch, timeoutMs = 30_000): Runner {
   return async (tool, args) => {
     if (!tasteEnabled(env)) return { status: "error", summary: "Taste insights are not set up", error: { code: "TASTE_OFF", retryable: false, recovery: "Set TASTE_URL and TASTE_SECRET" } };
+    const cache = edge();
+    const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${tool}\n${stable(args)}`)));
+    const key = new Request(`https://taste-call.internal/${[...digest].map((b) => b.toString(16).padStart(2, "0")).join("")}`);
+    const hit = cache ? await cache.match(key).catch(() => undefined) : undefined;
+    if (hit) return { ...((await hit.json()) as Envelope), cached: true };
     try {
       const r = await fetcher(`${env.TASTE_URL!.replace(/\/$/, "")}/v1/run`, {
         method: "POST",
@@ -73,7 +95,10 @@ export function tasteRunner(env: TasteEnv, fetcher: typeof fetch = fetch, timeou
         signal: AbortSignal.timeout(timeoutMs),
       });
       const body = (await r.json().catch(() => null)) as (Envelope & { error?: unknown }) | null;
-      if (body && typeof body.status === "string") return body;
+      if (body && typeof body.status === "string") {
+        if (cache && KEEP.has(body.status)) await cache.put(key, new Response(JSON.stringify(body), { headers: { "content-type": "application/json", "cache-control": "max-age=86400" } })).catch(() => {});
+        return body;
+      }
       return { status: "error", summary: `Taste service ${r.status}`, error: { code: r.status === 429 ? "DAILY_LIMIT" : "TASTE_HTTP", retryable: r.status >= 500, recovery: "" } };
     } catch (e) {
       return { status: "error", summary: (e as Error).message, error: { code: "TASTE_UNREACHABLE", retryable: true, recovery: "" } };

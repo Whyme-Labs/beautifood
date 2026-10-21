@@ -87,10 +87,12 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
 export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & TasteEnv & { AI?: AiBinding }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply & { turn?: string }> {
   const actx = await assistantContext(db, ctx);
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
-  // "I love BTS…": what fans of it love near this branch, from Qloo, as a boost on the menu's dishes
+  // "I love BTS…": what fans of it love near this branch, from Qloo, as a boost on the menu's dishes.
+  // A guest never waits on a sleeping taste service: past 2.5 seconds the brain answers without it
+  // (the request still wakes the container, so the next guest gets Qloo).
   const liked = tasteEnabled(env) ? likedThing(question, actx.items.map((i) => i.name)) : null;
   const hint = liked
-    ? await tasteHint(tasteRunner(env, fetch, 6000), actx.items, liked, tasteLocation(ctx.branch.address)).catch((e) => (console.warn("taste hint", e), null))
+    ? await tasteHint(tasteRunner(env, fetch, 2500), actx.items, liked, tasteLocation(ctx.branch.address)).catch((e) => (console.warn("taste hint", e), null))
     : null;
   const brain = answerGuest(actx, history, locale, hint);
   const r = await answer(db, env, ctx, actx, history, question, brain, locale);

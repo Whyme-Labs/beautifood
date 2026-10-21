@@ -28,10 +28,28 @@ npm test                                                                # agains
 ```
 
 Or build the container: `docker build -t beautifood-taste .`, then run it with `TASTE_SECRET` and
-`QLOO_API_KEY` as secrets. Any host that runs a container works: Cloudflare Containers, a small VM,
-or Cloud Run.
+`QLOO_API_KEY` as secrets. Any host that runs a container works. Then give the app Worker `TASTE_URL`
+(this service's HTTPS address) and the same `TASTE_SECRET`.
 
-Then give the Worker `TASTE_URL` (this service's HTTPS address) and the same `TASTE_SECRET`.
+## On Cloudflare Containers, on demand
+
+`cloudflare/` runs it on Cloudflare Containers: a small Worker checks the secret first, so a
+stranger's request never wakes the container, then hands the request to one "basic" instance
+(¼ vCPU, 1 GiB). The instance starts on the first request and sleeps after 10 idle minutes, so it
+costs only while it's answering. The app keeps each Qloo answer in its own cache for a day, so a
+sleeping container stays asleep for anything asked recently. Guests never wait on a cold start: the
+assistant gives Qloo 2.5 seconds, then answers without it.
+
+The **Taste service** workflow (`.github/workflows/taste.yml`, run by hand) does the lot: it tests
+the service, deploys the container Worker, makes a fresh shared secret for both Workers, points the
+app at it, and wakes it once to check Qloo answers. It needs the Workers Paid plan and the
+`QLOO_API_KEY` repository secret.
+
+What it costs: the Workers Paid plan ($5 a month) includes 25 GiB-hours of memory, 375 vCPU-minutes
+and 200 GB-hours of disk. Beyond that, memory is about $0.009 per GiB-hour, the main cost of an awake
+instance. CPU is billed only while busy, and at our call rates it stays inside the included minutes.
+A month with the container awake 60 hours is about $0.35 over the plan; awake all the time it would
+be about $7.
 
 | Variable | Default | |
 |---|---|---|

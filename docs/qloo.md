@@ -84,8 +84,9 @@ neither.
   its cuisine. The guest bridge sends only the public name a guest typed ("BTS") and the branch's area.
 - The Qloo key lives only in the container, as a secret. The Worker holds only the taste service's
   address and its bearer secret. Nothing reaches a browser.
-- Calls are cached (a day per question in the service, 12 hours per brief in the Worker) and capped
-  per day, as the kit asks.
+- Calls are cached and capped per day, as the kit asks. Each answer is kept a day in the Worker's
+  cache (and in the service while it's awake), and each brief for 12 hours. The container runs on
+  demand, so it is asleep (and costs nothing) unless someone asks something new.
 
 ## What a brief doesn't establish
 
@@ -98,9 +99,10 @@ neither.
 
 ## Setup
 
-1. Deploy `services/taste` as a container, with `QLOO_API_KEY` and `TASTE_SECRET`
-   ([its README](../services/taste/README.md)).
-2. Give the Worker `TASTE_URL` and the same `TASTE_SECRET`.
+1. Add the `QLOO_API_KEY` repository secret and run the **Taste service** workflow. It deploys
+   `services/taste` on Cloudflare Containers, on demand, and gives the app `TASTE_URL` and
+   `TASTE_SECRET`. Any other container host works too ([its README](../services/taste/README.md)).
+2. Or by hand: give the app Worker `TASTE_URL` and the same `TASTE_SECRET` you gave the service.
 3. Open *Taste* in the console, or ask your agent for `merchant_taste_brief`.
 
 Tests: `test/unit/taste.test.ts`; `services/taste` (`npm test`); and `e2e/api/taste.spec.ts` plus the

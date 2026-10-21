@@ -1,0 +1,16 @@
+// The taste service on Cloudflare Containers. Its own Worker, deployed apart from the app (the app
+// reaches it at TASTE_URL with TASTE_SECRET). One "basic" instance (1/4 vCPU, 1 GiB), started on
+// demand and asleep after 10 idle minutes, so it costs only while it's answering.
+//
+//   npx wrangler secret put TASTE_SECRET && npx wrangler secret put QLOO_API_KEY && npx wrangler deploy
+{
+  "name": "beautifood-taste",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "containers": [{ "class_name": "TasteContainer", "image": "../Dockerfile", "instance_type": "basic", "max_instances": 1 }],
+  "durable_objects": { "bindings": [{ "name": "TASTE", "class_name": "TasteContainer" }] },
+  "exports": { "TasteContainer": { "type": "durable-object", "storage": "sqlite" } },
+  "observability": { "enabled": true }
+}

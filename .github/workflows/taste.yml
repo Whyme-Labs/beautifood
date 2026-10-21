@@ -1,0 +1,72 @@
+name: Taste service (Qloo, Cloudflare Containers)
+
+# Deploys services/taste on Cloudflare Containers, on demand (it wakes on a request and sleeps after
+# 10 idle minutes; see services/taste/cloudflare), then points the app at it. Each run makes a fresh
+# shared secret and gives it to both Workers, so nobody ever handles it. Needs the Workers Paid plan
+# (for Containers) and the QLOO_API_KEY repository secret.
+#
+# Manual only: run it once to set up, and again after changing services/taste.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: taste-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 20
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      QLOO_API_KEY: ${{ secrets.QLOO_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 24
+      - name: Check the Qloo key is set
+        run: |
+          if [ -z "$QLOO_API_KEY" ]; then echo "::error::Add the QLOO_API_KEY repository secret first"; exit 1; fi
+      - name: Test the service
+        run: npm ci --prefix services/taste --no-audit --no-fund && npm test --prefix services/taste
+      - name: Install the deploy tools
+        run: npm ci --prefix services/taste/cloudflare --no-audit --no-fund
+      - name: A fresh shared secret
+        run: |
+          secret=$(openssl rand -hex 32)
+          echo "::add-mask::$secret"
+          echo "TASTE_SECRET=$secret" >> "$GITHUB_ENV"
+      - name: Deploy the container Worker
+        working-directory: services/taste/cloudflare
+        run: |
+          npx wrangler deploy --config wrangler.jsonc
+          printf '%s' "$TASTE_SECRET" | npx wrangler secret put TASTE_SECRET --config wrangler.jsonc
+          printf '%s' "$QLOO_API_KEY" | npx wrangler secret put QLOO_API_KEY --config wrangler.jsonc
+      - name: Point the app at it
+        run: |
+          set -euo pipefail
+          sub=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" | jq -r .result.subdomain)
+          url="https://beautifood-taste.$sub.workers.dev"
+          for kv in "TASTE_URL=$url" "TASTE_SECRET=$TASTE_SECRET"; do
+            curl -fsS -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/beautifood-app/secrets" \
+              -d "$(jq -n --arg n "${kv%%=*}" --arg v "${kv#*=}" '{name:$n, text:$v, type:"secret_text"}')" | jq -c '{success, errors}'
+          done
+          echo "TASTE_URL=$url" >> "$GITHUB_ENV"
+      - name: Wake it and check Qloo answers
+        # the first request starts the container; give it a minute
+        run: |
+          for i in $(seq 1 12); do
+            out=$(curl -s -X POST "$TASTE_URL/v1/run" -H "authorization: Bearer $TASTE_SECRET" -H "content-type: application/json" \
+              -d '{"tool":"qloo_find_tags","args":{"query":"Malaysian restaurant","limit":3}}' || true)
+            status=$(echo "$out" | jq -r '.status // empty' 2>/dev/null || true)
+            if [ -n "$status" ]; then echo "Qloo answered: $status"; echo "$out" | jq -c '{status, summary, result_count}'; [ "$status" != "error" ] && exit 0; fi
+            sleep 10
+          done
+          echo "::error::The taste service didn't answer with Qloo results"; exit 1
