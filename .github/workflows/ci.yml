@@ -151,10 +151,11 @@ jobs:
             -d "$(jq -n --arg v "${{ steps.url.outputs.public }}" '{name:"PUBLIC_URL", text:$v, type:"secret_text"}')" | jq -c '{success, errors}'
       - name: Guest assistant model
         # The small model behind the guest assistant, for what the rules engine can't answer
-        # (scored by the "Guest assistant eval" workflow). Override with the ASSISTANT_PROVIDER /
-        # ASSISTANT_MODEL repository variables; ASSISTANT_PROVIDER=off turns it off.
+        # (scored by the "Guest assistant eval" workflow). Off by default so the AI bill can't grow
+        # with traffic: guests get the free rules engine, and AI only where their own device can run
+        # it. Set the ASSISTANT_PROVIDER repository variable (e.g. workers-ai) to turn it on.
         env:
-          PROVIDER: ${{ vars.ASSISTANT_PROVIDER || 'workers-ai' }}
+          PROVIDER: ${{ vars.ASSISTANT_PROVIDER || 'off' }}
           MODEL: ${{ vars.ASSISTANT_MODEL || '@cf/meta/llama-3.1-8b-instruct-fp8-fast' }}
         run: |
           for kv in "ASSISTANT_PROVIDER=$PROVIDER" "ASSISTANT_MODEL=$MODEL"; do
