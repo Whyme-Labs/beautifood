@@ -22,3 +22,16 @@ The `test` split is frozen. It changes only to fix a wrong label, recorded here 
   test. No engine had been tuned on either split. Afterwards: dev 65.2% (58.2–71.6), test 69.8%
   (65.3–74.0), consistent with one distribution.
 - Test fingerprint: `1e7283da2d8e1f0f` (404 cases).
+
+## v1.1, unchanged: notes from iteration 3 (no case or label changed)
+
+- **An accidental test run.** `bench/run.ts --help` ran the test split, because the split defaulted
+  to `test`. Only the one-line summary was seen (75.2%, 5 unsafe, at a work-in-progress commit), no
+  case was read, and the result file was deleted. `--split` is now required.
+- **Overlap with the training templates.** `scripts/brain/leaks.ts` found 27 of the 601 benchmark
+  questions reading exactly like a training template once dish names are delexicalised ("what do
+  you recommend", "how much is it", "tandas kat mana"). The templates predate the benchmark and its
+  author never saw them, so these are common phrasings, not copying. The baseline was trained on
+  them, though. From iteration 3b on, any generated training question of three or more words that
+  reads like an eval or benchmark question is dropped before training.
+- Test fingerprint: `1e7283da2d8e1f0f` (404 cases), unchanged.

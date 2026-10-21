@@ -1,4 +1,4 @@
-# Benchmark v1.1: analysis of the baseline
+# Benchmark v1.1: the baseline, what failed, and three iterations
 
 The menu brain as deployed (commit b548b1b), on ground-truth dish data:
 
@@ -82,3 +82,43 @@ logits), what the rules decided, the dishes shown, and the check that failed.
 - A change is kept if it improves dev with no new unsafe answer. McNemar's test against the baseline
   says whether the change is real (p < 0.05).
 - Test is run once at the end and reported as it is.
+
+## Results after three iterations (commit a8d9426)
+
+Iterations 1 to 3 were tuned on dev only, in the order above, each kept only with no new unsafe
+answer on dev. Test was then run once.
+
+| | Rules engine | Brain, baseline | Brain, iteration 3 |
+|---|---|---|---|
+| dev (201) | | 65.2% (58.2–71.6), unsafe 3 | 98.5% (96.5–100), unsafe 0 |
+| **test (404)** | 37.6% (33.4–42.8), unsafe 29 | 69.8% (65.3–74.0), unsafe 4 | **86.1% (82.7–89.1), unsafe 7** |
+| test, menus read by the parser | | | 84.7%, unsafe 7 |
+
+- **The gain is real.** On test the brain fixed 75 cases and broke 9 against the baseline (McNemar
+  p < 0.001). The intervals don't overlap.
+- **Dev overstates it.** Dev reached 98.5% and test 86.1%. A 12-point gap is what tuning on 201
+  cases buys: a fix written for a dev failure covers that phrasing better than its neighbours.
+  Test is the number to quote.
+- **Safety got worse on test, and that comes first.** The 4 unsafe test answers of the baseline are
+  all still unsafe, and 3 more are new. 2 of the 3 are answers about one dish's allergens and 1 is a
+  recommendation. By stage, one each in course reading, allergen reading and the answer. The
+  benchmark counts any shown dish that contains an avoided allergen as unsafe. That includes the
+  asked-about dish in an "it contains X, not suitable" answer, so some of these may be a card shown
+  next to a correct warning rather than a wrong recommendation. That can only be settled by reading
+  the cases, which spends the test split.
+- **Where test still fails** (56 cases, by stage): the answer's policy or wording 19, the decision
+  rules 14, course reading 12, dish finding 5, allergen reading 3, budget 2, spice 1. Weakest tags:
+  not on the menu (50%, n=6), group meals (64%, n=14), Chinese (78%, n=92).
+- **The intent model.** Mean confidence is 0.76 on passing and 0.65 on failing cases. The top-2 logit
+  gap is 3.07 against 2.22. ECE is 0.155, from 0.17. Low-gap failures are still where it's unsure.
+  Retraining with thanks and compliments fixed the two small-talk failures it caused on dev.
+
+## Next
+
+1. Before any more tuning, a **new held-out set** from a fresh blind author (v2). Test v1.1 has
+   now been used to judge iteration 3; reading its failures to fix them would make it a second dev
+   set.
+2. Then **read the 7 unsafe test cases** and fix them, judged on v2. They don't wait on further
+   accuracy work.
+3. The menu parser's own safety errors (`bench/menu-data.ts`: allergens missed, non-vegan dishes
+   called vegan) are a separate benchmark. On parser data the brain scores 84.7%.
