@@ -31,6 +31,8 @@ export default defineEnv({
   /** Model answers per branch per day for guests (default 100), and the platform's monthly AI budget in US dollars (default 20). */
   ASSISTANT_DAILY_PER_BRANCH: string().optional(),
   AI_MONTHLY_BUDGET_USD: string().optional(),
+  /** One-off key the assistant eval workflow sets to score models through this Worker's AI binding. */
+  EVAL_KEY: string().optional(),
   /** Lets a trusted caller (e2e runner) bypass auth rate limits. Never expose to browsers. */
   AUTH_TRUSTED_KEY: string().optional(),
 });

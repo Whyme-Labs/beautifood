@@ -8,16 +8,55 @@ import { EVAL_CASES, dishesNamed, sampleDishes, score, type EvalReply } from "..
 import { answerWithModel, workersAiRest } from "../../src/server/ai/guestModel";
 import { answerLocally, type AssistantContext, type AssistantReply } from "../../src/server/ai/local";
 import { guard } from "../../src/server/ai/index";
-import { costMicros } from "../../src/server/ai/usage";
+import { costMicros, type Usage } from "../../src/server/ai/usage";
+import { sampleContext } from "../../src/server/ai/evalFixture";
 
 const dishes = sampleDishes();
-const ctx = {
-  restaurant: { name: "Ah Seng", cuisine: "Malaysian hawker", story: "We started in 1998 as a Penang hawker stall.", description: "" },
-  branchName: "KLCC",
-  currency: "MYR",
-  menuLanguage: "en",
-  items: dishes.map((d, n) => ({ ...d, categoryId: d.category, imageUrl: null, story: "", tags: [], modifiers: [], active: true, sort: n, soldOut: false, popularity: 0 })),
-} as unknown as AssistantContext;
+const ctx: AssistantContext = sampleContext();
+
+type Answer = { model: AssistantReply; deployed: AssistantReply; uses: Usage[]; ms: number; error: string | null };
+type Case = (typeof EVAL_CASES)[number];
+
+/**
+ * Two ways to reach the models: through the deployed Worker's own AI binding (EVAL_URL + EVAL_KEY,
+ * no extra token), or the Workers AI REST API (CF_ACCOUNT_ID + CF_API_TOKEN with Workers AI access).
+ */
+function asker(): (model: string, c: Case) => Promise<Answer> {
+  const url = process.env.EVAL_URL;
+  const key = process.env.EVAL_KEY;
+  if (url && key)
+    return async (model, c) => {
+      for (let attempt = 0; ; attempt++) {
+        const r = await fetch(`${url.replace(/\/$/, "")}/api/internal/assistant-eval`, {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-eval-key": key },
+          body: JSON.stringify({ model, question: c.question, lang: c.lang, before: c.before }),
+        });
+        if (r.ok) return (await r.json()) as Answer;
+        if (attempt >= 3) throw new Error(`eval endpoint ${r.status}: ${(await r.text()).slice(0, 200)}`);
+        await new Promise((ok) => setTimeout(ok, 3000 * (attempt + 1)));
+      }
+    };
+  const account = process.env.CF_ACCOUNT_ID;
+  const token = process.env.CF_API_TOKEN;
+  if (!account || !token) throw new Error("Set EVAL_URL + EVAL_KEY, or CF_ACCOUNT_ID + CF_API_TOKEN");
+  const ai = workersAiRest(account, token);
+  return async (model, c) => {
+    const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.question }, { role: "assistant" as const, content: b.answer }]), { role: "user" as const, content: c.question }];
+    const uses: Usage[] = [];
+    const t0 = Date.now();
+    let r: AssistantReply;
+    let error: string | null = null;
+    try {
+      r = await answerWithModel({ provider: "workers-ai", model, ai }, ctx, history, c.lang, (u) => uses.push(u));
+    } catch (e) {
+      error = (e as Error).message;
+      r = { answer: `(error) ${error}`, items: [], engine: "model" };
+    }
+    const local = answerLocally(ctx, c.question, c.lang);
+    return { model: r, deployed: local.confident || error ? local : guard(ctx, c.question, r, local, c.lang), uses, ms: Date.now() - t0, error };
+  };
+}
 
 const toEval = (r: AssistantReply): EvalReply => {
   const cards = r.items.map((x) => dishes.find((d) => d.id === x.id)!).filter(Boolean);
@@ -26,11 +65,8 @@ const toEval = (r: AssistantReply): EvalReply => {
 };
 
 it("scores the models", async () => {
-  const account = process.env.CF_ACCOUNT_ID;
-  const token = process.env.CF_API_TOKEN;
   const models = (process.env.EVAL_MODELS ?? "@cf/google/gemma-4-26b-a4b-it").split(",").map((m) => m.trim()).filter(Boolean);
-  if (!account || !token) throw new Error("Set CF_ACCOUNT_ID and CF_API_TOKEN");
-  const ai = workersAiRest(account, token);
+  const ask = asker();
   const out: Record<string, unknown>[] = [];
   const md = ["| Model | Model alone | As deployed | Unsafe (alone / deployed) | Avg seconds | Cost per model answer |", "|---|---|---|---|---|---|"];
   for (const model of models) {
@@ -41,22 +77,13 @@ it("scores the models", async () => {
     let calls = 0;
     const errors: string[] = [];
     for (const c of EVAL_CASES) {
-      const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.question }, { role: "assistant" as const, content: b.answer }]), { role: "user" as const, content: c.question }];
-      const uses: { model: string; input: number; output: number }[] = [];
-      const t0 = Date.now();
-      let r: AssistantReply;
-      try {
-        r = await answerWithModel({ provider: "workers-ai", model, ai }, ctx, history, c.lang, (u) => uses.push(u));
-      } catch (e) {
-        errors.push(`${c.question}: ${(e as Error).message}`);
-        r = { answer: `(error) ${(e as Error).message}`, items: [], engine: "model" };
-      }
-      secs += (Date.now() - t0) / 1000;
+      const a = await ask(model, c);
+      if (a.error) errors.push(`${c.question}: ${a.error}`);
+      secs += a.ms / 1000;
       calls++;
-      micros += uses.reduce((n, u) => n + costMicros(u), 0);
-      alone.push({ c, r: toEval(r) });
-      const local = answerLocally(ctx, c.question, c.lang);
-      deployed.push({ c, r: toEval(local.confident ? local : guard(ctx, c.question, r, local, c.lang)) });
+      micros += a.uses.reduce((n, u) => n + costMicros(u), 0);
+      alone.push({ c, r: toEval(a.model) });
+      deployed.push({ c, r: toEval(a.deployed) });
     }
     const a = score(alone);
     const d = score(deployed);
