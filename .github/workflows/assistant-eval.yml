@@ -5,10 +5,9 @@ name: Guest assistant eval
 # The models run on the live Worker's own Workers AI binding: the job sets a one-off EVAL_KEY
 # secret on the Worker, asks routes/api/internal/assistant-eval each question, then replaces the
 # key with one nobody knows. Results are in the job summary and the assistant-eval artifact.
+#
+# Manual only: it runs models on our Workers AI bill, and guests' AI runs on their own devices.
 on:
-  push:
-    branches: ["main"]
-    paths: [".github/workflows/assistant-eval.yml", "test/eval/**", "src/server/ai/**", "src/shared/assistantEval.ts", "routes/api/internal/**"]
   workflow_dispatch:
     inputs:
       models:
