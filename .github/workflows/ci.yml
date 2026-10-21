@@ -39,6 +39,8 @@ jobs:
         run: pnpm typecheck
       - name: Taste service tests (Qloo harness behind HTTPS)
         run: npm ci --prefix services/taste --no-audit --no-fund && npm test --prefix services/taste
+      - name: Taste service's Cloudflare Worker typechecks
+        run: npm ci --prefix services/taste/cloudflare --no-audit --no-fund && npm run typecheck --prefix services/taste/cloudflare
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
       - name: End-to-end (production build, fresh D1)
