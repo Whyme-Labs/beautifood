@@ -30,6 +30,7 @@ export const POST = api(async (c) => {
       model: z.string().regex(/^@cf\/[\w.\-/]+$/, "Workers AI models only"),
       question: z.string().min(1).max(500),
       lang: z.enum(["en", "zh"]),
+      mode: z.enum(["inline", "tools"]).optional(),
       before: z.array(z.object({ question: z.string().max(500), answer: z.string().max(2000) })).max(4).optional(),
     }),
   );
@@ -40,7 +41,7 @@ export const POST = api(async (c) => {
   let model: AssistantReply;
   let error: string | null = null;
   try {
-    model = await answerWithModel({ provider: "workers-ai", model: input.model, ai }, ctx, history, input.lang, (u) => uses.push(u));
+    model = await answerWithModel({ provider: "workers-ai", model: input.model, ai }, ctx, history, input.lang, (u) => uses.push(u), { mode: input.mode });
   } catch (e) {
     error = (e as Error).message;
     model = { answer: `(error) ${error}`, items: [], engine: "model" };

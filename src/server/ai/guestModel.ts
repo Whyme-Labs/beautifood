@@ -1,8 +1,8 @@
 // The small language model behind the guest assistant, for what the rules engine can't answer
 // (comparisons, pairings, "something light", follow-ups). Any provider with an OpenAI-style chat
 // API works: Workers AI (a binding on our own Cloudflare account, e.g. Gemma 4), DeepSeek,
-// OpenRouter, and so on; Anthropic goes through ./claude. It only sees the restaurant's menu
-// through the same two tools as the Claude path, so it can't invent dishes or allergens.
+// OpenRouter, and so on; Anthropic goes through ./claude. It sees only the restaurant's menu: in
+// the prompt for a normal menu (one call), or through the menu tools for a very large one.
 //
 // Off unless ASSISTANT_PROVIDER says otherwise (or an Anthropic key is set, as before): a model goes
 // live only after it has been scored on the guest cases (src/shared/assistantEval.ts, test/eval).
@@ -79,8 +79,8 @@ export function readTurn(raw: unknown): Turn {
   };
 }
 
-async function complete(m: Exclude<GuestModel, { provider: "anthropic" }>, messages: Msg[]): Promise<Turn> {
-  const body = { messages, tools: TOOLS, max_tokens: 600, temperature: 0.3 };
+async function complete(m: Exclude<GuestModel, { provider: "anthropic" }>, messages: Msg[], inline = false): Promise<Turn> {
+  const body = { messages, ...(inline ? {} : { tools: TOOLS }), max_tokens: 600, temperature: 0.3 };
   if (m.provider === "workers-ai") return readTurn(await m.ai.run(m.model, body));
   const res = await fetch(`${m.baseUrl}/chat/completions`, {
     method: "POST",
@@ -91,24 +91,64 @@ async function complete(m: Exclude<GuestModel, { provider: "anthropic" }>, messa
   return readTurn(await res.json());
 }
 
-/** Answer with an OpenAI-style model, looking dishes up through the menu tools. */
-export async function answerWithModel(m: Exclude<GuestModel, { provider: "anthropic" }>, ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale: string, onUsage: (u: Usage) => void): Promise<AssistantReply> {
-  const messages: Msg[] = [{ role: "system", content: systemPrompt(ctx, locale) }, ...history.slice(-10).map((h) => ({ role: h.role, content: h.content }))];
+/** The menu as compact lines for the prompt: what's served now, with the facts that matter. */
+export function menuForPrompt(ctx: AssistantContext): string {
+  return ctx.items
+    .filter((i) => i.active && !i.soldOut && i.servedNow !== false)
+    .map((i) =>
+      [
+        i.name,
+        `RM${(i.price / 100).toFixed(2)}`,
+        i.category ?? "",
+        i.isSignature ? "signature" : "",
+        i.spiceLevel ? `spice ${i.spiceLevel}/3` : "not spicy",
+        i.dietary.length ? i.dietary.join(", ") : "",
+        `allergens: ${i.allergens.length ? i.allergens.join(", ") : "none listed"}`,
+        i.description ? `— ${i.description.slice(0, 120)}` : "",
+      ]
+        .filter(Boolean)
+        .join(" | "),
+    )
+    .join("\n");
+}
+
+/** Menus up to this many dishes go into the prompt (one fast call); bigger ones are looked up through tools. */
+const INLINE_MAX = 120;
+
+/**
+ * Answer with an OpenAI-style model. A normal menu goes into the prompt so it's one call; a very
+ * large one is looked up through the menu tools.
+ */
+export async function answerWithModel(
+  m: Exclude<GuestModel, { provider: "anthropic" }>,
+  ctx: AssistantContext,
+  history: { role: "user" | "assistant"; content: string }[],
+  locale: string,
+  onUsage: (u: Usage) => void,
+  opts: { mode?: "inline" | "tools" } = {},
+): Promise<AssistantReply> {
+  const inline = (opts.mode ?? (ctx.items.length <= INLINE_MAX ? "inline" : "tools")) === "inline";
+  const system = inline
+    ? `${systemPrompt(ctx, locale)}\nThe menu (only these dishes exist; allergens are as listed, never assume more or less):\n${menuForPrompt(ctx)}\nWrite dish names exactly as on the menu.`
+    : systemPrompt(ctx, locale);
+  const messages: Msg[] = [{ role: "system", content: system }, ...history.slice(-10).map((h) => ({ role: h.role, content: h.content }))];
   const referenced = new Set<string>();
   for (let turn = 0; turn < 5; turn++) {
-    const t = await complete(m, messages);
+    const t = await complete(m, messages, inline);
     onUsage({ model: m.model, ...t.usage });
-    if (t.toolCalls.length) {
-      messages.push({ role: "assistant", content: t.content ?? "", tool_calls: t.toolCalls });
-      for (const call of t.toolCalls) {
+    if (t.toolCalls.length && !inline) {
+      const calls = t.toolCalls.map((call) => {
         let args: unknown = {};
         try {
           args = JSON.parse(call.function.arguments || "{}");
         } catch {
           /* small models sometimes send broken JSON: run with defaults */
         }
-        messages.push({ role: "tool", tool_call_id: call.id, content: runTool(ctx, call.function.name, args, referenced) });
-      }
+        return { call, args };
+      });
+      // send back arguments as valid JSON, or the API refuses the whole conversation
+      messages.push({ role: "assistant", content: t.content ?? "", tool_calls: calls.map(({ call, args }) => ({ ...call, function: { name: call.function.name, arguments: JSON.stringify(args ?? {}) } })) });
+      for (const { call, args } of calls) messages.push({ role: "tool", tool_call_id: call.id, content: runTool(ctx, call.function.name, args, referenced) });
       continue;
     }
     const text = (t.content ?? "").replace(/<think>[\s\S]*?<\/think>/g, "").trim();

@@ -56,7 +56,7 @@ describe("the small model", () => {
       { response: `A ${lime.name} cuts through the curry nicely.`, usage: { prompt_tokens: 1200, completion_tokens: 30 } },
     ]);
     const uses: { input: number; output: number }[] = [];
-    const r = await answerWithModel({ provider: "workers-ai", model: "@cf/google/gemma-4-26b-a4b-it", ai }, ctx, [{ role: "user", content: "what drink goes well with curry mee?" }], "en", (u) => uses.push(u));
+    const r = await answerWithModel({ provider: "workers-ai", model: "@cf/google/gemma-4-26b-a4b-it", ai }, ctx, [{ role: "user", content: "what drink goes well with curry mee?" }], "en", (u) => uses.push(u), { mode: "tools" });
     expect(r).toMatchObject({ engine: "model", items: [{ id: lime.id }] });
     expect(uses).toEqual([
       { model: "@cf/google/gemma-4-26b-a4b-it", input: 900, output: 20 },
@@ -65,6 +65,27 @@ describe("the small model", () => {
     // the tool's answer went back to the model, from the real menu data
     const second = sent[1].messages as { role: string; content: string }[];
     expect(second.find((m) => m.role === "tool")!.content).toContain(lime.name);
+  });
+
+  it("puts a normal menu in the prompt and answers in one call, without tools", async () => {
+    const { ai, sent } = fakeAi([{ response: "Curry Mee is coconut curry; Penang Assam Laksa is sour tamarind fish broth.", usage: { prompt_tokens: 1500, completion_tokens: 40 } }]);
+    const r = await answerWithModel({ provider: "workers-ai", model: "m", ai }, ctx, [{ role: "user", content: "curry mee vs laksa?" }], "en", () => {});
+    expect(sent).toHaveLength(1);
+    expect(sent[0].tools).toBeUndefined();
+    const system = (sent[0].messages as { content: string }[])[0].content;
+    expect(system).toContain("Penang Assam Laksa | RM15.50");
+    expect(system).toMatch(/allergens: /);
+    expect(r.items.map((i) => i.name)).toEqual(expect.arrayContaining(["Curry Mee", "Penang Assam Laksa"]));
+  });
+
+  it("sends broken tool arguments back as valid JSON", async () => {
+    const { ai, sent } = fakeAi([
+      { choices: [{ message: { content: null, tool_calls: [{ id: "c1", function: { name: "search_menu", arguments: '{"query": "drink"} extra' } }] } }] },
+      { response: "Try the lime juice." },
+    ]);
+    await answerWithModel({ provider: "workers-ai", model: "m", ai }, ctx, [{ role: "user", content: "a drink?" }], "en", () => {}, { mode: "tools" });
+    const echoed = (sent[1].messages as { role: string; tool_calls?: { function: { arguments: string } }[] }[]).find((m) => m.tool_calls)!;
+    expect(() => JSON.parse(echoed.tool_calls![0].function.arguments)).not.toThrow();
   });
 
   it("never lets a model put an allergen the guest named in front of them", () => {
