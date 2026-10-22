@@ -1,0 +1,47 @@
+# Taste probe: the shape of what Qloo's harness returns for the calls the owner's brief makes, so
+# src/server/taste/client.ts reads it right. This repository is public, and so are its logs, and
+# Qloo's terms forbid publishing their data: the probe prints structure only (key paths, types,
+# counts), never a name or a value.
+#
+# Manual only.
+name: Taste probe (Qloo response shape)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 10
+    env:
+      QLOO_API_KEY: ${{ secrets.QLOO_API_KEY }}
+      QLOO_BASE_URL: https://hackathon.api.qloo.com
+      QLOO_TRUSTED_BASE_URL: https://hackathon.api.qloo.com
+    steps:
+      - uses: actions/checkout@v4
+      - uses: useblacksmith/setup-node@v5
+        with:
+          node-version: 24
+      - run: npm ci --prefix services/taste --no-audit --no-fund
+      - name: Shapes
+        working-directory: services/taste
+        run: |
+          export QLOO_HOME="$RUNNER_TEMP/qloo-home"
+          shape() {
+            # every key path (array indexes folded to []), its type, and how many arrays hold; no values
+            jq -c '{
+              status, result_count, error: .error.code,
+              paths: ([paths(scalars) as $p | {p: ($p | map(if type == "number" then "[]" else . end) | join(".")), t: (getpath($p) | type)}] | unique | map("\(.p):\(.t)") | .[:80]),
+              arrays: ([paths(arrays) as $p | {p: ($p | map(if type == "number" then "[]" else . end) | join(".")), n: (getpath($p) | length)}] | unique_by(.p) | map("\(.p)=\(.n)") | .[:30])
+            }'
+          }
+          run() { echo "== $1 $2"; npx --no-install qloo exec "$1" --input "$2" | shape || true; }
+          run find_tags '{"query":"Malaysian restaurant","limit":3}'
+          run recommend '{"target_type":"place","signal_location":"Suria KLCC, Kuala Lumpur","filter_location":"Suria KLCC, Kuala Lumpur","limit":8}'
+          run recommend '{"target_type":"artist","signal_location":"Suria KLCC, Kuala Lumpur","limit":8}'
+          run recommend '{"target_type":"place","signal_location":"Kuala Lumpur","filter_location":"Kuala Lumpur","limit":8}'
+          run recommend '{"target_type":"tv_show","signal_location":"Kuala Lumpur","limit":6}'
+          run describe '{"entity":"Suria KLCC","type":"place"}'
