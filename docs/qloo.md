@@ -52,7 +52,7 @@ Worker (Cloudflare)                        taste service (container)            
 branch address ─► "Bangsar, Kuala Lumpur"
 menu, best sellers (D1)
           │  POST /v1/run (bearer secret)
-          ├──────────────────────────────► qloo mcp (harness, one connection) ─► api.qloo.com
+          ├──────────────────────────────► qloo mcp (harness, one connection) ─► hackathon.api.qloo.com
           │   1. qloo_find_tags  "Malaysian restaurant"   → a Qloo cuisine tag
           │      qloo_describe   "Ah Seng Bangsar, KL"    → the restaurant, if Qloo knows it
           │   2. qloo_recommend  place,   signal+filter location            → loved nearby

@@ -35,6 +35,19 @@ jobs:
           if [ -z "$QLOO_API_KEY" ]; then echo "::error::Add the QLOO_API_KEY repository secret first"; exit 1; fi
       - name: Test the service
         run: npm ci --prefix services/taste --no-audit --no-fund && npm test --prefix services/taste
+      - name: Check the key on Qloo's hackathon server, before deploying anything
+        working-directory: services/taste
+        env:
+          QLOO_BASE_URL: https://hackathon.api.qloo.com
+          QLOO_TRUSTED_BASE_URL: https://hackathon.api.qloo.com
+          QLOO_HOME: ${{ runner.temp }}/qloo-home
+        run: |
+          set -euo pipefail
+          npx --no-install qloo doctor || true
+          out=$(npx --no-install qloo exec find_tags --input '{"query":"Malaysian restaurant","limit":3}')
+          # a failure is {"error": {"code": …}}; never print the key, only the outcome
+          if echo "$out" | jq -e '.error' >/dev/null 2>&1; then echo "$out" | jq -c '{error: .error.code, recovery: .error.recovery}'; echo "::error::Qloo refused this key on hackathon.api.qloo.com"; exit 1; fi
+          echo "$out" | jq -c '{operation, status, summary} | with_entries(select(.value != null))' 2>/dev/null || echo "$out" | head -c 400
       - name: Install the deploy tools
         run: npm ci --prefix services/taste/cloudflare --no-audit --no-fund
       - name: A fresh shared secret

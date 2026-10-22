@@ -1,6 +1,9 @@
 # The taste service: Node 22 and Qloo's harness, as the hackathon kit asks for a server or container.
 FROM node:22-bookworm-slim
 ENV NODE_ENV=production PORT=8080 QLOO_HOME=/home/node/.qloo-state
+# The Qloo hackathon keys only work on the hackathon server. The harness sends the key to a
+# non-default server only when both are set to the same URL (its trust check).
+ENV QLOO_BASE_URL=https://hackathon.api.qloo.com QLOO_TRUSTED_BASE_URL=https://hackathon.api.qloo.com
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
