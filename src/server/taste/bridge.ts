@@ -3,10 +3,10 @@
 // "bubble tea"). The menu brain's dish concepts (../ai/brain/concepts) map that onto this menu's
 // own dishes, as a boost to its ranking, so every allergy, diet and budget filter still applies.
 // Only the name the guest typed goes to Qloo; the answer says the taste is fans', not theirs.
-import { conceptsOf } from "../ai/brain/concepts";
+import { conceptsOf, conceptTerms } from "../ai/brain/concepts";
 import { normalize } from "../../shared/brain/text";
-import { items, usable, type Runner } from "./client";
-import { widerAreas } from "./brief";
+import { items, likelyChoice, usable, type Runner } from "./client";
+import { RESTAURANT_TAG, widerAreas } from "./brief";
 
 export interface TasteHint {
   /** What the guest said they love, as they typed it. */
@@ -51,18 +51,29 @@ export function likedThing(question: string, menuNames: string[] = []): string |
 
 /** Ask Qloo which places fans of `liked` love near the branch, and turn their tags into dish boosts. */
 export async function tasteHint(run: Runner, menu: { id: string; name: string; description?: string; category?: string }[], liked: string, location: string): Promise<TasteHint | null> {
-  // the branch's own area first, then the wider one Qloo knows ("Suria KLCC, Kuala Lumpur" → "Kuala Lumpur")
-  let e = await run("qloo_recommend", { target_type: "place", signals: [liked], filter_location: location, limit: 10 });
-  for (const area of widerAreas(location).slice(1)) {
-    if (usable(e) || e.status === "error") break;
-    e = await run("qloo_recommend", { target_type: "place", signals: [liked], filter_location: area, limit: 10 });
+  // the city: Qloo seldom knows a mall or a street, and a guest is waiting ("Suria KLCC, Kuala Lumpur" → "Kuala Lumpur")
+  const area = widerAreas(location).at(-1) ?? location;
+  const ask = (signal: string, restaurants = true) =>
+    run("qloo_recommend", { target_type: "place", signals: [signal], filter_location: area, ...(restaurants ? { include_tags: [RESTAURANT_TAG] } : {}), limit: 10 });
+  let signal = liked;
+  let e = await ask(signal);
+  // "BTS" is more than one thing to Qloo: take the one they most likely meant, and ask again
+  if (e.status === "needs_input") {
+    const pick = likelyChoice(e, liked);
+    if (!pick) return null;
+    signal = pick.id;
+    e = await ask(signal);
   }
+  // no restaurants for them: the places they love, whatever kind
+  if (!usable(e) && e.status !== "error") e = await ask(signal, false);
   if (!usable(e)) return null;
   const places = items(e);
   // each tag (and place name) once per place, weighted by rank: the first place counts most
   const weight = new Map<string, number>();
   places.forEach((p, rank) => {
-    for (const t of new Set([...p.tags, p.name])) weight.set(t, (weight.get(t) ?? 0) + 1 / (1 + rank * 0.3));
+    // Qloo's tags when it gives them, else the foods the place's own description names ("Korean fried chicken", "bubble tea")
+    const known = p.tags.length ? p.tags : conceptTerms(p.description ?? "").map((c) => c.term.toLowerCase());
+    for (const t of new Set([...known, p.name])) weight.set(t, (weight.get(t) ?? 0) + 1 / (1 + rank * 0.3));
   });
   const tagConcepts = [...weight].map(([tag, w]) => ({ tag, w, concepts: conceptsOf({ name: tag }), drinkConcepts: conceptsOf({ name: tag, category: "Drinks" }), words: new Set(normalize(tag).split(" ").filter((x) => x.length > 3 && !GENERIC.has(x))) }));
   const boost: Record<string, number> = {};

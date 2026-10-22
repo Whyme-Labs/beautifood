@@ -41,7 +41,22 @@ export interface Envelope {
   warnings?: string[];
   error?: { code: string; retryable: boolean; recovery: string };
   provenance?: { source?: string; endpoint?: string; documentation?: string };
+  /** With needs_input: the names Qloo couldn't pin down, and what each might be. */
+  resolution?: { issues?: { field?: string; input?: string; candidates?: { id?: string; name?: string; type?: string; popularity?: number }[] }[] };
   cached?: boolean;
+}
+
+/**
+ * When Qloo needs a choice ("BTS" is two entities), the choice a guest most likely meant: the
+ * candidate named exactly as they said it, else the most popular. Null when there is none.
+ */
+export function likelyChoice(e: Envelope, input: string): { id: string; name: string } | null {
+  const issue = e.resolution?.issues?.find((i) => (i.input ?? "").toLowerCase() === input.toLowerCase()) ?? e.resolution?.issues?.[0];
+  const cands = (issue?.candidates ?? []).filter((c): c is { id: string; name: string; popularity?: number } => !!c.id && !!c.name);
+  if (!cands.length) return null;
+  const exact = cands.filter((c) => c.name.toLowerCase() === input.toLowerCase());
+  const best = (exact.length ? exact : cands).sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0))[0];
+  return { id: best.id, name: best.name };
 }
 
 /** One result, whatever its type: the fields we show, read tolerantly. */

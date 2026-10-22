@@ -219,10 +219,29 @@ describe("the taste bridge for guests", () => {
   it("asks Qloo with only the name the guest typed, and boosts the dishes fans' places are known for", async () => {
     const asked: Record<string, unknown>[] = [];
     const h = await tasteHint(async (t, a) => (asked.push(a), kpop(t, a)), ctx.items, "BTS", "Kuala Lumpur");
-    expect(asked[0]).toEqual({ target_type: "place", signals: ["BTS"], filter_location: "Kuala Lumpur", limit: 10 });
+    expect(asked[0]).toEqual({ target_type: "place", signals: ["BTS"], filter_location: "Kuala Lumpur", include_tags: ["urn:tag:genre:place:restaurant"], limit: 10 });
     const boosted = Object.keys(h!.boost).map((id) => dishes.find((d) => d.id === id)!.name);
     expect(boosted).toEqual(expect.arrayContaining(["Nasi Lemak Ayam Rempah", "Teh Tarik"]));
     expect(h!.because[0]).toBe("Korean Fried Chicken");
+  });
+
+  it("picks the BTS a guest most likely meant when Qloo asks which, and reads foods from the places' descriptions", async () => {
+    const asked: Record<string, unknown>[] = [];
+    const run = async (_t: string, a: Record<string, unknown>) => {
+      asked.push(a);
+      if ((a.signals as string[])[0] === "BTS")
+        return { status: "needs_input" as const, resolution: { issues: [{ field: "signals", input: "BTS", candidates: [{ id: "BTS-EP", name: "BTS World", popularity: 0.4 }, { id: "BTS-BAND", name: "BTS", popularity: 0.99 }] }] } };
+      return ok([
+        { entity_id: "K1", name: "Chicken Hof", properties: { short_description: "Korean fried chicken and beer, open late" } },
+        { entity_id: "K2", name: "Tealive", properties: { short_description: "Bubble tea and milk tea" } },
+      ]);
+    };
+    const h = await tasteHint(run, ctx.items, "BTS", "Suria KLCC, Kuala Lumpur");
+    expect(asked[1]).toMatchObject({ signals: ["BTS-BAND"], filter_location: "Kuala Lumpur" });
+    expect(asked).toHaveLength(2);
+    const boosted = Object.keys(h!.boost).map((id) => dishes.find((d) => d.id === id)!.name);
+    expect(boosted).toEqual(expect.arrayContaining(["Teh Tarik"]));
+    expect(h!.liked).toBe("BTS");
   });
 
   it("shapes the brain's picks, says where it came from, and never overrides an allergy", async () => {
