@@ -45,3 +45,8 @@ jobs:
           run recommend '{"target_type":"place","signal_location":"Kuala Lumpur","filter_location":"Kuala Lumpur","limit":8}'
           run recommend '{"target_type":"tv_show","signal_location":"Kuala Lumpur","limit":6}'
           run describe '{"entity":"Suria KLCC","type":"place"}'
+          # a guest's "I love BTS": fans' places in the city
+          run recommend '{"target_type":"place","signals":["BTS"],"filter_location":"Suria KLCC, Kuala Lumpur","limit":10}'
+          run recommend '{"target_type":"place","signals":["BTS"],"filter_location":"Kuala Lumpur","limit":10}'
+          run recommend '{"target_type":"place","signals":["BTS"],"filter_location":"Kuala Lumpur","include_tags":["urn:tag:genre:place:restaurant"],"limit":10}'
+          run recommend '{"target_type":"place","signals":["Taylor Swift"],"filter_location":"Kuala Lumpur","include_tags":["urn:tag:genre:place:restaurant"],"limit":10}'
