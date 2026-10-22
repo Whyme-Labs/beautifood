@@ -91,6 +91,36 @@ describe("the taste brief", () => {
     for (const a of b.actions) expect(a.why).toBeTruthy();
   });
 
+  it("asks what the area's favourite places are known for when Qloo's results carry no tags, and suggests a special from it", async () => {
+    const asked: { tool: string; args: Record<string, unknown> }[] = [];
+    const uuid = (n: number) => `0000000${n}-aaaa-bbbb-cccc-dddddddddddd`;
+    const run: Runner = async (tool, args) => {
+      asked.push({ tool, args });
+      if (tool === "qloo_find_tags") return ok([{ id: "urn:tag:genre:place:restaurant:malaysian", name: "Malaysian" }]);
+      if (tool === "qloo_describe") return { status: "needs_input", results: [] };
+      if (tool === "qloo_entity_tags") return ok([{ id: "urn:tag:genre:place:restaurant:indian_muslim", name: "Indian Muslim" }, { id: "urn:tag:amenity:place:late_night", name: "Late night" }, { id: "urn:tag:genre:place:restaurant:malaysian", name: "Malaysian" }]);
+      if (args.target_type === "place") return ok([1, 2, 3].map((n) => ({ entity_id: uuid(n), name: `Place ${n}` })));
+      if (args.target_type === "artist") return ok([{ name: "Yuna" }]);
+      return ok([{ name: "Upin & Ipin" }]);
+    };
+    const b = await tasteBrief(run, { ...input, location: "Kuala Lumpur" });
+    const call = asked.find((a) => a.tool === "qloo_entity_tags")!;
+    expect(call.args).toMatchObject({ entity_type: "place", entities: [uuid(1), uuid(2), uuid(3)] });
+    expect(b.findings.map((f) => f.key)).toContain("known_for");
+    const special = b.actions.find((a) => a.kind === "special")!;
+    expect(special.vars.tag).toBe("Indian Muslim");
+    expect(special.why).toMatch(/3 places people around Kuala Lumpur love most/);
+    expect(b.actions.find((a) => a.kind === "hours")!.vars.tag).toBe("Late night");
+    // the menu's own cuisine isn't suggested as a special
+    expect(b.actions.filter((a) => a.kind === "special").map((a) => a.vars.tag)).not.toContain("Malaysian");
+  });
+
+  it("doesn't ask for tags when the places already have them", async () => {
+    const { run, asked } = fakeRunner(false);
+    await tasteBrief(run, input);
+    expect(asked.some((a) => a.tool === "qloo_entity_tags")).toBe(false);
+  });
+
   it("names each artist once in a playlist, though Qloo holds some twice", () => {
     const music = items(ok([{ name: "Dato' Sri Siti Nurhaliza" }, { name: "Siti Nurhaliza" }, { name: "YOONA" }]));
     const a = actionsFor(input, [{ key: "music", items: music, source: { tool: "qloo_recommend", asked: "artists loved around Kuala Lumpur" } }]);

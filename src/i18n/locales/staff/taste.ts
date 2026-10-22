@@ -17,6 +17,7 @@ export const en = {
     music: "What they listen to",
     tv: "What they watch",
     audience: "Your guests, as Qloo sees them",
+    known_for: "What those places are known for",
   },
   actions: {
     special: "Trial a weekend special around “{tag}”.",
@@ -48,6 +49,7 @@ export const zh: Widen<typeof en> = {
     music: "他们爱听的音乐",
     tv: "他们爱看的节目",
     audience: "Qloo 眼中的你的客人",
+    known_for: "这些店的特色",
   },
   actions: {
     special: "周末试推一道“{tag}”特色菜。",

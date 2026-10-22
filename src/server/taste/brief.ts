@@ -17,10 +17,12 @@ export interface BriefInput {
 }
 
 export interface Finding {
-  key: "nearby" | "cuisine" | "music" | "tv" | "audience";
+  key: "nearby" | "cuisine" | "music" | "tv" | "audience" | "known_for";
   items: TasteItem[];
   /** Which Qloo workflow, with what, so the owner can see where it came from. */
   source: { tool: TasteTool; asked: string; cached?: boolean };
+  /** For "known_for": how many of the area's favourite places the tags describe. */
+  basis?: number;
 }
 
 export interface Action {
@@ -101,7 +103,17 @@ export async function tasteBrief(run: Runner, input: BriefInput): Promise<TasteB
     known ? ask("audience", "qloo_entity_tags", { entities: [known.id], entity_type: "place", limit: 8 }, `what Qloo says ${known.name}'s fans are like`) : null,
   ]);
   const findings = found.filter((f): f is Finding => !!f);
-  return { location: loc, generatedAt: Date.now(), findings, actions: actionsFor(input, findings), limits: LIMITS, gaps };
+
+  // what the area's favourite places are known for: Qloo's place results don't always carry
+  // tags, so ask for the tags those places share, in one call (the specials come from these)
+  const seen = new Set<string>();
+  const places = findings.filter((f) => f.key === "nearby" || f.key === "cuisine").flatMap((f) => f.items).filter((p) => !seen.has(p.id) && seen.add(p.id));
+  const ids = places.filter((p) => /^[0-9a-f-]{20,}$/i.test(p.id)).map((p) => p.id).slice(0, 8);
+  if (ids.length >= 2 && places.filter((p) => p.tags.length).length < places.length / 2) {
+    const f = await ask("known_for", "qloo_entity_tags", { entities: ids, entity_type: "place", limit: 12 }, `what the places people around ${loc} love are known for`);
+    if (f) findings.push({ ...f, basis: ids.length });
+  }
+  return { location: loc, generatedAt: Date.now(), findings, actions: actionsFor({ ...input, location: loc }, findings), limits: LIMITS, gaps };
 }
 
 const LIMITS = [
@@ -113,7 +125,8 @@ const LIMITS = [
 export function actionsFor(input: BriefInput, findings: Finding[]): Action[] {
   const out: Action[] = [];
   const by = (k: Finding["key"]) => findings.find((f) => f.key === k);
-  const menuWords = words(input.menu.map((m) => `${m.name} ${m.description ?? ""} ${m.category ?? ""}`).join(" "));
+  // what the restaurant already serves: its menu, and its own cuisine ("Malaysian" isn't a special for a Malaysian restaurant)
+  const menuWords = words(`${input.cuisine} ${input.menu.map((m) => `${m.name} ${m.description ?? ""} ${m.category ?? ""}`).join(" ")}`);
 
   // tags the area's favourite places share (each place counted once): a cuisine or dish the menu
   // doesn't touch is a special to trial; "late night", "breakfast" and the like are about hours
@@ -122,10 +135,13 @@ export function actionsFor(input: BriefInput, findings: Finding[]): Action[] {
   const tagCount = new Map<string, { n: number; id?: string }>();
   for (const it of nearby) it.tags.forEach((t, i) => tagCount.set(t, { n: (tagCount.get(t)?.n ?? 0) + 1, id: it.tagIds[i] }));
   const shared = [...tagCount].filter(([, v]) => v.n >= 2).sort((a, b) => b[1].n - a[1].n);
+  // or, when Qloo's places carried no tags, the tags they share (most characteristic first)
+  const knownFor = by("known_for");
+  if (knownFor && !shared.length) for (const t of knownFor.items) shared.push([t.name, { n: knownFor.basis ?? 2, id: t.id }]);
   const hours = shared.find(([t]) => HOURS.test(t));
   const food = shared.filter(([t, v]) => !HOURS.test(t) && isFoodTag(t, v.id) && ![...words(t)].some((w) => menuWords.has(w))).slice(0, 2);
   for (const [t, { n }] of food)
-    out.push({ kind: "special", vars: { tag: t, count: n, location: input.location }, text: `Trial a weekend special around "${t}".`, why: `${n} of the places people around ${input.location} love are known for it, and nothing on your menu is.` });
+    out.push({ kind: "special", vars: { tag: t, count: n, location: input.location }, text: `Trial a weekend special around "${t}".`, why: knownFor && !tagCount.size ? `Qloo: it's among what the ${n} places people around ${input.location} love most are known for, and nothing on your menu is.` : `${n} of the places people around ${input.location} love are known for it, and nothing on your menu is.` });
   if (hours) out.push({ kind: "hours", vars: { tag: hours[0], count: hours[1].n }, text: `Try opening for "${hours[0].toLowerCase()}" on your busiest night.`, why: `${hours[1].n} of the places people around ${input.location} love are known for it.` });
 
   const top = input.bestSellers[0];
