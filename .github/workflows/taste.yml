@@ -73,10 +73,11 @@ jobs:
           done
           echo "TASTE_URL=$url" >> "$GITHUB_ENV"
       - name: Wake it and check Qloo answers
-        # the first request starts the container; give it a minute
+        # the first request starts the container, and on a first deploy Cloudflare is still rolling
+        # out the image: give it up to ten minutes, never letting one request hang
         run: |
-          for i in $(seq 1 12); do
-            out=$(curl -s -X POST "$TASTE_URL/v1/run" -H "authorization: Bearer $TASTE_SECRET" -H "content-type: application/json" \
+          for i in $(seq 1 30); do
+            out=$(curl -s --max-time 45 -X POST "$TASTE_URL/v1/run" -H "authorization: Bearer $TASTE_SECRET" -H "content-type: application/json" \
               -d '{"tool":"qloo_find_tags","args":{"query":"Malaysian restaurant","limit":3}}' || true)
             status=$(echo "$out" | jq -r '.status // empty' 2>/dev/null || true)
             if [ -n "$status" ]; then echo "Qloo answered: $status"; echo "$out" | jq -c '{status, summary, result_count}'; [ "$status" != "error" ] && exit 0; fi
