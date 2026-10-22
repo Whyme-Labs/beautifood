@@ -225,7 +225,7 @@ test.describe("taste insights (browser)", () => {
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
     await page.waitForURL(/\/m(\/|$)/);
     await page.getByRole("link", { name: "Taste" }).click();
-    await expect(page.getByRole("heading", { name: "Taste" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Taste", exact: true })).toBeVisible();
     const tryIt = page.getByTestId("taste-actions");
     await expect(tryIt).toContainText("Indian Muslim");
     await expect(tryIt).toContainText("Yuna");
