@@ -97,7 +97,10 @@ export async function tasteBrief(run: Runner, input: BriefInput): Promise<TasteB
   if (cuisineTag && !tag) gaps.push({ tool: "qloo_find_tags", asked: `${input.cuisine} restaurant`, status: cuisineTag.status, summary: cuisineTag.summary });
 
   const found = await Promise.all([
-    ask("nearby", "qloo_recommend", { target_type: "place", signal_location: loc, filter_location: loc, limit: 8 }, `places loved around ${loc}`),
+    // restaurants, not the malls and hotels Qloo's "places" also holds; all places if none
+    ask("nearby", "qloo_recommend", { target_type: "place", signal_location: loc, filter_location: loc, include_tags: [RESTAURANT_TAG], limit: 8 }, `restaurants loved around ${loc}`).then(
+      (f) => f ?? ask("nearby", "qloo_recommend", { target_type: "place", signal_location: loc, filter_location: loc, limit: 8 }, `places loved around ${loc}`),
+    ),
     tag ? ask("cuisine", "qloo_recommend", { target_type: "place", signal_location: loc, filter_location: loc, include_tags: [tag.id], limit: 6 }, `${tag.name} places loved around ${loc}`) : null,
     ask("music", "qloo_recommend", known ? { target_type: "artist", signals: [known.id], limit: 8 } : { target_type: "artist", signal_location: loc, limit: 8 }, known ? `artists fans of ${known.name} love` : `artists loved around ${loc}`),
     ask("tv", "qloo_recommend", known ? { target_type: "tv_show", signals: [known.id], limit: 6 } : { target_type: "tv_show", signal_location: loc, limit: 6 }, known ? `shows fans of ${known.name} love` : `shows loved around ${loc}`),
@@ -123,6 +126,9 @@ const LIMITS = [
   "Qloo describes what an area's or a fan base's tastes lean towards, in aggregate. It is not a count of visits or a prediction about any one guest.",
   "Findings are a starting point for a trial (a weekend special, a playlist, a themed night), to be judged by what then sells.",
 ];
+
+/** Qloo's tag for restaurants (the parent of urn:tag:genre:place:restaurant:malaysian and its siblings). */
+export const RESTAURANT_TAG = "urn:tag:genre:place:restaurant";
 
 /** Cuisines a place's own description can name, as a guest would say them (Qloo's place results carry descriptions, not always tags). */
 const CUISINES: [string, RegExp][] = [
@@ -160,6 +166,12 @@ export function actionsFor(input: BriefInput, findings: Finding[]): Action[] {
       if (n >= 2 && ![...words(label)].some((w) => menuWords.has(w))) described.push([label, { n }]);
     }
     described.sort((a, b) => b[1].n - a[1].n);
+    // and opening hours the descriptions name ("late-night dining")
+    const late = nearby.filter((p) => HOURS.test(p.description ?? "")).length;
+    if (late >= 2 && !hours) {
+      const tag = (nearby.map((p) => (p.description ?? "").match(HOURS)?.[0]).find(Boolean) ?? "Late night").replace(/^./, (c) => c.toUpperCase());
+      out.push({ kind: "hours", vars: { tag, count: late }, text: `Try opening for "${tag.toLowerCase()}" on your busiest night.`, why: `${late} of the places people around ${input.location} love say they're known for it (Qloo's place details).` });
+    }
     for (const [t, { n }] of described.slice(0, 2))
       out.push({ kind: "special", vars: { tag: t, count: n, location: input.location }, text: `Trial a weekend special around "${t}".`, why: `${n} of the places people around ${input.location} love describe themselves as ${t.toLowerCase()} (Qloo's place details), and nothing on your menu is.` });
   }

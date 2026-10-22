@@ -49,7 +49,9 @@ describe("the taste brief", () => {
     const { run, asked } = fakeRunner(false);
     const b = await tasteBrief(run, input);
     expect(asked.map((a) => a.tool)).toEqual(expect.arrayContaining(["qloo_find_tags", "qloo_describe", "qloo_recommend"]));
-    const cuisine = asked.find((a) => a.args.include_tags)!;
+    const cuisine = asked.find((a) => (a.args.include_tags as string[] | undefined)?.includes("urn:tag:genre:place:restaurant:malaysian"))!;
+    // the area's favourites are asked as restaurants (not malls and hotels)
+    expect(asked.some((a) => (a.args.include_tags as string[] | undefined)?.includes("urn:tag:genre:place:restaurant"))).toBe(true);
     expect(cuisine.args).toMatchObject({ target_type: "place", filter_location: "Bangsar, Kuala Lumpur", include_tags: ["urn:tag:genre:place:restaurant:malaysian"] });
     expect(b.findings.map((f) => f.key)).toEqual(["nearby", "cuisine", "music", "tv"]);
     // every finding says where it came from
@@ -128,6 +130,11 @@ describe("the taste brief", () => {
     const specials = a.filter((x) => x.kind === "special");
     expect(specials.map((x) => x.vars.tag)).toEqual(["Nyonya"]); // Japanese: only one place
     expect(specials[0].why).toMatch(/2 of the places people around Kuala Lumpur love describe themselves as nyonya/);
+    const late = actionsFor({ ...input, location: "Kuala Lumpur" }, [{ key: "nearby", items: items(ok([
+      { entity_id: "d", name: "Murni", properties: { short_description: "Malaysian-fusion eatery, ideal for late-night group dining" } },
+      { entity_id: "e", name: "Anis Puteri", properties: { short_description: "Kelantanese eatery with late-night dining" } },
+    ])), source: { tool: "qloo_recommend", asked: "restaurants loved around Kuala Lumpur" } }]);
+    expect(late.find((x) => x.kind === "hours")!.vars).toMatchObject({ tag: "Late-night", count: 2 });
   });
 
   it("doesn't ask for tags when the places already have them", async () => {
