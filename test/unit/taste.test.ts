@@ -91,6 +91,12 @@ describe("the taste brief", () => {
     for (const a of b.actions) expect(a.why).toBeTruthy();
   });
 
+  it("names each artist once in a playlist, though Qloo holds some twice", () => {
+    const music = items(ok([{ name: "Dato' Sri Siti Nurhaliza" }, { name: "Siti Nurhaliza" }, { name: "YOONA" }]));
+    const a = actionsFor(input, [{ key: "music", items: music, source: { tool: "qloo_recommend", asked: "artists loved around Kuala Lumpur" } }]);
+    expect(a.find((x) => x.kind === "playlist")!.vars.artists).toBe("Dato' Sri Siti Nurhaliza, YOONA");
+  });
+
   it("doesn't suggest a special for what the menu already serves", () => {
     const actions = actionsFor({ ...input, menu: [{ name: "Indian Muslim mee goreng" }] }, [
       { key: "nearby", items: items(ok([{ name: "A", tags: ["Indian Muslim"] }, { name: "B", tags: ["Indian Muslim"] }])), source: { tool: "qloo_recommend", asked: "x" } },

@@ -133,7 +133,11 @@ export function actionsFor(input: BriefInput, findings: Finding[]): Action[] {
 
   const music = by("music")?.items ?? [];
   if (music.length) {
-    const artists = music.slice(0, 4).map((a) => a.name).join(", ");
+    // one name per artist: Qloo can hold one twice ("Dato' Sri Siti Nurhaliza" and "Siti Nurhaliza")
+    const key = (n: string) => n.toLowerCase().replace(/^(dato'? ?sri|datuk|dato'?|tan sri|dr\.?)\s+/, "").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    const names: string[] = [];
+    for (const a of music) if (!names.some((n) => key(n).includes(key(a.name)) || key(a.name).includes(key(n)))) names.push(a.name);
+    const artists = names.slice(0, 4).join(", ");
     out.push({ kind: "playlist", vars: { artists }, text: `Build your dining-room playlist around ${artists}.`, why: `Qloo: ${by("music")!.source.asked}.` });
   }
 
