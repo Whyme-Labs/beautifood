@@ -33,7 +33,8 @@ export async function actor(browser: Browser, info: TestInfo, name: string, who:
     hasTouch: mobile,
     locale: "en-MY",
     timezoneId: "Asia/Kuala_Lumpur",
-    extraHTTPHeaders: { "x-auth-trusted-key": process.env.AUTH_TRUSTED_KEY ?? "e2e-trusted" },
+    // the local server's test key; never sent to a deployed app
+    extraHTTPHeaders: process.env.E2E_BASE ? {} : { "x-auth-trusted-key": process.env.AUTH_TRUSTED_KEY ?? "e2e-trusted" },
     recordVideo: { dir: info.outputPath(`video-${name}`), size: viewport },
   });
   open.push(ctx);

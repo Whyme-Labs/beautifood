@@ -28,6 +28,21 @@ const featureProps = (f: (typeof FEATURES)[number], lang: Lang): FeatureDemoProp
   return { lang, n: f.n, stock: f.stock, title: c.title, sub: c.sub, points: c.points, segments: f.takes.map((t, i) => ({ ...t, note: c.notes[i] ?? "" })) };
 };
 
+/** The Qloo hackathon cut: real Qloo answers from the live app. The footage is git-ignored (Qloo's data). */
+const QLOO: FeatureDemoProps = {
+  lang: "en",
+  n: "Q",
+  stock: "#ffd12e",
+  title: "Beautifood × Qloo",
+  sub: "What the people around your restaurant love, turned into things to do",
+  points: ["Live Qloo taste graph", "Every finding cites its source", "Allergies still come first", "Same tools for your own AI agent"],
+  segments: [
+    { clip: "qloo/owner.mp4", kind: "desktop", start: 1, len: 28, note: "The owner's Taste page" },
+    { clip: "qloo/guest.mp4", kind: "phone", start: 1, len: 22.5, note: "A guest: “I love BTS”" },
+    { clip: "qloo/agent.mp4", kind: "desktop", start: 0.5, len: 23.5, note: "The owner's AI agent, over MCP" },
+  ],
+};
+
 // 110 s of scenes minus 11 transitions of 0.4 s.
 export const RemotionRoot = () => (
   <>
@@ -45,6 +60,7 @@ export const RemotionRoot = () => (
         })}
       </Fragment>
     ))}
+    <Composition id="qloo-en" component={FeatureDemo} durationInFrames={featureFrames(QLOO.segments, "en")} fps={30} width={1920} height={1080} defaultProps={QLOO} />
     <Still id="Thumbnail-en" component={Thumbnail} width={1280} height={720} defaultProps={{ lang: "en" as const }} />
     <Still id="Thumbnail-zh" component={Thumbnail} width={1280} height={720} defaultProps={{ lang: "zh" as const }} />
     <Composition id="Hook" component={Hook} durationInFrames={150} fps={30} width={1920} height={1080} />

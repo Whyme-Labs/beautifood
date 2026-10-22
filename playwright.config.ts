@@ -5,6 +5,8 @@ const chromium = process.env.PW_CHROMIUM ?? (process.env.PLAYWRIGHT_BROWSERS_PAT
 
 export default defineConfig({
   testDir: "e2e",
+  // the Qloo footage records the live app (playwright.qloo.config.ts)
+  testIgnore: ["qloo/**"],
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: true,

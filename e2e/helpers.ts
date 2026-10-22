@@ -1,6 +1,7 @@
 import { expect, request as pwRequest, type APIRequestContext, type APIResponse } from "@playwright/test";
 
-export const BASE = `http://127.0.0.1:${process.env.E2E_PORT ?? 5190}`;
+/** The app under test: the local e2e server, or a deployed one (E2E_BASE, for recording the live app). */
+export const BASE = process.env.E2E_BASE ?? `http://127.0.0.1:${process.env.E2E_PORT ?? 5190}`;
 const TRUSTED = { "x-auth-trusted-key": process.env.AUTH_TRUSTED_KEY ?? "e2e-trusted" };
 let seq = 0;
 export const uid = (p = "x") => `${p}${Date.now().toString(36)}${(seq++).toString(36)}${Math.random().toString(36).slice(2, 6)}`;
