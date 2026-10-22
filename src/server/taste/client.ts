@@ -132,7 +132,7 @@ export function items(e: Envelope): TasteItem[] {
         tags: tagList.map((t) => t.name),
         tagIds: tagList.map((t) => t.id),
         place: addr,
-        description: str(r.description) ?? str(props.short_description),
+        description: str(r.description) ?? str(props.short_description) ?? str(props.description),
       };
     })
     .filter((x): x is TasteItem => !!x);

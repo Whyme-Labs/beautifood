@@ -118,6 +118,18 @@ describe("the taste brief", () => {
     expect(b.actions.filter((a) => a.kind === "special").map((a) => a.vars.tag)).not.toContain("Malaysian");
   });
 
+  it("reads the cuisines from the places' own descriptions when Qloo gives no food tags", () => {
+    const places = items(ok([
+      { entity_id: "a", name: "Old China Café", properties: { short_description: "Nyonya and Peranakan classics in a heritage shophouse" } },
+      { entity_id: "b", name: "Limapulo", properties: { short_description: "Home-style Nyonya cooking" } },
+      { entity_id: "c", name: "Sushi Hibiki", properties: { short_description: "Japanese omakase" } },
+    ]));
+    const a = actionsFor({ ...input, location: "Kuala Lumpur" }, [{ key: "nearby", items: places, source: { tool: "qloo_recommend", asked: "places loved around Kuala Lumpur" } }]);
+    const specials = a.filter((x) => x.kind === "special");
+    expect(specials.map((x) => x.vars.tag)).toEqual(["Nyonya"]); // Japanese: only one place
+    expect(specials[0].why).toMatch(/2 of the places people around Kuala Lumpur love describe themselves as nyonya/);
+  });
+
   it("doesn't ask for tags when the places already have them", async () => {
     const { run, asked } = fakeRunner(false);
     await tasteBrief(run, input);

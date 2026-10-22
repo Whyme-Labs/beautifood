@@ -124,6 +124,15 @@ const LIMITS = [
   "Findings are a starting point for a trial (a weekend special, a playlist, a themed night), to be judged by what then sells.",
 ];
 
+/** Cuisines a place's own description can name, as a guest would say them (Qloo's place results carry descriptions, not always tags). */
+const CUISINES: [string, RegExp][] = [
+  ["Nyonya", /nyonya|peranakan/i], ["Indian", /\bindian\b|north indian|south indian/i], ["Mamak", /mamak|nasi kandar/i], ["Banana leaf", /banana leaf/i],
+  ["Chinese", /\bchinese\b/i], ["Cantonese", /cantonese/i], ["Dim sum", /dim sum|dimsum/i], ["Hakka", /hakka/i], ["Japanese", /japanese|sushi|omakase|izakaya|ramen/i],
+  ["Korean", /korean/i], ["Thai", /\bthai\b/i], ["Vietnamese", /vietnamese/i], ["Indonesian", /indonesian/i], ["Middle Eastern", /middle eastern|arab|lebanese|turkish/i],
+  ["Italian", /italian|pizza|pasta/i], ["French", /\bfrench\b/i], ["Western", /\bwestern\b|steakhouse/i], ["Seafood", /seafood/i], ["Vegetarian", /vegetarian|vegan/i],
+  ["Fine dining", /fine dining|tasting menu/i], ["Rooftop bar", /rooftop/i], ["Café", /\bcaf[eé]\b|coffee/i], ["Dessert", /dessert|bakery|patisserie/i],
+];
+
 /** From findings to things to do, each with the finding that suggested it. */
 export function actionsFor(input: BriefInput, findings: Finding[]): Action[] {
   const out: Action[] = [];
@@ -143,6 +152,17 @@ export function actionsFor(input: BriefInput, findings: Finding[]): Action[] {
   if (knownFor && !shared.length) for (const t of knownFor.items) shared.push([t.name, { n: knownFor.basis ?? 2, id: t.id }]);
   const hours = shared.find(([t]) => HOURS.test(t));
   const food = shared.filter(([t, v]) => !HOURS.test(t) && isFoodTag(t, v.id) && ![...words(t)].some((w) => menuWords.has(w))).slice(0, 2);
+  // or, when Qloo gave no food tags, the cuisines the favourite places' own descriptions name
+  const described: [string, { n: number }][] = [];
+  if (!food.length && nearby.length) {
+    for (const [label, re] of CUISINES) {
+      const n = nearby.filter((p) => re.test(`${p.name} ${p.description ?? ""}`)).length;
+      if (n >= 2 && ![...words(label)].some((w) => menuWords.has(w))) described.push([label, { n }]);
+    }
+    described.sort((a, b) => b[1].n - a[1].n);
+    for (const [t, { n }] of described.slice(0, 2))
+      out.push({ kind: "special", vars: { tag: t, count: n, location: input.location }, text: `Trial a weekend special around "${t}".`, why: `${n} of the places people around ${input.location} love describe themselves as ${t.toLowerCase()} (Qloo's place details), and nothing on your menu is.` });
+  }
   for (const [t, { n }] of food)
     out.push({ kind: "special", vars: { tag: t, count: n, location: input.location }, text: `Trial a weekend special around "${t}".`, why: knownFor && !tagCount.size ? `Qloo: it's among what the ${n} places people around ${input.location} love most are known for, and nothing on your menu is.` : `${n} of the places people around ${input.location} love are known for it, and nothing on your menu is.` });
   if (hours) out.push({ kind: "hours", vars: { tag: hours[0], count: hours[1].n }, text: `Try opening for "${hours[0].toLowerCase()}" on your busiest night.`, why: `${hours[1].n} of the places people around ${input.location} love are known for it.` });
