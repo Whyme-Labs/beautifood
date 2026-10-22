@@ -111,7 +111,7 @@ export async function tasteBrief(run: Runner, input: BriefInput): Promise<TasteB
   const places = findings.filter((f) => f.key === "nearby" || f.key === "cuisine").flatMap((f) => f.items).filter((p) => !seen.has(p.id) && seen.add(p.id));
   const ids = places.filter((p) => /^[0-9a-f-]{20,}$/i.test(p.id)).map((p) => p.id).slice(0, 8);
   if (ids.length >= 2 && places.filter((p) => p.tags.length).length < places.length / 2) {
-    const f = await ask("known_for", "qloo_entity_tags", { entities: ids, entity_type: "place", limit: 40 }, `what the places people around ${loc} love are known for`);
+    const f = await ask("known_for", "qloo_entity_tags", { entities: ids, entity_type: "place", limit: 20 }, `what the places people around ${loc} love are known for`);
     // keep the tags about places (Qloo returns people, brands and media too)
     const placeTags = f ? f.items.filter((t) => /:place:/i.test(t.id)) : [];
     if (f && placeTags.length) findings.push({ ...f, items: placeTags.slice(0, 12), basis: ids.length });
