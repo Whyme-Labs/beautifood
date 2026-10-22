@@ -98,7 +98,7 @@ describe("the taste brief", () => {
       asked.push({ tool, args });
       if (tool === "qloo_find_tags") return ok([{ id: "urn:tag:genre:place:restaurant:malaysian", name: "Malaysian" }]);
       if (tool === "qloo_describe") return { status: "needs_input", results: [] };
-      if (tool === "qloo_entity_tags") return ok([{ id: "urn:tag:genre:place:restaurant:indian_muslim", name: "Indian Muslim" }, { id: "urn:tag:amenity:place:late_night", name: "Late night" }, { id: "urn:tag:genre:place:restaurant:malaysian", name: "Malaysian" }]);
+      if (tool === "qloo_entity_tags") return ok([{ id: "urn:tag:genre:person:actor", name: "Actor" }, { id: "urn:tag:genre:brand:fashion", name: "Fashion" }, { id: "urn:tag:genre:place:restaurant:indian_muslim", name: "Indian Muslim" }, { id: "urn:tag:amenity:place:late_night", name: "Late night" }, { id: "urn:tag:genre:place:restaurant:malaysian", name: "Malaysian" }]);
       if (args.target_type === "place") return ok([1, 2, 3].map((n) => ({ entity_id: uuid(n), name: `Place ${n}` })));
       if (args.target_type === "artist") return ok([{ name: "Yuna" }]);
       return ok([{ name: "Upin & Ipin" }]);
@@ -111,6 +111,9 @@ describe("the taste brief", () => {
     expect(special.vars.tag).toBe("Indian Muslim");
     expect(special.why).toMatch(/3 places people around Kuala Lumpur love most/);
     expect(b.actions.find((a) => a.kind === "hours")!.vars.tag).toBe("Late night");
+    // only place tags: Qloo's lookup also returns people, brands and media
+    expect(b.findings.find((f) => f.key === "known_for")!.items.map((t) => t.name)).not.toContain("Actor");
+    expect(b.actions.filter((a) => a.kind === "special").map((a) => a.vars.tag)).toEqual(["Indian Muslim"]);
     // the menu's own cuisine isn't suggested as a special
     expect(b.actions.filter((a) => a.kind === "special").map((a) => a.vars.tag)).not.toContain("Malaysian");
   });
