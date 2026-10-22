@@ -136,7 +136,7 @@ const CUISINES: [string, RegExp][] = [
   ["Chinese", /\bchinese\b/i], ["Cantonese", /cantonese/i], ["Dim sum", /dim sum|dimsum/i], ["Hakka", /hakka/i], ["Japanese", /japanese|sushi|omakase|izakaya|ramen/i],
   ["Korean", /korean/i], ["Thai", /\bthai\b/i], ["Vietnamese", /vietnamese/i], ["Indonesian", /indonesian/i], ["Middle Eastern", /middle eastern|arab|lebanese|turkish/i],
   ["Italian", /italian|pizza|pasta/i], ["French", /\bfrench\b/i], ["Western", /\bwestern\b|steakhouse/i], ["Seafood", /seafood/i], ["Vegetarian", /vegetarian|vegan/i],
-  ["Fine dining", /fine dining|tasting menu/i], ["Rooftop bar", /rooftop/i], ["Café", /\bcaf[eé]\b|coffee/i], ["Dessert", /dessert|bakery|patisserie/i],
+  ["Fine dining", /fine dining|tasting menu/i], ["Dessert", /dessert|bakery|patisserie/i],
 ];
 
 /** From findings to things to do, each with the finding that suggested it. */
@@ -170,14 +170,14 @@ export function actionsFor(input: BriefInput, findings: Finding[]): Action[] {
     const late = nearby.filter((p) => HOURS.test(p.description ?? "")).length;
     if (late >= 2 && !hours) {
       const tag = (nearby.map((p) => (p.description ?? "").match(HOURS)?.[0]).find(Boolean) ?? "Late night").replace(/^./, (c) => c.toUpperCase());
-      out.push({ kind: "hours", vars: { tag, count: late }, text: `Try opening for "${tag.toLowerCase()}" on your busiest night.`, why: `${late} of the places people around ${input.location} love say they're known for it (Qloo's place details).` });
+      out.push({ kind: "hours", vars: { tag, count: late }, text: `Try a "${tag.toLowerCase()}" service on your busiest day.`, why: `${late} of the places people around ${input.location} love say they're known for it (Qloo's place details).` });
     }
     for (const [t, { n }] of described.slice(0, 2))
       out.push({ kind: "special", vars: { tag: t, count: n, location: input.location }, text: `Trial a weekend special around "${t}".`, why: `${n} of the places people around ${input.location} love describe themselves as ${t.toLowerCase()} (Qloo's place details), and nothing on your menu is.` });
   }
   for (const [t, { n }] of food)
     out.push({ kind: "special", vars: { tag: t, count: n, location: input.location }, text: `Trial a weekend special around "${t}".`, why: knownFor && !tagCount.size ? `Qloo: it's among what the ${n} places people around ${input.location} love most are known for, and nothing on your menu is.` : `${n} of the places people around ${input.location} love are known for it, and nothing on your menu is.` });
-  if (hours) out.push({ kind: "hours", vars: { tag: hours[0], count: hours[1].n }, text: `Try opening for "${hours[0].toLowerCase()}" on your busiest night.`, why: `${hours[1].n} of the places people around ${input.location} love are known for it.` });
+  if (hours) out.push({ kind: "hours", vars: { tag: hours[0], count: hours[1].n }, text: `Try a "${hours[0].toLowerCase()}" service on your busiest day.`, why: `${hours[1].n} of the places people around ${input.location} love are known for it.` });
 
   const top = input.bestSellers[0];
   if (top) out.push({ kind: "promo", vars: { dish: top.name, qty: top.qty }, text: `Lead your promotions with ${top.name}.`, why: `It's what already sells best here (${top.qty} in the last 30 days).` });

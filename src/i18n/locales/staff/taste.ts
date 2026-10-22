@@ -21,7 +21,7 @@ export const en = {
   },
   actions: {
     special: "Trial a weekend special around “{tag}”.",
-    hours: "Try opening for “{tag}” on your busiest night.",
+    hours: "Try a “{tag}” service on your busiest day.",
     promo: "Lead your promotions with {dish}.",
     playlist: "Build your dining-room playlist around {artists}.",
     theme_night: "Try a {show} night: a themed set menu and a screening.",
@@ -53,7 +53,7 @@ export const zh: Widen<typeof en> = {
   },
   actions: {
     special: "周末试推一道“{tag}”特色菜。",
-    hours: "在最忙的那晚试试“{tag}”时段营业。",
+    hours: "在最忙的那天试试“{tag}”时段。",
     promo: "推广时以{dish}为主打。",
     playlist: "用{artists}的歌做店里的歌单。",
     theme_night: "办一场{show}主题夜：主题套餐加放映。",
