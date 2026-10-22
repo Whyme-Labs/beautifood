@@ -60,9 +60,23 @@ const isFoodTag = (name: string, id?: string) =>
 
 const words = (s: string) => new Set(s.toLowerCase().split(/[^a-z一-鿿]+/).filter((w) => w.length > 2));
 
+/** The wider areas to fall back on, narrowest first: "Suria KLCC, Kuala Lumpur" → "Kuala Lumpur". */
+export function widerAreas(location: string): string[] {
+  const parts = location.split(",").map((p) => p.trim()).filter(Boolean);
+  return parts.map((_, n) => parts.slice(n).join(", ")).filter((x, n, all) => all.indexOf(x) === n);
+}
+
 export async function tasteBrief(run: Runner, input: BriefInput): Promise<TasteBrief> {
-  const loc = input.location;
   const gaps: TasteBrief["gaps"] = [];
+  // Qloo places a city, not always a mall or a street ("Suria KLCC" finds nothing, "Kuala Lumpur"
+  // does): the narrowest area it knows anything about, said as such in every finding
+  let loc = input.location;
+  for (const area of widerAreas(input.location)) {
+    const probe = await run("qloo_recommend", { target_type: "place", signal_location: area, filter_location: area, limit: 8 });
+    loc = area;
+    if (usable(probe)) break;
+    if (area !== widerAreas(input.location).at(-1)) gaps.push({ tool: "qloo_recommend", asked: `places loved around ${area}`, status: probe.status, summary: "Qloo knows nothing for this area yet; asked the wider area instead" });
+  }
   const ask = async (key: Finding["key"], tool: TasteTool, args: Record<string, unknown>, asked: string): Promise<Finding | null> => {
     const e: Envelope = await run(tool, args);
     if (usable(e)) return { key, items: items(e).slice(0, 8), source: { tool, asked, cached: e.cached } };

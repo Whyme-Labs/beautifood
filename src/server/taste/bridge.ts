@@ -6,6 +6,7 @@
 import { conceptsOf } from "../ai/brain/concepts";
 import { normalize } from "../../shared/brain/text";
 import { items, usable, type Runner } from "./client";
+import { widerAreas } from "./brief";
 
 export interface TasteHint {
   /** What the guest said they love, as they typed it. */
@@ -50,7 +51,12 @@ export function likedThing(question: string, menuNames: string[] = []): string |
 
 /** Ask Qloo which places fans of `liked` love near the branch, and turn their tags into dish boosts. */
 export async function tasteHint(run: Runner, menu: { id: string; name: string; description?: string; category?: string }[], liked: string, location: string): Promise<TasteHint | null> {
-  const e = await run("qloo_recommend", { target_type: "place", signals: [liked], filter_location: location, limit: 10 });
+  // the branch's own area first, then the wider one Qloo knows ("Suria KLCC, Kuala Lumpur" → "Kuala Lumpur")
+  let e = await run("qloo_recommend", { target_type: "place", signals: [liked], filter_location: location, limit: 10 });
+  for (const area of widerAreas(location).slice(1)) {
+    if (usable(e) || e.status === "error") break;
+    e = await run("qloo_recommend", { target_type: "place", signals: [liked], filter_location: area, limit: 10 });
+  }
   if (!usable(e)) return null;
   const places = items(e);
   // each tag (and place name) once per place, weighted by rank: the first place counts most

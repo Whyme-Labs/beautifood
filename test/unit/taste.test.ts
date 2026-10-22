@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { actionsFor, tasteBrief, tasteLocation, type BriefInput } from "../../src/server/taste/brief";
+import { widerAreas, actionsFor, tasteBrief, tasteLocation, type BriefInput } from "../../src/server/taste/brief";
 import { items, tasteRunner, type Envelope, type Runner } from "../../src/server/taste/client";
 import { likedThing, tasteHint } from "../../src/server/taste/bridge";
 import { answerGuest } from "../../src/server/ai/brain";
@@ -55,6 +55,18 @@ describe("the taste brief", () => {
     // every finding says where it came from
     for (const f of b.findings) expect(f.source.asked).toBeTruthy();
     expect(b.limits.length).toBeGreaterThan(0);
+  });
+
+  it("asks the wider area when Qloo knows nothing for the branch's own (a mall, a street)", async () => {
+    const { run: inner, asked } = fakeRunner(false);
+    // as on the hackathon server: "Suria KLCC, Kuala Lumpur" has no results, "Kuala Lumpur" does
+    const run: Runner = async (tool, args) => (String(args.signal_location ?? "").includes("Suria KLCC") ? (asked.push({ tool, args }), { status: "ok", results: [] }) : inner(tool, args));
+    const b = await tasteBrief(run, { ...input, location: "Suria KLCC, Kuala Lumpur" });
+    expect(b.location).toBe("Kuala Lumpur");
+    expect(b.findings.map((f) => f.key)).toEqual(expect.arrayContaining(["nearby", "music", "tv"]));
+    expect(b.findings.every((f) => !f.source.asked.includes("Suria KLCC"))).toBe(true);
+    expect(b.gaps.some((g) => g.asked.includes("Suria KLCC"))).toBe(true);
+    expect(widerAreas("Suria KLCC, Kuala Lumpur")).toEqual(["Suria KLCC, Kuala Lumpur", "Kuala Lumpur"]);
   });
 
   it("uses the restaurant itself as the signal when Qloo knows it", async () => {
