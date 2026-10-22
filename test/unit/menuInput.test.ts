@@ -3,8 +3,7 @@ import { catalog, catalogKey, GUIDE, now } from "../../src/server/ai/menuInput";
 import { layout } from "../../src/server/ai/claude";
 import { answerGuest } from "../../src/server/ai/brain";
 import type { Clock } from "../../src/shared/schedule";
-import { contextAt } from "../../demo/brain/run";
-import { KOPI_KAKI, SAKE_SMOKE } from "../../demo/brain/menus";
+import { contextAt, KOPI_KAKI, SAKE_SMOKE } from "../../src/server/ai/demoMenus";
 
 const at = (weekday: number, hhmm: string, date: string): Clock => ({ weekday, minutes: Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3)), date });
 const MOMENTS = [at(1, "08:30", "2026-10-19"), at(3, "12:10", "2026-10-21"), at(3, "16:20", "2026-10-21"), at(5, "23:40", "2026-10-23"), at(6, "09:15", "2026-10-24")];

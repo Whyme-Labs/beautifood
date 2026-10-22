@@ -234,3 +234,33 @@ test.describe("taste insights (browser)", () => {
     if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT, fullPage: true });
   });
 });
+
+test.describe("menu brain lab (browser)", () => {
+  test("answers on a demo menu at a chosen moment: deals now, a menu not served yet, no model", async ({ page }) => {
+    await open(page, "/lab/brain");
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+    // Wednesday 4:20pm at the kopitiam: happy hour is on
+    await page.getByRole("button", { name: "Wed happy hour" }).click();
+    await expect(page.getByTestId("brain-now")).toContainText("Happy hour drinks -30%");
+    await page.getByRole("button", { name: "happy hour drinks?" }).click();
+    const chat = page.getByTestId("brain-chat");
+    await expect(chat).toContainText("Kopi O Kosong (RM2.45, usually RM3.50)");
+    await page.locator("#brain-question").fill("Can I still order breakfast?");
+    await page.getByRole("button", { name: "Ask" }).click();
+    await expect(chat).toContainText("Breakfast is served from Thu");
+    // the catalog a model would get is the same at another hour; NOW is what changes
+    const key = await page.getByTestId("brain-input").locator("code").textContent();
+    await page.locator("#brain-time").fill("09:00");
+    await expect(page.getByTestId("brain-input").locator("code")).toHaveText(key!);
+    await expect(page.getByTestId("brain-input")).toContainText("NOW time Wed 09:00");
+    if (process.env.SHOTS) {
+      await page.getByRole("button", { name: "Wed happy hour" }).click();
+      await page.getByRole("button", { name: "happy hour drinks?" }).click();
+      await page.getByRole("button", { name: "Can I still order breakfast?" }).click();
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.screenshot({ path: `${process.env.SHOTS}/brain-lab-phone.png`, fullPage: true });
+      await page.setViewportSize({ width: 1280, height: 900 });
+      await page.screenshot({ path: `${process.env.SHOTS}/brain-lab.png`, fullPage: true });
+    }
+  });
+});

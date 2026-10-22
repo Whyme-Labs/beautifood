@@ -1,7 +1,11 @@
-// Two all-day menus for demonstrating the menu brain: timed menus (breakfast, weekday lunch sets,
-// dinner, late night), a seasonal menu, happy hours and promotions. Written the way a merchant
-// pastes a menu at onboarding; the parser reads allergens, diet and spice from the descriptions.
-import type { PriceRule, TimedMenu } from "../../src/shared/schedule";
+// Two all-day demo menus for the menu brain (the /lab/brain page, demo/brain, the tests): timed
+// menus (breakfast, weekday lunch sets, dinner, late night), dated seasons, happy hours and promos.
+// Written the way a merchant pastes a menu at onboarding; the parser reads allergens, diet and
+// spice from the descriptions, as it does for a real merchant (who then reviews them).
+import { parseMenuText } from "../../shared/menuParser";
+import { menuNow, type Clock, type PriceRule, type TimedMenu } from "../../shared/schedule";
+import type { Menu, MenuItem } from "../../shared/types";
+import type { AssistantContext } from "./local";
 
 export interface DemoMenu {
   id: string;
@@ -138,3 +142,63 @@ Oolong Tea - RM5.00 - iced oolong tea, free refill (vegan) | 乌龙茶
     rule("skewer", "Skewer Tuesday RM2 off every skewer", "串烧星期二每串减RM2", "amount", 200, ["Skewers"], [2], "17:00", "23:00"),
   ],
 };
+
+export const DEMO_MENUS = [KOPI_KAKI, SAKE_SMOKE];
+
+/** The merchant's menu as the app stores it: categories, dishes, timed menus and price rules. */
+export function toMenu(d: DemoMenu): Menu {
+  const zh = new Map<string, string>();
+  const text = d.text
+    .split("\n")
+    .map((line) => {
+      const [main, cn] = line.split(" | ");
+      if (cn) zh.set(main.replace(/^★\s*/, "").split(" - ")[0].trim(), cn.trim());
+      return main;
+    })
+    .join("\n");
+  const parsed = parseMenuText(text);
+  const cats = parsed.categories.map((name, n) => ({ id: `cat_${n}`, name, sort: n }));
+  const catId = new Map(cats.map((c) => [c.name.toLowerCase(), c.id]));
+  const items: MenuItem[] = parsed.items.map((p, n) => {
+    const menuId = Object.entries(d.menuOf).find(([c]) => c.toLowerCase() === p.category.toLowerCase())?.[1];
+    return {
+      id: `${d.id}-${n + 1}`,
+      categoryId: catId.get(p.category.toLowerCase())!,
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      imageUrl: null,
+      allergens: p.allergens,
+      dietary: p.dietary,
+      spiceLevel: p.spiceLevel,
+      story: "",
+      isSignature: p.isSignature,
+      tags: [],
+      station: p.station,
+      modifiers: [],
+      active: true,
+      sort: n,
+      menuIds: menuId ? [menuId] : [],
+      translations: zh.has(p.name) ? { zh: { name: zh.get(p.name)! } } : undefined,
+    } as MenuItem;
+  });
+  const rules = d.rules.map((r) => ({ ...r, categories: r.categories.map((c) => catId.get(c.toLowerCase()) ?? c) }));
+  return { language: "en", version: 1, categories: cats, items, menus: d.menus, rules };
+}
+
+/** The assistant context at a moment, as server/ai/index.ts builds it from the database. */
+export function contextAt(d: DemoMenu, clock: Clock): AssistantContext {
+  const m = menuNow(toMenu(d), "br_main", clock);
+  const catName = new Map(m.categories.map((c) => [c.id, c.name]));
+  return {
+    restaurant: { name: d.name, cuisine: d.cuisine, story: d.story, description: "" },
+    branchName: "Main",
+    currency: "MYR",
+    menuLanguage: "en",
+    now: m.now,
+    menus: m.menus,
+    rules: m.rules,
+    clock,
+    items: m.items.map((i) => ({ ...i, category: catName.get(i.categoryId), popularity: 0 })),
+  } as AssistantContext;
+}

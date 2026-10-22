@@ -4,73 +4,12 @@
 //
 //   npx tsx demo/brain/run.ts            writes demo/brain/out/transcripts.json and prints a summary
 import { mkdirSync, writeFileSync } from "node:fs";
-import { parseMenuText } from "../../src/shared/menuParser";
-import { menuNow, type Clock } from "../../src/shared/schedule";
-import type { Menu, MenuItem } from "../../src/shared/types";
-import type { AssistantContext } from "../../src/server/ai/local";
+import type { Clock } from "../../src/shared/schedule";
 import { answerGuest } from "../../src/server/ai/brain";
 import { catalog, catalogKey, GUIDE, now } from "../../src/server/ai/menuInput";
-import { KOPI_KAKI, SAKE_SMOKE, type DemoMenu } from "./menus";
+import { contextAt, KOPI_KAKI, SAKE_SMOKE, type DemoMenu } from "../../src/server/ai/demoMenus";
 
 const DIR = new URL(".", import.meta.url).pathname;
-
-/** The merchant's menu as the app stores it: categories, dishes, timed menus and price rules. */
-export function toMenu(d: DemoMenu): Menu {
-  const zh = new Map<string, string>();
-  const text = d.text
-    .split("\n")
-    .map((line) => {
-      const [main, cn] = line.split(" | ");
-      if (cn) zh.set(main.replace(/^★\s*/, "").split(" - ")[0].trim(), cn.trim());
-      return main;
-    })
-    .join("\n");
-  const parsed = parseMenuText(text);
-  const cats = parsed.categories.map((name, n) => ({ id: `cat_${n}`, name, sort: n }));
-  const catId = new Map(cats.map((c) => [c.name.toLowerCase(), c.id]));
-  const items: MenuItem[] = parsed.items.map((p, n) => {
-    const menuId = Object.entries(d.menuOf).find(([c]) => c.toLowerCase() === p.category.toLowerCase())?.[1];
-    return {
-      id: `${d.id}-${n + 1}`,
-      categoryId: catId.get(p.category.toLowerCase())!,
-      name: p.name,
-      description: p.description,
-      price: p.price,
-      imageUrl: null,
-      allergens: p.allergens,
-      dietary: p.dietary,
-      spiceLevel: p.spiceLevel,
-      story: "",
-      isSignature: p.isSignature,
-      tags: [],
-      station: p.station,
-      modifiers: [],
-      active: true,
-      sort: n,
-      menuIds: menuId ? [menuId] : [],
-      translations: zh.has(p.name) ? { zh: { name: zh.get(p.name)! } } : undefined,
-    } as MenuItem;
-  });
-  const rules = d.rules.map((r) => ({ ...r, categories: r.categories.map((c) => catId.get(c.toLowerCase()) ?? c) }));
-  return { language: "en", version: 1, categories: cats, items, menus: d.menus, rules };
-}
-
-/** The assistant context at a moment, as server/ai/index.ts builds it from the database. */
-export function contextAt(d: DemoMenu, clock: Clock): AssistantContext {
-  const m = menuNow(toMenu(d), "br_main", clock);
-  const catName = new Map(m.categories.map((c) => [c.id, c.name]));
-  return {
-    restaurant: { name: d.name, cuisine: d.cuisine, story: d.story, description: "" },
-    branchName: "Main",
-    currency: "MYR",
-    menuLanguage: "en",
-    now: m.now,
-    menus: m.menus,
-    rules: m.rules,
-    clock,
-    items: m.items.map((i) => ({ ...i, category: catName.get(i.categoryId), popularity: 0 })),
-  } as AssistantContext;
-}
 
 const at = (weekday: number, hhmm: string, date: string): Clock => ({ weekday, minutes: Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3)), date });
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];

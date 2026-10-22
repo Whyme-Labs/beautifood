@@ -12,8 +12,7 @@ import { MENU_TOOLS, runTool } from "../../src/server/ai/claude";
 import type { AssistantContext } from "../../src/server/ai/local";
 import { catalog, catalogKey, GUIDE, now } from "../../src/server/ai/menuInput";
 import type { Clock } from "../../src/shared/schedule";
-import { contextAt } from "./run";
-import { KOPI_KAKI, SAKE_SMOKE } from "./menus";
+import { contextAt, KOPI_KAKI, SAKE_SMOKE } from "../../src/server/ai/demoMenus";
 
 export const tokens = (s: string) => {
   const cjk = (s.match(/[　-鿿＀-￯]/g) ?? []).length;
