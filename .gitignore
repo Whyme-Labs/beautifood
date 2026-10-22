@@ -30,3 +30,4 @@ crates/core/target/
 
 # Agents' isolated worktrees
 /.claude/worktrees/
+/devpost/qloo-submission.md
