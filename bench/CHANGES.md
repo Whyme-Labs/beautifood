@@ -140,3 +140,19 @@ times, so its next use should be as the reference for a v4 that replaces it.
 - Frozen and committed before any engine was scored on it. It replaces v3 as the held-out
   measure; v3 becomes dev.
 - Fingerprints: cases `81b84ff0a71cb6a1` (495), menus and gold `098e66d187f61051` (8 files).
+
+## First scores on v4 (once each, 2026-10-24)
+
+| | a3f4a42 (deployed this morning) | 0f9cf8b |
+|---|---|---|
+| assistant, gold data | 86.7%, 4 unsafe | 88.7%, 4 unsafe |
+| assistant, parser data | 85.3%, 4 unsafe | 87.3%, 4 unsafe |
+| budget questions (51) | 62.7% | 82.4% |
+| combined constraints (27) | 66.7% | 88.9% |
+| Chinese questions | 74.5% | 76.5% |
+| parser: missed allergens | 21 of 138 dishes' (recall 91%) | same parser; 5 of the 21 suggested to the merchant |
+
+The order planner carries over to new menus; the Chinese dictionary only a little (most v4
+Chinese questions name dishes the menus do translate, or ask in ways it doesn't cover). The 4
+unsafe answers (allergy and diet questions on arab-mandi and padang-nasi) are in both versions,
+so none is new; they stay unread until a v5 replaces v4.
