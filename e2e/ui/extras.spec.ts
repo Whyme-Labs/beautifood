@@ -264,3 +264,42 @@ test.describe("menu brain lab (browser)", () => {
     }
   });
 });
+
+test.describe("seasons and promotions (browser)", () => {
+  test("an owner gives a happy hour dates: it waits for its first day, and All year clears them", async ({ page }) => {
+    const s = await seed();
+    await open(page, "/m/login");
+    await page.getByLabel("Email").fill(s.ownerEmail);
+    await page.getByLabel("Password").fill("password-123456");
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.waitForURL(/\/m$/);
+    await open(page, "/m/menu");
+    await page.getByTestId("new-price-rule").click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByLabel("Name").fill("Raya promo");
+    // two weekly times, one set of dates for both
+    await dialog.getByRole("button", { name: "Add another time" }).click();
+    await dialog.getByTestId("timed-start").fill("2099-03-20");
+    await dialog.getByTestId("timed-end").fill("2099-03-01");
+    await expect(dialog.getByRole("alert")).toHaveText("The last day is before the first day.");
+    await expect(dialog.getByRole("button", { name: "Save" })).toBeDisabled();
+    await dialog.getByTestId("timed-end").fill("2099-04-20");
+    if (process.env.SHOTS) await dialog.screenshot({ path: `${process.env.SHOTS}/season-dates.png` });
+    await dialog.getByRole("button", { name: "Save" }).click();
+    const row = page.getByTestId("price-rule").filter({ hasText: "Raya promo" });
+    await expect(row).toContainText("Starts 20 Mar 2099");
+    await expect(row).toContainText("20 Mar 2099 – 20 Apr 2099");
+    await expect(row).not.toContainText("On now");
+    const saved = (await json(s.owner.get("/api/m/menu"))).rules.find((r: { name: string }) => r.name === "Raya promo");
+    expect(saved.windows).toHaveLength(2);
+    for (const w of saved.windows) expect(w).toMatchObject({ start: "2099-03-20", end: "2099-04-20" });
+
+    await row.getByRole("button", { name: "Edit" }).click();
+    await dialog.getByRole("button", { name: "All year" }).click();
+    await expect(dialog.getByTestId("timed-start")).toHaveValue("");
+    await dialog.getByRole("button", { name: "Save" }).click();
+    await expect(row).not.toContainText("Starts");
+    const cleared = (await json(s.owner.get("/api/m/menu"))).rules.find((r: { name: string }) => r.name === "Raya promo");
+    for (const w of cleared.windows) expect(w.start ?? w.end).toBeUndefined();
+  });
+});

@@ -1,12 +1,14 @@
 // Menu editor: timed menus (Breakfast 7–11 am, Lunch…) and happy hours (drinks −30%, weekdays
-// 3–6 pm). Each has weekly times in the branch's local time and the branches it runs at; a happy
-// hour also has its discount and the categories or dishes it covers.
+// 3–6 pm). Each has weekly times in the branch's local time and the branches it runs at, and may
+// run only between two dates (a season, a Raya promotion); a happy hour also has its discount and
+// the categories or dishes it covers.
 import { useEffect, useMemo, useState } from "react";
-import { Clock, Plus, Tag, X } from "lucide-react";
+import { CalendarDays, Clock, Plus, Tag, X } from "lucide-react";
 import { api } from "./api";
 import { useStaff } from "./staff";
 import { Modal, useAction } from "./components";
 import { useI18n } from "../i18n/react";
+import { localeInfo } from "../i18n/core";
 import { clockAt, clockLabel, daysLabel, isOn, weekdayNames, toMinutes, type PriceRule, type TimedMenu, type Window } from "../shared/schedule";
 import type { Menu } from "../shared/types";
 
@@ -16,17 +18,66 @@ const WEEKDAYS = [1, 2, 3, 4, 5];
 type MenuDraft = Omit<TimedMenu, "id" | "sort" | "translations"> & { id?: string };
 type RuleDraft = Omit<PriceRule, "id" | "translations"> & { id?: string };
 
-/** "Mon–Fri 7:00 am–11:00 am · Sat, Sun 8:00 am–12:00 pm" */
+/** The dates its times run between: the same for every time (as the editor sets them), or `mixed`. */
+function datesOf(ws: Window[]) {
+  const start = ws[0]?.start ?? "";
+  const end = ws[0]?.end ?? "";
+  return { start, end, mixed: ws.some((w) => (w.start ?? "") !== start || (w.end ?? "") !== end) };
+}
+
+/** Every time with these dates; an empty one is open (from the start, or with no end). */
+const withDates = (ws: Window[], start: string, end: string): Window[] =>
+  ws.map(({ start: _s, end: _e, ...w }) => ({ ...w, ...(start ? { start } : {}), ...(end ? { end } : {}) }));
+
+/** "1 Oct", or "1 Oct 2027" when it isn't this year. */
+function useDayLabel() {
+  const { locale } = useI18n();
+  const intl = localeInfo(locale).intl;
+  const year = new Date().getFullYear();
+  return (ymd: string) =>
+    new Intl.DateTimeFormat(intl, { day: "numeric", month: "short", ...(Number(ymd.slice(0, 4)) !== year ? { year: "numeric" } : {}), timeZone: "UTC" }).format(new Date(`${ymd}T12:00:00Z`));
+}
+
+/** "1 Oct – 30 Nov", "From 1 Oct", "Until 30 Nov", or "" for all year. */
+function useRangeLabel() {
+  const { t } = useI18n();
+  const day = useDayLabel();
+  return (w: Pick<Window, "start" | "end">) =>
+    w.start && w.end ? t("staff.menu.timed.range", { start: day(w.start), end: day(w.end) }) : w.start ? t("staff.menu.timed.fromDate", { date: day(w.start) }) : w.end ? t("staff.menu.timed.untilDate", { date: day(w.end) }) : "";
+}
+
+/** "Mon–Fri 7:00 am–11:00 am · Sat, Sun 8:00 am–12:00 pm", then its dates: "· 1 Oct – 30 Nov" */
 export function useWindowsLabel() {
   const { t, locale } = useI18n();
   const names = weekdayNames(locale);
-  return (ws: Window[]) => ws.map((w) => `${daysLabel(w.days, names, t("staff.menu.timed.everyDay"))} ${clockLabel(w.from, locale)}–${clockLabel(w.to, locale)}`).join(" · ");
+  const range = useRangeLabel();
+  return (ws: Window[]) => {
+    const { mixed } = datesOf(ws);
+    const times = ws.map((w) => [`${daysLabel(w.days, names, t("staff.menu.timed.everyDay"))} ${clockLabel(w.from, locale)}–${clockLabel(w.to, locale)}`, mixed ? range(w) : ""].filter(Boolean).join(", ")).join(" · ");
+    return [times, mixed ? "" : range(ws[0] ?? {})].filter(Boolean).join(" · ");
+  };
 }
+
+/** Before its first day, or past its last: "Starts 1 Oct", "Ended 30 Nov". */
+function useSeasonBadge() {
+  const { t } = useI18n();
+  const day = useDayLabel();
+  return (ws: Window[], today: string | undefined) => {
+    if (!today || !ws.length) return null;
+    if (ws.every((w) => w.start && w.start > today)) return t("staff.menu.timed.upcoming", { date: day(ws.map((w) => w.start!).sort()[0]) });
+    if (ws.every((w) => w.end && w.end < today)) return t("staff.menu.timed.ended", { date: day(ws.map((w) => w.end!).sort().at(-1)!) });
+    return null;
+  };
+}
+
+/** A time whose last day is before its first. */
+const datesBackwards = (ws: Window[]) => ws.some((w) => w.start && w.end && w.start > w.end);
 
 export function TimedMenusCard({ menu, currency, onChange }: { menu: Menu; currency: string; onChange: () => Promise<void> }) {
   const s = useStaff();
   const { t, f } = useI18n();
   const when = useWindowsLabel();
+  const season = useSeasonBadge();
   const [editMenu, setEditMenu] = useState<MenuDraft | null>(null);
   const [editRule, setEditRule] = useState<RuleDraft | null>(null);
   const clock = clockAt(Date.now(), s.branch?.config.timezone ?? "Asia/Kuala_Lumpur");
@@ -63,6 +114,7 @@ export function TimedMenusCard({ menu, currency, onChange }: { menu: Menu; curre
                 <div className="row" style={{ gap: 6 }}>
                   <b>{m.name}</b>
                   {on && <span className="badge ok">{t("staff.menu.timed.onNow")}</span>}
+                  {m.active && season(m.windows, clock.date) && <span className="badge">{season(m.windows, clock.date)}</span>}
                   {!m.active && <span className="badge">{t("staff.menu.timed.off")}</span>}
                 </div>
                 <div className="muted">{when(m.windows)}</div>
@@ -97,6 +149,7 @@ export function TimedMenusCard({ menu, currency, onChange }: { menu: Menu; curre
                     <Tag size={12} /> {r.kind === "percent" ? t("staff.menu.timed.summaryPercent", { value: r.value }) : t("staff.menu.timed.summaryAmount", { amount: f.money(r.value, currency) })}
                   </span>
                   {on && <span className="badge ok">{t("staff.menu.timed.onNow")}</span>}
+                  {r.active && season(r.windows, clock.date) && <span className="badge">{season(r.windows, clock.date)}</span>}
                   {!r.active && <span className="badge">{t("staff.menu.timed.off")}</span>}
                 </div>
                 <div className="muted">{when(r.windows)}</div>
@@ -160,6 +213,36 @@ function WindowsField({ windows, onChange }: { windows: Window[]; onChange: (w: 
   );
 }
 
+/** The first and last day it runs, for every time at once: a season or a promotion. Empty: all year. */
+function DatesField({ windows, onChange }: { windows: Window[]; onChange: (w: Window[]) => void }) {
+  const { t } = useI18n();
+  const { start, end, mixed } = datesOf(windows);
+  return (
+    <fieldset className="menu-fieldset col" data-testid="timed-dates">
+      <legend>
+        <CalendarDays size={15} strokeWidth={1.75} aria-hidden="true" /> {t("staff.menu.timed.dates")}
+      </legend>
+      <span className="hint">{t("staff.menu.timed.datesHint")}</span>
+      <div className="row nowrap" style={{ alignItems: "flex-end" }}>
+        <label>
+          {t("staff.menu.timed.startDate")}
+          <input type="date" value={start} max={end || undefined} onChange={(e) => onChange(withDates(windows, e.target.value, end))} data-testid="timed-start" />
+        </label>
+        <label>
+          {t("staff.menu.timed.endDate")}
+          <input type="date" value={end} min={start || undefined} onChange={(e) => onChange(withDates(windows, start, e.target.value))} data-testid="timed-end" />
+        </label>
+        {(start || end || mixed) && (
+          <button type="button" className="btn small ghost" onClick={() => onChange(withDates(windows, "", ""))}>
+            {t("staff.menu.timed.allYear")}
+          </button>
+        )}
+      </div>
+      {mixed && <span className="hint">{t("staff.menu.timed.datesMixed")}</span>}
+    </fieldset>
+  );
+}
+
 function BranchesField({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
   const s = useStaff();
   const { t } = useI18n();
@@ -189,7 +272,7 @@ function TimedMenuModal({ draft, onClose, onDone }: { draft: MenuDraft; onClose:
   const { run, pending } = useAction();
   const [m, setM] = useState(draft);
   useEffect(() => setM(draft), [draft]);
-  const ok = m.windows.every((w) => w.days.length);
+  const ok = m.windows.every((w) => w.days.length) && !datesBackwards(m.windows);
   const save = () =>
     run(async () => {
       await api("/api/m/menu/timed", { body: { id: m.id, name: m.name, windows: m.windows, branches: m.branches.length ? m.branches : ["*"], active: m.active } });
@@ -203,11 +286,12 @@ function TimedMenuModal({ draft, onClose, onDone }: { draft: MenuDraft; onClose:
           <input value={m.name} maxLength={40} required placeholder={t("staff.menu.timed.menuNamePlaceholder")} onChange={(e) => setM({ ...m, name: e.target.value })} />
         </label>
         <WindowsField windows={m.windows} onChange={(windows) => setM({ ...m, windows })} />
+        <DatesField windows={m.windows} onChange={(windows) => setM({ ...m, windows })} />
         <BranchesField value={m.branches} onChange={(branches) => setM({ ...m, branches })} />
         <label className="inline">
           <input type="checkbox" checked={m.active} onChange={(e) => setM({ ...m, active: e.target.checked })} /> {t("staff.menu.timed.active")}
         </label>
-        {!ok && <p className="hint" role="alert">{t("staff.menu.timed.needsDay")}</p>}
+        {!ok && <p className="hint" role="alert">{t(datesBackwards(m.windows) ? "staff.menu.timed.datesOrder" : "staff.menu.timed.needsDay")}</p>}
         <div className="row between">
           <button className="btn primary" disabled={pending || !ok}>
             {t("common.save")}
@@ -228,7 +312,7 @@ function PriceRuleModal({ draft, menu, currency, onClose, onDone }: { draft: Rul
   const { run, pending } = useAction();
   const [r, setR] = useState(draft);
   useEffect(() => setR(draft), [draft]);
-  const ok = r.windows.every((w) => w.days.length) && r.value > 0 && (r.kind !== "percent" || r.value < 100);
+  const ok = r.windows.every((w) => w.days.length) && !datesBackwards(r.windows) && r.value > 0 && (r.kind !== "percent" || r.value < 100);
   const toggle = (list: string[], id: string) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
   const dishes = useMemo(() => menu.items.filter((i) => i.active), [menu]);
   const save = () =>
@@ -292,11 +376,12 @@ function PriceRuleModal({ draft, menu, currency, onClose, onDone }: { draft: Rul
           </details>
         </fieldset>
         <WindowsField windows={r.windows} onChange={(windows) => setR({ ...r, windows })} />
+        <DatesField windows={r.windows} onChange={(windows) => setR({ ...r, windows })} />
         <BranchesField value={r.branches} onChange={(branches) => setR({ ...r, branches })} />
         <label className="inline">
           <input type="checkbox" checked={r.active} onChange={(e) => setR({ ...r, active: e.target.checked })} /> {t("staff.menu.timed.active")}
         </label>
-        {!ok && <p className="hint" role="alert">{t("staff.menu.timed.needsDay")}</p>}
+        {!ok && <p className="hint" role="alert">{t(datesBackwards(r.windows) ? "staff.menu.timed.datesOrder" : r.windows.every((w) => w.days.length) ? "staff.menu.timed.needsDiscount" : "staff.menu.timed.needsDay")}</p>}
         <div className="row between">
           <button className="btn primary" disabled={pending || !ok}>
             {t("common.save")}
