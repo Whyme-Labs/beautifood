@@ -169,3 +169,20 @@ describe("RBAC", () => {
     expect(canGrant({ role: "rl_mgr", perms: ["staff.manage", "queue.operate", "order.create", "booking.manage", "kds.operate"] }, { role: "waiter" })).toBe(true);
   });
 });
+
+describe("what a dish usually has that its text doesn't say", () => {
+  it("suggests it for the merchant to confirm, with the reason", async () => {
+    const { likelyAllergens } = await import("../../src/shared/dishKnowledge");
+    const pho = likelyAllergens("Pho Bo", "beef broth, rice noodles, basil");
+    expect(pho.map((l) => l.allergen)).toEqual(["fish"]);
+    expect(pho[0].because.en).toMatch(/fish sauce/);
+    expect(likelyAllergens("Kangkung Sambal", "water spinach with chilli").map((l) => l.allergen)).toContain("crustaceans");
+  });
+  it("not what the text already says, rules out, or a vegan dish can't have", async () => {
+    const { likelyAllergens } = await import("../../src/shared/dishKnowledge");
+    expect(likelyAllergens("Vegan Pho", "mushroom broth, rice noodles (vegan)")).toEqual([]);
+    expect(likelyAllergens("Pho Ga", "chicken broth with fish sauce")).toEqual([]);
+    expect(likelyAllergens("Tom Yum Soup", "no fish sauce, no shrimp paste").map((l) => l.allergen)).toEqual([]);
+    expect(likelyAllergens("Sesame Glutinous Rice Balls", "glutinous rice dumplings with black sesame")).toEqual([]);
+  });
+});

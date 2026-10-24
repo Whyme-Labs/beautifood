@@ -7,6 +7,7 @@ import { useStaff } from "../../src/ui/staff";
 import { Allergens, Money, useAction } from "../../src/ui/components";
 import { ALLERGENS } from "../../src/shared/allergens";
 import { useI18n } from "../../src/i18n/react";
+import type { MessageKey } from "../../src/i18n/core";
 
 interface Draft {
   engine: string;
@@ -15,6 +16,7 @@ interface Draft {
   items: { category: string; name: string; price: number; description?: string; story?: string; allergens?: string[]; dietary?: string[]; spiceLevel?: number; isSignature?: boolean; station?: string }[];
   tables: { label: string; zone?: string; seatsMin: number; seatsMax: number; mergeGroup?: string | null; splitConfig?: { suffix: string; seats: number }[] | null }[];
   warnings: string[];
+  likely?: { allergen: string; because: { en: string; zh: string } }[][];
   suggestions: string[];
 }
 
@@ -26,7 +28,7 @@ const EXAMPLE = {
 
 export default function Setup() {
   const s = useStaff();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { run, pending } = useAction();
   const [create, setCreate] = useState(() => ({ name: "", cuisine: "", branchName: t("staff.setup.create.branchDefault"), address: "", currency: "MYR", timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kuala_Lumpur" }));
   const [about, setAbout] = useState("");
@@ -204,6 +206,17 @@ export default function Setup() {
                             <Allergens list={it.allergens ?? []} />
                             {!it.allergens?.length && <span className="muted">{t("staff.setup.none")}</span>}
                           </summary>
+                          {/* what this kind of dish usually has that its text doesn't say: the owner decides */}
+                          {(draft.likely?.[i] ?? []).filter((l) => !it.allergens?.includes(l.allergen)).map((l) => (
+                            <div key={l.allergen} className="row nowrap hint" style={{ gap: 6, marginTop: 6 }} data-testid="likely-allergen">
+                              <span>
+                                {t("staff.setup.likely", { allergen: t(`allergens.${l.allergen}` as MessageKey), because: locale === "zh" ? l.because.zh : l.because.en })}
+                              </span>
+                              <button type="button" className="btn small" onClick={() => patchItem(i, { allergens: [...(it.allergens ?? []), l.allergen] })}>
+                                {t("staff.setup.likelyAdd")}
+                              </button>
+                            </div>
+                          ))}
                           <div className="row" style={{ marginTop: 6 }}>
                             {ALLERGENS.map((a) => (
                               <label key={a} className="inline" style={{ fontSize: 12 }}>

@@ -31,13 +31,20 @@ test.describe("merchant console (browser)", () => {
     await page.getByLabel("First branch").fill("Damansara");
     await page.getByRole("button", { name: "Create restaurant" }).click();
     await expect(page.getByRole("heading", { name: /AI setup/ })).toBeVisible();
-    await page.getByTestId("menu-text").fill("NOODLES\n★ Wonton Mee - RM12.90 - egg noodles, char siu, prawn wontons\nPan Mee 11.50\nDRINKS\nLime Juice - 5.00");
+    await page.getByTestId("menu-text").fill("NOODLES\n★ Wonton Mee - RM12.90 - egg noodles, char siu, prawn wontons\nPan Mee 11.50\nPho Bo - RM15.90 - beef broth, rice noodles, basil\nDRINKS\nLime Juice - 5.00");
     await page.getByTestId("floor-text").fill("4 two-seaters and 2 tables of 4");
     await page.getByRole("button", { name: "Generate my setup" }).click();
-    await expect(page.getByTestId("draft-item")).toHaveCount(3);
+    await expect(page.getByTestId("draft-item")).toHaveCount(4);
     await expect(page.getByTestId("draft-table")).toHaveCount(6);
+    // pho broth is seasoned with fish sauce, though the line doesn't say: suggested, and added by the owner
+    const pho = page.getByTestId("draft-item").filter({ has: page.locator('input[value="Pho Bo"]') });
+    await pho.locator("summary").click();
+    await expect(pho.getByTestId("likely-allergen")).toContainText("Often contains Fish");
+    await pho.getByTestId("likely-allergen").getByRole("button", { name: "Add" }).click();
+    await expect(pho.getByTestId("likely-allergen")).toHaveCount(0);
+    await expect(pho.locator("summary")).toContainText(/Fish/);
     await page.getByTestId("apply-draft").click();
-    await expect(page.getByTestId("setup-done")).toContainText("Applied 3 dishes and 6 tables");
+    await expect(page.getByTestId("setup-done")).toContainText("Applied 4 dishes and 6 tables");
     await open(page, "/m");
     await expect(page.getByTestId("onboarding")).toBeVisible();
   });

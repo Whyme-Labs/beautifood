@@ -1,6 +1,7 @@
 // AI entry points used by routes and the MCP server. Each picks Claude when
 // configured and falls back to the deterministic local engine otherwise (or on error).
 import { inferAllergens, inferDietary } from "../../shared/allergens";
+import { likelyAllergens, type Likely } from "../../shared/dishKnowledge";
 import { localizeItem } from "../../shared/menuI18n";
 import { formatMoney } from "../../shared/format";
 import { parseFloorText, parseMenuText, stationFor } from "../../shared/menuParser";
@@ -158,6 +159,8 @@ export interface OnboardingDraft {
   tables: TableInput[];
   warnings: string[];
   suggestions: string[];
+  /** Per item (same order): allergens it likely has that its text doesn't say, for the owner to confirm. */
+  likely: Likely[][];
 }
 
 /**
@@ -239,7 +242,11 @@ function finalizeDraft(engine: OnboardingDraft["engine"], cuisine: string, story
     suggestions.push(`${tables.length} tables, ${seats} seats. ${big ? "" : "You have no tables for 6+; mark tables that can be pushed together so large parties can still be seated."}`.trim());
     if (tables.length >= 12) suggestions.push("With this many tables, the Smart strategy (wait time + seat fit + merges) usually clears the queue fastest.");
   } else suggestions.push("Describe your floor (e.g. \"8 two-seaters, 6 tables of 4 that can be pushed together\") and we'll lay out tables for you.");
-  return { engine, cuisine, story, items: items.slice(0, 300), tables: tables.slice(0, 200), warnings, suggestions };
+  const kept = items.slice(0, 300);
+  const likely = kept.map((i) => likelyAllergens(i.name, i.description ?? "").filter((l) => !(i.allergens ?? []).includes(l.allergen)));
+  const flagged = likely.filter((l) => l.length).length;
+  if (flagged) suggestions.push(`${flagged} dishes often have an allergen their description doesn't mention (fish sauce in a broth, belacan in sambal). Each is marked "often contains" for you to confirm.`);
+  return { engine, cuisine, story, items: kept, tables: tables.slice(0, 200), warnings, suggestions, likely };
 }
 
 function draftStory(name: string, description: string, signature: boolean, restaurant: string): string {
