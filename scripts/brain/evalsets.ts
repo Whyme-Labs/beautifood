@@ -29,7 +29,7 @@ export function protectedQuestions(): Set<string> {
     ...HELD_OUT.map(([q]) => asRead(hawker, q)),
     ...FINAL_CASES.flatMap((c) => [c.question, ...(c.before ?? []).map((b) => b.question)]).map((q) => asRead(cafeDishes, q)),
     // the benchmark, both splits (bench/): never trained on either
-    ...(existsSync(new URL("../../bench/cases", import.meta.url)) ? [...loadCases("all"), ...loadCases("all", "heldout"), ...loadCases("all", "v3")] : []).flatMap((c) => {
+    ...(existsSync(new URL("../../bench/cases", import.meta.url)) ? [...loadCases("all"), ...loadCases("all", "heldout"), ...loadCases("all", "v3"), ...loadCases("all", "v4")] : []).flatMap((c) => {
       const items = loadMenu(c.menu).items as unknown as Dish[];
       return [c.question, ...(c.before ?? []).map((b) => b.user)].map((q) => asRead(items, q));
     }),

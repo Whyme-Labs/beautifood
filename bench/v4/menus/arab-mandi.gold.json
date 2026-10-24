@@ -1,0 +1,373 @@
+{
+  "Lamb Mandi": {
+    "allergens": [
+      "tree_nuts",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Roasted almonds = tree nuts; yoghurt = milk. Basmati rice, no wheat. Described mild."
+  },
+  "Chicken Mandi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ghee = milk (hidden). Rice, no wheat. Described mild."
+  },
+  "Lamb Mansaf": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Jameed = milk; shrak flatbread = wheat; almonds = tree nuts. Not spicy."
+  },
+  "Fish Zurbian": {
+    "allergens": [
+      "fish",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Seabass; yoghurt marinade = milk; cashews = tree nuts. Spicy."
+  },
+  "Fahsa": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Malawah = wheat flatbread; ghee = milk. Fenugreek is not an EU-14 allergen. Very spicy."
+  },
+  "Shakshuka": {
+    "allergens": [
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Eggs; Arabic bread = wheat. Vegetarian, not vegan. Mild."
+  },
+  "Vegetable Saloona": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "No listed allergens: vegetable stock, rice, no ghee. Mild."
+  },
+  "Hummus": {
+    "allergens": [
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tahini = sesame; Arabic bread = wheat (hidden in the serving)."
+  },
+  "Hummus Lahmeh": {
+    "allergens": [
+      "sesame",
+      "gluten",
+      "tree_nuts",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but has minced lamb. Tahini, bread, almonds, ghee."
+  },
+  "Mutabal": {
+    "allergens": [
+      "sesame",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tahini, yoghurt, bread. Vegetarian, not vegan."
+  },
+  "Muhammara": {
+    "allergens": [
+      "tree_nuts",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Walnuts = tree nuts; breadcrumbs and bread = wheat. No sesame. Spicy."
+  },
+  "Falafel": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated egg-free and gluten-free; served without bread. Tahini sauce = sesame."
+  },
+  "Fattoush": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pita chips = wheat."
+  },
+  "Lentil Soup": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but uses chicken stock. Celery."
+  },
+  "Meat Sambousek": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat pastry; butter = milk."
+  },
+  "Cheese Sambousek": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat pastry; cheese; egg wash."
+  },
+  "Arabic Bread": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat."
+  },
+  "Chicken Shawarma Wrap": {
+    "allergens": [
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Toum here contains egg white (hidden); saj bread = wheat."
+  },
+  "Beef Shawarma Plate": {
+    "allergens": [
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tahini = sesame; bread = wheat. No egg (no toum)."
+  },
+  "Falafel Wrap": {
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Bread = wheat; hummus/tahini = sesame."
+  },
+  "Shish Tawook": {
+    "allergens": [
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt marinade = milk; toum = egg. No bread listed, so no gluten."
+  },
+  "Lamb Kofta": {
+    "allergens": [
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tahini; bread. Spicy."
+  },
+  "Mixed Grill Platter": {
+    "allergens": [
+      "milk",
+      "egg",
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Tawook yoghurt = milk; toum = egg; hummus = sesame; bread = wheat. Kofta is 'made mild' for the platter: mild = 1, as for every other dish described mild."
+  },
+  "Kunafa": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Kataifi = wheat; cheese, butter; pistachio."
+  },
+  "Baklava": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Filo = wheat; butter; walnut and pistachio. Honey: vegetarian, not vegan."
+  },
+  "Umm Ali": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Pastry = wheat; milk, cream; almonds. Coconut is not a tree nut here."
+  },
+  "Mahalabia": {
+    "allergens": [
+      "milk",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk; peanuts (not pistachio). Cornflour, gluten-free."
+  },
+  "Dates Platter": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Dates only."
+  },
+  "Adeni Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk. Contains caffeine (tea)."
+  },
+  "Arabic Coffee": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No milk. Caffeine."
+  },
+  "Sulaimani Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No milk. Caffeine."
+  },
+  "Mint Lemonade": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Caffeine-free."
+  },
+  "Laban": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt. Caffeine-free."
+  },
+  "Avocado Juice": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk; almonds. Caffeine-free."
+  },
+  "Hibiscus Karkade": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan. Hibiscus is caffeine-free."
+  }
+}

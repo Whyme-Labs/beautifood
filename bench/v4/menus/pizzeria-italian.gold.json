@@ -1,0 +1,390 @@
+{
+  "Bruschetta al Pomodoro": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sourdough = wheat."
+  },
+  "Garlic Bread": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Baguette = wheat; butter = milk."
+  },
+  "Calamari Fritti": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Squid; wheat flour; aioli = egg emulsion."
+  },
+  "Caprese Salad": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Mozzarella. No bread, no balsamic."
+  },
+  "Minestrone": {
+    "allergens": [
+      "gluten",
+      "celery",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but uses chicken stock. Ditalini = wheat pasta; celery; parmesan."
+  },
+  "Arancini": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Breadcrumbs = wheat; egg coating; mozzarella. No wine, so halal."
+  },
+  "Spicy Calabrian Wings": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "No allergens listed (no flour stated). Very spicy."
+  },
+  "Margherita": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella."
+  },
+  "Diavola": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Beef pepperoni (halal). Spicy."
+  },
+  "Quattro Formaggi": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Hidden walnuts = tree nuts. Cheese counted as vegetarian (merchant tag; rennet not stated)."
+  },
+  "Prosciutto e Rucola": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Parma ham = pork: not halal."
+  },
+  "Pollo Pesto": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cashew pesto = tree nuts; cheese."
+  },
+  "Funghi e Tartufo": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella."
+  },
+  "Marinara Vegana": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough only."
+  },
+  "Frutti di Mare": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Prawns = crustaceans; squid and mussels = molluscs. No cheese. A little chilli = mild."
+  },
+  "Rendang Beef Pizza": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat dough; mozzarella. Kerisik is coconut. Spicy."
+  },
+  "Spaghetti Carbonara": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat pasta; egg yolk; pecorino. Beef bacon, so halal."
+  },
+  "Aglio Olio": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat pasta. Spicy."
+  },
+  "Aglio Olio Gamberi": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns; hidden anchovy = fish. Spicy."
+  },
+  "Beef Lasagna": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg pasta; béchamel and cheese = milk (béchamel flour = wheat); celery in the ragù. No wine."
+  },
+  "Penne Arrabbiata": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 3,
+    "note": "Wheat pasta. Very spicy."
+  },
+  "Penne alla Vodka": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Vodka: not halal. Cream and parmesan. Chilli in the sauce with no heat descriptor: read as mild (1)."
+  },
+  "Risotto ai Funghi": {
+    "allergens": [
+      "milk",
+      "sulphites"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "White wine = sulphites, not halal. Butter and parmesan. Rice, no gluten."
+  },
+  "Seafood Risotto": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawns; clams and squid; fish stock; butter. No wine, halal."
+  },
+  "Tiramisu": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Savoiardi = wheat + egg; mascarpone; coffee liqueur: not halal."
+  },
+  "Panna Cotta": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but beef gelatine: not vegetarian. Halal gelatine."
+  },
+  "Pistachio Gelato": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Pistachio = tree nuts; milk."
+  },
+  "Sorbetto al Limone": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Lemon, sugar, water."
+  },
+  "Nutella Calzone": {
+    "allergens": [
+      "gluten",
+      "tree_nuts",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dough = wheat; Nutella = hazelnuts, skimmed milk powder, soy lecithin."
+  },
+  "Espresso": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coffee only."
+  },
+  "Cappuccino": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk."
+  },
+  "Caffe Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk."
+  },
+  "Iced Mocha": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk."
+  },
+  "Blood Orange Italian Soda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Syrup and soda."
+  },
+  "Raspberry Cream Soda": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream float = milk."
+  },
+  "Peroni Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol: not halal; barley malt = gluten."
+  }
+}

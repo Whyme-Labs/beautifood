@@ -2,14 +2,15 @@
 // benchmark's ground truth (bench/menus/<menu>.gold.json). A missed allergen is the dangerous kind
 // of error (recall); a false one only hides a dish (precision).
 //
-//   npx tsx bench/menu-data.ts [--set v3] [--dishes]
+//   npx tsx bench/menu-data.ts [--set v3|v4] [--dishes]
 import { readdirSync } from "node:fs";
 import { loadGold, loadMenu } from "./run";
 import { likelyAllergens } from "../src/shared/dishKnowledge";
 
 const DIR = new URL(".", import.meta.url).pathname;
 // v1/v2's menus, or v3's (held out: read the totals, not the dishes)
-const menuDir = process.argv.includes("--set") && process.argv[process.argv.indexOf("--set") + 1] === "v3" ? `${DIR}v3/menus` : `${DIR}menus`;
+const held = process.argv.includes("--set") ? process.argv[process.argv.indexOf("--set") + 1] : "";
+const menuDir = /^v\d$/.test(held) ? `${DIR}${held}/menus` : `${DIR}menus`;
 const menus = readdirSync(menuDir).filter((f) => f.endsWith(".gold.json")).map((f) => f.replace(".gold.json", ""));
 const per = new Map<string, { tp: number; fp: number; fn: number }>();
 const misses: string[] = [];

@@ -1,0 +1,371 @@
+{
+  "Braised Pork Rice": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sulphites",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Soy sauce = soy + wheat; Shaoxing = sulphites + gluten, not halal; pork; braised egg."
+  },
+  "Taiwanese Beef Noodle Soup": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Doubanjiang = soy + gluten; wheat noodles; Shaoxing = sulphites, not halal. Spicy. Suan cai = pickled greens, not mustard seed."
+  },
+  "Clear Broth Beef Noodle Soup": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat noodles only. No soy sauce, no wine. Halal by ingredients."
+  },
+  "Oyster Mee Sua": {
+    "allergens": [
+      "gluten",
+      "molluscs",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Mee sua = wheat; oysters; bonito = fish; pork intestine."
+  },
+  "Three Cup Chicken Rice": {
+    "allergens": [
+      "sesame",
+      "soy",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Sesame oil; soy sauce; Shaoxing wine (not halal). Mild."
+  },
+  "Mushroom Lu Rou Fan": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu, soy sauce; braised egg so not vegan."
+  },
+  "Zha Jiang Noodles": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat noodles; soybean paste; pork."
+  },
+  "Sesame Cold Noodles": {
+    "allergens": [
+      "gluten",
+      "sesame",
+      "peanuts",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat, sesame paste, peanut butter, soy sauce. Mildly spicy."
+  },
+  "Popcorn Chicken": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Soy sauce; Shaoxing wine (not halal). Sweet potato starch is gluten-free but soy sauce is not."
+  },
+  "Giant Fried Chicken Cutlet": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy sauce = soy + wheat. No wine listed."
+  },
+  "Scallion Pancake": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Sounds vegetarian but made with pork lard. Wheat; egg; soy paste."
+  },
+  "Pork Belly Gua Bao": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Milk bun = wheat + milk; soy; peanut powder; pork."
+  },
+  "Fried Chicken Gua Bao": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "soy",
+      "egg",
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk bun; soy; mayo = egg; peanuts."
+  },
+  "Mushroom Gua Bao": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat bun without milk; soy; peanut powder. King oyster mushroom is not a mollusc."
+  },
+  "Stinky Tofu": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Sounds vegetarian but the brine has dried shrimp = crustaceans. Tofu, soy sauce. Spicy."
+  },
+  "Oyster Omelette": {
+    "allergens": [
+      "molluscs",
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oysters; egg; miso and soy sauce = soy (+ wheat in soy sauce)."
+  },
+  "Spicy Wontons in Chilli Oil": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 3,
+    "note": "Wheat wrapper; prawn; soy sauce; sesame seeds; pork. Very spicy."
+  },
+  "Taiwanese Sausage": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork and liquor, not halal. Soy sauce. Kaoliang (sorghum) adds no gluten or sulphites by the rules."
+  },
+  "Tea Egg": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg; soy sauce."
+  },
+  "Sweet Potato Balls": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No listed allergens."
+  },
+  "Crispy Squid": {
+    "allergens": [
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Squid = molluscs. Sweet potato starch, no wheat, no soy."
+  },
+  "Mango Shaved Ice": {
+    "allergens": [
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk ice, condensed milk; ice cream with egg."
+  },
+  "Taro Ball Shaved Ice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No listed allergens. Taro/tapioca balls, no wheat."
+  },
+  "Peanut Ice Cream Roll": {
+    "allergens": [
+      "milk",
+      "peanuts",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ice cream = milk; peanut brittle; wheat crepe. No egg listed."
+  },
+  "Pineapple Cake": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat pastry; butter, milk powder; egg."
+  },
+  "Douhua": {
+    "allergens": [
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soybean; peanuts."
+  },
+  "Brown Sugar Pearl Milk": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk. No caffeine."
+  },
+  "Classic Pearl Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "'Non-dairy' creamer contains milk protein (casein) = milk. Not vegan. Caffeine."
+  },
+  "Winter Melon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Winter melon infusion, no tea leaves: caffeine-free."
+  },
+  "Taro Oat Milk Tea": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oats = gluten (EU cereal rule). Dairy-free. Caffeine (green tea)."
+  },
+  "Passion Fruit Green Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan. Caffeine."
+  },
+  "Soy Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy. Caffeine-free."
+  },
+  "Taiwan Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer = barley = gluten; alcohol, not halal. No animal products."
+  }
+}

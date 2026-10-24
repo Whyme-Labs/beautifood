@@ -128,3 +128,15 @@ unsafe v3 answer is not touched by either version; it waits for a set that repla
 Between 47fd11d and a3f4a42 the engine was iterated on v1 dev, v2 (now dev) and six new dev
 menus only. The one unsafe v3 answer is still there and still unread; v3 has now been scored three
 times, so its next use should be as the reference for a v4 that replaces it.
+
+## v4 held-out set (bench/v4/): 2026-10-24
+
+- 495 cases, all `test`, on 4 new menus with gold readings of all 138 dishes (`v4/menus/`:
+  arab-mandi, taiwanese-street, padang-nasi, pizzeria-italian). Written by two new blind authors
+  who read only the README, the schema and the v2 and v3 reviews, never the engine or the other
+  sets; only some dishes have Chinese names, as on real menus. It covers composing an order and
+  totals as well as everything v3 did.
+- Reviewed blind (`v4/REVIEW.md`): 1 gold entry and 10 cases changed, none removed.
+- Frozen and committed before any engine was scored on it. It replaces v3 as the held-out
+  measure; v3 becomes dev.
+- Fingerprints: cases `81b84ff0a71cb6a1` (495), menus and gold `098e66d187f61051` (8 files).
