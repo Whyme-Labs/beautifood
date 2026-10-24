@@ -62,13 +62,14 @@
   "Lo Mai Kai": {
     "allergens": [
       "crustaceans",
-      "molluscs"
+      "molluscs",
+      "gluten"
     ],
     "vegetarian": false,
     "vegan": false,
     "halal": false,
     "spice": 0,
-    "note": "Pork Chinese sausage = not halal; dried shrimp = crustaceans; oyster sauce = molluscs. Glutinous rice has no gluten."
+    "note": "Pork Chinese sausage = not halal; dried shrimp = crustaceans; oyster sauce = molluscs. Glutinous rice has no gluten. Oyster sauce = molluscs + gluten (most commercial oyster sauce contains wheat; v3 rule g)."
   },
   "Vegetarian Crystal Dumplings": {
     "allergens": [
@@ -230,13 +231,14 @@
   },
   "Kai Lan with Garlic": {
     "allergens": [
-      "molluscs"
+      "molluscs",
+      "gluten"
     ],
     "vegetarian": false,
     "vegan": false,
     "halal": true,
     "spice": 0,
-    "note": "Oyster sauce = molluscs, so NOT vegetarian despite being a vegetable dish."
+    "note": "Oyster sauce = molluscs, so NOT vegetarian despite being a vegetable dish. Oyster sauce = molluscs + gluten (most commercial oyster sauce contains wheat; v3 rule g)."
   },
   "Baked Egg Tarts (3 pcs)": {
     "allergens": [

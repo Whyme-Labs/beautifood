@@ -410,9 +410,9 @@ export const isDrink = (i: Dish) =>
 export const isDessert = (i: Dish) => DESSERT.test(i.category ?? "") || (!isDrink(i) && /\b(cendol|ais kacang|pudding|crepe cake|cheesecake|ice cream|gelato|mochi|tong sui|bubur cha cha|pulut hitam|tart|brownie)\b/i.test(i.name));
 
 const ASKS_CONTENTS = /\b(allerg\w*|alergi|contain\w*|ingredients?|inside|safe|ada .{0,20}(tak|ke)|got .{0,20}(or not|inside)|does .{0,40}(have|got|use|come with)|is there|any .{0,15} in (it|this|that|the)|made with|cooked (in|with)|boleh makan|free from|\w+ free)\b/;
-const AVOID_CUE = /\b(allerg\w*|alergi|no|without|tanpa|avoid|cant eat|cannot eat|can t eat|cant have|dont eat|don t eat|not eat|tak boleh makan|tak makan|tak nak|jangan|intolerant|intolerance|free|tak tahan|sensitive|no more|hate|exclude|except|minus|kecuali|tak boleh)\b/;
+const AVOID_CUE = /\b(allerg\w*|alergi|alah|alahan|no|without|tanpa|avoid|cant eat|cannot eat|can t eat|cant have|dont eat|don t eat|not eat|tak boleh makan|tak makan|tak nak|jangan|intolerant|intolerance|free|tak tahan|sensitive|no more|hate|exclude|except|minus|kecuali|tak boleh)\b/;
 
-const ALLERGY_WORD = /\b(allerg\w*|alergi\w*|alahan|intol\w*|coeliac|celiac|sensitive)\b|过[敏民闵抿]|过敏|不耐/i;
+const ALLERGY_WORD = /\b(allerg\w*|alergi\w*|alahan|alah|intol\w*|coeliac|celiac|sensitive)\b|过[敏民闵抿]|过敏|不耐/i;
 const NEG_CUE = /^(no|not|non|without|tanpa|tak|takde|bukan|jangan|cannot|cant|dont|doesnt|never|avoid|except|kecuali|minus|hate|exclude|skip|free|less|zero|nothing|nak|boleh)$/;
 const ZH_CUE = /不要|不能|不吃|不可以|吃不了|没有|没|无|不含|别|免|戒|避免|不加|走/;
 
@@ -510,6 +510,9 @@ function requested(question: string, a: Allergen): boolean {
   const bare = normalize(question).split(" ").filter((w) => w && !/^(got|ada|any|ah|lah|pls|please|the|some)$/.test(w));
   if (bare.length <= 2 && bare.some((w) => FOOD_NOUN.test(w)) && mentionedAllergens(question).includes(a)) return true;
   if (/^[\s?？!！]*(有没有)?\s*(豆腐|虾|蟹|鱼|芝士|鸡蛋)\s*(吗)?[\s?？!！]*$/.test(question)) return true;
+  // "egg dishes?", "seafood options", "any tofu stuff": the food asked for by its kind of dish
+  const words = normalize(question).split(" ");
+  if (words.some((w, i) => /^(dish|dishes|options?|food|foods|items?|stuff|menu|selection)$/.test(w) && i > 0 && mentionedAllergens(words[i - 1]).includes(a))) return true;
   return question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && (REQUEST.test(clause) || REQUEST_ZH.test(clause)));
 }
 
@@ -525,7 +528,7 @@ export function read(items: Dish[], asked: string): Reading {
   // "saya alergi kacang", "allergic to nuts": the word after is an allergen, not a dish (Ais Kacang)
   const skip = new Set<number>();
   toks.forEach((t, i) => {
-    if (!/^(alergi|allergic|allergy|allergies|alahan)$/.test(t)) return;
+    if (!/^(alergi|allergic|allergy|allergies|alahan|alah)$/.test(t)) return;
     for (let j = i + 1; j <= i + 3 && j < toks.length; j++) {
       if (/^(to|kepada|pada|dengan|a|an)$/.test(toks[j])) continue;
       if (mentionedAllergens(toks[j]).length || toks[j] === "kacang") skip.add(j);

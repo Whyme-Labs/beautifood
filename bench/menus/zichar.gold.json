@@ -39,13 +39,14 @@
   "Kam Heong Lala": {
     "allergens": [
       "molluscs",
-      "crustaceans"
+      "crustaceans",
+      "gluten"
     ],
     "vegetarian": false,
     "vegan": false,
     "halal": true,
     "spice": 2,
-    "note": "Clams and oyster sauce = molluscs; dried shrimp = crustaceans; chilli."
+    "note": "Clams and oyster sauce = molluscs; dried shrimp = crustaceans; chilli. Oyster sauce = molluscs + gluten (most commercial oyster sauce contains wheat; v3 rule g)."
   },
   "Sambal Sotong": {
     "allergens": [
@@ -117,13 +118,14 @@
   },
   "Ginger Spring Onion Beef": {
     "allergens": [
-      "molluscs"
+      "molluscs",
+      "gluten"
     ],
     "vegetarian": false,
     "vegan": false,
     "halal": true,
     "spice": 0,
-    "note": "Oyster sauce = molluscs."
+    "note": "Oyster sauce = molluscs. Oyster sauce = molluscs + gluten (most commercial oyster sauce contains wheat; v3 rule g)."
   },
   "Sambal Kangkung": {
     "allergens": [
@@ -147,13 +149,14 @@
       "egg",
       "soy",
       "crustaceans",
-      "molluscs"
+      "molluscs",
+      "gluten"
     ],
     "vegetarian": false,
     "vegan": false,
     "halal": true,
     "spice": 0,
-    "note": "Egg tofu; prawns; oyster sauce = molluscs."
+    "note": "Egg tofu; prawns; oyster sauce = molluscs. Oyster sauce = molluscs + gluten (most commercial oyster sauce contains wheat; v3 rule g)."
   },
   "Four Heavenly Kings": {
     "allergens": [

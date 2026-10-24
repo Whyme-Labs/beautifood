@@ -328,6 +328,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "is the second one spicy?": a question about that dish
   if (nth && !["dish_allergen", "compare", "pairing"].includes(intent)) intent = "dish_info";
   if (intent === "compare" && focus.length + (mentioned.length ? 0 : state.shown.length) < 2) intent = focus.length ? "dish_info" : "recommend";
+  // "那面呢？", "what about desserts?": a new course asked for, not the last dishes weighed
+  if (intent === "compare" && !mentioned.length && (u.courses.length || u.categories.length)) intent = "recommend";
   if (intent === "pairing" && !focus.length && !(state.focus && !mentioned.length)) {
     // "mkn ramen, minum apa sesuai?": no one dish to pair with, so what goes with it is the ask
     intent = "recommend";

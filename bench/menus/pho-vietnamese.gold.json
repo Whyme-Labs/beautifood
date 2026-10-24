@@ -1,0 +1,344 @@
+{
+  "Goi Cuon Tom": {
+    "allergens": [
+      "crustaceans",
+      "peanuts",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice paper and vermicelli are gluten-free but hoisin sauce contains soy and wheat flour."
+  },
+  "Vegan Fresh Rolls": {
+    "allergens": [
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu = soy; peanut dip."
+  },
+  "Cha Gio": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Rice paper wrapper and mung bean glass noodles: no gluten. Nuoc cham = fish sauce. Pork, not halal."
+  },
+  "Vegetarian Fried Spring Rolls": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat pastry; soy dip. No animal product listed, so vegan true."
+  },
+  "Banh Xeo": {
+    "allergens": [
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Rice flour, no gluten; coconut milk not milk; pork."
+  },
+  "Goi Ga": {
+    "allergens": [
+      "fish",
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish sauce; peanuts."
+  },
+  "Chao Tom": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork fat, not halal."
+  },
+  "Pho Bo Tai": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish sauce in broth. Rice noodles, no gluten."
+  },
+  "Pho Bo Dac Biet": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Same broth as Pho Bo Tai, so fish sauce (hidden)."
+  },
+  "Pho Ga": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish sauce."
+  },
+  "Vegetarian Pho": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy sauce = soy + gluten; tofu."
+  },
+  "Bun Bo Hue": {
+    "allergens": [
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Shrimp paste; fish sauce; pork."
+  },
+  "Bun Rieu": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "soy",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Crab, shrimp paste; egg; tofu; fish sauce."
+  },
+  "Bun Cha Ha Noi": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Fish sauce; pork. No peanuts."
+  },
+  "Bun Ga Nuong": {
+    "allergens": [
+      "fish",
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish sauce; peanuts."
+  },
+  "Com Tam Suon": {
+    "allergens": [
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork; egg; nuoc cham."
+  },
+  "Com Tam Ga": {
+    "allergens": [
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Egg; nuoc cham = fish sauce."
+  },
+  "Banh Mi Dac Biet": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg",
+      "soy",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Baguette wheat; butter = milk; mayo = egg; Maggi seasoning = soy + wheat; cha lua is seasoned with fish sauce (hidden). Pork."
+  },
+  "Banh Mi Ga": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Pate with butter = milk; mayo = egg."
+  },
+  "Banh Mi Chay": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg and mayonnaise: vegetarian, not vegan."
+  },
+  "Che Ba Mau": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut milk is not milk; no listed allergen."
+  },
+  "Che Chuoi": {
+    "allergens": [
+      "peanuts",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanuts; sesame."
+  },
+  "Banh Flan": {
+    "allergens": [
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg, milk."
+  },
+  "Sua Chua Nep Cam": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt = milk; glutinous rice has no gluten."
+  },
+  "Ca Phe Sua Da": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Ca Phe Den Da": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No milk."
+  },
+  "Ca Phe Trung": {
+    "allergens": [
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg yolk; condensed milk."
+  },
+  "Coconut Coffee": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut is not milk, but condensed milk is."
+  },
+  "Tra Da": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain tea."
+  },
+  "Rau Ma": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain."
+  },
+  "Sinh To Bo": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk; avocado is not a tree nut."
+  },
+  "Saigon Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol, not halal."
+  }
+}

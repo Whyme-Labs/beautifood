@@ -1,0 +1,391 @@
+{
+  "Kaya Butter Toast": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Kaya = egg; butter = milk; santan is not milk."
+  },
+  "Kaya Margarine Toast": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dairy-free margarine stated, loaf has no milk listed; kaya still has egg."
+  },
+  "Half-Boiled Eggs": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Kicap = soy + gluten."
+  },
+  "Roti Bakar Sardin": {
+    "allergens": [
+      "fish",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Sardines; bread."
+  },
+  "Peanut Butter Toast": {
+    "allergens": [
+      "peanuts",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk = milk."
+  },
+  "Egg Mayo Sandwich": {
+    "allergens": [
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Mayonnaise = egg."
+  },
+  "Chicken Ham & Cheese Toastie": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cheese, butter = milk. Chicken ham, halal."
+  },
+  "Nasi Lemak Bungkus": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "peanuts",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Anchovies = fish; belacan = crustaceans; peanuts; egg."
+  },
+  "Mee Rebus": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "soy",
+      "peanuts",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Yellow noodles = wheat; dried shrimp; taucu + tauhu = soy; ground peanuts."
+  },
+  "Curry Mee": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "molluscs",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Yellow mee = wheat; tauhu pok = soy; cockles = molluscs; belacan = crustaceans. Santan is not milk."
+  },
+  "Wantan Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Egg noodles = wheat + egg; pork and lard, not halal; prawn wantan in wheat wrapper."
+  },
+  "Vegetarian Bee Hoon": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice vermicelli itself is gluten-free but mock meat is wheat gluten and soy sauce has wheat. No animal product, so vegan true."
+  },
+  "Egg Tart": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter pastry, evaporated milk, egg."
+  },
+  "Chicken Curry Puff": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Margarine taken as dairy-free (vegetable)."
+  },
+  "Sardine Puff": {
+    "allergens": [
+      "gluten",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Sardines; wheat pastry."
+  },
+  "Coconut Bun": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut is not a tree nut (EU) and not milk; the bun has milk, egg, butter."
+  },
+  "Char Siu Bun": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork, not halal; oyster sauce = molluscs."
+  },
+  "Tau Sar Piah": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Sounds vegetarian (mung bean) but the pastry uses lard: not vegetarian, not halal."
+  },
+  "Wife Biscuit": {
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Lard pastry; sesame seeds."
+  },
+  "Pandan Chiffon Slice": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "No dairy stated; coconut milk is not milk."
+  },
+  "Kuih Lapis": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice + tapioca flour, no gluten; santan is not milk."
+  },
+  "Seri Muka": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice has no gluten; custard has egg."
+  },
+  "Onde-Onde": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice, gula melaka, coconut: no listed allergen."
+  },
+  "Kuih Ketayap": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour crepe with egg."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Kopi C": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk; butter-roasted beans."
+  },
+  "Kopi O": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "No milk added, but the beans are butter-roasted: milk (trace), not vegan."
+  },
+  "Kopi O Kosong": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter-roasted beans: milk, not vegan."
+  },
+  "Ipoh White Coffee": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Judgement: 'non-dairy' creamer normally contains sodium caseinate, a milk protein, so milk and not vegan."
+  },
+  "Cham": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Teh C Peng": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk."
+  },
+  "Teh O Ais Limau": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No milk."
+  },
+  "Milo Dinosaur": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milo = malted barley + milk powder: gluten + milk; condensed milk."
+  },
+  "Barley Ais": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Barley = gluten."
+  },
+  "Soya Bean Ais": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy."
+  }
+}

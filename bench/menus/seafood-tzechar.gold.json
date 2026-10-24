@@ -1,0 +1,408 @@
+{
+  "Hong Kong Steamed Tilapia": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy sauce = soy + wheat."
+  },
+  "Teochew Steamed Pomfret": {
+    "allergens": [
+      "fish",
+      "soy",
+      "sulphites",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Silken tofu = soy; Shaoxing = sulphites + gluten, not halal; pork lard. Salted mustard greens (kiam chye) are the leaf, not mustard seed, so mustard not listed."
+  },
+  "Steamed Grouper Nyonya Style": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan = shrimp paste = crustaceans. No soy sauce listed."
+  },
+  "Salted Egg Crab": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Cornflour coating, no wheat. Butter + evaporated milk = milk."
+  },
+  "Kam Heong Lala": {
+    "allergens": [
+      "molluscs",
+      "crustaceans",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Clams + oyster sauce = molluscs; dried shrimp = crustaceans; kicap = soy + gluten; oyster sauce wheat."
+  },
+  "Butter Prawns": {
+    "allergens": [
+      "crustaceans",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "No flour coating stated. Butter = milk; egg floss."
+  },
+  "Oyster Omelette": {
+    "allergens": [
+      "molluscs",
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Starch batter is sweet potato + tapioca, no wheat. Fish sauce = fish."
+  },
+  "Sweet and Sour Fish Fillet": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour + egg batter."
+  },
+  "Cereal Prawns": {
+    "allergens": [
+      "crustaceans",
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Nestum = wheat (and oats) cereal with milk; butter = milk; egg yolk."
+  },
+  "Sambal Sotong": {
+    "allergens": [
+      "molluscs",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Squid = molluscs; sambal belacan = crustaceans."
+  },
+  "Chilli Crab with Mantou": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Mantou = wheat buns; egg ribbons."
+  },
+  "Claypot Tofu": {
+    "allergens": [
+      "egg",
+      "soy",
+      "crustaceans",
+      "molluscs",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg tofu = egg + soy milk; pork and Shaoxing not halal; oyster sauce molluscs + wheat."
+  },
+  "Golden Treasure Tofu": {
+    "allergens": [
+      "soy",
+      "fish",
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but stuffed with fish paste (surimi); oyster sauce = molluscs + gluten."
+  },
+  "Steamed Egg Trio": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Lacto-ovo vegetarian; light soy = soy + gluten."
+  },
+  "Kangkung Belacan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan + dried shrimp = crustaceans."
+  },
+  "Garlic Stir-fried Kailan": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but oyster sauce: molluscs + gluten, not vegetarian."
+  },
+  "Four Heavenly Kings": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Sambal belacan = shrimp paste."
+  },
+  "Garlic Broccoli": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No oyster sauce, plain. Oyster sauce = molluscs + gluten (most commercial oyster sauce contains wheat; v3 rule g)."
+  },
+  "Buddhist Yam Ring": {
+    "allergens": [
+      "gluten",
+      "tree_nuts",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat starch; cashews = tree nuts; vegetarian mushroom 'oyster' sauce = soy sauce based (soy + gluten), no molluscs. No animal product listed, so vegan true though merchant tagged vegetarian."
+  },
+  "Taugeh with Salted Fish": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salted fish."
+  },
+  "Salted Fish Fried Rice": {
+    "allergens": [
+      "fish",
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy = soy + gluten."
+  },
+  "Seafood Hor Fun": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice noodles have no gluten, but soy and oyster sauce do; fish cake = fish."
+  },
+  "KL Hokkien Mee": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "crustaceans",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat noodles; pork and lard, not halal. No egg in the noodle stated."
+  },
+  "Vegetarian Fried Rice": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg; light soy = soy + gluten."
+  },
+  "XO Fried Rice": {
+    "allergens": [
+      "molluscs",
+      "crustaceans",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Dried scallop = molluscs; dried shrimp = crustaceans; Jinhua ham = pork, not halal."
+  },
+  "Steamed White Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Fish Head Bee Hoon Soup": {
+    "allergens": [
+      "fish",
+      "milk",
+      "sulphites",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Milky broth is evaporated milk; Shaoxing = sulphites + gluten, not halal. Rice vermicelli itself gluten-free."
+  },
+  "Mango Sago Pomelo": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut milk is not milk, but evaporated milk is."
+  },
+  "Hot Peanut Paste": {
+    "allergens": [
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanuts."
+  },
+  "Yam Paste with Gingko": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork lard: not vegetarian or halal. Gingko is a seed, not on the EU tree nut list, so not tree_nuts. Coconut cream is not milk."
+  },
+  "Cheng Teng": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten (EU cereal rule)."
+  },
+  "Chinese Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain tea."
+  },
+  "Barley Lime": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Barley = gluten."
+  },
+  "Soya Bean Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy, no dairy."
+  },
+  "Calamansi Sour Plum": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain."
+  },
+  "Tiger Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol, not halal."
+  }
+}

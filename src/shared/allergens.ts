@@ -37,19 +37,19 @@ export const ALLERGEN_LABELS: Record<Allergen, string> = {
 };
 
 const KEYWORDS: Record<Allergen, string[]> = {
-  gluten: ["wheat", "flour", "noodle", "mee", "bread", "toast", "pasta", "spaghetti", "bun", "roti", "dumpling", "wonton", "batter", "battered", "breaded", "breadcrumbs", "panko", "tempura", "katsu", "cake", "pastry", "pastries", "croissant", "brioche", "bagel", "muffin", "sourdough", "crouton", "semolina", "couscous", "bulgur", "rye", "spelt", "seitan", "naan", "chapati", "paratha", "murtabak", "pau", "bao", "barley", "malt", "milo", "oat", "oats", "granola", "cereal", "beer", "soy sauce", "dark soy", "light soy", "sweet soy", "soy tare", "tare", "teriyaki", "shoyu", "kicap", "hoisin", "okonomi", "gochujang", "pancake", "waffle", "biscuit", "cookie", "cracker", "pizza", "udon", "ramen", "soba"],
+  gluten: ["wheat", "flour", "noodle", "mee", "bread", "toast", "pasta", "spaghetti", "bun", "roti", "dumpling", "wonton", "batter", "battered", "breaded", "breadcrumbs", "panko", "tempura", "katsu", "cake", "pastry", "pastries", "croissant", "brioche", "bagel", "muffin", "sourdough", "crouton", "semolina", "couscous", "bulgur", "rye", "spelt", "seitan", "naan", "chapati", "paratha", "murtabak", "pau", "bao", "barley", "malt", "milo", "oat", "oats", "granola", "cereal", "beer", "soy sauce", "dark soy", "light soy", "sweet soy", "soy tare", "tare", "teriyaki", "shoyu", "kicap", "hoisin", "okonomi", "gochujang", "pancake", "waffle", "biscuit", "cookie", "cracker", "pizza", "udon", "ramen", "soba", "oyster sauce", "shaoxing", "hua tiao", "asafoetida", "hing", "maggi seasoning", "baguette", "toastie", "chashu", "ajitama", "takoyaki sauce"],
   crustaceans: ["prawn", "shrimp", "crab", "lobster", "crayfish", "udang", "belacan", "har gow", "langoustine", "cincalok", "hae bee", "heh bee", "rebon", "krill"],
   molluscs: ["squid", "sotong", "octopus", "clam", "lala", "mussel", "oyster", "scallop", "cockle", "kerang", "abalone", "calamari", "escargot", "geoduck"],
-  fish: ["fish", "ikan", "salmon", "tuna", "anchovy", "anchovies", "ikan bilis", "cod", "mackerel", "sardine", "fish sauce", "bonito", "katsuobushi", "dashi", "otak-otak", "seabass", "snapper", "pomfret", "eel", "unagi", "saba", "kembung", "roe", "ikura", "tobiko", "caviar", "surimi", "keropok lekor", "budu", "worcestershire"],
-  egg: ["egg", "telur", "mayo", "mayonnaise", "custard", "meringue", "omelette", "kaya", "aioli", "hollandaise", "carbonara", "tamago", "tamagoyaki", "pavlova"],
-  milk: ["milk", "milkshake", "buttermilk", "dairy", "cheese", "cheesy", "cheesecake", "butter", "buttery", "buttercream", "cream", "creamy", "creamer", "yogurt", "yoghurt", "ghee", "condensed", "latte", "cappuccino", "susu", "paneer", "whey", "ice cream", "gelato", "mozzarella", "parmesan", "feta", "ricotta", "mascarpone", "burrata", "halloumi", "hollandaise", "bechamel", "carbonara", "custard", "lassi", "kulfi", "teh tarik", "milo"],
+  fish: ["fish", "ikan", "salmon", "tuna", "anchovy", "anchovies", "ikan bilis", "cod", "mackerel", "sardine", "fish sauce", "bonito", "katsuobushi", "dashi", "otak-otak", "seabass", "snapper", "pomfret", "eel", "unagi", "saba", "kembung", "roe", "ikura", "tobiko", "caviar", "surimi", "keropok lekor", "budu", "worcestershire", "tilapia", "grouper", "garoupa", "barramundi", "siakap", "tenggiri", "catfish", "keli", "patin", "trout", "sea bream", "carp", "halibut", "sardin", "nuoc cham", "nuoc mam", "niboshi", "takoyaki sauce"],
+  egg: ["egg", "telur", "mayo", "mayonnaise", "custard", "meringue", "omelette", "kaya", "aioli", "hollandaise", "carbonara", "tamago", "tamagoyaki", "pavlova", "cheesecake"],
+  milk: ["milk", "milkshake", "buttermilk", "dairy", "cheese", "cheesy", "cheesecake", "butter", "buttery", "buttercream", "cream", "creamy", "creamer", "yogurt", "yoghurt", "ghee", "condensed", "latte", "cappuccino", "susu", "paneer", "whey", "ice cream", "gelato", "mozzarella", "parmesan", "feta", "ricotta", "mascarpone", "burrata", "halloumi", "hollandaise", "bechamel", "carbonara", "custard", "lassi", "kulfi", "teh tarik", "milo", "curd", "paneer"],
   peanuts: ["peanut", "groundnut", "kacang", "satay sauce", "satay"],
   tree_nuts: ["almond", "cashew", "walnut", "pistachio", "hazelnut", "pecan", "macadamia", "praline", "marzipan", "candlenut", "pine nut"],
-  soy: ["soy", "soya", "soybean", "tofu", "taukua", "tempeh", "edamame", "miso", "natto", "yuba", "tau fu", "beancurd", "bean curd", "tau foo", "tare", "teriyaki", "shoyu", "kicap", "okonomi"],
+  soy: ["soy", "soya", "soybean", "tofu", "taukua", "tempeh", "edamame", "miso", "natto", "yuba", "tau fu", "beancurd", "bean curd", "tau foo", "tare", "teriyaki", "shoyu", "kicap", "okonomi", "tauhu", "tahu", "taucu", "tau cheong", "tamari", "hoisin", "maggi seasoning", "doubanjiang", "chashu", "ajitama", "takoyaki sauce"],
   sesame: ["sesame", "tahini", "bijan"],
   celery: ["celery", "celeriac"],
   mustard: ["mustard", "dijon"],
-  sulphites: ["wine", "vinegar", "dried fruit", "raisin"],
+  sulphites: ["wine", "vinegar", "dried fruit", "raisin", "shaoxing", "hua tiao"],
   lupin: ["lupin"],
 };
 
@@ -84,7 +84,8 @@ function ingredients(text: string): string {
       .replace(/\b(coconut|oat|soy|soya|soya bean|soybean|almond|rice|cashew|nut|peanut)[\s-]+(?:milk|cream|butter)\b/g, "$1 plant")
       .replace(/\b(?:cocoa|shea|apple)\s+butter\b/g, " ")
       .replace(/\bvegan\s+(?:cheese|mayo|mayonnaise|butter|cream|sausage|meat|patty)\b/g, "vegan")
-      .replace(/\b(?:vegetarian|mushroom|mushroom-based)\s+(?:vegetarian\s+)?oyster sauce\b/g, "mushroom sauce")
+      .replace(/\b(?:vegetarian|mushroom|mushroom-based)\s+(?:vegetarian\s+)?(?:mushroom\s+)?oyster sauce\b/g, "mushroom soy sauce")
+      .replace(/\bbean\s+curd\b/g, "beancurd")
       .replace(/\boyster mushrooms?\b/g, "mushroom")
       .replace(/\bbutterfly pea\b/g, "pea flower")
       .replace(/\b(?:fish|rice flour|rice|carrot|radish|turnip|yam|taro|water chestnut)\s+cakes?\b/g, (m) => (m.startsWith("fish") ? "fish kuih" : "kuih"))
@@ -92,11 +93,20 @@ function ingredients(text: string): string {
       .replace(/\b(?:bee ?hoon|mee hoon|kway teow|kuey teow|hor fun|cheong fun|chee cheong fun)\b/g, "ricenoodle")
       .replace(/\b(?:glutinous rice|rice|tapioca|corn|soybean|soy|chickpea|gram|almond|coconut|potato|sago)[\s-]+flour\b/g, (m) => m.replace(/flour$/, "starch"))
       .replace(/\bcornflour\b/g, "starch")
+      // a batter of those ("gram flour and rice flour batter", "tapioca starch batter"): no wheat
+      .replace(/\b(starch|besan)\b([^,.;]{0,40}?)\bbatter\b/g, "$1$2")
+      .replace(/\bglutinous rice (?:dumplings?|balls?)\b/g, "kuih")
+      // Vietnamese bún is rice vermicelli: bún bò, bún riêu, bún chả
+      .replace(/\bbun (?:bo|rieu|cha|ga|thit|nem|mam|ca|oc)\b/g, "ricenoodle")
   );
 }
 
+// what a dish is called, never what it's made of: a stated wheat-free ramen has no wheat
+const NOODLE_NAMES = ["noodle", "ramen", "mee"];
+
 export function inferAllergens(text: string): Allergen[] {
-  const t = ingredients(text);
+  let t = ingredients(text);
+  if (/\bgluten[\s-]free\b|\bno wheat\b|\bwheat[\s-]free\b/i.test(text)) for (const w of NOODLE_NAMES) t = t.replace(new RegExp(`\\b${w}s?\\b`, "g"), " ");
   return ALLERGENS.filter((a) => has(t, KEYWORDS[a]));
 }
 

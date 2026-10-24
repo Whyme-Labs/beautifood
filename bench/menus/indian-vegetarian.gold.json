@@ -1,0 +1,348 @@
+{
+  "Masala Thosai": {
+    "allergens": [
+      "milk",
+      "mustard",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Roasted with ghee = milk; mustard seeds; asafoetida (compounded hing is cut with wheat flour) = gluten, also in the sambar. Urad dal is not an allergen. Mild."
+  },
+  "Plain Thosai": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Cooked in vegetable oil; coconut chutney tempered with mustard seeds. Merchant tags vegan."
+  },
+  "Ghee Roast Thosai": {
+    "allergens": [
+      "milk",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Pure ghee = milk. Served with the house coconut chutney, which Plain Thosai and Idli Set state is tempered with mustard seeds, so mustard is labelled too (judgement call)."
+  },
+  "Rava Thosai": {
+    "allergens": [
+      "gluten",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Semolina (rava) is wheat = gluten; cashews = tree nuts. Cooked in oil, vegan. Green chilli, a little spicy."
+  },
+  "Idli Set": {
+    "allergens": [
+      "gluten",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Idli itself is rice + urad dal, but the sambar has asafoetida (wheat-cut hing) = gluten; chutney has mustard seeds. Sambar is mildly spiced (label 1)."
+  },
+  "Medu Vadai": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Urad dal; asafoetida = wheat. A little spicy."
+  },
+  "Masala Vadai": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Chana dal (chickpea) is not an allergen; no asafoetida listed. A little spicy."
+  },
+  "Onion Pakora": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Gram flour (besan, chickpea) and rice flour, stated no wheat. A little spicy."
+  },
+  "Samosa": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat pastry; mint chutney with curd = milk, so not vegan. Mild."
+  },
+  "Chapati": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Whole wheat; no ghee, no oil."
+  },
+  "Puri Set": {
+    "allergens": [
+      "gluten",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat; potato masala with mustard seeds and asafoetida. Mildly spiced masala."
+  },
+  "Butter Naan": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Maida = wheat; curd, milk, butter."
+  },
+  "Paneer Butter Masala": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Paneer, butter, cream = milk; cashew paste = tree nuts. Mild."
+  },
+  "Palak Paneer": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Paneer and cream. Mild."
+  },
+  "Dal Tadka": {
+    "allergens": [
+      "milk",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Sounds vegan (lentils) but tempered with ghee = milk; mustard seeds. Mild."
+  },
+  "Chana Masala": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Asafoetida = wheat-cut hing. Spicy."
+  },
+  "Aloo Gobi": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Sunflower oil; no allergens listed. Mild."
+  },
+  "Vegetable Kurma": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Cashew paste = tree nuts. Coconut is not milk; poppy seed is not an EU allergen. Not spicy."
+  },
+  "Mushroom Pepper Varuval": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 3,
+    "note": "Black pepper, fennel, curry leaves. Very spicy."
+  },
+  "Jain Vegetable Curry": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Stated no onion, garlic or asafoetida (so no hidden wheat). Sunflower oil. Mild."
+  },
+  "Vegetable Briyani": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ghee and yoghurt raita = milk; cashews = tree nuts. Briyani is mildly spiced (label 1)."
+  },
+  "Banana Leaf Meal": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Rasam and sambar with asafoetida = gluten; curd = milk; South Indian sambar and vegetable poriyal are tempered with mustard seeds (judgement call). Spicy."
+  },
+  "Gulab Jamun": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Khoya (milk solids) and flour; fried in ghee. No egg."
+  },
+  "Rasmalai": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Chenna and milk; pistachios = tree nuts."
+  },
+  "Rava Kesari": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Semolina = wheat; ghee; cashews."
+  },
+  "Semiya Payasam": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat vermicelli; milk and ghee; cashews."
+  },
+  "Mysore Pak": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Gram flour (chickpea), stated no wheat, so no gluten; ghee = milk."
+  },
+  "Peanut Chikki": {
+    "allergens": [
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanuts and jaggery."
+  },
+  "Mango Lassi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt."
+  },
+  "Masala Chaas": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Buttermilk."
+  },
+  "Masala Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Boiled with milk."
+  },
+  "Badam Milk": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk; almonds = tree nuts."
+  },
+  "Ginger Honey Lemon": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian but not vegan."
+  },
+  "Fresh Lime Soda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Lime, soda, sugar or salt."
+  }
+}

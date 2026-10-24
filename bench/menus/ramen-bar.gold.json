@@ -1,0 +1,359 @@
+{
+  "Tonkotsu Ramen": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork broth and chashu; wheat noodles; ajitama egg is soy-sauce marinated (soy + wheat); sesame."
+  },
+  "Shoyu Ramen": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Bonito dashi and naruto fish cake = fish; soy tare = soy + wheat; wheat noodles; pork chashu; ajitama egg."
+  },
+  "Miso Ramen": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "milk",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Miso = soy; wheat noodles; butter = milk; sesame; minced pork."
+  },
+  "Spicy Tantanmen": {
+    "allergens": [
+      "sesame",
+      "peanuts",
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 3,
+    "note": "Sesame paste; crushed peanuts; wheat noodles; tantanmen tare is sesame paste with soy sauce (soy, labelled from standard recipe). Pork. Very spicy."
+  },
+  "Chicken Paitan Ramen": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat noodles; soy-braised chashu = soy + wheat; egg. Stated no pork, mirin or sake, so the halal-friendly ramen."
+  },
+  "Yuzu Shio Ramen": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Asari clams = molluscs; wheat noodles. Menma is customarily seasoned in soy sauce, so soy is labelled (judgement call). No pork or alcohol listed."
+  },
+  "Tsukemen": {
+    "allergens": [
+      "gluten",
+      "fish",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat noodles; niboshi (dried sardine) = fish; ajitama egg (soy marinade); pork."
+  },
+  "Vegan Shoyu Ramen": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Kombu/shiitake broth, no bonito; soy tare = soy + wheat; wheat noodles; tofu. Mirin is alcohol, so vegan but not halal."
+  },
+  "Gluten-Free Chicken Ramen": {
+    "allergens": [
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice noodles; gluten-free tamari = soy only; egg marinated in tamari. No wheat."
+  },
+  "Kaedama Extra Noodles": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat noodles only."
+  },
+  "Pan-fried Gyoza": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork; wheat wrapper; soy-vinegar dip = soy + wheat; chilli oil on the side (label 1)."
+  },
+  "Vegetable Gyoza": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat wrapper; tofu; sesame oil. Glass noodles no gluten (wrapper has it anyway)."
+  },
+  "Chicken Karaage": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Soy sauce = soy + wheat; Japanese mayo = egg; sake = alcohol, not halal. Potato starch has no gluten."
+  },
+  "Chashu Don": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork chashu; tare = soy + wheat; onsen egg; sesame."
+  },
+  "Ajitama": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Sounds vegetarian (just an egg) but marinated in the pork chashu braising liquid; soy sauce = soy + wheat; mirin and pork, not halal."
+  },
+  "Edamame": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soybeans."
+  },
+  "Takoyaki": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "egg",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Octopus = molluscs; wheat batter; egg and mayo; bonito flakes = fish; takoyaki sauce is Worcestershire-style (fish + gluten, rule i) with soy."
+  },
+  "Agedashi Tofu": {
+    "allergens": [
+      "soy",
+      "fish",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but the dashi is bonito = fish; soy broth = soy + wheat; tofu."
+  },
+  "Wakame Salad": {
+    "allergens": [
+      "sesame",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Sesame seeds; soy sauce = soy + wheat. A little chilli."
+  },
+  "Salmon Onigiri": {
+    "allergens": [
+      "fish",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salmon; sesame."
+  },
+  "Tuna Mayo Onigiri": {
+    "allergens": [
+      "fish",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tuna; Japanese mayo = egg."
+  },
+  "Umeboshi Onigiri": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice, pickled plum, nori."
+  },
+  "Matcha Mochi": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice has no gluten; red bean is not an allergen; stated no dairy."
+  },
+  "Warabi Mochi": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Kinako = roasted soybean flour. Bracken starch, no gluten."
+  },
+  "Black Sesame Ice Cream": {
+    "allergens": [
+      "milk",
+      "egg",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk, cream, egg yolk, sesame."
+  },
+  "Matcha Cheesecake": {
+    "allergens": [
+      "milk",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream cheese; baked cheesecake contains egg; digestive biscuit = wheat."
+  },
+  "Matcha Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk."
+  },
+  "Iced Hojicha Oat Latte": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Dairy-free, but oat milk = oats = gluten (v3 rule)."
+  },
+  "Yuzu Honey Soda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan."
+  },
+  "Calpis Soda": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cultured milk drink."
+  },
+  "Genmaicha": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Green tea and roasted rice; no gluten."
+  },
+  "Asahi Draft": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer = barley malt = gluten; alcohol, not halal."
+  }
+}

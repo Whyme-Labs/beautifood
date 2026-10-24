@@ -95,3 +95,22 @@ The `test` split is frozen. It changes only to fix a wrong label, recorded here 
 The parser fixes carry over to new menus, but far less than in sample (0 missed on the menus they
 were made on, 17 on these): its keyword list still lacks ingredients these kitchens use. The one
 unsafe v3 answer is not touched by either version; it waits for a set that replaces v3.
+
+## More dev data: six menus by two new authors (2026-10-24)
+
+- economy-rice, indian-vegetarian, ramen-bar, seafood-tzechar, kopitiam-bakery and pho-vietnamese,
+  with gold readings of all 207 dishes and 308 `dev` cases (`cases/<menu>.json`). Written by two
+  new authors who read only the README, the schema and the v2 and v3 reviews' conventions, never
+  the engine or its other sets. They are for iterating (the parser had no dev menus left to learn
+  from: it missed nothing on the first ten), not for reporting.
+- Engine before any change on them: 87.7%, 3 unsafe (Malay "alah" not read as an allergy; 乳糜泻,
+  coeliac disease, read as dairy). Parser: 38 missed allergens.
+
+## Oyster sauce counts as gluten in the older gold files too (label fix)
+
+- The v3 reviewer settled oyster sauce = molluscs + gluten (most commercial oyster sauce has
+  wheat) and flagged the older gold files as labelled the other way. 8 dishes gained `gluten`:
+  dim-sum-house (Lo Mai Kai, Kai Lan with Garlic), seafood-tzechar (Garlic Broccoli), thai-kitchen
+  (Cashew Chicken, Stir-fried Morning Glory) and zichar (Kam Heong Lala, Ginger Spring Onion Beef,
+  Claypot Egg Tofu). Vegetarian "mushroom oyster sauce" is unchanged. zichar is a v1 menu, so v1's
+  test split is scored on the corrected readings from here on; its cases are unchanged.

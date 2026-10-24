@@ -77,6 +77,7 @@ const ALLERGEN_WORDS: Record<Allergen, RegExp> = {
 // Malay (and Manglish) words for the common ones. "kacang" alone is beans or nuts (ais kacang has
 // red beans), so it only counts as an allergen when the guest says they're allergic.
 const ALLERGEN_WORDS_MS: Partial<Record<Allergen, RegExp>> = {
+  gluten: /\b(gandum|tepung gandum)\b/i,
   crustaceans: /\b(udang|ketam|makanan laut)\b/i,
   molluscs: /\b(sotong|kerang|siput|lala|tiram|makanan laut)\b/i,
   fish: /\bikan\b|makanan laut/i,
@@ -89,12 +90,13 @@ const ALLERGEN_WORDS_MS: Partial<Record<Allergen, RegExp>> = {
 
 // The same, for questions asked in Chinese (no word boundaries in CJK).
 const ALLERGEN_WORDS_ZH: Partial<Record<Allergen, RegExp>> = {
-  gluten: /麸质|麦/,
+  gluten: /麸质|麦|乳糜泻|腹腔病/,
   crustaceans: /虾|蟹|甲壳|海鲜/,
   molluscs: /鱿鱼|蚝|贝|蛤|软体|海鲜/,
   fish: /鱼|海鲜/,
   egg: /蛋/,
-  milk: /奶|乳/,
+  // 乳 is milk, but not in 乳糜泻 (coeliac disease)
+  milk: /奶|乳(?!\s*糜)/,
   peanuts: /花生/,
   tree_nuts: /坚果|果仁|腰果|杏仁|核桃/,
   soy: /大豆|黄豆|豆腐|酱油/,

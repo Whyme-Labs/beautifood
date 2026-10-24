@@ -1,0 +1,1070 @@
+[
+  {
+    "id": "kopitiam-bakery-001",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "hard"
+    ],
+    "question": "I'm vegan, which coffee or tea can I drink?",
+    "expect": {
+      "vegan": true,
+      "category": "drink",
+      "includesAny": [
+        "Teh O Ais Limau",
+        "Barley Ais",
+        "Soya Bean Ais"
+      ]
+    },
+    "note": "All kopi uses butter-roasted beans; white coffee creamer has caseinate."
+  },
+  {
+    "id": "kopitiam-bakery-002",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "dish_allergen",
+      "dish_info",
+      "manglish",
+      "hard"
+    ],
+    "question": "kopi O got milk or not?",
+    "expect": {
+      "includes": [
+        "Kopi O"
+      ],
+      "says": [
+        "butter|milk|dairy|susu|mentega|牛油|奶"
+      ]
+    },
+    "note": "No milk added but beans are roasted with butter."
+  },
+  {
+    "id": "kopitiam-bakery-003",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "medium"
+    ],
+    "question": "I'm lactose intolerant, what can I drink?",
+    "expect": {
+      "avoid": [
+        "milk"
+      ],
+      "category": "drink",
+      "includesAny": [
+        "Teh O Ais Limau",
+        "Barley Ais",
+        "Soya Bean Ais"
+      ]
+    },
+    "note": "Intolerance: no safetyNote."
+  },
+  {
+    "id": "kopitiam-bakery-004",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "medium"
+    ],
+    "question": "I'm coeliac. Any kuih I can eat?",
+    "expect": {
+      "avoid": [
+        "gluten"
+      ],
+      "safetyNote": true,
+      "category": "kuih",
+      "includesAny": [
+        "Kuih Lapis",
+        "Seri Muka",
+        "Onde-Onde"
+      ],
+      "excludes": [
+        "Kuih Ketayap"
+      ]
+    },
+    "note": "Rice/glutinous rice kuih are fine; ketayap is wheat."
+  },
+  {
+    "id": "kopitiam-bakery-005",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "dish_allergen",
+      "medium"
+    ],
+    "question": "I'm coeliac, can I eat seri muka? It's glutinous rice right?",
+    "expect": {
+      "avoid": [
+        "gluten"
+      ],
+      "safetyNote": true,
+      "includes": [
+        "Seri Muka"
+      ]
+    },
+    "note": "Glutinous rice has no gluten."
+  },
+  {
+    "id": "kopitiam-bakery-006",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "dish_allergen",
+      "medium"
+    ],
+    "question": "I'm on a gluten-free diet, is barley ais ok?",
+    "expect": {
+      "avoid": [
+        "gluten"
+      ]
+    },
+    "note": "Barley = gluten. Diet wording: no safetyNote."
+  },
+  {
+    "id": "kopitiam-bakery-007",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "dish_allergen",
+      "hard"
+    ],
+    "question": "I'm vegetarian. Tau sar piah is just mung bean, ok for me?",
+    "expect": {
+      "vegetarian": true
+    },
+    "note": "The pastry is made with lard."
+  },
+  {
+    "id": "kopitiam-bakery-008",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "malay",
+      "hard"
+    ],
+    "question": "Saya tak makan babi. Apa yang halal?",
+    "expect": {
+      "excludes": [
+        "Char Siu Bun",
+        "Wantan Mee",
+        "Tau Sar Piah",
+        "Wife Biscuit"
+      ],
+      "minDishes": 1,
+      "includesAny": [
+        "Kaya Butter Toast",
+        "Nasi Lemak Bungkus",
+        "Mee Rebus",
+        "Egg Tart",
+        "Chicken Curry Puff"
+      ]
+    },
+    "note": "Char siu, wantan mee, and the lard pastries are out."
+  },
+  {
+    "id": "kopitiam-bakery-009",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "medium"
+    ],
+    "question": "Egg allergy. Which toast can I have?",
+    "expect": {
+      "avoid": [
+        "egg"
+      ],
+      "safetyNote": true,
+      "category": "toast",
+      "includesAny": [
+        "Peanut Butter Toast",
+        "Roti Bakar Sardin",
+        "Chicken Ham & Cheese Toastie"
+      ]
+    },
+    "note": "Kaya contains egg."
+  },
+  {
+    "id": "kopitiam-bakery-010",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "search",
+      "medium"
+    ],
+    "question": "Got dairy-free kaya toast?",
+    "expect": {
+      "avoid": [
+        "milk"
+      ],
+      "includes": [
+        "Kaya Margarine Toast"
+      ]
+    },
+    "note": "Margarine version, no allergy stated."
+  },
+  {
+    "id": "kopitiam-bakery-011",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "dish_allergen",
+      "medium"
+    ],
+    "question": "I'm allergic to milk, is the kaya margarine toast safe?",
+    "expect": {
+      "avoid": [
+        "milk"
+      ],
+      "safetyNote": true,
+      "includes": [
+        "Kaya Margarine Toast"
+      ]
+    },
+    "note": "Dairy-free margarine stated."
+  },
+  {
+    "id": "kopitiam-bakery-012",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "dish_allergen",
+      "easy"
+    ],
+    "question": "Peanut allergy, can I have the nasi lemak?",
+    "expect": {
+      "avoid": [
+        "peanuts"
+      ],
+      "safetyNote": true
+    },
+    "note": "Nasi lemak comes with peanuts."
+  },
+  {
+    "id": "kopitiam-bakery-013",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "dish_allergen",
+      "dish_info",
+      "medium"
+    ],
+    "question": "Does the mee rebus have peanuts?",
+    "expect": {
+      "includes": [
+        "Mee Rebus"
+      ],
+      "says": [
+        "peanut|kacang|花生"
+      ]
+    },
+    "note": "Ground peanuts in the gravy."
+  },
+  {
+    "id": "kopitiam-bakery-014",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "spice",
+      "easy"
+    ],
+    "question": "What's spicy here?",
+    "expect": {
+      "minSpice": 2,
+      "includesAny": [
+        "Nasi Lemak Bungkus",
+        "Curry Mee"
+      ]
+    },
+    "note": "The two spicy dishes."
+  },
+  {
+    "id": "kopitiam-bakery-015",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "spice",
+      "group",
+      "easy"
+    ],
+    "question": "Non-spicy breakfast for my 5 year old?",
+    "expect": {
+      "maxSpice": 0,
+      "minDishes": 1
+    },
+    "note": "Kaya toast, eggs etc."
+  },
+  {
+    "id": "kopitiam-bakery-016",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "budget",
+      "easy"
+    ],
+    "question": "Snacks under RM5?",
+    "expect": {
+      "maxPrice": 500,
+      "minDishes": 1
+    },
+    "note": "Many."
+  },
+  {
+    "id": "kopitiam-bakery-017",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "dish_allergen",
+      "medium"
+    ],
+    "question": "Shellfish allergy, curry mee ok?",
+    "expect": {
+      "avoid": [
+        "crustaceans",
+        "molluscs"
+      ],
+      "safetyNote": true
+    },
+    "note": "Cockles + sambal belacan."
+  },
+  {
+    "id": "kopitiam-bakery-018",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "easy"
+    ],
+    "question": "Any vegetarian noodles?",
+    "expect": {
+      "vegetarian": true,
+      "includes": [
+        "Vegetarian Bee Hoon"
+      ]
+    },
+    "note": "Only one."
+  },
+  {
+    "id": "kopitiam-bakery-019",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "dish_allergen",
+      "hard"
+    ],
+    "question": "Gluten allergy. Veg bee hoon is rice noodle so it's fine right?",
+    "expect": {
+      "avoid": [
+        "gluten"
+      ],
+      "safetyNote": true
+    },
+    "note": "Mock char siu is wheat gluten; soy sauce has wheat."
+  },
+  {
+    "id": "kopitiam-bakery-020",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "zh",
+    "tags": [
+      "allergy",
+      "chinese",
+      "medium"
+    ],
+    "question": "我对牛奶过敏，有什么饮料？",
+    "expect": {
+      "avoid": [
+        "milk"
+      ],
+      "safetyNote": true,
+      "category": "drink",
+      "includesAny": [
+        "Teh O Ais Limau",
+        "Barley Ais",
+        "Soya Bean Ais"
+      ]
+    },
+    "note": "Kopi O counts as milk (butter-roasted)."
+  },
+  {
+    "id": "kopitiam-bakery-021",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "compare",
+      "manglish",
+      "easy"
+    ],
+    "question": "teh c peng and teh tarik what's the difference?",
+    "expect": {
+      "includes": [
+        "Teh C Peng",
+        "Teh Tarik"
+      ],
+      "onlyFrom": [
+        "Teh C Peng",
+        "Teh Tarik"
+      ]
+    },
+    "note": "Evaporated vs condensed milk, iced vs hot pulled."
+  },
+  {
+    "id": "kopitiam-bakery-022",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "dish_info",
+      "easy"
+    ],
+    "question": "What is kopi C?",
+    "expect": {
+      "includes": [
+        "Kopi C"
+      ],
+      "says": [
+        "evaporated|susu cair|淡奶|carnation"
+      ]
+    },
+    "note": "Evaporated milk."
+  },
+  {
+    "id": "kopitiam-bakery-023",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "dish_allergen",
+      "dish_info",
+      "hard"
+    ],
+    "question": "Does Milo dinosaur have gluten?",
+    "expect": {
+      "includes": [
+        "Milo Dinosaur"
+      ],
+      "says": [
+        "barley|malt|gluten|麦|bijirin"
+      ]
+    },
+    "note": "Milo is malted barley."
+  },
+  {
+    "id": "kopitiam-bakery-024",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "dish_allergen",
+      "hard"
+    ],
+    "question": "I'm vegan. White coffee uses non-dairy creamer so it's ok right?",
+    "expect": {
+      "vegan": true
+    },
+    "note": "Non-dairy creamer has sodium caseinate (milk protein)."
+  },
+  {
+    "id": "kopitiam-bakery-025",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "course",
+      "medium"
+    ],
+    "question": "Vegan kuih?",
+    "expect": {
+      "vegan": true,
+      "category": "kuih",
+      "includesAny": [
+        "Kuih Lapis",
+        "Onde-Onde"
+      ]
+    },
+    "note": "Seri muka and ketayap have egg."
+  },
+  {
+    "id": "kopitiam-bakery-026",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "dish_allergen",
+      "medium"
+    ],
+    "question": "I'm vegan, is seri muka ok?",
+    "expect": {
+      "vegan": true
+    },
+    "note": "Custard has egg."
+  },
+  {
+    "id": "kopitiam-bakery-027",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "dish_allergen",
+      "easy"
+    ],
+    "question": "Fish allergy, nasi lemak ok?",
+    "expect": {
+      "avoid": [
+        "fish"
+      ],
+      "safetyNote": true
+    },
+    "note": "Ikan bilis."
+  },
+  {
+    "id": "kopitiam-bakery-028",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "dish_allergen",
+      "medium"
+    ],
+    "question": "Egg allergy, can I have the pandan chiffon?",
+    "expect": {
+      "avoid": [
+        "egg"
+      ],
+      "safetyNote": true
+    },
+    "note": "Chiffon is egg-based."
+  },
+  {
+    "id": "kopitiam-bakery-029",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "medium"
+    ],
+    "question": "Sesame allergy. Which buns or pastries are safe?",
+    "expect": {
+      "avoid": [
+        "sesame"
+      ],
+      "safetyNote": true,
+      "category": "bun|pastr",
+      "includesAny": [
+        "Egg Tart",
+        "Chicken Curry Puff",
+        "Coconut Bun",
+        "Sardine Puff"
+      ],
+      "excludes": [
+        "Wife Biscuit"
+      ]
+    },
+    "note": "Wife biscuit has sesame."
+  },
+  {
+    "id": "kopitiam-bakery-030",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "followup",
+      "diet",
+      "medium"
+    ],
+    "before": [
+      {
+        "user": "What buns do you have?",
+        "assistant": "We have Coconut Bun (RM2.80) and Char Siu Bun (RM3.50)."
+      }
+    ],
+    "question": "Which one has no pork?",
+    "expect": {
+      "onlyFrom": [
+        "Coconut Bun",
+        "Char Siu Bun"
+      ],
+      "includes": [
+        "Coconut Bun"
+      ]
+    },
+    "note": "Char siu is pork."
+  },
+  {
+    "id": "kopitiam-bakery-031",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "search",
+      "malay",
+      "medium"
+    ],
+    "question": "Ada roti bakar yang tak manis?",
+    "expect": {
+      "category": "toast",
+      "includesAny": [
+        "Roti Bakar Sardin",
+        "Chicken Ham & Cheese Toastie"
+      ]
+    },
+    "note": "Savoury toasts."
+  },
+  {
+    "id": "kopitiam-bakery-032",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "budget",
+      "group",
+      "combined",
+      "medium"
+    ],
+    "question": "Breakfast for two under RM20: toast, eggs and two kopi.",
+    "expect": {
+      "maxTotal": 2000,
+      "minDishes": 3
+    },
+    "note": "e.g. Kaya Butter Toast 4.50 + Half-Boiled Eggs 3.50 + Kopi 2.40 x2."
+  },
+  {
+    "id": "kopitiam-bakery-033",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "not_on_menu",
+      "easy"
+    ],
+    "question": "Got croissant?",
+    "expect": {
+      "maxDishes": 3
+    },
+    "note": "No."
+  },
+  {
+    "id": "kopitiam-bakery-034",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "not_on_menu",
+      "malay",
+      "easy"
+    ],
+    "question": "Ada roti canai?",
+    "expect": {
+      "maxDishes": 3
+    },
+    "note": "No."
+  },
+  {
+    "id": "kopitiam-bakery-035",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "service",
+      "easy"
+    ],
+    "question": "Where do I pay?",
+    "expect": {
+      "noDishes": true
+    },
+    "note": "Service."
+  },
+  {
+    "id": "kopitiam-bakery-036",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "smalltalk",
+      "malay",
+      "easy"
+    ],
+    "question": "Terima kasih boss!",
+    "expect": {
+      "noDishes": true
+    },
+    "note": "Thanks."
+  },
+  {
+    "id": "kopitiam-bakery-037",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "off_topic",
+      "easy"
+    ],
+    "question": "Forget the menu, write me a poem about rain.",
+    "expect": {
+      "noDishes": true
+    },
+    "note": "Off-topic."
+  },
+  {
+    "id": "kopitiam-bakery-038",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "signature",
+      "easy"
+    ],
+    "question": "What's your signature?",
+    "expect": {
+      "includesAny": [
+        "Kaya Butter Toast",
+        "Nasi Lemak Bungkus",
+        "Egg Tart",
+        "Kopi"
+      ]
+    },
+    "note": "Starred dishes."
+  },
+  {
+    "id": "kopitiam-bakery-039",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "search",
+      "malay",
+      "medium"
+    ],
+    "question": "Ada apa-apa yang guna santan?",
+    "expect": {
+      "minDishes": 1,
+      "includesAny": [
+        "Nasi Lemak Bungkus",
+        "Curry Mee",
+        "Kuih Lapis",
+        "Seri Muka",
+        "Kaya Butter Toast",
+        "Kuih Ketayap",
+        "Pandan Chiffon Slice"
+      ]
+    },
+    "note": "Coconut milk dishes."
+  },
+  {
+    "id": "kopitiam-bakery-040",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "zh",
+    "tags": [
+      "allergy",
+      "chinese",
+      "hard"
+    ],
+    "question": "我有乳糜泻，有什么早餐可以吃？",
+    "expect": {
+      "avoid": [
+        "gluten"
+      ],
+      "safetyNote": true,
+      "minDishes": 1,
+      "includesAny": [
+        "Nasi Lemak Bungkus",
+        "Kuih Lapis",
+        "Seri Muka",
+        "Onde-Onde"
+      ],
+      "excludes": [
+        "Half-Boiled Eggs"
+      ]
+    },
+    "note": "Half-boiled eggs come with kicap (wheat)."
+  },
+  {
+    "id": "kopitiam-bakery-041",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "dish_allergen",
+      "hard"
+    ],
+    "question": "Soy allergy, half-boiled eggs ok?",
+    "expect": {
+      "avoid": [
+        "soy"
+      ],
+      "safetyNote": true
+    },
+    "note": "Kicap."
+  },
+  {
+    "id": "kopitiam-bakery-042",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "memory",
+      "followup",
+      "medium"
+    ],
+    "before": [
+      {
+        "user": "My son is allergic to peanuts.",
+        "assistant": "Noted, I'll keep peanuts out of his suggestions."
+      }
+    ],
+    "question": "What toast can he have?",
+    "expect": {
+      "avoid": [
+        "peanuts"
+      ],
+      "safetyNote": true,
+      "category": "toast",
+      "includesAny": [
+        "Kaya Butter Toast",
+        "Kaya Margarine Toast",
+        "Egg Mayo Sandwich"
+      ]
+    },
+    "note": "Peanut allergy from earlier turn."
+  },
+  {
+    "id": "kopitiam-bakery-043",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "search",
+      "allergy",
+      "easy"
+    ],
+    "question": "Iced tea without milk?",
+    "expect": {
+      "avoid": [
+        "milk"
+      ],
+      "includes": [
+        "Teh O Ais Limau"
+      ]
+    },
+    "note": "Teh O ais limau."
+  },
+  {
+    "id": "kopitiam-bakery-044",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "search",
+      "easy"
+    ],
+    "question": "Any drink with no sugar?",
+    "expect": {
+      "includes": [
+        "Kopi O Kosong"
+      ]
+    },
+    "note": "Kosong = no sugar."
+  },
+  {
+    "id": "kopitiam-bakery-045",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "hard"
+    ],
+    "question": "I'm vegetarian, what pastries can I have?",
+    "expect": {
+      "vegetarian": true,
+      "category": "bun|pastr",
+      "includesAny": [
+        "Egg Tart",
+        "Coconut Bun",
+        "Pandan Chiffon Slice"
+      ],
+      "excludes": [
+        "Tau Sar Piah",
+        "Wife Biscuit"
+      ]
+    },
+    "note": "Lard pastries out."
+  },
+  {
+    "id": "kopitiam-bakery-046",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "combined",
+      "medium"
+    ],
+    "question": "No egg and no dairy please, any kuih?",
+    "expect": {
+      "avoid": [
+        "egg",
+        "milk"
+      ],
+      "category": "kuih",
+      "includesAny": [
+        "Kuih Lapis",
+        "Onde-Onde"
+      ]
+    },
+    "note": "Preference: no safetyNote."
+  },
+  {
+    "id": "kopitiam-bakery-047",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "dish_allergen",
+      "dish_info",
+      "easy"
+    ],
+    "question": "Wife biscuit got sesame?",
+    "expect": {
+      "includes": [
+        "Wife Biscuit"
+      ],
+      "says": [
+        "sesame|bijan|芝麻"
+      ]
+    },
+    "note": "Yes."
+  },
+  {
+    "id": "kopitiam-bakery-048",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "spice",
+      "dish_info",
+      "easy"
+    ],
+    "question": "Is the curry puff spicy?",
+    "expect": {
+      "includes": [
+        "Chicken Curry Puff"
+      ]
+    },
+    "note": "Mild."
+  },
+  {
+    "id": "kopitiam-bakery-049",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "zh",
+    "tags": [
+      "dish_allergen",
+      "chinese",
+      "easy"
+    ],
+    "question": "咖椰吐司有蛋吗？",
+    "expect": {
+      "includes": [
+        "Kaya Butter Toast"
+      ],
+      "says": [
+        "蛋|egg|telur"
+      ]
+    },
+    "note": "Kaya has egg."
+  },
+  {
+    "id": "kopitiam-bakery-050",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "pairing",
+      "easy"
+    ],
+    "question": "What drink goes with kaya toast?",
+    "expect": {
+      "category": "drink",
+      "minDishes": 1
+    },
+    "note": "Any drink."
+  },
+  {
+    "id": "kopitiam-bakery-051",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "diet",
+      "malay",
+      "hard"
+    ],
+    "question": "Saya vegetarian, boleh makan mee rebus?",
+    "expect": {
+      "vegetarian": true
+    },
+    "note": "Dried shrimp and beef stock in the gravy."
+  },
+  {
+    "id": "kopitiam-bakery-052",
+    "menu": "kopitiam-bakery",
+    "split": "dev",
+    "lang": "en",
+    "tags": [
+      "allergy",
+      "dish_allergen",
+      "medium"
+    ],
+    "question": "Milk allergy, is the egg tart ok?",
+    "expect": {
+      "avoid": [
+        "milk"
+      ],
+      "safetyNote": true
+    },
+    "note": "Butter pastry + evaporated milk."
+  }
+]

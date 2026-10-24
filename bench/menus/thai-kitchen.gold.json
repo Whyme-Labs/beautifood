@@ -137,13 +137,14 @@
   "Cashew Chicken": {
     "allergens": [
       "tree_nuts",
-      "molluscs"
+      "molluscs",
+      "gluten"
     ],
     "vegetarian": false,
     "vegan": false,
     "halal": true,
     "spice": 1,
-    "note": "Cashews = tree nuts; oyster sauce = molluscs; described as mild."
+    "note": "Cashews = tree nuts; oyster sauce = molluscs; described as mild. Oyster sauce = molluscs + gluten (most commercial oyster sauce contains wheat; v3 rule g)."
   },
   "Pla Rad Prik": {
     "allergens": [
@@ -168,13 +169,14 @@
   "Stir-fried Morning Glory": {
     "allergens": [
       "soy",
-      "molluscs"
+      "molluscs",
+      "gluten"
     ],
     "vegetarian": false,
     "vegan": false,
     "halal": true,
     "spice": 1,
-    "note": "Fermented soybean paste = soy; oyster sauce = molluscs, so not vegetarian. Chilli = mild."
+    "note": "Fermented soybean paste = soy; oyster sauce = molluscs, so not vegetarian. Chilli = mild. Oyster sauce = molluscs + gluten (most commercial oyster sauce contains wheat; v3 rule g)."
   },
   "Pad Kra Pao Gai": {
     "allergens": [
