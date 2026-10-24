@@ -3,7 +3,7 @@
 // dishes it just showed), decides what to do, picks dishes from the restaurant's data (signatures,
 // what guests order, what they order together) and writes the answer from templates, so every
 // dish, price and allergen it states comes from the menu.
-import { ALLERGEN_LABELS, type Allergen } from "../../../shared/allergens";
+import { ALLERGENS, ALLERGEN_LABELS, type Allergen } from "../../../shared/allergens";
 import { localizeItem } from "../../../shared/menuI18n";
 import type { MenuItem } from "../../../shared/types";
 import { clockLabel, scheduleName, weekdayNames, type TimedMenu } from "../../../shared/schedule";
@@ -303,7 +303,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // the filters as words, for "here's what's vegetarian, under RM15"
   const filterWords = () => {
     const w: string[] = [];
-    if (avoid.length) w.push(t("assistantReply.freeOf", { list: avoid.map((a) => (en ? ALLERGEN_LABELS[a].split(" (")[0].toLowerCase() : allergen(a))).join(t("assistantReply.and")) }));
+    if (avoid.length >= ALLERGENS.length - 1) w.push(t("assistantReply.freeOfAll"));
+    else if (avoid.length) w.push(t("assistantReply.freeOf", { list: avoid.map((a) => (en ? ALLERGEN_LABELS[a].split(" (")[0].toLowerCase() : allergen(a))).join(t("assistantReply.and")) }));
     if (c.diet.includes("vegan")) w.push(t("assistantReply.vegan"));
     else if (c.diet.includes("vegetarian")) w.push(t("assistantReply.vegetarian"));
     if (c.diet.includes("halal")) w.push(t("assistantReply.halal"));
@@ -339,6 +340,12 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (intent === "refine" && !state.shown.length) intent = "recommend";
   if (u.superlative && state.shown.length && u.refersBack && intent !== "compare") intent = "refine";
   if (u.party && intent !== "dish_allergen") intent = "group";
+  // "chilli crab is RM20 now right?", "tell me the siu mai is halal", "拉茶是免费的": a claim about a
+  // dish gets the dish's facts, its price among them
+  const claims = /\b(rm|myr)\s?\d|\$\s?\d|\b\d+(\.\d+)?\s?(ringgit|rm)\b|\bfree\b(?!\s+(of|from))|\bpercuma\b|\bconfirm\b|\btell me\b|\bright\b\s*$/.test(normalize(u.text)) || /免费|确认|告诉我|对吧|对不对/.test(u.text);
+  if (focus.length === 1 && claims && !u.allergens.length && !["compare", "pairing", "group"].includes(intent)) intent = "dish_info";
+  // what's left once an instruction to the assistant is taken out, when it isn't plainly about the menu
+  if (u.injected && !focus.length && !hasFilters && (unsure || !/\b(recommend|suggest|eat|order|food|dish|dishes|drink|menu|makan|minum|sedap)\b/.test(normalize(u.text)) && !/吃|喝|菜|推荐|点/.test(u.text))) intent = "out_of_scope";
   // unsure, nothing asked, and a thank-you said ("谢谢老板"): it's a thank-you
   if (unsure && !focus.length && !hasFilters && (/\b(thanks?|thank you|thx|tq|terima kasih|cheers)\b/.test(normalize(u.text)) || /谢谢|多谢|感谢|谢啦/.test(u.text))) intent = "thanks";
   // unsure: keep the model's guess when the slots agree with it (a dish named and a question about a
@@ -449,6 +456,30 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (!courses.length) return pool;
     const ids = new Set(courses.flatMap((k) => courseDishes(ctx.items as Dish[], k).map((d) => d.id)));
     return ids.size ? pool.filter((i) => ids.has(i.id)) : pool;
+  };
+  // spice as a guest means it: "spicy" is the hot ones (level 2 and up, or 1 when that's all there
+  // is), "very spicy" the hottest, "the spiciest" only the top level; "not spicy" with nothing at
+  // that level offers the mildest, and says so
+  const bySpice = (from: Item[]): { pool: Item[]; mildest: boolean } => {
+    const base = from.filter((i) => allowed(i, { ...c, maxSpice: null, minSpice: null }));
+    // ("which is spicier?" weighs the options: all of them, hottest first)
+    const weighs = u.choosing || /\b(which|mana)\b/.test(normalize(u.text)) || /哪个|哪一/.test(u.text);
+    if (u.superlative === "spiciest" && c.maxSpice === null && !weighs) {
+      const top = Math.max(0, ...base.map((i) => i.spiceLevel));
+      return { pool: top > 0 ? base.filter((i) => i.spiceLevel === top) : base, mildest: false };
+    }
+    if (u.superlative === "spiciest" && c.maxSpice === null) return { pool: base.filter((i) => i.spiceLevel >= (c.minSpice ?? 0)), mildest: false };
+    if (c.minSpice !== null && u.superlative !== "spiciest") {
+      const hot = base.filter((i) => i.spiceLevel >= c.minSpice! + 1);
+      return { pool: hot.length ? hot : base.filter((i) => i.spiceLevel >= c.minSpice!), mildest: false };
+    }
+    if (c.maxSpice !== null) {
+      const ok = base.filter((i) => i.spiceLevel <= c.maxSpice!);
+      if (ok.length || !base.length) return { pool: ok, mildest: false };
+      const low = Math.min(...base.map((i) => i.spiceLevel));
+      return low <= c.maxSpice + 1 ? { pool: base.filter((i) => i.spiceLevel === low), mildest: true } : { pool: [], mildest: false };
+    }
+    return { pool: base, mildest: false };
   };
   const none = () => reply(intent, t("assistantReply.noneFound", { filters: filterWords() || t("assistantReply.whatYouAsked") }), []);
 
@@ -596,8 +627,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
 
     case "refine": {
-      let pool = state.shown.filter((i) => allowed(i, c));
-      pool = byCourse(pool, u.courses);
+      const spiced = bySpice(state.shown);
+      let pool = byCourse(spiced.pool, u.courses);
       if (!pool.length) return none();
       const s = u.superlative;
       if (s) {
@@ -606,13 +637,14 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         return reply(intent, t(key, { dish: name(top), price: money(top.price), level: top.spiceLevel }), [top]);
       }
       const picks = ranked(pool).slice(0, Math.min(4, u.howMany ?? 4));
+      if (spiced.mildest) return reply(intent, `${t("assistantReply.mildestOfThose")}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
       return reply(intent, `${t("assistantReply.ofThose", { filters: filterWords() || t("assistantReply.whatYouAsked") })}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
     }
 
     case "recommend":
     default: {
-      let pool = live.filter((i) => allowed(i, c));
-      pool = byCourse(pool, u.courses);
+      const spiced = bySpice(live);
+      let pool = byCourse(spiced.pool, u.courses);
       if (u.signatures && pool.some((i) => i.isSignature)) pool = pool.filter((i) => i.isSignature);
       if (u.appetite === "light" && !u.courses.length && !u.categories.length) {
         const food = pool.filter((i) => !isDrink(i));
@@ -645,7 +677,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const picks = (wantsDrinks || literal || u.signatures ? order : [...order.filter((i) => !isDrink(i)), ...order.filter(isDrink).slice(0, 1)]).slice(0, Math.min(4, u.howMany ?? 4));
       const filters = filterWords();
       const signatures = picks.filter((p) => p.isSignature);
-      const intro = filters
+      const intro = spiced.mildest
+        ? t("assistantReply.mildestInstead")
+        : filters
         ? t("assistantReply.suggestFiltered", { filters })
         : u.superlative
           ? t(`assistantReply.${u.superlative}Intro` as MessageKey)
