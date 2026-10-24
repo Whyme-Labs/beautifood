@@ -1,0 +1,362 @@
+{
+  "Kimchi": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Fish sauce; salted shrimp. Not vegetarian. Spicy."
+  },
+  "Temple Kimchi": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Made without fish sauce or shrimp. Spicy."
+  },
+  "Japchae": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Beef; soy sauce = soy + wheat; sesame oil; egg strips. Sweet potato noodles themselves have no gluten."
+  },
+  "Vegetable Japchae": {
+    "allergens": [
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tamari stated as gluten-free soy sauce, so soy but no gluten; sesame oil; no egg. Vegan."
+  },
+  "Haemul Pajeon": {
+    "allergens": [
+      "molluscs",
+      "crustaceans",
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Squid and mussels = molluscs; prawns; wheat flour; egg; soy dipping sauce (soy sauce assumed wheat-brewed, labelled soy; gluten already present)."
+  },
+  "Mandu": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat wrappers; tofu = soy; soy vinegar dip. Pork = not halal."
+  },
+  "Gyeran Jjim": {
+    "allergens": [
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg; anchovy stock = fish, so not vegetarian."
+  },
+  "Tteokbokki": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Gochujang with wheat and soybeans; fish cakes = fish (Korean fish cakes also usually contain wheat). Rice cakes alone are gluten-free but the sauce is not. Spicy."
+  },
+  "Rose Tteokbokki": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Cream and mozzarella = milk; gochujang = wheat + soy; bacon = pork, not halal. Mild."
+  },
+  "Corn Cheese": {
+    "allergens": [
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Mozzarella and butter = milk; mayonnaise = egg."
+  },
+  "Samgyeopsal": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork belly = not halal; ssamjang = soybean + wheat; sesame oil. Mild."
+  },
+  "Beef Bulgogi": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy sauce = soy + wheat; sesame oil. Halal by ingredients (beef, no alcohol stated)."
+  },
+  "Spicy Pork Bulgogi": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Gochujang and soy sauce = soy + wheat; sesame oil; pork. Spicy."
+  },
+  "LA Galbi": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Soy sauce; sesame oil; mirin = rice wine with alcohol, so not halal. Mirin is not counted as sulphites or gluten (rice and rice koji; v3 rule)."
+  },
+  "Dak Galbi": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Gochujang = wheat + soy. Perilla leaves (sometimes called 'sesame leaves') are not sesame. Very spicy."
+  },
+  "Grilled Tiger Prawns": {
+    "allergens": [
+      "crustaceans",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawns; garlic butter = milk."
+  },
+  "Grilled King Oyster Mushrooms": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "King oyster is a mushroom, not a mollusc. Sesame oil."
+  },
+  "Grilled Tofu Steak": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu and soy sauce glaze = soy + wheat; sesame seeds."
+  },
+  "Kimchi Jjigae": {
+    "allergens": [
+      "crustaceans",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Kimchi with fish sauce and salted shrimp; anchovy stock; tofu; pork belly = not halal. Spicy."
+  },
+  "Sundubu Jjigae": {
+    "allergens": [
+      "soy",
+      "molluscs",
+      "crustaceans",
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Tofu; clams; prawns; egg; anchovy broth. Very spicy."
+  },
+  "Doenjang Jjigae": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Doenjang stated to contain wheat; tofu. Kelp broth, no meat. Mild."
+  },
+  "Samgyetang": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Chicken, glutinous rice (no gluten), ginseng, jujube, garlic. No listed allergens."
+  },
+  "Dolsot Bibimbap": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Gochujang = wheat + soy; marinated beef; fried egg; sesame oil. Mild."
+  },
+  "Vegetable Bibimbap": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Gochujang = wheat + soy; tofu; sesame oil. No egg. Mild."
+  },
+  "Naengmyeon": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat in the noodles (buckwheat itself is not gluten, but the wheat is); egg; mustard. Not spicy."
+  },
+  "Gonggibap": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Injeolmi Bingsu": {
+    "allergens": [
+      "milk",
+      "soy",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk ice and condensed milk; roasted soybean powder; almond flakes. Glutinous rice cake, no gluten. No peanuts."
+  },
+  "Hotteok": {
+    "allergens": [
+      "gluten",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; chopped peanuts."
+  },
+  "Hodu-gwaja": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour, egg, milk; walnut."
+  },
+  "Sikhye": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley = gluten."
+  },
+  "Yuja Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan."
+  },
+  "Banana Milk": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk."
+  }
+}

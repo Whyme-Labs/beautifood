@@ -1,0 +1,350 @@
+{
+  "Mushroom Soup": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Chicken stock: not vegetarian despite the name. Cream, butter = milk; flour and garlic bread = gluten (garlic bread may have butter too)."
+  },
+  "Pumpkin Soup": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Vegetable stock lists celery. Coconut milk is not dairy. Vegan."
+  },
+  "Cheesy Wedges": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cheddar and sour cream."
+  },
+  "Buffalo Wings": {
+    "allergens": [
+      "milk",
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Butter and blue cheese = milk; celery sticks = celery; very spicy."
+  },
+  "Calamari Rings": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Squid = molluscs; wheat flour + egg batter; tartar sauce (mayo) = egg."
+  },
+  "Chicken Chop Black Pepper": {
+    "allergens": [
+      "milk",
+      "fish",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Butter = milk; Worcestershire = anchovies (fish) and malt vinegar (gluten); coleslaw dressing = mayo (egg). Mild."
+  },
+  "Chicken Chop Mushroom Sauce": {
+    "allergens": [
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream, butter = milk; coleslaw mayo = egg. Not spicy."
+  },
+  "Lamb Chop": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Buttery mashed potato = milk. Mint sauce, rosemary, garlic."
+  },
+  "Fish & Chips": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dory = fish; wheat batter; mayonnaise = egg."
+  },
+  "Grilled Salmon": {
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salmon; lemon butter sauce = milk. Gluten-free as stated."
+  },
+  "Mussels in White Wine": {
+    "allergens": [
+      "molluscs",
+      "sulphites",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Mussels = molluscs; white wine = sulphites and alcohol (not halal); butter; baguette = gluten."
+  },
+  "Ribeye Steak": {
+    "allergens": [
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Bearnaise: egg yolk and butter. Fries and greens."
+  },
+  "Carbonara": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Spaghetti; egg yolk; cream and parmesan. Beef bacon, so halal."
+  },
+  "Aglio Olio Prawns": {
+    "allergens": [
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Spaghetti; prawns. Spicy."
+  },
+  "Vegetarian Aglio Olio": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Egg-free wheat spaghetti; vegan; spicy."
+  },
+  "Seafood Marinara": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "molluscs",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Linguine; prawns; squid and mussels; dory. Mild."
+  },
+  "Pesto Penne": {
+    "allergens": [
+      "gluten",
+      "tree_nuts",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Penne; pine nuts + cashew = tree nuts; parmesan = milk (strictly animal rennet, but merchant tags vegetarian)."
+  },
+  "Classic Beef Burger": {
+    "allergens": [
+      "gluten",
+      "sesame",
+      "milk",
+      "egg",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Brioche (wheat, egg, butter) with sesame; cheddar; mustard mayo = mustard + egg."
+  },
+  "Crispy Chicken Burger": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Buttermilk = milk; wheat coating and bun; mayo/coleslaw = egg; mildly spicy."
+  },
+  "Portobello Burger": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wholemeal bun = gluten; soy-based aioli = soy. Vegan."
+  },
+  "Caesar Salad": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "fish",
+      "egg",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Croutons; parmesan; anchovies; egg yolk; mustard; chicken."
+  },
+  "Garden Salad": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain greens, lemon and olive oil."
+  },
+  "Quinoa Salad": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Feta = milk; walnuts = tree nuts; honey = not vegan."
+  },
+  "Burnt Cheesecake": {
+    "allergens": [
+      "milk",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream cheese, cream; eggs; flour."
+  },
+  "Chocolate Lava Cake": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Chocolate cake (flour, eggs, butter); ice cream = milk. Not tagged but ingredients are vegetarian."
+  },
+  "Flourless Chocolate Almond Cake": {
+    "allergens": [
+      "tree_nuts",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ground almonds = tree nuts; eggs; butter. Gluten-free."
+  },
+  "Chocolate Milkshake": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ice cream, milk, cream."
+  },
+  "Strawberry Oat Shake": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oat milk: oats are a gluten cereal (unsafe for coeliac unless certified). Dairy-free, vegan."
+  },
+  "Peanut Butter Banana Shake": {
+    "allergens": [
+      "peanuts",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanut butter; fresh milk; honey."
+  },
+  "Cafe Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk."
+  },
+  "Long Black": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Espresso and water."
+  }
+}

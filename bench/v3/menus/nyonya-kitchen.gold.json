@@ -1,0 +1,352 @@
+{
+  "Otak-Otak": {
+    "allergens": [
+      "fish",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Mackerel paste; egg; chilli paste contains belacan = crustaceans. Coconut milk is not dairy. Described as spicy."
+  },
+  "Pie Tee": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat-flour cups; prawns; shredded egg. Sweet chilli sauce, mild."
+  },
+  "Jiu Hu Char": {
+    "allergens": [
+      "molluscs",
+      "soy",
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Dried cuttlefish = molluscs, so not vegetarian despite being mostly vegetables; soy sauce = soy + wheat; sambal belacan served on the side = crustaceans. Mild."
+  },
+  "Ngoh Hiang": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawn; egg binder; beancurd skin = soy. Not spicy."
+  },
+  "Kerabu Mangga": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Dried shrimp and sambal belacan = crustaceans. Spicy."
+  },
+  "Acar Awak": {
+    "allergens": [
+      "sesame",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Sesame seeds; crushed peanuts. Vegan tag. Mild."
+  },
+  "Ayam Pongteh": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Taucu = soy; dark soy sauce = soy + wheat. Not spicy."
+  },
+  "Babi Pongteh": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork = not halal. Taucu and dark soy sauce = soy + wheat."
+  },
+  "Kari Kapitan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan = crustaceans. Coconut milk, not dairy. Spicy."
+  },
+  "Assam Pedas Fish": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Spanish mackerel; belacan. Very spicy."
+  },
+  "Sotong Sambal": {
+    "allergens": [
+      "molluscs",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Squid = molluscs; belacan = crustaceans. Spicy."
+  },
+  "Chap Chye": {
+    "allergens": [
+      "crustaceans",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but cooked in dried prawn stock = crustaceans, not vegetarian. Beancurd skin and light soy sauce = soy + wheat. Glass noodles are mung bean (no wheat)."
+  },
+  "Sayur Lodeh": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Tempeh = soy. Made without belacan or dried shrimp. Coconut milk not dairy. Mild."
+  },
+  "Kangkung Belacan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Sambal belacan = crustaceans; not vegetarian. Spicy."
+  },
+  "Tauhu Goreng": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Tofu = soy; kicap manis (sweet soy sauce) = soy + wheat; peanut sauce. No shrimp paste, vegan. Mild."
+  },
+  "Nyonya Laksa": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan and prawns = crustaceans; cockles = molluscs; fish balls = fish; tofu puffs = soy; egg. Rice noodles. Fish balls assumed fish + tapioca starch (no wheat) - judgement call, no case depends on laksa being gluten-free. Spicy."
+  },
+  "Mee Siam": {
+    "allergens": [
+      "crustaceans",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Dried shrimp; tofu; egg. Rice vermicelli, no wheat. Mild."
+  },
+  "Nasi Lemak Nyonya": {
+    "allergens": [
+      "crustaceans",
+      "fish",
+      "peanuts",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Sambal with belacan and anchovies; fried anchovies; peanuts; egg. Turmeric fried chicken, no batter stated. Coconut rice not dairy. Spicy."
+  },
+  "Nasi Ulam": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds like a herb rice but has salted fish and dried shrimp. Not spicy."
+  },
+  "Nasi Goreng Kunyit": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Egg; light soy sauce = soy + wheat. Vegetarian, not vegan. Mild."
+  },
+  "Prawn Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Yellow egg noodles = wheat + egg; prawns and prawn broth; pork = not halal. Chilli on the side, mild."
+  },
+  "Nasi Putih": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Cendol": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice-flour jelly, red beans, coconut milk (not dairy), gula melaka. Vegan."
+  },
+  "Pulut Inti": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice has no gluten; coconut; gula melaka."
+  },
+  "Kuih Lapis": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice flour, tapioca, coconut milk; without egg."
+  },
+  "Nyonya Pineapple Tarts": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour, butter, egg yolk."
+  },
+  "Bubur Cha Cha": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sweet potato, yam, sago, coconut milk; no dairy."
+  },
+  "Sago Gula Melaka": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk = milk (this version is not the coconut-milk one), so vegetarian but not vegan."
+  },
+  "Nyonya Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Kopi O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black coffee with sugar. (Local kopi beans are sometimes roasted with margarine; not stated, follows merchant's vegan tag.)"
+  },
+  "Barley Lime": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten (barley is a gluten cereal)."
+  },
+  "Bunga Telang Lemonade": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan."
+  },
+  "Soya Bean Pandan": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy milk."
+  }
+}

@@ -58,3 +58,25 @@ The `test` split is frozen. It changes only to fix a wrong label, recorded here 
   changed (19 test, 9 dev), none removed. No other edits.
 - Every version was re-scored on v1.2, so the comparison stays like for like.
 - Test fingerprint: `2aeecd9888d2ed1a` (404 cases).
+
+## v3 held-out set (bench/v3/): 2026-10-24
+
+- 453 cases, all `test`, on 4 new menus with their own gold readings (`v3/menus/`: nyonya-kitchen,
+  korean-grill, hotpot-house, bistro-western). Written by two new blind authors who read only the
+  README, the schema, the v2 review's conventions and one example menu, never the engine, its
+  training data or the other sets.
+- Reviewed by a third blind reviewer (`v3/REVIEW.md`): all 453 cases and 128 gold dishes checked; 4
+  gold entries and 4 cases changed, none removed. It settles rules v2 left open, notably oyster sauce
+  = molluscs + gluten and Shaoxing wine = sulphites + gluten.
+- Frozen, and committed, before any engine was scored on it. Like v2 before it, it is run once per
+  reported version, and no engine change may be judged on it until a further set replaces it.
+- The menus are new, so it also measures the onboarding parser out of sample
+  (`bench/menu-data.ts --set v3`, totals only).
+- Fingerprints: cases `e3a1169991e3c969` (453), menus and gold `12ee51326476c385` (8 files).
+
+## v2 held-out becomes dev (2026-10-24)
+
+- With v3 written (blind, before anyone read v2's failures), v2's cases may now be read and iterated
+  on. Its 2 unsafe answers were the first thing fixed: "veg here" / "veggie here" weren't read as a
+  stated diet, so the asked-about non-vegetarian dish still came as a card. v2's fingerprint is
+  unchanged; it is no longer a held-out measure.
