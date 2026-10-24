@@ -9,6 +9,8 @@ import type { MenuItem } from "../../../shared/types";
 import { clockLabel, scheduleName, weekdayNames, type TimedMenu } from "../../../shared/schedule";
 import { formatters, translator, type MessageKey } from "../../../i18n/core";
 import { normalize } from "../../../shared/brain/text";
+import { basketOf, compose } from "./basket";
+import { mentionedAllergens } from "../local";
 import type { Intent } from "../../../shared/brain/intentModel";
 import { allergyNote, type AssistantContext, type AssistantReply } from "../local";
 import type { TasteHint } from "../../taste/bridge";
@@ -279,7 +281,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const safety = avoid.length || u.allergens.length ? allyNote(locale) : undefined;
   // a card is an "add to order" button: never one for a dish that breaks an allergy or diet the guest
   // stated, even when the text is warning them about it
-  const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet])] };
+  // an order spelled out item by item ("one meat two veg"): "veg" there names an item, not a
+  // vegetarian guest, unless they said they are one
+  const spelled = basketOf(u.text, live as Dish[]);
+  // not a list of what they avoid ("allergic to fish, prawn, squid"), and not a group's "mains +
+  // drinks" with no numbers (the group plan sizes that to the party)
+  const basket =
+    spelled && !spelled.some((b) => mentionedAllergens(b.term).some((a) => u.stated.includes(a) || state.avoid.includes(a))) && !(u.party && !spelled.some((b) => b.counted)) ? spelled : null;
+  const vegItem = !!basket?.some((b) => b.course && /^(veg|veggie|vegetable|sayur|sayuran)$/.test(b.term));
+  const saysVegetarian = /\b(vegetarian|vegan|meatless|no meat|(i m|im|i am|we re|we are) (a )?veg)\b/.test(normalize(u.text)) || /素/.test(u.text);
+  const notVeg = (d: Diet) => !(vegItem && d === "vegetarian" && !saysVegetarian && !state.diet.includes("vegetarian"));
+  const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet])].filter(notVeg) };
   // ...and none for a dish that isn't served right now (it can't be ordered yet)
   const safeCard = (i: Item) => i.servedNow !== false && allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
   const reply = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
@@ -422,6 +434,15 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const sig = rank(live.filter((i) => !isDrink(i) && allowed(i, c))).slice(0, 3);
     if (later) return reply("recommend", t("assistantReply.menuLater", { menu: menuName(m), when: when(later), list: list(sig.map(line)) }), sig);
   }
+  // "total for both?", "berapa semua?", "一共多少？": what the dishes just talked about add up to
+  if (!u.budget && (/\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text))) {
+    const these = mentioned.length ? mentioned : state.shown;
+    if (these.length >= 2) {
+      const total = these.reduce((sum, i) => sum + i.price, 0);
+      return reply("recommend", `${these.map(line).join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}`, these);
+    }
+  }
+
   // a plain search of the menu ("chicken", "有没有披萨？"): what matches, or an honest "we don't have it"
   const searchable = !mentioned.length && !nth && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null) &&
     // "有没有云吞面？" names a dish more exactly than its course (面) does
@@ -507,6 +528,22 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   };
   const none = () => reply(intent, t("assistantReply.noneFound", { filters: filterWords() || t("assistantReply.whatYouAsked") }), []);
 
+  // an order spelled out item by item ("one ramen and one drink for RM35", "one meat two veg"): a
+  // dish for each, within what they have to spend, and the total
+  if (basket && !(intent === "dish_allergen" && focus.length && u.asksContents) && !["compare", "pairing", "order_help", "out_of_scope"].includes(intent)) {
+    const spend = u.amount ?? u.budget;
+    // "toast, eggs and two kopi": an allergen named as an item is asked for, unless they said they avoid it
+    const items = new Set(basket.flatMap((b) => mentionedAllergens(b.term)));
+    const diet = c.diet.filter(notVeg);
+    const keep = { ...c, diet, budget: null, avoid: c.avoid.filter((a) => !items.has(a) || u.stated.includes(a) || state.avoid.includes(a)) };
+    const order = compose(basket, ranked(live.filter((i) => allowed(i, keep))), spend);
+    const asked = list(basket.map((b) => (b.count > 1 ? `${b.count} × ${b.term}` : b.term)));
+    if (!order) return { ...reply("recommend", spend !== null ? t("assistantReply.basketNoFit", { list: asked, budget: money(spend) }) : t("assistantReply.noneFound", { filters: filterWords() || t("assistantReply.whatYouAsked") }), []), safetyNote: safety };
+    const total = order.reduce((sum, o) => sum + o.dish.price * o.count, 0);
+    const lines = order.map((o) => (o.count > 1 ? `${o.count} × ${line(o.dish)}` : line(o.dish)));
+    const sum = spend !== null ? t("assistantReply.basketWithin", { total: money(total), budget: money(spend) }) : t("assistantReply.basketTotal", { total: money(total) });
+    return { ...reply("recommend", `${t("assistantReply.basketIntro")}${sp}${lines.join(t("assistantReply.itemSep"))}${stop}${sp}${sum}`, order.map((o) => o.dish)), safetyNote: safety };
+  }
   switch (intent) {
     case "greeting":
     case "out_of_scope":

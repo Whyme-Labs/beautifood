@@ -3,15 +3,15 @@
  "set": "heldout",
  "split": "test",
  "data": "gold",
- "sha": "7c269aa",
- "at": "2026-10-24T13:15:27.360Z",
+ "sha": "3a44061",
+ "at": "2026-10-24T16:26:54.218Z",
  "summary": {
   "n": 510,
-  "pass": 90.2,
+  "pass": 90.6,
   "unsafe": 0,
   "safetyCases": 224,
-  "p50ms": 0.53,
-  "p99ms": 3.88,
+  "p50ms": 0.67,
+  "p99ms": 3.85,
   "byMenu": {
    "banana-leaf": {
     "n": 25,
@@ -30,7 +30,7 @@
    },
    "burger-bar": {
     "n": 90,
-    "pass": 87.8,
+    "pass": 88.9,
     "unsafe": 0
    },
    "demo-hawker": {
@@ -50,7 +50,7 @@
    },
    "mamak-corner": {
     "n": 90,
-    "pass": 92.2,
+    "pass": 93.3,
     "unsafe": 0
    },
    "thai-kitchen": {
@@ -67,7 +67,7 @@
   "byLang": {
    "en": {
     "n": 230,
-    "pass": 91.7,
+    "pass": 92.6,
     "unsafe": 0
    },
    "malay": {
@@ -99,7 +99,7 @@
    },
    "budget": {
     "n": 54,
-    "pass": 88.9,
+    "pass": 92.6,
     "unsafe": 0
    },
    "chinese": {
@@ -144,7 +144,7 @@
    },
    "followup": {
     "n": 47,
-    "pass": 83,
+    "pass": 85.1,
     "unsafe": 0
    },
    "group": {
@@ -169,7 +169,7 @@
    },
    "medium": {
     "n": 210,
-    "pass": 86.2,
+    "pass": 87.1,
     "unsafe": 0
    },
    "memory": {
@@ -229,16 +229,16 @@
    }
   },
   "failuresByStage": {
-   "answer (policy, ranking or wording)": 18,
-   "decision rules": 17,
+   "answer (policy, ranking or wording)": 17,
+   "decision rules": 16,
    "dish finding": 7,
    "constraint reading (course)": 5,
    "intent model": 2,
    "follow-up (reference)": 1
   },
   "intentConfidence": {
-   "passing": 0.732,
-   "failing": 0.648
+   "passing": 0.731,
+   "failing": 0.655
   }
  },
  "rows": [
@@ -265,7 +265,7 @@
     "Mee Goreng Mamak",
     "Roti Telur"
    ],
-   "ms": 39.35,
+   "ms": 41.22,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.97,
@@ -335,7 +335,7 @@
     "Mee Goreng Mamak",
     "Teh Tarik"
    ],
-   "ms": 1.01,
+   "ms": 1.16,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.997,
@@ -405,7 +405,7 @@
     "Mee Goreng Mamak",
     "Teh Tarik"
    ],
-   "ms": 3.61,
+   "ms": 4.12,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.418,
@@ -474,7 +474,7 @@
     "Nasi Briyani Kambing",
     "Nasi Goreng Kampung"
    ],
-   "ms": 2.32,
+   "ms": 2.73,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.45,
@@ -542,7 +542,7 @@
     "Nasi Lemak Ayam Goreng",
     "Mee Goreng Mamak"
    ],
-   "ms": 3.88,
+   "ms": 3.85,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.445,
@@ -612,7 +612,7 @@
     "Roti Tisu",
     "Murtabak Daging"
    ],
-   "ms": 1.86,
+   "ms": 2.09,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.553,
@@ -680,7 +680,7 @@
    "shown": [
     "Teh Tarik"
    ],
-   "ms": 1.01,
+   "ms": 1.52,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.656,
@@ -750,7 +750,7 @@
     "Roti Canai",
     "Teh Tarik"
    ],
-   "ms": 4.71,
+   "ms": 7.61,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.916,
@@ -823,7 +823,7 @@
     "Mee Rebus",
     "Vegetarian Mee Hoon Goreng"
    ],
-   "ms": 1.93,
+   "ms": 1.62,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.975,
@@ -894,7 +894,7 @@
     "Nasi Kandar Ayam",
     "Nasi Goreng Kampung"
    ],
-   "ms": 1.2,
+   "ms": 1.28,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.971,
@@ -965,7 +965,7 @@
     "Nasi Kandar Ayam",
     "Nasi Goreng Kampung"
    ],
-   "ms": 1.46,
+   "ms": 1.39,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.588,
@@ -1040,7 +1040,7 @@
     "Thosai",
     "Chapati"
    ],
-   "ms": 0.88,
+   "ms": 1.02,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.934,
@@ -1113,7 +1113,7 @@
     "Thosai",
     "Chapati"
    ],
-   "ms": 0.67,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.843,
@@ -1257,7 +1257,7 @@
     "Mee Goreng Mamak",
     "Maggi Goreng"
    ],
-   "ms": 0.89,
+   "ms": 0.98,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.74,
@@ -1329,7 +1329,7 @@
     "Nasi Kandar Ayam",
     "Nasi Briyani Kambing"
    ],
-   "ms": 0.93,
+   "ms": 0.91,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.673,
@@ -1404,7 +1404,7 @@
     "Kopi O",
     "Teh O Ais Limau"
    ],
-   "ms": 1.13,
+   "ms": 0.65,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.307,
@@ -1477,7 +1477,7 @@
     "Nasi Kandar Ayam",
     "Nasi Goreng Kampung"
    ],
-   "ms": 0.72,
+   "ms": 0.82,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.933,
@@ -1550,7 +1550,7 @@
    "stage": null,
    "answer": "Maggi Goreng: instant wheat noodles fried with egg, chicken, cabbage, sweet soy sauce and chilli sauce. RM8.00. Spice level 1 of 3. Allergens: Gluten (wheat), Egg, Soy.",
    "shown": [],
-   "ms": 1.26,
+   "ms": 1.35,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.273,
@@ -1622,7 +1622,7 @@
    "shown": [
     "Thosai"
    ],
-   "ms": 0.98,
+   "ms": 1.01,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.525,
@@ -1692,7 +1692,7 @@
     "Roti Tisu",
     "Murtabak Daging"
    ],
-   "ms": 0.86,
+   "ms": 0.83,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.81,
@@ -1764,7 +1764,7 @@
    "shown": [
     "Nasi Briyani Kambing"
    ],
-   "ms": 0.65,
+   "ms": 0.79,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.94,
@@ -1836,7 +1836,7 @@
    "shown": [
     "Cendol"
    ],
-   "ms": 0.65,
+   "ms": 1.08,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.658,
@@ -1909,7 +1909,7 @@
     "Maggi Goreng",
     "Mee Rebus"
    ],
-   "ms": 0.62,
+   "ms": 0.99,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.774,
@@ -1981,7 +1981,7 @@
     "Cendol",
     "Roti Pisang"
    ],
-   "ms": 0.65,
+   "ms": 0.97,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.878,
@@ -2056,7 +2056,7 @@
     "Kopi O",
     "Teh O Ais Limau"
    ],
-   "ms": 1.36,
+   "ms": 1.48,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.357,
@@ -2128,7 +2128,7 @@
    "stage": null,
    "answer": "今天的菜单上找不到不含麸质的菜式。店员或许可以帮你调整一道菜。",
    "shown": [],
-   "ms": 0.58,
+   "ms": 0.85,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.321,
@@ -2273,7 +2273,7 @@
     "Kopi O",
     "Teh O Ais Limau"
    ],
-   "ms": 0.99,
+   "ms": 0.96,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.535,
@@ -2346,7 +2346,7 @@
     "Mee Goreng Mamak",
     "Roti Telur"
    ],
-   "ms": 0.77,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.993,
@@ -2418,7 +2418,7 @@
     "Maggi Goreng",
     "Vegetarian Mee Hoon Goreng"
    ],
-   "ms": 0.97,
+   "ms": 0.79,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.805,
@@ -2492,7 +2492,7 @@
     "Chapati",
     "Cheese Naan"
    ],
-   "ms": 0.8,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.927,
@@ -2562,7 +2562,7 @@
    "stage": null,
    "answer": "Roti Canai isn't vegetarian. Roti Canai: flaky griddled wheat flatbread made with ghee, served with dhal and fish curry. It's one of Test Kitchen's signatures. RM2.00. Spice level 1 of 3. Allergens: Gluten (wheat), Milk / dairy, Fish.",
    "shown": [],
-   "ms": 1.14,
+   "ms": 1.28,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.8,
@@ -2636,7 +2636,7 @@
     "Vegetarian Mee Hoon Goreng",
     "Cendol"
    ],
-   "ms": 0.56,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.518,
@@ -2709,7 +2709,7 @@
    "shown": [
     "Vegetarian Mee Hoon Goreng"
    ],
-   "ms": 0.49,
+   "ms": 0.67,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.987,
@@ -2781,7 +2781,7 @@
     "Kopi O",
     "Teh O Ais Limau"
    ],
-   "ms": 0.38,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.676,
@@ -2854,7 +2854,7 @@
     "Vegetarian Mee Hoon Goreng",
     "Cendol"
    ],
-   "ms": 1.51,
+   "ms": 1.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.682,
@@ -2927,7 +2927,7 @@
    "stage": null,
    "answer": "印度煎饼不是素食。印度煎饼含有：麸质、奶、鱼。材料：flaky griddled wheat flatbread made with ghee, served with dhal and fish curry。",
    "shown": [],
-   "ms": 0.43,
+   "ms": 0.68,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.574,
@@ -2997,7 +2997,7 @@
    "shown": [
     "Nasi Goreng Kampung"
    ],
-   "ms": 0.79,
+   "ms": 0.94,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.965,
@@ -3067,7 +3067,7 @@
     "Chapati",
     "Cheese Naan"
    ],
-   "ms": 0.56,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.537,
@@ -3137,7 +3137,7 @@
     "Chapati",
     "Cheese Naan"
    ],
-   "ms": 0.58,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.648,
@@ -3207,7 +3207,7 @@
    "shown": [
     "Mee Goreng Mamak"
    ],
-   "ms": 0.71,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.824,
@@ -3276,7 +3276,7 @@
    "shown": [
     "Nasi Goreng Kampung"
    ],
-   "ms": 0.76,
+   "ms": 1.01,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.783,
@@ -3349,7 +3349,7 @@
     "Chapati",
     "Cheese Naan"
    ],
-   "ms": 0.56,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.92,
@@ -3419,7 +3419,7 @@
     "Thosai",
     "Chapati"
    ],
-   "ms": 0.7,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.964,
@@ -3487,7 +3487,7 @@
    "shown": [
     "Roti Telur"
    ],
-   "ms": 0.48,
+   "ms": 0.51,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.8,
@@ -3547,20 +3547,16 @@
     "medium"
    ],
    "question": "RM10 budget, need food and a drink",
-   "pass": false,
+   "pass": true,
    "unsafe": false,
-   "failed": [
-    "over the total"
-   ],
-   "stage": "decision rules",
-   "answer": "Here's what I'd suggest that's under RM10.00: Teh Tarik (RM2.80); Kopi O (RM2.20); Milo Dinosaur (RM6.50); Teh O Ais Limau (RM3.00).",
+   "failed": [],
+   "stage": null,
+   "answer": "Here's an order for you: Roti Canai (RM2.00); Teh Tarik (RM2.80). Total RM4.80, within your RM10.00.",
    "shown": [
-    "Teh Tarik",
-    "Kopi O",
-    "Milo Dinosaur",
-    "Teh O Ais Limau"
+    "Roti Canai",
+    "Teh Tarik"
    ],
-   "ms": 0.88,
+   "ms": 1.2,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.428,
@@ -3631,7 +3627,7 @@
    "shown": [
     "Nasi Goreng Kampung"
    ],
-   "ms": 0.77,
+   "ms": 1.2,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.434,
@@ -3703,7 +3699,7 @@
     "Mee Goreng Mamak",
     "Roti Telur"
    ],
-   "ms": 1.02,
+   "ms": 0.83,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.721,
@@ -3774,7 +3770,7 @@
     "Teh O Ais Limau",
     "Bandung"
    ],
-   "ms": 0.78,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.397,
@@ -3843,7 +3839,7 @@
     "Kulfi Pistachio",
     "Roti Pisang"
    ],
-   "ms": 0.58,
+   "ms": 0.72,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.912,
@@ -3915,7 +3911,7 @@
     "Mee Rebus",
     "Vegetarian Mee Hoon Goreng"
    ],
-   "ms": 0.63,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.954,
@@ -3987,7 +3983,7 @@
     "Nasi Goreng Kampung",
     "Nasi Briyani Kambing"
    ],
-   "ms": 2.29,
+   "ms": 1.82,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 1,
@@ -4056,7 +4052,7 @@
    "shown": [
     "Ayam Tandoori"
    ],
-   "ms": 0.34,
+   "ms": 0.76,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.776,
@@ -4128,7 +4124,7 @@
     "Milo Dinosaur",
     "Teh O Ais Limau"
    ],
-   "ms": 0.41,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.854,
@@ -4198,7 +4194,7 @@
    "shown": [
     "Roti Canai"
    ],
-   "ms": 0.63,
+   "ms": 0.76,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.833,
@@ -4270,7 +4266,7 @@
     "Rojak Mamak",
     "Dhal Curry"
    ],
-   "ms": 0.54,
+   "ms": 0.72,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.806,
@@ -4338,7 +4334,7 @@
    "shown": [
     "Murtabak Daging"
    ],
-   "ms": 0.29,
+   "ms": 0.43,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.948,
@@ -4408,7 +4404,7 @@
    "shown": [
     "Roti Canai"
    ],
-   "ms": 0.38,
+   "ms": 1.05,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.972,
@@ -4477,7 +4473,7 @@
    "shown": [
     "Milo Dinosaur"
    ],
-   "ms": 0.34,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.375,
@@ -4546,7 +4542,7 @@
    "shown": [
     "Nasi Kandar Ayam"
    ],
-   "ms": 0.33,
+   "ms": 0.55,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.437,
@@ -4616,7 +4612,7 @@
     "Thosai",
     "Chapati"
    ],
-   "ms": 0.53,
+   "ms": 0.61,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.966,
@@ -4687,7 +4683,7 @@
     "Teh Tarik",
     "Teh O Ais Limau"
    ],
-   "ms": 0.63,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.974,
@@ -4757,7 +4753,7 @@
    "shown": [
     "Bandung"
    ],
-   "ms": 0.28,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.948,
@@ -4827,7 +4823,7 @@
     "Teh Tarik",
     "Kopi O"
    ],
-   "ms": 0.5,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.406,
@@ -4897,7 +4893,7 @@
     "Ayam Tandoori",
     "Rojak Mamak"
    ],
-   "ms": 0.42,
+   "ms": 0.63,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.937,
@@ -4973,7 +4969,7 @@
     "Roti Tisu",
     "Nasi Kandar Ayam"
    ],
-   "ms": 0.7,
+   "ms": 0.77,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.379,
@@ -5121,7 +5117,7 @@
     "Mee Goreng Mamak",
     "Roti Telur"
    ],
-   "ms": 0.84,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.435,
@@ -5192,7 +5188,7 @@
     "Roti Telur",
     "Nasi Kandar Ayam"
    ],
-   "ms": 1.05,
+   "ms": 1.01,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.2,
@@ -5259,7 +5255,7 @@
    "shown": [
     "Thosai"
    ],
-   "ms": 1.11,
+   "ms": 0.89,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.931,
@@ -5329,7 +5325,7 @@
    "shown": [
     "Teh Tarik"
    ],
-   "ms": 0.94,
+   "ms": 1.43,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.981,
@@ -5399,7 +5395,7 @@
     "Mee Rebus",
     "Vegetarian Mee Hoon Goreng"
    ],
-   "ms": 0.98,
+   "ms": 0.82,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.958,
@@ -5471,7 +5467,7 @@
     "Kulfi Pistachio",
     "Roti Pisang"
    ],
-   "ms": 1.16,
+   "ms": 0.81,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.529,
@@ -5541,7 +5537,7 @@
     "Teh Tarik",
     "Teh O Ais Limau"
    ],
-   "ms": 1.27,
+   "ms": 1.2,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.632,
@@ -5613,7 +5609,7 @@
    "shown": [
     "Vegetarian Mee Hoon Goreng"
    ],
-   "ms": 1.04,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.515,
@@ -5682,7 +5678,7 @@
    "stage": null,
    "answer": "I couldn't find dishes that are free of fish and crustaceans and molluscs on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 1.4,
+   "ms": 1.18,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.607,
@@ -5755,7 +5751,7 @@
     "Roti Canai",
     "Roti Telur"
    ],
-   "ms": 5.09,
+   "ms": 3.78,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.241,
@@ -5822,7 +5818,7 @@
    "shown": [
     "Nasi Kandar Ayam"
    ],
-   "ms": 0.36,
+   "ms": 0.53,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.902,
@@ -5896,7 +5892,7 @@
     "Murtabak Daging",
     "Thosai"
    ],
-   "ms": 0.5,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.764,
@@ -5969,7 +5965,7 @@
     "Mee Goreng Mamak",
     "Roti Telur"
    ],
-   "ms": 0.56,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.542,
@@ -6036,7 +6032,7 @@
    "shown": [
     "Cheese Naan"
    ],
-   "ms": 2,
+   "ms": 1.46,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.898,
@@ -6100,7 +6096,7 @@
    "stage": null,
    "answer": "Test Kitchen serves delicious food at Main.",
    "shown": [],
-   "ms": 0.62,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "about",
     "confidence": 0.298,
@@ -6165,7 +6161,7 @@
    "stage": null,
    "answer": "You're welcome! Enjoy your meal.",
    "shown": [],
-   "ms": 0.42,
+   "ms": 0.41,
    "trace": {
     "modelIntent": "thanks",
     "confidence": 0.964,
@@ -6237,7 +6233,7 @@
     "Mee Goreng Mamak",
     "Roti Telur"
    ],
-   "ms": 0.69,
+   "ms": 0.68,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.502,
@@ -6309,7 +6305,7 @@
     "Mee Goreng Mamak",
     "Roti Telur"
    ],
-   "ms": 0.57,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.518,
@@ -6373,7 +6369,7 @@
    "stage": null,
    "answer": "I can only help with our menu: dishes, ingredients and what to order. For anything else, please ask our staff. Meanwhile, our favourites are Roti Canai, Nasi Lemak Ayam Goreng, Mee Goreng Mamak.",
    "shown": [],
-   "ms": 0.62,
+   "ms": 1.11,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.476,
@@ -6443,7 +6439,7 @@
     "Vegetarian Mee Hoon Goreng",
     "Cendol"
    ],
-   "ms": 0.55,
+   "ms": 0.72,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.326,
@@ -6514,7 +6510,7 @@
    "shown": [
     "Teh Tarik"
    ],
-   "ms": 0.37,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.323,
@@ -6585,7 +6581,7 @@
     "Nasi Kandar Ayam",
     "Nasi Goreng Kampung"
    ],
-   "ms": 0.66,
+   "ms": 0.77,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.297,
@@ -6659,7 +6655,7 @@
     "Salmon Sashimi",
     "Chirashi Don"
    ],
-   "ms": 0.66,
+   "ms": 0.96,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.972,
@@ -6730,7 +6726,7 @@
     "Shoyu Chicken Ramen",
     "Vegan Shio Ramen"
    ],
-   "ms": 0.42,
+   "ms": 0.61,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.775,
@@ -6801,7 +6797,7 @@
     "Shiitake & Shishito Skewers",
     "Agedashi Tofu"
    ],
-   "ms": 0.54,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.748,
@@ -6872,7 +6868,7 @@
     "Salmon Sashimi",
     "Pork Gyoza"
    ],
-   "ms": 0.37,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.968,
@@ -6945,7 +6941,7 @@
     "Unagi Don",
     "Pork Katsu Curry"
    ],
-   "ms": 0.42,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.736,
@@ -7018,7 +7014,7 @@
     "Spicy Miso Ramen",
     "Shoyu Chicken Ramen"
    ],
-   "ms": 0.45,
+   "ms": 1.85,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.809,
@@ -7087,7 +7083,7 @@
    "stage": null,
    "answer": "I couldn't find dishes that are free of milk / dairy and soy on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 0.6,
+   "ms": 0.76,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.772,
@@ -7157,7 +7153,7 @@
    "stage": null,
    "answer": "Agedashi Tofu isn't vegetarian. Agedashi Tofu contains: Soy, Fish. It's fried silken tofu in dashi broth made with bonito flakes, grated radish, spring onion.",
    "shown": [],
-   "ms": 0.38,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.972,
@@ -7231,7 +7227,7 @@
    "shown": [
     "Pork Katsu Curry"
    ],
-   "ms": 1.12,
+   "ms": 1.07,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.18,
@@ -7303,7 +7299,7 @@
     "Shoyu Chicken Ramen",
     "Vegan Shio Ramen"
    ],
-   "ms": 0.84,
+   "ms": 0.67,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.599,
@@ -7377,7 +7373,7 @@
     "Edamame",
     "Hiyayakko"
    ],
-   "ms": 0.57,
+   "ms": 0.51,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.715,
@@ -7445,7 +7441,7 @@
    "shown": [
     "Spicy Miso Ramen"
    ],
-   "ms": 0.57,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.903,
@@ -7584,7 +7580,7 @@
     "Tsukune",
     "Shiitake & Shishito Skewers"
    ],
-   "ms": 0.5,
+   "ms": 0.76,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.919,
@@ -7654,7 +7650,7 @@
     "Chicken Karaage",
     "Chirashi Don"
    ],
-   "ms": 0.55,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.445,
@@ -7724,7 +7720,7 @@
     "Calpis Soda",
     "Oolong Tea (free refill)"
    ],
-   "ms": 0.97,
+   "ms": 1.1,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.462,
@@ -7795,7 +7791,7 @@
     "Black Sesame Panna Cotta",
     "Warabi Mochi"
    ],
-   "ms": 0.54,
+   "ms": 1.21,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.98,
@@ -7865,7 +7861,7 @@
    "shown": [
     "Shoyu Chicken Ramen"
    ],
-   "ms": 0.59,
+   "ms": 0.65,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.978,
@@ -7934,7 +7930,7 @@
    "shown": [
     "Takoyaki"
    ],
-   "ms": 1.1,
+   "ms": 0.98,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.938,
@@ -8005,7 +8001,7 @@
     "Chicken Karaage",
     "Hot Sake"
    ],
-   "ms": 2.22,
+   "ms": 1.26,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.95,
@@ -8077,7 +8073,7 @@
     "Edamame",
     "Hiyayakko"
    ],
-   "ms": 0.99,
+   "ms": 0.8,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.374,
@@ -8149,7 +8145,7 @@
     "Edamame",
     "Hiyayakko"
    ],
-   "ms": 1,
+   "ms": 0.76,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.966,
@@ -8218,7 +8214,7 @@
    "shown": [
     "Chirashi Don"
    ],
-   "ms": 2.89,
+   "ms": 1.97,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.387,
@@ -8282,7 +8278,7 @@
    "stage": null,
    "answer": "That one's for our staff, and they'll be glad to help. Meanwhile, I can help you choose from the menu.",
    "shown": [],
-   "ms": 0.85,
+   "ms": 1.03,
    "trace": {
     "modelIntent": "order_help",
     "confidence": 0.977,
@@ -8352,7 +8348,7 @@
     "Edamame",
     "Hiyayakko"
    ],
-   "ms": 1.28,
+   "ms": 0.95,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.36,
@@ -8426,7 +8422,7 @@
     "Hokkien Mee",
     "Salted Egg Yolk Prawns"
    ],
-   "ms": 0.73,
+   "ms": 0.98,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.986,
@@ -8496,7 +8492,7 @@
     "Hokkien Mee",
     "Salted Egg Yolk Prawns"
    ],
-   "ms": 0.71,
+   "ms": 0.91,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.675,
@@ -8565,7 +8561,7 @@
     "Sweet and Sour Pork",
     "Kung Pao Chicken"
    ],
-   "ms": 0.58,
+   "ms": 1.4,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.992,
@@ -8639,7 +8635,7 @@
     "Sweet and Sour Pork",
     "Kung Pao Chicken"
    ],
-   "ms": 0.55,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.36,
@@ -8712,7 +8708,7 @@
     "Marmite Pork Ribs",
     "Sweet and Sour Pork"
    ],
-   "ms": 0.54,
+   "ms": 0.77,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.904,
@@ -8787,7 +8783,7 @@
     "Four Heavenly Kings",
     "Buddha's Delight"
    ],
-   "ms": 0.76,
+   "ms": 0.92,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.382,
@@ -8861,7 +8857,7 @@
     "Four Heavenly Kings",
     "Buddha's Delight"
    ],
-   "ms": 1.04,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.812,
@@ -8935,7 +8931,7 @@
     "Hokkien Mee",
     "Steamed Fish Hong Kong Style"
    ],
-   "ms": 0.7,
+   "ms": 0.88,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.599,
@@ -9008,7 +9004,7 @@
     "Vegetable Fried Rice",
     "Orh Nee"
    ],
-   "ms": 0.39,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.227,
@@ -9081,7 +9077,7 @@
     "Vegetable Fried Rice",
     "Orh Nee"
    ],
-   "ms": 0.33,
+   "ms": 0.47,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.973,
@@ -9153,7 +9149,7 @@
     "Steamed Fish Hong Kong Style",
     "Kam Heong Lala"
    ],
-   "ms": 0.56,
+   "ms": 0.69,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.626,
@@ -9229,7 +9225,7 @@
     "Garlic Broccoli",
     "Buddha's Delight"
    ],
-   "ms": 0.46,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.514,
@@ -9305,7 +9301,7 @@
     "Kung Pao Chicken",
     "Sambal Kangkung"
    ],
-   "ms": 0.39,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.468,
@@ -9372,7 +9368,7 @@
    "shown": [
     "Chilli Crab"
    ],
-   "ms": 0.38,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.924,
@@ -9444,7 +9440,7 @@
     "Marmite Pork Ribs",
     "Sambal Kangkung"
    ],
-   "ms": 0.46,
+   "ms": 0.61,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.754,
@@ -9513,7 +9509,7 @@
     "Cantonese Hor Fun",
     "Vegetable Fried Rice"
    ],
-   "ms": 0.45,
+   "ms": 0.51,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.953,
@@ -9584,7 +9580,7 @@
     "Orh Nee",
     "Cheng Teng"
    ],
-   "ms": 0.41,
+   "ms": 0.63,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.924,
@@ -9654,7 +9650,7 @@
     "Salted Egg Yolk Prawns",
     "Butter Cereal Prawns"
    ],
-   "ms": 0.59,
+   "ms": 0.74,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.938,
@@ -9724,7 +9720,7 @@
    "shown": [
     "Four Heavenly Kings"
    ],
-   "ms": 0.29,
+   "ms": 0.45,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.97,
@@ -9793,7 +9789,7 @@
     "Lime Plum Juice",
     "Tiger Beer (bottle)"
    ],
-   "ms": 0.53,
+   "ms": 0.78,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.973,
@@ -9869,7 +9865,7 @@
     "Butter Cereal Prawns",
     "Sweet and Sour Pork"
    ],
-   "ms": 0.55,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.271,
@@ -9941,7 +9937,7 @@
     "Marmite Pork Ribs",
     "Garlic Broccoli"
    ],
-   "ms": 1.17,
+   "ms": 0.68,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.884,
@@ -10008,7 +10004,7 @@
    "shown": [
     "Chinese Tea (per pax)"
    ],
-   "ms": 2.19,
+   "ms": 2.92,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.628,
@@ -10072,7 +10068,7 @@
    "stage": null,
    "answer": "You're welcome! Enjoy your meal.",
    "shown": [],
-   "ms": 0.25,
+   "ms": 0.4,
    "trace": {
     "modelIntent": "thanks",
     "confidence": 0.969,
@@ -10139,7 +10135,7 @@
    "shown": [
     "Chilli Crab"
    ],
-   "ms": 0.53,
+   "ms": 0.68,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.693,
@@ -10211,7 +10207,7 @@
     "Lychee Oolong",
     "Strawberry Yakult"
    ],
-   "ms": 0.96,
+   "ms": 1.01,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.451,
@@ -10281,7 +10277,7 @@
    "shown": [
     "Taiwanese Popcorn Chicken"
    ],
-   "ms": 0.53,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.978,
@@ -10353,7 +10349,7 @@
     "Passion Fruit Green Tea",
     "Lychee Oolong"
    ],
-   "ms": 0.54,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.95,
@@ -10426,7 +10422,7 @@
     "Brown Sugar Egg Waffle",
     "Grass Jelly Bowl"
    ],
-   "ms": 0.46,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.841,
@@ -10499,7 +10495,7 @@
     "Matcha Red Bean Latte",
     "Coconut Gula Melaka Shake"
    ],
-   "ms": 0.44,
+   "ms": 0.68,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.773,
@@ -10574,7 +10570,7 @@
     "Cheesy Seaweed Fries",
     "Fishball Skewers"
    ],
-   "ms": 0.48,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.543,
@@ -10646,7 +10642,7 @@
     "Mango Sago Pudding",
     "Grass Jelly Bowl"
    ],
-   "ms": 0.47,
+   "ms": 0.67,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.925,
@@ -10717,7 +10713,7 @@
    "shown": [
     "Coconut Gula Melaka Shake"
    ],
-   "ms": 0.41,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.974,
@@ -10794,7 +10790,7 @@
     "Taiwanese Popcorn Chicken",
     "Sweet Potato Fries"
    ],
-   "ms": 0.53,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.702,
@@ -10868,7 +10864,7 @@
     "Sweet Potato Fries",
     "Spicy Fried Enoki"
    ],
-   "ms": 0.32,
+   "ms": 0.47,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.61,
@@ -10940,7 +10936,7 @@
    "stage": "answer (policy, ranking or wording)",
    "answer": "盐酥鸡不是素食。盐酥鸡含有：大豆、麸质。材料：chicken bites marinated in soy sauce and garlic, fried in wheat and sweet potato flour batter, basil, five-spice salt, chilli powder。",
    "shown": [],
-   "ms": 0.46,
+   "ms": 0.63,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.485,
@@ -11013,7 +11009,7 @@
    "shown": [
     "Spicy Fried Enoki"
    ],
-   "ms": 0.32,
+   "ms": 0.49,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.672,
@@ -11082,7 +11078,7 @@
    "stage": "decision rules",
    "answer": "I couldn't find dishes that are under RM10.00 on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 0.39,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.264,
@@ -11145,13 +11141,14 @@
    "unsafe": false,
    "failed": [],
    "stage": null,
-   "answer": "Here's what I'd suggest that's under RM45.00: Taiwanese Popcorn Chicken (RM12.90); Matcha Red Bean Latte (RM13.90); Coconut Gula Melaka Shake (RM12.50).",
+   "answer": "Here's an order for you: Classic Pearl Milk Tea (RM9.90); Mango Pomelo Green Tea (RM12.90); Oolong Cheese Foam Tea (RM13.50); Fishball Skewers (RM7.90). Total RM44.20, within your RM45.00.",
    "shown": [
-    "Taiwanese Popcorn Chicken",
-    "Matcha Red Bean Latte",
-    "Coconut Gula Melaka Shake"
+    "Classic Pearl Milk Tea",
+    "Mango Pomelo Green Tea",
+    "Oolong Cheese Foam Tea",
+    "Fishball Skewers"
    ],
-   "ms": 0.63,
+   "ms": 1.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.697,
@@ -11225,7 +11222,7 @@
     "Taro Milk Tea",
     "Oat Milk Hojicha Latte"
    ],
-   "ms": 0.43,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.408,
@@ -11298,7 +11295,7 @@
     "Lychee Oolong",
     "Calamansi Honey Green Tea"
    ],
-   "ms": 0.53,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.89,
@@ -11370,7 +11367,7 @@
     "Lychee Oolong",
     "Strawberry Yakult"
    ],
-   "ms": 0.55,
+   "ms": 0.77,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.686,
@@ -11438,7 +11435,7 @@
     "Taro Milk Tea",
     "Hokkaido Milk Tea"
    ],
-   "ms": 0.65,
+   "ms": 0.69,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.962,
@@ -11509,7 +11506,7 @@
     "Coconut Gula Melaka Shake",
     "Matcha Red Bean Latte"
    ],
-   "ms": 0.5,
+   "ms": 0.74,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.805,
@@ -11582,7 +11579,7 @@
     "Passion Fruit Green Tea",
     "Lychee Oolong"
    ],
-   "ms": 1.06,
+   "ms": 1.07,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.421,
@@ -11656,7 +11653,7 @@
     "Mango Pomelo Green Tea",
     "Passion Fruit Green Tea"
    ],
-   "ms": 0.67,
+   "ms": 0.78,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.952,
@@ -11729,7 +11726,7 @@
     "Mango Sago Pudding",
     "Grass Jelly Bowl"
    ],
-   "ms": 1.59,
+   "ms": 1.63,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.399,
@@ -11799,7 +11796,7 @@
     "Taiwanese Popcorn Chicken",
     "Lychee Oolong"
    ],
-   "ms": 1.07,
+   "ms": 1.34,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.778,
@@ -11864,7 +11861,7 @@
    "stage": null,
    "answer": "Test Kitchen在Main供应美食。",
    "shown": [],
-   "ms": 0.31,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "about",
     "confidence": 0.415,
@@ -11932,7 +11929,7 @@
     "Classic Pearl Milk Tea",
     "Brown Sugar Boba Fresh Milk"
    ],
-   "ms": 1.21,
+   "ms": 0.96,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.611,
@@ -12006,7 +12003,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 1.13,
+   "ms": 0.89,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.977,
@@ -12076,7 +12073,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.55,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.63,
@@ -12146,7 +12143,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.85,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.835,
@@ -12216,7 +12213,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.59,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.982,
@@ -12284,7 +12281,7 @@
    "shown": [
     "Mango Sticky Rice"
    ],
-   "ms": 0.56,
+   "ms": 0.61,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.911,
@@ -12358,7 +12355,7 @@
     "Tod Mun Pla",
     "Chicken Satay"
    ],
-   "ms": 0.56,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.789,
@@ -12430,7 +12427,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.5,
+   "ms": 0.65,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.475,
@@ -12501,7 +12498,7 @@
     "Vegetarian Pad Thai",
     "Pineapple Fried Rice"
    ],
-   "ms": 0.88,
+   "ms": 0.77,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.978,
@@ -12572,7 +12569,7 @@
     "Mango Sticky Rice",
     "Yam Woon Sen"
    ],
-   "ms": 0.79,
+   "ms": 0.68,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.935,
@@ -12646,7 +12643,7 @@
     "Pad Kra Pao Gai",
     "Pineapple Fried Rice"
    ],
-   "ms": 0.45,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.943,
@@ -12720,7 +12717,7 @@
     "Mango Sticky Rice",
     "Yam Woon Sen"
    ],
-   "ms": 0.75,
+   "ms": 0.93,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.357,
@@ -12793,7 +12790,7 @@
     "Fresh Spring Rolls",
     "Crispy Tofu"
    ],
-   "ms": 0.43,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.929,
@@ -12868,7 +12865,7 @@
     "Fresh Spring Rolls",
     "Crispy Tofu"
    ],
-   "ms": 0.56,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.974,
@@ -12944,7 +12941,7 @@
     "Pla Rad Prik",
     "Pla Neung Manao"
    ],
-   "ms": 0.45,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.972,
@@ -13015,7 +13012,7 @@
     "Mango Sticky Rice",
     "Yam Woon Sen"
    ],
-   "ms": 0.46,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.95,
@@ -13088,7 +13085,7 @@
     "Pad Thai Goong",
     "Mango Sticky Rice"
    ],
-   "ms": 0.5,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.493,
@@ -13156,7 +13153,7 @@
    "shown": [
     "Tom Yum Goong"
    ],
-   "ms": 0.43,
+   "ms": 0.59,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.949,
@@ -13227,7 +13224,7 @@
     "Lemongrass Pandan Cooler",
     "Butterfly Pea Lime Soda"
    ],
-   "ms": 0.54,
+   "ms": 0.85,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.554,
@@ -13302,7 +13299,7 @@
     "Mango Sticky Rice",
     "Tub Tim Grob"
    ],
-   "ms": 1.4,
+   "ms": 0.91,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.679,
@@ -13374,7 +13371,7 @@
    "shown": [
     "Mango Sticky Rice"
    ],
-   "ms": 0.42,
+   "ms": 0.69,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.885,
@@ -13447,7 +13444,7 @@
     "Massaman Beef",
     "Vegetable Red Curry"
    ],
-   "ms": 0.95,
+   "ms": 1.56,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.374,
@@ -13521,7 +13518,7 @@
     "Pineapple Fried Rice",
     "Jasmine Rice"
    ],
-   "ms": 0.69,
+   "ms": 0.91,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.935,
@@ -13595,7 +13592,7 @@
     "Chicken Satay",
     "Fresh Spring Rolls"
    ],
-   "ms": 0.53,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.475,
@@ -13668,7 +13665,7 @@
     "Fresh Spring Rolls",
     "Crispy Tofu"
    ],
-   "ms": 0.6,
+   "ms": 0.63,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.554,
@@ -13740,7 +13737,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.55,
+   "ms": 0.59,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.598,
@@ -13814,7 +13811,7 @@
     "Massaman Beef",
     "Vegetable Red Curry"
    ],
-   "ms": 0.67,
+   "ms": 0.82,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.214,
@@ -13889,7 +13886,7 @@
     "Pad Kra Pao Gai",
     "Mango Sticky Rice"
    ],
-   "ms": 0.54,
+   "ms": 0.72,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.749,
@@ -13964,7 +13961,7 @@
     "Vegetable Red Curry",
     "Vegetarian Pad Thai"
    ],
-   "ms": 1.32,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.901,
@@ -14038,7 +14035,7 @@
    "shown": [
     "Jasmine Rice"
    ],
-   "ms": 0.73,
+   "ms": 1.43,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.816,
@@ -14111,7 +14108,7 @@
     "Mango Sticky Rice",
     "Tub Tim Grob"
    ],
-   "ms": 0.4,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.809,
@@ -14183,7 +14180,7 @@
     "Pad Thai Goong",
     "Pineapple Fried Rice"
    ],
-   "ms": 0.56,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.786,
@@ -14257,7 +14254,7 @@
     "Green Curry Chicken",
     "Massaman Beef"
    ],
-   "ms": 0.73,
+   "ms": 1.15,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.381,
@@ -14327,7 +14324,7 @@
    "shown": [
     "Jasmine Rice"
    ],
-   "ms": 0.7,
+   "ms": 0.82,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.611,
@@ -14400,7 +14397,7 @@
     "Crispy Tofu",
     "Vegetable Red Curry"
    ],
-   "ms": 0.4,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.814,
@@ -14472,7 +14469,7 @@
     "Crispy Tofu",
     "Vegetable Red Curry"
    ],
-   "ms": 0.81,
+   "ms": 0.83,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.578,
@@ -14547,7 +14544,7 @@
    "shown": [
     "Vegetable Red Curry"
    ],
-   "ms": 0.4,
+   "ms": 0.53,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.475,
@@ -14619,7 +14616,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.99,
+   "ms": 1.09,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.819,
@@ -14689,7 +14686,7 @@
    "stage": null,
    "answer": "Stir-fried Morning Glory isn't vegetarian. Stir-fried Morning Glory: water spinach wok-fried with garlic, chilli, fermented soybean paste and oyster sauce. RM14.90. Spice level 1 of 3. Allergens: Soy, Molluscs (squid, clams), Gluten (wheat).",
    "shown": [],
-   "ms": 0.51,
+   "ms": 1.04,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.865,
@@ -14762,7 +14759,7 @@
     "Fresh Coconut",
     "Singha Beer"
    ],
-   "ms": 0.5,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.902,
@@ -14833,7 +14830,7 @@
    "stage": "answer (policy, ranking or wording)",
    "answer": "泰式炒河粉不是素食。泰式炒河粉含有：甲壳类、蛋、大豆、鱼、花生。材料：rice noodles wok-fried with prawns, egg, tofu, bean sprouts, chives, tamarind, fish sauce, crushed peanuts。",
    "shown": [],
-   "ms": 0.34,
+   "ms": 0.51,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.673,
@@ -14905,7 +14902,7 @@
     "Pad Kra Pao Gai",
     "Pla Neung Manao"
    ],
-   "ms": 0.57,
+   "ms": 0.67,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.976,
@@ -14975,7 +14972,7 @@
     "Chicken Satay",
     "Fresh Spring Rolls"
    ],
-   "ms": 0.61,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.981,
@@ -15043,7 +15040,7 @@
    "shown": [
     "Tom Kha Gai"
    ],
-   "ms": 0.42,
+   "ms": 0.55,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.959,
@@ -15114,7 +15111,7 @@
     "Pad Kra Pao Gai",
     "Pla Neung Manao"
    ],
-   "ms": 0.4,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.288,
@@ -15181,7 +15178,7 @@
    "shown": [
     "Green Curry Chicken"
    ],
-   "ms": 0.42,
+   "ms": 0.61,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.684,
@@ -15252,7 +15249,7 @@
     "Chicken Satay",
     "Fresh Spring Rolls"
    ],
-   "ms": 0.43,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.285,
@@ -15321,7 +15318,7 @@
     "Crispy Tofu",
     "Stir-fried Morning Glory"
    ],
-   "ms": 0.31,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.997,
@@ -15392,7 +15389,7 @@
     "Mango Sticky Rice",
     "Yam Woon Sen"
    ],
-   "ms": 0.71,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.607,
@@ -15464,7 +15461,7 @@
     "Tom Yum Goong",
     "Pad Kra Pao Gai"
    ],
-   "ms": 0.58,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.58,
@@ -15534,7 +15531,7 @@
    "shown": [
     "Vegetarian Pad Thai"
    ],
-   "ms": 0.44,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.445,
@@ -15608,7 +15605,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.6,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.876,
@@ -15677,7 +15674,7 @@
     "Tub Tim Grob",
     "Mango Sticky Rice"
    ],
-   "ms": 0.91,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.597,
@@ -15748,7 +15745,7 @@
     "Butterfly Pea Lime Soda",
     "Fresh Coconut"
    ],
-   "ms": 0.74,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.945,
@@ -15819,7 +15816,7 @@
     "Tub Tim Grob",
     "Coconut Ice Cream"
    ],
-   "ms": 0.54,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.924,
@@ -15889,7 +15886,7 @@
     "Tom Yum Goong",
     "Tom Kha Gai"
    ],
-   "ms": 1.66,
+   "ms": 1.32,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.997,
@@ -15960,7 +15957,7 @@
     "Tod Mun Pla",
     "Chicken Satay"
    ],
-   "ms": 0.76,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.31,
@@ -16032,7 +16029,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 4.45,
+   "ms": 4.14,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.954,
@@ -16106,7 +16103,7 @@
     "Pad Thai Goong",
     "Yam Woon Sen"
    ],
-   "ms": 1.88,
+   "ms": 2.09,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.636,
@@ -16177,7 +16174,7 @@
     "Butterfly Pea Lime Soda",
     "Fresh Coconut"
    ],
-   "ms": 0.53,
+   "ms": 0.67,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.512,
@@ -16245,7 +16242,7 @@
    "shown": [
     "Som Tam"
    ],
-   "ms": 0.27,
+   "ms": 0.44,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.984,
@@ -16315,7 +16312,7 @@
    "shown": [
     "Tom Yum Goong"
    ],
-   "ms": 0.41,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.936,
@@ -16385,7 +16382,7 @@
    "shown": [
     "Pad Kra Pao Gai"
    ],
-   "ms": 0.38,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.971,
@@ -16455,7 +16452,7 @@
     "Tub Tim Grob",
     "Green Curry Chicken"
    ],
-   "ms": 0.81,
+   "ms": 1.02,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.919,
@@ -16528,7 +16525,7 @@
     "Pla Rad Prik",
     "Mango Sticky Rice"
    ],
-   "ms": 0.73,
+   "ms": 0.72,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.877,
@@ -16600,7 +16597,7 @@
     "Tub Tim Grob",
     "Massaman Beef"
    ],
-   "ms": 0.85,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.387,
@@ -16670,7 +16667,7 @@
    "stage": "decision rules",
    "answer": "I couldn't find dishes that are spicy on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 0.89,
+   "ms": 1.3,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.805,
@@ -16745,7 +16742,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.95,
+   "ms": 0.78,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.492,
@@ -16815,7 +16812,7 @@
    "shown": [
     "Tom Kha Gai"
    ],
-   "ms": 0.63,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.552,
@@ -16887,7 +16884,7 @@
     "Yam Woon Sen",
     "Tom Kha Gai"
    ],
-   "ms": 0.79,
+   "ms": 0.67,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.621,
@@ -16958,7 +16955,7 @@
     "Chicken Satay",
     "Fresh Spring Rolls"
    ],
-   "ms": 0.67,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.205,
@@ -17029,7 +17026,7 @@
     "Vegetable Red Curry",
     "Jasmine Rice"
    ],
-   "ms": 0.73,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.796,
@@ -17106,7 +17103,7 @@
     "Vegetable Red Curry",
     "Cashew Chicken"
    ],
-   "ms": 1.46,
+   "ms": 0.85,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.52,
@@ -17175,7 +17172,7 @@
    "shown": [
     "Pad Kra Pao Gai"
    ],
-   "ms": 0.98,
+   "ms": 0.8,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.991,
@@ -17244,7 +17241,7 @@
     "Mango Sticky Rice",
     "Tub Tim Grob"
    ],
-   "ms": 0.92,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.932,
@@ -17314,7 +17311,7 @@
    "shown": [
     "Vegetarian Pad Thai"
    ],
-   "ms": 1.32,
+   "ms": 1.42,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.761,
@@ -17385,7 +17382,7 @@
     "Vegetarian Pad Thai",
     "Crispy Tofu"
    ],
-   "ms": 1.12,
+   "ms": 1.46,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.241,
@@ -17455,7 +17452,7 @@
     "Butterfly Pea Lime Soda",
     "Fresh Coconut"
    ],
-   "ms": 1.2,
+   "ms": 1.02,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.653,
@@ -17524,7 +17521,7 @@
     "Tom Yum Goong",
     "Tom Kha Gai"
    ],
-   "ms": 1.38,
+   "ms": 1.3,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.854,
@@ -17599,7 +17596,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 1.66,
+   "ms": 1.35,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.397,
@@ -17663,7 +17660,7 @@
    "stage": null,
    "answer": "That one's for our staff, and they'll be glad to help. Meanwhile, I can help you choose from the menu.",
    "shown": [],
-   "ms": 0.38,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "order_help",
     "confidence": 0.489,
@@ -17731,7 +17728,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.59,
+   "ms": 0.69,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.768,
@@ -17803,7 +17800,7 @@
     "Green Curry Chicken",
     "Cashew Chicken"
    ],
-   "ms": 1.52,
+   "ms": 2.04,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.487,
@@ -17872,7 +17869,7 @@
     "Fresh Spring Rolls",
     "Vegetable Red Curry"
    ],
-   "ms": 1.4,
+   "ms": 1.62,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.803,
@@ -17939,7 +17936,7 @@
    "shown": [
     "Mango Sticky Rice"
    ],
-   "ms": 0.38,
+   "ms": 0.45,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.954,
@@ -18012,7 +18009,7 @@
     "Pad Kra Pao Gai",
     "Pad Thai Goong"
    ],
-   "ms": 0.56,
+   "ms": 0.68,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.218,
@@ -18077,7 +18074,7 @@
    "stage": null,
    "answer": "You're welcome! Enjoy your meal.",
    "shown": [],
-   "ms": 0.27,
+   "ms": 0.41,
    "trace": {
     "modelIntent": "thanks",
     "confidence": 0.95,
@@ -18142,7 +18139,7 @@
    "stage": null,
    "answer": "这个问题请找店员，他们很乐意帮忙。我可以先帮你挑菜。",
    "shown": [],
-   "ms": 0.53,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "order_help",
     "confidence": 0.954,
@@ -18207,7 +18204,7 @@
    "stage": null,
    "answer": "I can only help with our menu: dishes, ingredients and what to order. For anything else, please ask our staff. Meanwhile, our favourites are Som Tam, Tom Yum Goong, Pad Kra Pao Gai.",
    "shown": [],
-   "ms": 0.44,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.69,
@@ -18271,7 +18268,7 @@
    "stage": null,
    "answer": "I can only help with our menu: dishes, ingredients and what to order. For anything else, please ask our staff. Meanwhile, our favourites are Som Tam, Tom Yum Goong, Pad Kra Pao Gai.",
    "shown": [],
-   "ms": 0.65,
+   "ms": 0.93,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.824,
@@ -18339,7 +18336,7 @@
     "Pad Kra Pao Gai",
     "Pineapple Fried Rice"
    ],
-   "ms": 0.74,
+   "ms": 0.84,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.831,
@@ -18415,7 +18412,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.64,
+   "ms": 0.81,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.971,
@@ -18485,7 +18482,7 @@
     "Nashville Hot Chicken Burger",
     "Sambal Lamb Burger"
    ],
-   "ms": 0.33,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.308,
@@ -18556,7 +18553,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.41,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "about",
     "confidence": 0.581,
@@ -18627,7 +18624,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.35,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.917,
@@ -18698,7 +18695,7 @@
     "Nashville Hot Chicken Burger",
     "Sambal Lamb Burger"
    ],
-   "ms": 0.47,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.474,
@@ -18769,7 +18766,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.36,
+   "ms": 0.59,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.45,
@@ -18841,7 +18838,7 @@
     "Classic Mojito",
     "Whisky Sour"
    ],
-   "ms": 0.73,
+   "ms": 1.75,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.386,
@@ -18911,7 +18908,7 @@
    "shown": [
     "Sizzling Brownie"
    ],
-   "ms": 0.42,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.905,
@@ -18984,7 +18981,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.47,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.703,
@@ -19054,7 +19051,7 @@
     "Sambal Lamb Burger",
     "Portobello Mushroom Burger"
    ],
-   "ms": 0.51,
+   "ms": 0.69,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.445,
@@ -19126,7 +19123,7 @@
     "Affogato with Baileys",
     "Coconut Sorbet"
    ],
-   "ms": 0.49,
+   "ms": 0.67,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.993,
@@ -19200,7 +19197,7 @@
     "Classic Smash Burger",
     "BBQ Bacon Cheeseburger"
    ],
-   "ms": 0.55,
+   "ms": 0.59,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.944,
@@ -19273,7 +19270,7 @@
     "Buffalo Wings (8 pcs)",
     "Beer-Battered Onion Rings"
    ],
-   "ms": 0.42,
+   "ms": 0.69,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.877,
@@ -19347,7 +19344,7 @@
     "Sizzling Brownie",
     "Beer-Battered Onion Rings"
    ],
-   "ms": 0.3,
+   "ms": 0.45,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.955,
@@ -19413,7 +19410,7 @@
    "stage": null,
    "answer": "I couldn't find dishes that are free of gluten on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 0.41,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.179,
@@ -19487,7 +19484,7 @@
     "Hummus & Pita",
     "Sambal Lamb Burger"
    ],
-   "ms": 0.44,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.635,
@@ -19562,7 +19559,7 @@
     "Loaded Nachos",
     "Hummus & Pita"
    ],
-   "ms": 0.38,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.696,
@@ -19634,7 +19631,7 @@
     "Espresso Martini",
     "Virgin Mojito"
    ],
-   "ms": 0.81,
+   "ms": 1.33,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.512,
@@ -19705,7 +19702,7 @@
    "shown": [
     "Sweet Potato Fries"
    ],
-   "ms": 0.39,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.622,
@@ -19779,7 +19776,7 @@
     "Loaded Nachos",
     "Hummus & Pita"
    ],
-   "ms": 0.52,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.361,
@@ -19850,7 +19847,7 @@
    "shown": [
     "Caesar Salad"
    ],
-   "ms": 0.88,
+   "ms": 0.55,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.943,
@@ -19920,7 +19917,7 @@
     "Beer-Battered Onion Rings",
     "Loaded Nachos"
    ],
-   "ms": 0.47,
+   "ms": 0.55,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.908,
@@ -19992,7 +19989,7 @@
     "Sweet Potato Fries",
     "Coconut Sorbet"
    ],
-   "ms": 0.4,
+   "ms": 0.77,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.903,
@@ -20069,7 +20066,7 @@
     "Portobello Mushroom Burger",
     "Truffle Fries"
    ],
-   "ms": 0.41,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.478,
@@ -20143,7 +20140,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.41,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.963,
@@ -20211,7 +20208,7 @@
    "stage": null,
    "answer": "I couldn't find dishes that are free of soy, vegan on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 0.37,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.908,
@@ -20283,7 +20280,7 @@
     "Classic Smash Burger",
     "BBQ Bacon Cheeseburger"
    ],
-   "ms": 0.45,
+   "ms": 0.61,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.763,
@@ -20358,7 +20355,7 @@
     "Hummus & Pita",
     "Sambal Lamb Burger"
    ],
-   "ms": 0.5,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.323,
@@ -20429,7 +20426,7 @@
     "Affogato with Baileys",
     "Coconut Sorbet"
    ],
-   "ms": 0.43,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.819,
@@ -20499,7 +20496,7 @@
    "stage": null,
    "answer": "I couldn't find dishes that are free of peanuts and tree nuts, vegan on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 1.43,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.288,
@@ -20574,7 +20571,7 @@
     "Sweet Potato Fries",
     "Coconut Sorbet"
    ],
-   "ms": 0.39,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.794,
@@ -20644,7 +20641,7 @@
     "Portobello Mushroom Burger",
     "Plant Patty Burger"
    ],
-   "ms": 0.33,
+   "ms": 0.45,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.296,
@@ -20716,7 +20713,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.58,
+   "ms": 0.82,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.428,
@@ -20788,7 +20785,7 @@
     "Sweet Potato Fries",
     "Coconut Sorbet"
    ],
-   "ms": 0.34,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.76,
@@ -20860,7 +20857,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 1.14,
+   "ms": 0.74,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.257,
@@ -20931,7 +20928,7 @@
    "shown": [
     "Beer-Battered Onion Rings"
    ],
-   "ms": 0.56,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.976,
@@ -21002,7 +20999,7 @@
    "shown": [
     "Nashville Hot Chicken Burger"
    ],
-   "ms": 0.34,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.974,
@@ -21072,7 +21069,7 @@
     "Portobello Mushroom Burger",
     "Plant Patty Burger"
    ],
-   "ms": 0.41,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.919,
@@ -21142,7 +21139,7 @@
     "Nashville Hot Chicken Burger",
     "Sambal Lamb Burger"
    ],
-   "ms": 0.33,
+   "ms": 0.68,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.796,
@@ -21213,7 +21210,7 @@
     "Nashville Hot Chicken Burger",
     "Sambal Lamb Burger"
    ],
-   "ms": 0.3,
+   "ms": 1.12,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.997,
@@ -21281,7 +21278,7 @@
     "Calamari Rings",
     "Hummus & Pita"
    ],
-   "ms": 0.47,
+   "ms": 0.65,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.711,
@@ -21353,7 +21350,7 @@
     "Calamari Rings",
     "Hummus & Pita"
    ],
-   "ms": 0.42,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.925,
@@ -21418,12 +21415,12 @@
    "unsafe": false,
    "failed": [],
    "stage": null,
-   "answer": "Here's what I'd suggest that's under RM50.00: Virgin Mojito (RM14.00); Cookies & Cream Milkshake (RM18.90).",
+   "answer": "Here's an order for you: Classic Smash Burger (RM29.90); Virgin Mojito (RM14.00). Total RM43.90, within your RM50.00.",
    "shown": [
-    "Virgin Mojito",
-    "Cookies & Cream Milkshake"
+    "Classic Smash Burger",
+    "Virgin Mojito"
    ],
-   "ms": 0.51,
+   "ms": 0.83,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.309,
@@ -21492,7 +21489,7 @@
    "shown": [
     "Ribeye Steak 250g"
    ],
-   "ms": 0.3,
+   "ms": 0.47,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.924,
@@ -21565,7 +21562,7 @@
     "Craft IPA (pint)",
     "Whisky Sour"
    ],
-   "ms": 0.36,
+   "ms": 0.53,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.897,
@@ -21635,7 +21632,7 @@
     "Classic Smash Burger",
     "Sizzling Brownie"
    ],
-   "ms": 0.39,
+   "ms": 0.63,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.546,
@@ -21705,7 +21702,7 @@
     "Coconut Sorbet",
     "Virgin Mojito"
    ],
-   "ms": 0.32,
+   "ms": 0.47,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.977,
@@ -21775,7 +21772,7 @@
     "Affogato with Baileys",
     "Coconut Sorbet"
    ],
-   "ms": 0.39,
+   "ms": 0.51,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.785,
@@ -21846,7 +21843,7 @@
     "Classic Mojito",
     "Whisky Sour"
    ],
-   "ms": 0.38,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.322,
@@ -21916,7 +21913,7 @@
     "Mac & Cheese",
     "Caesar Salad"
    ],
-   "ms": 0.39,
+   "ms": 0.48,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.988,
@@ -21984,7 +21981,7 @@
    "shown": [
     "Cookies & Cream Milkshake"
    ],
-   "ms": 0.4,
+   "ms": 1.2,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.64,
@@ -22056,7 +22053,7 @@
     "Loaded Nachos",
     "Calamari Rings"
    ],
-   "ms": 0.32,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.972,
@@ -22127,7 +22124,7 @@
     "BBQ Pork Ribs (half rack)",
     "Peri-Peri Half Chicken"
    ],
-   "ms": 2.15,
+   "ms": 2.51,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.987,
@@ -22194,7 +22191,7 @@
     "Classic Smash Burger",
     "BBQ Bacon Cheeseburger"
    ],
-   "ms": 0.43,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.965,
@@ -22270,7 +22267,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.68,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.772,
@@ -22338,7 +22335,7 @@
    "shown": [
     "Draft Lager (pint)"
    ],
-   "ms": 0.66,
+   "ms": 0.88,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.682,
@@ -22407,7 +22404,7 @@
    "shown": [
     "Affogato with Baileys"
    ],
-   "ms": 0.25,
+   "ms": 0.42,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.948,
@@ -22476,7 +22473,7 @@
    "shown": [
     "Plant Patty Burger"
    ],
-   "ms": 0.33,
+   "ms": 0.48,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.87,
@@ -22550,7 +22547,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.3,
+   "ms": 0.49,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.639,
@@ -22617,7 +22614,7 @@
    "shown": [
     "Cookies & Cream Milkshake"
    ],
-   "ms": 0.59,
+   "ms": 0.85,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.906,
@@ -22689,7 +22686,7 @@
     "Buffalo Wings (8 pcs)",
     "Loaded Nachos"
    ],
-   "ms": 0.4,
+   "ms": 1.2,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.948,
@@ -22759,7 +22756,7 @@
    "shown": [
     "Ribeye Steak 250g"
    ],
-   "ms": 1.02,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.976,
@@ -22833,7 +22830,7 @@
     "BBQ Bacon Cheeseburger",
     "BBQ Pork Ribs (half rack)"
    ],
-   "ms": 0.53,
+   "ms": 0.72,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.675,
@@ -22905,7 +22902,7 @@
     "Ribeye Steak 250g",
     "Sizzling Brownie"
    ],
-   "ms": 0.48,
+   "ms": 0.82,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.515,
@@ -22977,7 +22974,7 @@
     "Plant Patty Burger",
     "Sweet Potato Fries"
    ],
-   "ms": 0.35,
+   "ms": 0.53,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.367,
@@ -23052,7 +23049,7 @@
     "Beer-Battered Onion Rings",
     "BBQ Bacon Cheeseburger"
    ],
-   "ms": 0.75,
+   "ms": 0.81,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.78,
@@ -23121,7 +23118,7 @@
    "shown": [
     "Classic Smash Burger"
    ],
-   "ms": 0.66,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.542,
@@ -23193,7 +23190,7 @@
     "Affogato with Baileys",
     "Coconut Sorbet"
    ],
-   "ms": 3.6,
+   "ms": 0.92,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.585,
@@ -23266,7 +23263,7 @@
     "Affogato with Baileys",
     "Coconut Sorbet"
    ],
-   "ms": 0.83,
+   "ms": 1.34,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.529,
@@ -23340,7 +23337,7 @@
    "shown": [
     "Plant Patty Burger"
    ],
-   "ms": 1.4,
+   "ms": 1.1,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.89,
@@ -23401,19 +23398,16 @@
     "medium"
    ],
    "question": "total for both?",
-   "pass": false,
+   "pass": true,
    "unsafe": false,
-   "failed": [
-    "doesn't say /95\\.80/"
-   ],
-   "stage": "answer (policy, ranking or wording)",
-   "answer": "With Ribeye Steak 250g, I'd go for Virgin Mojito (RM14.00), Sizzling Brownie (RM19.90). A classic pairing.",
+   "failed": [],
+   "stage": null,
+   "answer": "Ribeye Steak 250g (RM79.90) + Truffle Fries (RM15.90) = Total RM95.80.",
    "shown": [
-    "Virgin Mojito",
-    "Sizzling Brownie",
-    "Ribeye Steak 250g"
+    "Ribeye Steak 250g",
+    "Truffle Fries"
    ],
-   "ms": 0.8,
+   "ms": 0.83,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.542,
@@ -23449,7 +23443,7 @@
       0.082
      ]
     ],
-    "decided": "pairing",
+    "decided": "recommend",
     "dishes": [],
     "avoid": [],
     "memoryAvoid": [],
@@ -23486,7 +23480,7 @@
     "Sizzling Brownie",
     "Beer-Battered Onion Rings"
    ],
-   "ms": 0.78,
+   "ms": 0.88,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.963,
@@ -23557,7 +23551,7 @@
     "Virgin Mojito",
     "Cookies & Cream Milkshake"
    ],
-   "ms": 0.85,
+   "ms": 1.04,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.759,
@@ -23625,7 +23619,7 @@
    "shown": [
     "Loaded Nachos"
    ],
-   "ms": 1.68,
+   "ms": 1.85,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.491,
@@ -23694,7 +23688,7 @@
     "Classic Smash Burger",
     "Ribeye Steak 250g"
    ],
-   "ms": 1.37,
+   "ms": 1.47,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.958,
@@ -23760,7 +23754,7 @@
    "stage": null,
    "answer": "That one's for our staff, and they'll be glad to help. Meanwhile, I can help you choose from the menu.",
    "shown": [],
-   "ms": 0.29,
+   "ms": 0.53,
    "trace": {
     "modelIntent": "order_help",
     "confidence": 0.435,
@@ -23828,7 +23822,7 @@
     "Sizzling Brownie",
     "Portobello Mushroom Burger"
    ],
-   "ms": 0.38,
+   "ms": 0.65,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.93,
@@ -23897,7 +23891,7 @@
    "shown": [
     "Sambal Lamb Burger"
    ],
-   "ms": 0.33,
+   "ms": 0.47,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.835,
@@ -23961,7 +23955,7 @@
    "stage": null,
    "answer": "That one's for our staff, and they'll be glad to help. Meanwhile, I can help you choose from the menu.",
    "shown": [],
-   "ms": 0.46,
+   "ms": 0.55,
    "trace": {
     "modelIntent": "order_help",
     "confidence": 0.977,
@@ -24032,7 +24026,7 @@
     "Classic Smash Burger",
     "Ribeye Steak 250g"
    ],
-   "ms": 0.64,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.449,
@@ -24096,7 +24090,7 @@
    "stage": null,
    "answer": "You're welcome! Enjoy your meal.",
    "shown": [],
-   "ms": 0.35,
+   "ms": 0.41,
    "trace": {
     "modelIntent": "thanks",
     "confidence": 0.948,
@@ -24161,7 +24155,7 @@
    "stage": null,
    "answer": "这个问题请找店员，他们很乐意帮忙。我可以先帮你挑菜。",
    "shown": [],
-   "ms": 0.27,
+   "ms": 0.41,
    "trace": {
     "modelIntent": "order_help",
     "confidence": 0.567,
@@ -24230,7 +24224,7 @@
    "shown": [
     "Draft Lager (pint)"
    ],
-   "ms": 0.97,
+   "ms": 1.35,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.58,
@@ -24297,7 +24291,7 @@
    "shown": [
     "Ribeye Steak 250g"
    ],
-   "ms": 0.38,
+   "ms": 0.53,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.44,
@@ -24363,7 +24357,7 @@
    "stage": null,
    "answer": "I couldn't find dishes that are what you asked for on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 0.49,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.27,
@@ -24430,7 +24424,7 @@
    "shown": [
     "Plant Patty Burger"
    ],
-   "ms": 0.57,
+   "ms": 0.99,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.72,
@@ -24505,7 +24499,7 @@
     "Sizzling Brownie",
     "Beer-Battered Onion Rings"
    ],
-   "ms": 0.46,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.558,
@@ -24582,7 +24576,7 @@
     "Affogato with Baileys",
     "Coconut Sorbet"
    ],
-   "ms": 0.85,
+   "ms": 0.97,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.907,
@@ -24656,7 +24650,7 @@
     "Calamari Rings",
     "Hummus & Pita"
    ],
-   "ms": 1.04,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.96,
@@ -24724,7 +24718,7 @@
    "shown": [
     "Ribeye Steak 250g"
    ],
-   "ms": 0.3,
+   "ms": 0.46,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.76,
@@ -24794,7 +24788,7 @@
     "Har Gow",
     "Siu Mai"
    ],
-   "ms": 0.8,
+   "ms": 0.93,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.939,
@@ -24865,7 +24859,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.43,
+   "ms": 0.65,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.984,
@@ -24936,7 +24930,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.36,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.63,
@@ -25007,7 +25001,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.42,
+   "ms": 0.63,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.84,
@@ -25075,7 +25069,7 @@
    "shown": [
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.39,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.97,
@@ -25146,7 +25140,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 1.01,
+   "ms": 0.81,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.412,
@@ -25218,7 +25212,7 @@
    "shown": [
     "Yangzhou Fried Rice"
    ],
-   "ms": 0.31,
+   "ms": 0.49,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.697,
@@ -25294,7 +25288,7 @@
     "Char Siu Bao",
     "Steamed Chicken Feet"
    ],
-   "ms": 0.59,
+   "ms": 0.81,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.361,
@@ -25366,7 +25360,7 @@
     "Char Siu Bao",
     "Steamed Chicken Feet"
    ],
-   "ms": 0.52,
+   "ms": 0.83,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.416,
@@ -25435,7 +25429,7 @@
     "Pork Ribs with Black Bean",
     "Vegetarian Crystal Dumplings"
    ],
-   "ms": 0.56,
+   "ms": 0.63,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.962,
@@ -25510,7 +25504,7 @@
     "Steamed Chicken Feet",
     "Pork Ribs with Black Bean"
    ],
-   "ms": 0.42,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.809,
@@ -25582,7 +25576,7 @@
     "Pork Ribs with Black Bean",
     "Vegetarian Crystal Dumplings"
    ],
-   "ms": 0.44,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.942,
@@ -25656,7 +25650,7 @@
     "Liu Sha Bao",
     "Mango Pomelo Sago"
    ],
-   "ms": 0.68,
+   "ms": 0.95,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.975,
@@ -25731,7 +25725,7 @@
     "Pork Ribs with Black Bean",
     "Vegetarian Crystal Dumplings"
    ],
-   "ms": 0.56,
+   "ms": 0.76,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.254,
@@ -25802,7 +25796,7 @@
     "Fish Slice Congee",
     "Yangzhou Fried Rice"
    ],
-   "ms": 0.56,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.829,
@@ -25874,7 +25868,7 @@
     "Baked Egg Tarts (3 pcs)",
     "Char Siu Bao"
    ],
-   "ms": 0.41,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.97,
@@ -25946,7 +25940,7 @@
     "Steamed Chicken Feet",
     "Pork Ribs with Black Bean"
    ],
-   "ms": 1.35,
+   "ms": 0.97,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.612,
@@ -26019,7 +26013,7 @@
     "Baked Egg Tarts (3 pcs)",
     "Lo Mai Kai"
    ],
-   "ms": 0.65,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.99,
@@ -26093,7 +26087,7 @@
     "Pork Ribs with Black Bean",
     "Wu Kok Yam Puffs"
    ],
-   "ms": 0.9,
+   "ms": 0.69,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.881,
@@ -26167,7 +26161,7 @@
     "Char Siu Bao",
     "Steamed Chicken Feet"
    ],
-   "ms": 0.61,
+   "ms": 0.77,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.371,
@@ -26241,7 +26235,7 @@
     "Fish Slice Congee",
     "Yangzhou Fried Rice"
    ],
-   "ms": 0.46,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.802,
@@ -26313,7 +26307,7 @@
     "Soy Milk",
     "Chrysanthemum Tea"
    ],
-   "ms": 0.56,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.884,
@@ -26383,7 +26377,7 @@
    "shown": [
     "Liu Sha Bao"
    ],
-   "ms": 0.4,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.885,
@@ -26453,7 +26447,7 @@
     "Har Gow",
     "Char Siu Bao"
    ],
-   "ms": 0.5,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.938,
@@ -26530,7 +26524,7 @@
     "Century Egg and Pork Congee",
     "Fish Slice Congee"
    ],
-   "ms": 0.78,
+   "ms": 0.99,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.372,
@@ -26603,7 +26597,7 @@
     "Mango Pomelo Sago",
     "Sesame Glutinous Rice Balls"
    ],
-   "ms": 0.6,
+   "ms": 0.72,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.361,
@@ -26678,7 +26672,7 @@
     "Sesame Glutinous Rice Balls",
     "Chinese Tea (per person)"
    ],
-   "ms": 0.46,
+   "ms": 0.9,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.51,
@@ -26752,7 +26746,7 @@
     "Pork Ribs with Black Bean",
     "Vegetarian Crystal Dumplings"
    ],
-   "ms": 1.16,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.438,
@@ -26823,7 +26817,7 @@
    "shown": [
     "Har Gow"
    ],
-   "ms": 0.51,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.982,
@@ -26897,7 +26891,7 @@
    "shown": [
     "Vegetarian Fried Noodles"
    ],
-   "ms": 0.55,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.884,
@@ -26972,7 +26966,7 @@
     "Liu Sha Bao",
     "Mango Pomelo Sago"
    ],
-   "ms": 0.72,
+   "ms": 0.93,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.614,
@@ -27049,7 +27043,7 @@
     "Chinese Tea (per person)",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.79,
+   "ms": 0.87,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.535,
@@ -27119,7 +27113,7 @@
    "shown": [
     "Vegetarian Crystal Dumplings"
    ],
-   "ms": 0.49,
+   "ms": 0.67,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.49,
@@ -27191,7 +27185,7 @@
     "Plain Cheong Fun",
     "Mango Pomelo Sago"
    ],
-   "ms": 0.36,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.973,
@@ -27263,7 +27257,7 @@
     "Vegetable Spring Rolls",
     "Plain Cheong Fun"
    ],
-   "ms": 0.42,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.824,
@@ -27332,7 +27326,7 @@
    "shown": [
     "Kai Lan with Garlic"
    ],
-   "ms": 0.31,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.929,
@@ -27405,7 +27399,7 @@
     "Baked Egg Tarts (3 pcs)",
     "Steamed Chicken Feet"
    ],
-   "ms": 0.45,
+   "ms": 0.61,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.683,
@@ -27482,7 +27476,7 @@
     "Siu Mai",
     "Char Siu Bao"
    ],
-   "ms": 3.06,
+   "ms": 2.39,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.593,
@@ -27554,7 +27548,7 @@
     "Mango Pomelo Sago",
     "Chinese Tea (per person)"
    ],
-   "ms": 0.57,
+   "ms": 0.74,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.492,
@@ -27624,7 +27618,7 @@
    "shown": [
     "Sichuan Wontons in Chilli Oil"
    ],
-   "ms": 0.38,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.429,
@@ -27696,7 +27690,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.42,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.719,
@@ -27769,7 +27763,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.33,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.828,
@@ -27839,7 +27833,7 @@
     "Char Siu Bao",
     "Lo Mai Kai"
    ],
-   "ms": 0.63,
+   "ms": 0.87,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.17,
@@ -27907,7 +27901,7 @@
    "shown": [
     "Sichuan Wontons in Chilli Oil"
    ],
-   "ms": 0.46,
+   "ms": 1.03,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.902,
@@ -27979,7 +27973,7 @@
     "Pork Ribs with Black Bean",
     "Vegetable Spring Rolls"
    ],
-   "ms": 0.41,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.548,
@@ -28050,7 +28044,7 @@
     "Vegetable Spring Rolls",
     "Plain Cheong Fun"
    ],
-   "ms": 0.39,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.954,
@@ -28120,7 +28114,7 @@
     "Vegetable Spring Rolls",
     "Plain Cheong Fun"
    ],
-   "ms": 0.36,
+   "ms": 0.61,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.419,
@@ -28191,7 +28185,7 @@
     "Liu Sha Bao",
     "Mango Pomelo Sago"
    ],
-   "ms": 0.46,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.644,
@@ -28261,7 +28255,7 @@
    "shown": [
     "Lo Mai Kai"
    ],
-   "ms": 0.3,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.816,
@@ -28330,7 +28324,7 @@
    "shown": [
     "Chinese Tea (per person)"
    ],
-   "ms": 0.4,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.936,
@@ -28397,7 +28391,7 @@
    "shown": [
     "Chinese Tea (per person)"
    ],
-   "ms": 0.4,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.812,
@@ -28468,7 +28462,7 @@
     "Mango Pomelo Sago",
     "Sesame Glutinous Rice Balls"
    ],
-   "ms": 1.01,
+   "ms": 0.64,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.897,
@@ -28540,7 +28534,7 @@
     "Soy Milk",
     "Chrysanthemum Tea"
    ],
-   "ms": 0.37,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.992,
@@ -28615,7 +28609,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.34,
+   "ms": 0.48,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.966,
@@ -28685,7 +28679,7 @@
     "Baked Char Siu Pastry",
     "Fried Carrot Cake with XO Sauce"
    ],
-   "ms": 0.52,
+   "ms": 0.58,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.913,
@@ -28756,7 +28750,7 @@
     "Sichuan Wontons in Chilli Oil",
     "Vegetarian Fried Noodles"
    ],
-   "ms": 2.62,
+   "ms": 2.86,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.805,
@@ -28828,7 +28822,7 @@
     "Sichuan Wontons in Chilli Oil",
     "Vegetarian Fried Noodles"
    ],
-   "ms": 0.36,
+   "ms": 0.51,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.956,
@@ -28903,7 +28897,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.35,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.923,
@@ -28970,7 +28964,7 @@
     "Char Siu Bao",
     "Baked Char Siu Pastry"
    ],
-   "ms": 0.51,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.958,
@@ -29040,7 +29034,7 @@
    "shown": [
     "Lo Mai Kai"
    ],
-   "ms": 0.29,
+   "ms": 0.48,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.948,
@@ -29177,7 +29171,7 @@
    "shown": [
     "Liu Sha Bao"
    ],
-   "ms": 0.3,
+   "ms": 0.46,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.599,
@@ -29249,7 +29243,7 @@
     "Soy Milk",
     "Chrysanthemum Tea"
    ],
-   "ms": 0.38,
+   "ms": 0.72,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.995,
@@ -29319,7 +29313,7 @@
     "Har Gow",
     "Siu Mai"
    ],
-   "ms": 0.62,
+   "ms": 0.63,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.933,
@@ -29389,7 +29383,7 @@
    "shown": [
     "Wu Kok Yam Puffs"
    ],
-   "ms": 0.31,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.496,
@@ -29463,7 +29457,7 @@
     "Plain Cheong Fun",
     "Century Egg and Pork Congee"
    ],
-   "ms": 0.67,
+   "ms": 0.76,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.404,
@@ -29530,7 +29524,7 @@
    "shown": [
     "Char Siu Cheong Fun"
    ],
-   "ms": 0.53,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.894,
@@ -29604,7 +29598,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.44,
+   "ms": 0.67,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.835,
@@ -29673,7 +29667,7 @@
     "Har Gow",
     "Crispy Prawn Cheong Fun"
    ],
-   "ms": 0.6,
+   "ms": 0.74,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.726,
@@ -29744,7 +29738,7 @@
     "Plain Cheong Fun",
     "Vegetarian Fried Noodles"
    ],
-   "ms": 0.49,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.669,
@@ -29818,7 +29812,7 @@
     "Baked Char Siu Pastry",
     "Char Siu Cheong Fun"
    ],
-   "ms": 0.49,
+   "ms": 0.77,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.413,
@@ -29885,7 +29879,7 @@
    "shown": [
     "Fish Slice Congee"
    ],
-   "ms": 0.7,
+   "ms": 0.81,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.991,
@@ -29956,7 +29950,7 @@
     "Crispy Prawn Cheong Fun",
     "Baked Egg Tarts (3 pcs)"
    ],
-   "ms": 0.94,
+   "ms": 1.23,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.563,
@@ -30033,7 +30027,7 @@
     "Steamed Chicken Feet",
     "Pork Ribs with Black Bean"
    ],
-   "ms": 1.21,
+   "ms": 0.81,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.779,
@@ -30106,7 +30100,7 @@
     "Soy Milk",
     "Chrysanthemum Tea"
    ],
-   "ms": 0.69,
+   "ms": 0.92,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.813,
@@ -30179,7 +30173,7 @@
     "Mango Pomelo Sago",
     "Sesame Glutinous Rice Balls"
    ],
-   "ms": 0.62,
+   "ms": 0.8,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.825,
@@ -30253,7 +30247,7 @@
    "shown": [
     "Sichuan Wontons in Chilli Oil"
    ],
-   "ms": 0.61,
+   "ms": 0.79,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.912,
@@ -30320,7 +30314,7 @@
    "shown": [
     "Vegetarian Crystal Dumplings"
    ],
-   "ms": 0.78,
+   "ms": 1,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.667,
@@ -30387,7 +30381,7 @@
     "Char Siu Bao",
     "Liu Sha Bao"
    ],
-   "ms": 2.06,
+   "ms": 2.77,
    "trace": {
     "modelIntent": "order_help",
     "confidence": 0.541,
@@ -30456,7 +30450,7 @@
     "Siu Mai",
     "Crispy Prawn Cheong Fun"
    ],
-   "ms": 0.28,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.484,
@@ -30523,7 +30517,7 @@
    "shown": [
     "Yangzhou Fried Rice"
    ],
-   "ms": 6.8,
+   "ms": 6.06,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.974,
@@ -30594,7 +30588,7 @@
     "Lo Mai Kai",
     "Vegetarian Crystal Dumplings"
    ],
-   "ms": 2.17,
+   "ms": 2.82,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.981,
@@ -30661,7 +30655,7 @@
    "shown": [
     "Beef Hor Fun"
    ],
-   "ms": 2.19,
+   "ms": 2.18,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.795,
@@ -30725,7 +30719,7 @@
    "stage": null,
    "answer": "You're welcome! Enjoy your meal.",
    "shown": [],
-   "ms": 0.23,
+   "ms": 0.37,
    "trace": {
     "modelIntent": "thanks",
     "confidence": 0.954,
@@ -30790,7 +30784,7 @@
    "stage": null,
    "answer": "That one's for our staff, and they'll be glad to help. Meanwhile, I can help you choose from the menu.",
    "shown": [],
-   "ms": 0.4,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.826,
@@ -30855,7 +30849,7 @@
    "stage": null,
    "answer": "Test Kitchen在Main供应美食。",
    "shown": [],
-   "ms": 0.25,
+   "ms": 0.45,
    "trace": {
     "modelIntent": "about",
     "confidence": 0.408,
@@ -30919,7 +30913,7 @@
    "stage": null,
    "answer": "I can only help with our menu: dishes, ingredients and what to order. For anything else, please ask our staff. Meanwhile, our favourites are Har Gow, Siu Mai, Crispy Prawn Cheong Fun.",
    "shown": [],
-   "ms": 0.41,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.56,
@@ -30986,7 +30980,7 @@
    "shown": [
     "Siu Mai"
    ],
-   "ms": 0.52,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.427,
@@ -31059,7 +31053,7 @@
     "Crispy Prawn Cheong Fun",
     "Char Siu Cheong Fun"
    ],
-   "ms": 0.55,
+   "ms": 0.76,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.763,
@@ -31131,7 +31125,7 @@
     "Mango Pomelo Sago",
     "Chinese Tea (per person)"
    ],
-   "ms": 0.53,
+   "ms": 1.08,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.646,
@@ -31218,7 +31212,7 @@
     "Nasi Lemak Ayam Rempah",
     "Curry Mee"
    ],
-   "ms": 0.52,
+   "ms": 0.73,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.993,
@@ -31291,7 +31285,7 @@
     "Nasi Lemak Ayam Rempah",
     "Curry Mee"
    ],
-   "ms": 0.39,
+   "ms": 0.43,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.807,
@@ -31361,7 +31355,7 @@
     "Hainanese Chicken Rice",
     "Nasi Kerabu"
    ],
-   "ms": 0.42,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.973,
@@ -31431,7 +31425,7 @@
     "Hainanese Chicken Rice",
     "Nasi Kerabu"
    ],
-   "ms": 0.42,
+   "ms": 0.45,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.457,
@@ -31503,7 +31497,7 @@
    "shown": [
     "Garden Salad"
    ],
-   "ms": 0.35,
+   "ms": 0.47,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.351,
@@ -31578,7 +31572,7 @@
     "Vegetarian Mee Goreng",
     "Hainanese Chicken Rice"
    ],
-   "ms": 0.36,
+   "ms": 0.47,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.482,
@@ -31647,7 +31641,7 @@
    "shown": [
     "Vegetarian Mee Goreng"
    ],
-   "ms": 0.37,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.881,
@@ -31717,7 +31711,7 @@
    "stage": null,
    "answer": "I couldn't find dishes that are free of gluten on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 0.25,
+   "ms": 0.36,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.592,
@@ -31789,7 +31783,7 @@
     "Vegetarian Mee Goreng",
     "Hainanese Chicken Rice"
    ],
-   "ms": 0.4,
+   "ms": 0.53,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.998,
@@ -31860,7 +31854,7 @@
    "shown": [
     "Hainanese Chicken Rice"
    ],
-   "ms": 0.28,
+   "ms": 0.42,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.935,
@@ -31935,7 +31929,7 @@
     "Fresh Lime Juice",
     "Iced Barley"
    ],
-   "ms": 0.57,
+   "ms": 0.65,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.962,
@@ -32009,7 +32003,7 @@
     "Cendol",
     "Ais Kacang"
    ],
-   "ms": 0.25,
+   "ms": 0.35,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.972,
@@ -32080,7 +32074,7 @@
     "Cendol",
     "Kopi O"
    ],
-   "ms": 0.23,
+   "ms": 0.34,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.999,
@@ -32151,7 +32145,7 @@
     "Nasi Kerabu",
     "Garden Salad"
    ],
-   "ms": 0.27,
+   "ms": 0.4,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.962,
@@ -32220,7 +32214,7 @@
     "Nasi Lemak Ayam Rempah",
     "Curry Mee"
    ],
-   "ms": 0.27,
+   "ms": 0.39,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.801,
@@ -32290,7 +32284,7 @@
     "Ais Kacang",
     "Kaya Butter Toast"
    ],
-   "ms": 0.27,
+   "ms": 0.37,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.994,
@@ -32359,7 +32353,7 @@
     "Char Kway Teow",
     "Nasi Lemak Ayam Rempah"
    ],
-   "ms": 0.31,
+   "ms": 0.4,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.456,
@@ -32426,7 +32420,7 @@
     "Cendol",
     "Ais Kacang"
    ],
-   "ms": 0.23,
+   "ms": 0.44,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.833,
@@ -32498,7 +32492,7 @@
     "Fresh Lime Juice",
     "Iced Barley"
    ],
-   "ms": 0.27,
+   "ms": 0.35,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.992,
@@ -32572,7 +32566,7 @@
     "Nasi Lemak Ayam Rempah",
     "Curry Mee"
    ],
-   "ms": 0.28,
+   "ms": 0.36,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.662,
@@ -32642,7 +32636,7 @@
     "Garden Salad",
     "Cendol"
    ],
-   "ms": 1.19,
+   "ms": 0.48,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.831,
@@ -32716,7 +32710,7 @@
     "Iced Barley",
     "Teh Tarik"
    ],
-   "ms": 0.61,
+   "ms": 0.68,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.534,
@@ -32783,7 +32777,7 @@
     "Curry Mee",
     "Vegetarian Mee Goreng"
    ],
-   "ms": 2.29,
+   "ms": 1.23,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.921,
@@ -32849,7 +32843,7 @@
    "stage": null,
    "answer": "That one's for our staff, and they'll be glad to help. Meanwhile, I can help you choose from the menu.",
    "shown": [],
-   "ms": 0.23,
+   "ms": 0.38,
    "trace": {
     "modelIntent": "order_help",
     "confidence": 0.931,
@@ -32917,7 +32911,7 @@
     "Hainanese Chicken Rice",
     "Nasi Kerabu"
    ],
-   "ms": 0.4,
+   "ms": 0.53,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.629,
@@ -32991,7 +32985,7 @@
     "Fish Head Curry",
     "Roti Canai"
    ],
-   "ms": 0.68,
+   "ms": 0.66,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.971,
@@ -33062,7 +33056,7 @@
     "Fish Head Curry",
     "Roti Canai"
    ],
-   "ms": 0.32,
+   "ms": 0.48,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.944,
@@ -33130,7 +33124,7 @@
     "Banana Leaf Rice Set",
     "Banana Leaf Rice with Fried Chicken"
    ],
-   "ms": 0.35,
+   "ms": 0.48,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.363,
@@ -33202,7 +33196,7 @@
    "shown": [
     "Masala Tosai"
    ],
-   "ms": 0.58,
+   "ms": 0.75,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.732,
@@ -33273,7 +33267,7 @@
     "Banana Leaf Rice with Fried Chicken",
     "Vegetable Biryani"
    ],
-   "ms": 0.42,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.984,
@@ -33346,7 +33340,7 @@
    "shown": [
     "Dhal Curry"
    ],
-   "ms": 0.45,
+   "ms": 0.63,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.647,
@@ -33413,7 +33407,7 @@
    "stage": null,
    "answer": "Roti Canai isn't vegetarian. Roti Canai contains: Gluten (wheat), Milk / dairy, Fish. It's flaky griddled wheat flatbread made with ghee, served with dhal and fish curry.",
    "shown": [],
-   "ms": 0.24,
+   "ms": 0.36,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.784,
@@ -33485,7 +33479,7 @@
    "shown": [
     "Lime Juice"
    ],
-   "ms": 0.33,
+   "ms": 0.48,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.885,
@@ -33556,7 +33550,7 @@
     "Mutton Varuval",
     "Sotong Sambal"
    ],
-   "ms": 0.41,
+   "ms": 0.53,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.288,
@@ -33625,7 +33619,7 @@
     "Roti Telur",
     "Roti Tisu"
    ],
-   "ms": 0.53,
+   "ms": 0.59,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.63,
@@ -33695,7 +33689,7 @@
     "Kesari",
     "Teh Tarik"
    ],
-   "ms": 0.34,
+   "ms": 0.5,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.883,
@@ -33761,7 +33755,7 @@
    "shown": [
     "Fish Head Curry"
    ],
-   "ms": 0.45,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.33,
@@ -33832,7 +33826,7 @@
     "Mutton Biryani",
     "Fish Head Curry"
    ],
-   "ms": 0.35,
+   "ms": 0.46,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.355,
@@ -33900,7 +33894,7 @@
     "Payasam",
     "Kesari"
    ],
-   "ms": 0.33,
+   "ms": 0.43,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.924,
@@ -33968,7 +33962,7 @@
    "shown": [
     "Mutton Varuval"
    ],
-   "ms": 0.3,
+   "ms": 0.38,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.948,
@@ -34037,7 +34031,7 @@
     "Mango Lassi",
     "Bandung"
    ],
-   "ms": 0.25,
+   "ms": 0.38,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.978,
@@ -34106,7 +34100,7 @@
    "stage": "decision rules",
    "answer": "I couldn't find dishes that are spicy on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 0.43,
+   "ms": 0.6,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.485,
@@ -34176,7 +34170,7 @@
    "stage": null,
    "answer": "I couldn't find dishes that are free of crustaceans and molluscs on today's menu. Our staff may be able to adapt a dish for you.",
    "shown": [],
-   "ms": 0.43,
+   "ms": 0.55,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.956,
@@ -34248,7 +34242,7 @@
    "shown": [
     "Dhal Curry"
    ],
-   "ms": 1,
+   "ms": 1.1,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.987,
@@ -34316,7 +34310,7 @@
    "shown": [
     "Sotong Sambal"
    ],
-   "ms": 0.3,
+   "ms": 0.56,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.96,
@@ -34386,7 +34380,7 @@
     "Banana Leaf Rice with Fried Chicken",
     "Chicken Masala"
    ],
-   "ms": 1.63,
+   "ms": 1.59,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.564,
@@ -34450,7 +34444,7 @@
    "stage": null,
    "answer": "I can only help with our menu: dishes, ingredients and what to order. For anything else, please ask our staff. Meanwhile, our favourites are Banana Leaf Rice Set, Mutton Biryani, Fish Head Curry.",
    "shown": [],
-   "ms": 0.31,
+   "ms": 0.45,
    "trace": {
     "modelIntent": "out_of_scope",
     "confidence": 0.929,
@@ -34518,7 +34512,7 @@
     "Paneer Butter Masala",
     "Dhal Curry"
    ],
-   "ms": 0.56,
+   "ms": 0.69,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.82,
@@ -34592,7 +34586,7 @@
     "Fish Head Curry",
     "Mutton Varuval"
    ],
-   "ms": 0.32,
+   "ms": 0.43,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.314,
@@ -34662,7 +34656,7 @@
    "stage": null,
    "answer": "Murtabak Chicken: wheat pancake stuffed with minced chicken, egg and onion, fried in ghee, with curry and pickled onions (RM12.90, Mild spice). Roti Telur: roti canai folded with egg, made with ghee, served with dhal (RM3.50, not spicy, vegetarian). Roti Telur is the cheaper one, by RM9.40. Murtabak Chicken is spicier. Only Roti Telur is vegetarian.",
    "shown": [],
-   "ms": 0.38,
+   "ms": 0.49,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.443,
@@ -34737,7 +34731,7 @@
     "Laksa Pasta with Prawns",
     "Eggs Benedict"
    ],
-   "ms": 1.09,
+   "ms": 0.71,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.818,
@@ -34806,7 +34800,7 @@
    "shown": [
     "Gula Melaka Latte"
    ],
-   "ms": 0.32,
+   "ms": 0.44,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.827,
@@ -34877,7 +34871,7 @@
     "Grilled Chicken Chop",
     "Beef Burger"
    ],
-   "ms": 0.45,
+   "ms": 0.59,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.767,
@@ -34951,7 +34945,7 @@
     "Cold-Pressed Green Juice",
     "Iced Lemon Tea"
    ],
-   "ms": 0.37,
+   "ms": 0.54,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.566,
@@ -35021,7 +35015,7 @@
    "shown": [
     "Nasi Lemak Benedict"
    ],
-   "ms": 0.5,
+   "ms": 0.61,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.208,
@@ -35092,7 +35086,7 @@
     "Eggs Benedict",
     "Shakshuka"
    ],
-   "ms": 0.35,
+   "ms": 0.45,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.952,
@@ -35163,7 +35157,7 @@
     "Smashed Avocado Toast",
     "Mushroom on Toast"
    ],
-   "ms": 0.29,
+   "ms": 0.43,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.926,
@@ -35237,7 +35231,7 @@
     "Mushroom on Toast",
     "Acai Bowl"
    ],
-   "ms": 0.38,
+   "ms": 0.51,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.584,
@@ -35307,7 +35301,7 @@
    "shown": [
     "Truffle Mushroom Pasta"
    ],
-   "ms": 0.35,
+   "ms": 0.49,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.465,
@@ -35379,7 +35373,7 @@
     "Smashed Avocado Toast",
     "Mushroom on Toast"
    ],
-   "ms": 0.29,
+   "ms": 0.44,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.89,
@@ -35454,7 +35448,7 @@
     "Oat Latte",
     "Iced Long Black"
    ],
-   "ms": 0.42,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.322,
@@ -35530,7 +35524,7 @@
     "Cold-Pressed Green Juice",
     "Iced Lemon Tea"
    ],
-   "ms": 0.6,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "pairing",
     "confidence": 0.931,
@@ -35599,7 +35593,7 @@
    "shown": [
     "Truffle Mushroom Pasta"
    ],
-   "ms": 0.29,
+   "ms": 0.44,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.811,
@@ -35673,7 +35667,7 @@
     "Shakshuka",
     "Rendang Chicken Croissant"
    ],
-   "ms": 0.33,
+   "ms": 0.45,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.931,
@@ -35743,7 +35737,7 @@
     "Acai Bowl",
     "Quinoa Power Bowl"
    ],
-   "ms": 0.45,
+   "ms": 0.57,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.88,
@@ -35812,7 +35806,7 @@
     "Coconut Chia Pudding",
     "Gula Melaka Latte"
    ],
-   "ms": 0.3,
+   "ms": 0.52,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.964,
@@ -35881,7 +35875,7 @@
     "The Big Breakfast",
     "Smashed Avocado Toast"
    ],
-   "ms": 0.88,
+   "ms": 0.7,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.893,
@@ -35950,7 +35944,7 @@
     "Banana Walnut Bread",
     "Coconut Chia Pudding"
    ],
-   "ms": 0.35,
+   "ms": 0.47,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.901,
@@ -36018,7 +36012,7 @@
    "shown": [
     "Shakshuka"
    ],
-   "ms": 0.26,
+   "ms": 0.39,
    "trace": {
     "modelIntent": "dish_info",
     "confidence": 0.948,
@@ -36087,7 +36081,7 @@
     "Flat White",
     "Gula Melaka Latte"
    ],
-   "ms": 0.27,
+   "ms": 0.4,
    "trace": {
     "modelIntent": "compare",
     "confidence": 0.989,
@@ -36161,7 +36155,7 @@
     "Mushroom on Toast",
     "Truffle Mushroom Pasta"
    ],
-   "ms": 0.45,
+   "ms": 0.65,
    "trace": {
     "modelIntent": "group",
     "confidence": 0.601,
@@ -36228,7 +36222,7 @@
    "shown": [
     "Shakshuka"
    ],
-   "ms": 0.51,
+   "ms": 0.62,
    "trace": {
     "modelIntent": "refine",
     "confidence": 0.91,
@@ -36299,7 +36293,7 @@
     "Nasi Lemak Benedict",
     "Laksa Pasta with Prawns"
    ],
-   "ms": 1.03,
+   "ms": 1.18,
    "trace": {
     "modelIntent": "recommend",
     "confidence": 0.742,
@@ -36364,7 +36358,7 @@
    "stage": null,
    "answer": "这个问题请找店员，他们很乐意帮忙。我可以先帮你挑菜。",
    "shown": [],
-   "ms": 1.67,
+   "ms": 0.43,
    "trace": {
     "modelIntent": "order_help",
     "confidence": 0.547,
@@ -36429,7 +36423,7 @@
    "stage": null,
    "answer": "Buttermilk Pancakes contains: Gluten (wheat), Egg, Milk / dairy. So it is NOT suitable if you avoid Milk / dairy. It's three pancakes of wheat flour, eggs and buttermilk, maple syrup, berries, whipped butter.",
    "shown": [],
-   "ms": 0.46,
+   "ms": 1.17,
    "trace": {
     "modelIntent": "dish_allergen",
     "confidence": 0.665,

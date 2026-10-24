@@ -5,7 +5,7 @@ import { parseMenuText } from "../../src/shared/menuParser";
 import { WEIGHTS } from "../../src/shared/brain/weights.gen";
 import { normalize } from "../../src/shared/brain/text";
 import { answerGuest } from "../../src/server/ai/brain";
-import { correct, read, understand, type Dish } from "../../src/server/ai/brain/understand";
+import { correct, isDrink, read, understand, type Dish } from "../../src/server/ai/brain/understand";
 import type { AssistantContext } from "../../src/server/ai/local";
 import { conceptsOf, type PlatformPairs } from "../../src/server/ai/brain/concepts";
 import { aggregateConcepts, MIN_TENANTS } from "../../src/server/ai/brain/platform";
@@ -453,5 +453,35 @@ describe("spice as guests mean it, and other limits (v2 as dev)", () => {
     for (const x of r.items) expect(ctx.items.find((i) => i.id === x.id)!.allergens).toEqual([]);
     expect(r.safetyNote).toBeTruthy();
     expect(read(hawker as unknown as Dish[], "I'm 16, any drinks?").noAlcohol).toBe(true);
+  });
+});
+
+describe("an order spelled out item by item", () => {
+  it("puts one dish in each slot, within what they have to spend, and adds it up", () => {
+    const r = answerGuest(ctx, [{ role: "user", content: "I have RM20, one noodle dish and one drink" }]);
+    const shown = r.items.map((x) => ctx.items.find((i) => i.id === x.id)!);
+    expect(shown).toHaveLength(2);
+    expect(shown.filter((i) => isDrink(i as unknown as Dish))).toHaveLength(1);
+    expect(shown.reduce((s, i) => s + i.price, 0)).toBeLessThanOrEqual(2000);
+    expect(r.answer).toMatch(/Total RM\d/);
+  });
+  it("says so when the order can't fit the money", () => {
+    const r = answerGuest(ctx, [{ role: "user", content: "RM3 for one noodle dish and one drink" }]);
+    expect(r.items).toEqual([]);
+    expect(r.answer).toMatch(/couldn't fit/);
+  });
+  it("adds up the dishes just talked about", () => {
+    const [a, b] = ctx.items;
+    const r = answerGuest(ctx, [
+      { role: "user", content: "what's good?" },
+      { role: "assistant", content: `${a.name} (RM${(a.price / 100).toFixed(2)}) and ${b.name} (RM${(b.price / 100).toFixed(2)})` },
+      { role: "user", content: "total for both?" },
+    ]);
+    expect(r.answer).toContain(((a.price + b.price) / 100).toFixed(2));
+  });
+  it("leaves a list of allergies, and a dish named with 'and', alone", async () => {
+    const { basketOf } = await import("../../src/server/ai/brain/basket");
+    expect(basketOf("I'm allergic to fish and prawns, what's safe?", hawker as unknown as Dish[])).toBeNull();
+    expect(basketOf("is the nasi lemak and teh tarik halal?", hawker as unknown as Dish[])).toBeNull();
   });
 });
