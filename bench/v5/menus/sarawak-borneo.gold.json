@@ -1,0 +1,339 @@
+{
+  "Sarawak Kolo Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat egg noodles = gluten + egg; light soy sauce and honey-soy char siu = soy (+ wheat). Chicken, stated no pork or lard."
+  },
+  "Kampua Mee": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat noodles stated made without egg; light soy sauce = soy + gluten. Char siu chicken."
+  },
+  "Vegetarian Kolo Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg noodles (egg, wheat); light soy sauce. Vegetarian tag; not vegan because of egg."
+  },
+  "Sarawak Laksa": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns and belacan in paste and sambal = crustaceans; toasted sesame seeds in paste (hidden); omelette = egg. Rice vermicelli, coconut milk not milk. Spicy."
+  },
+  "Tomato Kway Teow": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawns; squid; egg; oyster sauce = molluscs + gluten (rule g). Rice noodles. No chilli stated."
+  },
+  "Kuching Beef Noodle Soup": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Yellow egg noodles = wheat + egg; chilli-soy dip = soy. Mild."
+  },
+  "Tuaran Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "molluscs",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tuaran egg noodles; egg; oyster sauce = molluscs + gluten; light soy sauce. No chilli."
+  },
+  "Manok Pansoh": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Tuak (rice wine) = alcohol, not halal. Tuak is glutinous rice + rice-based ragi yeast: no gluten or sulphites by the mirin reading (rule h). A little chilli = 1."
+  },
+  "Ayam Pansuh Halal": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Same bamboo chicken without alcohol. A little chilli = 1."
+  },
+  "Vegetable Pansuh": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu = soy. Stated no alcohol, not spicy, vegan."
+  },
+  "Sarawak Black Pepper Beef": {
+    "allergens": [
+      "milk",
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Butter = milk; oyster sauce = molluscs + gluten. Described as spicy (pepper)."
+  },
+  "Ikan Masak Terung Dayak": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tilapia = fish; belacan = crustaceans. Spicy."
+  },
+  "Bubur Pedas": {
+    "allergens": [
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Paste has roasted peanuts (hidden); toasted coconut is not a tree nut. Minced beef. Mildly spicy = 1."
+  },
+  "Nasi Aruk": {
+    "allergens": [
+      "fish",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ikan bilis = fish; egg. Not spicy."
+  },
+  "Ambuyat Set": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Sago (no gluten); grilled fish; sambal belacan = crustaceans. Spicy."
+  },
+  "White Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Umai Ikan": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Raw mackerel = fish. Very spicy."
+  },
+  "Hinava": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Raw mackerel = fish. Bambangan is wild mango (not a nut). Red chilli, spicy."
+  },
+  "Midin Belacan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan = crustaceans, so not vegetarian although it is a fern dish. Spicy."
+  },
+  "Midin Garlic": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Garlic and salt only, stated no belacan or oyster sauce. Vegan."
+  },
+  "Terung Dayak Sour Soup": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ikan bilis = fish, so not vegetarian. Not spicy."
+  },
+  "Kek Lapis Sarawak": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour, eggs, butter, condensed milk. Prune flavour: no sulphites stated."
+  },
+  "Kek Lapis Cheese Almond": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, eggs, butter, cheddar; almonds = tree nuts."
+  },
+  "Gula Apong Ice Cream": {
+    "allergens": [
+      "milk",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream and milk; roasted peanuts on top."
+  },
+  "Kuih Celorot": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice flour, coconut milk (not milk), palm sugar. Vegan."
+  },
+  "Pisang Goreng Cheese": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat batter; cheddar and condensed milk. No egg stated."
+  },
+  "Teh C Peng Special": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk."
+  },
+  "Kopi O Kosong": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black coffee, no sugar, no milk."
+  },
+  "Calamansi Asam Boi": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Calamansi and salted plum. No sulphites stated."
+  },
+  "Lemongrass Ginger Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan."
+  },
+  "Pandan Tuak-Free Cooler": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated no alcohol. Glutinous rice has no gluten."
+  },
+  "Tuak": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Rice wine with alcohol: not halal. Rice-based, no gluten or sulphites stated (mirin reading, rule h)."
+  },
+  "Tiger Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer = barley malt = gluten; alcohol, not halal."
+  }
+}

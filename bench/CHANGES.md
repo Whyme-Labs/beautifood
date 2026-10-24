@@ -167,3 +167,15 @@ so none is new; they stay unread until a v5 replaces v4.
 - After: v4 89.5%, 0 unsafe; v3 (dev) 88.7%, 0 unsafe; v1 dev 97.1%, v2 91.4%, 0 unsafe.
 - v4 is therefore no longer fully blind on safety: its safety figure from here on is not a clean
   held-out number. v5 replaces it.
+
+## v5 held-out set (bench/v5/): 2026-10-24
+
+- 497 cases, all `test`, on 4 new menus with gold readings of all 138 dishes (`v5/menus/`:
+  sarawak-borneo, poke-salad-bar, siu-mei-roast, mexican-cantina), by two new blind authors who
+  read only the README, the schema and the v2–v4 reviews. Reviewed blind (`v5/REVIEW.md`): 1 gold
+  entry and 8 cases changed, none removed. It settles "I don't eat meat" = vegetarian (no meat,
+  poultry or seafood) unless the guest says fish is fine (rule k).
+- Its authors were asked to include phrasings like "I don't eat meat" and "allergic to anchovies",
+  which v4's unsafe answers had just shown up, so v5 leans a little towards what was just fixed.
+- Frozen and committed before any engine was scored on it. It replaces v4; v4 becomes dev.
+- Fingerprints: cases `2b4b070e93c06812` (497), menus and gold `e472d02d6f67efe9` (8 files).

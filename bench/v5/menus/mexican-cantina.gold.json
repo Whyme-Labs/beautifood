@@ -1,0 +1,376 @@
+{
+  "Carne Asada Tacos": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Corn tortillas (no gluten); halal beef stated; salsa roja; described as spicy."
+  },
+  "Pollo Asado Tacos": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Corn tortillas; halal chicken; sour cream = milk; mild."
+  },
+  "Baja Fish Tacos": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Dory = fish; beer batter and flour tortillas = gluten; beer = not halal; chipotle mayo = egg; mild."
+  },
+  "Grilled Fish Tacos": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Corn tortillas; seabass = fish; stated not spicy. Halal fish option."
+  },
+  "Mushroom Tacos": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Merchant (vegetarian) tag; queso fresco = milk. Oyster mushroom is not a mollusc. Corn tortillas. Mild."
+  },
+  "Carnitas Tacos": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork shoulder, stated not halal. Corn tortillas, no allergens. Mild."
+  },
+  "Prawn Tacos": {
+    "allergens": [
+      "crustaceans",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns; flour tortillas = gluten; aioli = egg. Spicy."
+  },
+  "Beef Barbacoa Burrito": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Flour tortilla; cheddar and sour cream = milk; halal beef; rice in chicken stock. Mild."
+  },
+  "Chicken Tinga Burrito": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Flour tortilla; cheddar, sour cream; halal chicken. Spicy."
+  },
+  "Veggie Burrito": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Merchant (vegan) tag: no cheese or sour cream, cilantro-lime rice (not the chicken-stock Mexican rice). Flour tortilla = gluten. Mild."
+  },
+  "Cheese Quesadilla": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Merchant (vegetarian) tag. Flour tortilla; cheese, sour cream. Not spicy."
+  },
+  "Chicken Quesadilla": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Flour tortilla; cheddar; halal chicken. Not spicy."
+  },
+  "Chorizo Quesadilla": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Pork chorizo = not halal; flour tortilla; cheese. Spicy."
+  },
+  "Guacamole & Chips": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Merchant (vegan) tag. Corn chips. Serrano, described mild."
+  },
+  "Loaded Nachos": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Cheese sauce stated milk + wheat flour; sour cream; halal beef chilli. Spicy."
+  },
+  "Elote": {
+    "allergens": [
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Mayonnaise = egg; cotija = milk. Vegetarian, not vegan. Chilli powder, mild."
+  },
+  "Refried Beans": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Sounds vegetarian but fried in pork lard: not vegetarian, not halal. Queso fresco = milk. No heat stated."
+  },
+  "Mexican Rice": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cooked in chicken stock, so not vegetarian. No allergens. No heat stated."
+  },
+  "Tortilla Soup": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken broth (not vegetarian); sour cream and cheese = milk; corn tortilla strips (no gluten). Mild."
+  },
+  "Ceviche": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Seabass = fish; prawns = crustaceans; corn tostadas. Jalapeno, described spicy."
+  },
+  "Jalapeño Poppers": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Merchant (vegetarian) tag. Cream cheese; breading = gluten (+ egg wash); ranch = egg + milk. Spicy."
+  },
+  "Chicken Fajitas": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Flour tortillas; sour cream; halal chicken. Mild."
+  },
+  "Chicken Mole": {
+    "allergens": [
+      "peanuts",
+      "tree_nuts",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Mole: peanuts, almonds (tree nuts), sesame seeds; dark chocolate stated dairy-free. Mexican rice (chicken stock). No halal word for the chicken, but no pork or alcohol, read from ingredients. Mild."
+  },
+  "Beef Birria": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Halal beef; melted cheese = milk; corn tortillas. Spicy."
+  },
+  "Camarones a la Diabla": {
+    "allergens": [
+      "crustaceans",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Prawns; butter sauce = milk; very spicy."
+  },
+  "Churros": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Choux: wheat flour, butter, egg; chocolate sauce."
+  },
+  "Tres Leches Cake": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sponge (wheat, egg); three milks and cream. No rum stated."
+  },
+  "Mango Chamoy Sorbet": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Merchant (vegan) tag, dairy-free. Tajin chilli-lime salt, mild."
+  },
+  "Horchata": {
+    "allergens": [
+      "tree_nuts",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Hidden almonds = tree nuts; milk. Rice, no gluten."
+  },
+  "Agua de Jamaica": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Hibiscus and lime."
+  },
+  "Watermelon Agua Fresca": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Fruit, lime, mint."
+  },
+  "Mexican Hot Chocolate": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Milk; a pinch of chilli = mild."
+  },
+  "Virgin Margarita": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated alcohol-free: halal."
+  },
+  "Classic Margarita": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Tequila = alcohol, not halal. No allergen (no sulphite or gluten source stated)."
+  },
+  "Spicy Mango Margarita": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 2,
+    "note": "Tequila, not halal. Jalapeno, described spicy."
+  },
+  "Corona": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer = gluten, not halal."
+  },
+  "Michelada": {
+    "allergens": [
+      "gluten",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Lager = gluten, not halal; Worcestershire = fish + gluten (anchovies), so not vegetarian. Spicy."
+  }
+}

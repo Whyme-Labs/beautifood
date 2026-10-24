@@ -1,0 +1,378 @@
+{
+  "Classic Shoyu Salmon Poke": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salmon; shoyu = soy + wheat; sesame oil and seeds; edamame = soy."
+  },
+  "Spicy Tuna Poke": {
+    "allergens": [
+      "fish",
+      "egg",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tuna and bonito flakes = fish; sriracha mayo = egg; furikake sesame. Brown rice, no soy sauce stated. Spicy."
+  },
+  "Mentai Salmon Poke": {
+    "allergens": [
+      "fish",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Salmon, pollock roe, imitation crab (fish + wheat, stated no real crab, so no crustaceans); mayo and tamagoyaki = egg. Mildly spicy."
+  },
+  "Ponzu Prawn Poke": {
+    "allergens": [
+      "crustaceans",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawns; ponzu soy sauce = soy + gluten; edamame. Quinoa no gluten."
+  },
+  "Teriyaki Chicken Bowl": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Soy sauce = soy + gluten; sesame seeds; mirin = not halal (rule h); honey."
+  },
+  "Tofu Miso Poke": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu, edamame; miso = soy + gluten (v4 rule); toasted sesame. Vegan."
+  },
+  "Quinoa Power Bowl": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tahini = sesame. Pumpkin seeds are not tree nuts. Vegan."
+  },
+  "Mediterranean Falafel Bowl": {
+    "allergens": [
+      "gluten",
+      "sesame",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Couscous = wheat; hummus = tahini (sesame); feta and yoghurt = milk."
+  },
+  "Korean Beef Bulgogi Bowl": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame",
+      "fish",
+      "crustaceans",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Soy sauce and gochujang = soy + gluten; sesame oil; kimchi with fish sauce (fish) and salted shrimp (crustaceans, hidden); egg. Spicy."
+  },
+  "Soba Noodle Bowl": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soba with wheat; edamame and sesame-soy dressing."
+  },
+  "Nasi Ulam Bowl": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Salted fish = fish; sambal belacan = crustaceans; kerisik is coconut (not tree nut). Mildly spicy."
+  },
+  "Chicken Caesar Wrap": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "fish",
+      "egg",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat tortilla; parmesan; Caesar with anchovies, egg yolk, Dijon mustard."
+  },
+  "Hummus Veggie Wrap": {
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat tortilla; hummus = sesame."
+  },
+  "Tuna Mayo Wrap": {
+    "allergens": [
+      "gluten",
+      "fish",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat tortilla; tuna; mayonnaise = egg; cheddar."
+  },
+  "Peri-Peri Chicken Wrap": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat tortilla; Greek yoghurt. Spicy."
+  },
+  "Green Goddess Salad": {
+    "allergens": [
+      "soy",
+      "milk",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Edamame = soy; yoghurt = milk; anchovy in dressing = fish, so not vegetarian (hidden)."
+  },
+  "Salmon Avocado Salad": {
+    "allergens": [
+      "fish",
+      "tree_nuts",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salmon; walnuts; honey-mustard."
+  },
+  "Kerabu Mango Tofu Salad": {
+    "allergens": [
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 3,
+    "note": "Tofu; peanuts. Stated no fish sauce; vegan. Very spicy."
+  },
+  "Roasted Pumpkin Feta Salad": {
+    "allergens": [
+      "milk",
+      "tree_nuts",
+      "sulphites"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Feta; pecans; balsamic stated with sulphites."
+  },
+  "Pumpkin Ginger Soup": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Vegetable stock with celery (hidden). Coconut milk not milk. Pumpkin seeds not nuts."
+  },
+  "Chicken Bone Broth": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Celery. Goji berries no allergen."
+  },
+  "Mushroom Miso Soup": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Miso = soy + gluten; tofu; bonito dashi = fish, so not vegetarian (hidden)."
+  },
+  "Green Machine Smoothie": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Almond milk = tree nuts."
+  },
+  "Peanut Butter Protein Smoothie": {
+    "allergens": [
+      "peanuts",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanut butter; oats = gluten; whey and milk; honey. Vegetarian (no meat), not vegan."
+  },
+  "Berry Blast Smoothie": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Greek yoghurt; honey."
+  },
+  "Cold-Pressed Green Juice": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Celery (hidden in a juice)."
+  },
+  "Cold-Pressed ABC Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Apple, beetroot, carrot."
+  },
+  "Ginger Turmeric Kombucha": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Fermented, trace alcohol stated. Treated as not halal (safer reading for a Muslim guest; JAKIM tolerance for natural alcohol not assumed)."
+  },
+  "Iced Matcha Oat Latte": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oat milk = oats = gluten (EU cereal rule). Dairy-free."
+  },
+  "Fresh Coconut Water": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut is not a tree nut."
+  },
+  "Peanut Butter Protein Balls": {
+    "allergens": [
+      "peanuts",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanut butter; oats = gluten. Pea protein, coconut. Vegan."
+  },
+  "Almond Matcha Bliss Balls": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Almonds and cashews; honey, so not vegan. Stated gluten-free."
+  },
+  "Acai Bowl": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Granola oats = gluten; honey, so not vegan."
+  },
+  "Mango Chia Pudding": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut milk (not milk), chia, fruit. Vegan."
+  }
+}
