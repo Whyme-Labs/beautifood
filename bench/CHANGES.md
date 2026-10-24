@@ -80,3 +80,18 @@ The `test` split is frozen. It changes only to fix a wrong label, recorded here 
   on. Its 2 unsafe answers were the first thing fixed: "veg here" / "veggie here" weren't read as a
   stated diet, so the asked-about non-vegetarian dish still came as a card. v2's fingerprint is
   unchanged; it is no longer a held-out measure.
+
+## First scores on v3 (once each, 2026-10-24)
+
+| | before (b92c814) | after (47fd11d) |
+|---|---|---|
+| assistant, gold data | 85.7%, 1 unsafe | 85.7%, 1 unsafe |
+| assistant, parser data | 77.5%, 1 unsafe | 82.1%, 1 unsafe |
+| parser: missed allergens | 23 (recall 91%) | 17 (recall 93%) |
+| parser: false allergens | 46 | 13 |
+| parser: vegetarian / vegan right | 94% / 83% | 98% / 97% |
+| v1.2 test (reference) | 87.9%, 0 unsafe | 87.9%, 0 unsafe |
+
+The parser fixes carry over to new menus, but far less than in sample (0 missed on the menus they
+were made on, 17 on these): its keyword list still lacks ingredients these kitchens use. The one
+unsafe v3 answer is not touched by either version; it waits for a set that replaces v3.
