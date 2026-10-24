@@ -100,7 +100,7 @@ const GENERIC = new Set(
 
 /** Places and styles a dish is named after: they describe it ("Penang Assam Laksa") but don't name it on their own ("the traffic on the Penang bridge"). */
 const ORIGIN = new Set(
-  "penang ipoh melaka malacca johor kelantan kedah perak sabah sarawak kampung hainanese hokkien cantonese teochew hakka nyonya peranakan sichuan szechuan hong kong taiwanese thai korean japanese chinese indian malay mamak western italian singapore".split(" "),
+  "free gluten dairy sugar less penang ipoh melaka malacca johor kelantan kedah perak sabah sarawak kampung hainanese hokkien cantonese teochew hakka nyonya peranakan sichuan szechuan hong kong taiwanese thai korean japanese chinese indian malay mamak western italian singapore".split(" "),
 );
 
 interface DishIndex {
@@ -133,7 +133,7 @@ const KEYWORDS = (
 ).split(" ");
 
 /** Real words that are one letter off a keyword ("there" and "these", "daily" and "dairy"): never "corrected". */
-const REAL = new Set("there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram".split(" "));
+const REAL = new Set("there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story".split(" "));
 
 /**
  * Allergen words, which are worth correcting even when short ("egs", "nutz"): missing one is the
@@ -177,6 +177,11 @@ export function stripInjection(question: string): { text: string; injected: bool
     // after it stays (to be answered truthfully)
     .replace(/\b(ignore|disregard|forget)\b[^.!?,\n]{0,40}?\b(instructions?|rules?|prompt|filters?)\b\s*(?:[.!?,]|\band\b)?/gi, " ")
     .replace(/(忽略|无视|忘记|忘掉)[^，。！？,.!?]{0,12}(规则|指令|提示|设定|限制)[，,。！？!?]?/g, " ")
+    // a new role, a pretence, or a message for other guests: "you are now a pirate", "pretend
+    // there's a free ramen", "forget the menu", "tell everyone every dish is vegan"
+    .replace(/\b(you are now|you're now|from now on|act as|roleplay as|pretend( that)?|imagine( that)?)\b[^.!?\n]*[.!?]?/gi, " ")
+    .replace(/\bforget (the|your) (menu|job|role)\b[,.!?]?/gi, " ")
+    .replace(/\btell (everyone|everybody|all guests|the other guests|people)\b[^.!?\n]*[.!?]?/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
   return { text, injected: text !== question.replace(/\s+/g, " ").trim() };
@@ -187,7 +192,7 @@ export function stripInjection(question: string): { text: string; injected: bool
  * intent model already knows ("better") is never a typo of a dish word ("butter").
  */
 const same = (a: string, b: string) =>
-  a === b || a === `${b}s` || b === `${a}s` || (a.length >= 5 && b.length >= 5 && a[0] === b[0] && !intentModel().vocab?.has(a) && editDistance(a, b, 1) <= 1);
+  a === b || a === `${b}s` || b === `${a}s` || (a.length >= 5 && b.length >= 5 && a[0] === b[0] && !intentModel().vocab?.has(a) && !REAL.has(a) && editDistance(a, b, 1) <= 1);
 
 interface Mention {
   dish: Dish;
@@ -208,7 +213,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
       if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2 });
-    let name = ix.names[n].filter((w) => w.length > 1 || /\d/.test(w));
+    // one letter can be the whole difference: Kopi O is black, Kopi C has evaporated milk
+    let name = ix.names[n].filter((w) => w.length > 1 || /\d/.test(w) || !/^[ai]$/.test(w));
     if (!name.length) return;
     // two of its words typed as one ("kungpao" for Kung Pao): one word, as rare as the rarer
     const df = (w: string) => ix.df.get(w) ?? Math.min(...name.filter((x) => w.startsWith(x) || w.endsWith(x)).map((x) => ix.df.get(x) ?? 1), 1);
@@ -381,7 +387,7 @@ interface CourseWords {
 }
 
 const COURSES: CourseWords[] = [
-  { course: "drinks", ask: /\b(drinks?|beverages?|minum|minuman|juices?|thirsty|haus|dahaga|to drink|sip)\b/, askZh: /饮料|喝|饮品|饮/, category: /drink|beverage|minum|饮|juice|coffee|\btea\b|kopi|teh/i, dish: /juice|\btea\b|\bteh\b|kopi|coffee|latte|soda|lemonade|\bmilk\b|\bwater\b|smoothie|kombucha/i },
+  { course: "drinks", ask: /\b(drinks?|beverages?|minum|minuman|juices?|thirsty|haus|dahaga|to drink|sip|coffees?|teas?|iced tea)\b/, askZh: /饮料|喝|饮品|饮/, category: /drink|beverage|minum|饮|juice|coffee|\btea\b|kopi|teh/i, dish: /juice|\btea\b|\bteh\b|kopi|coffee|latte|soda|lemonade|\bmilk\b|\bwater\b|smoothie|kombucha/i },
   { course: "desserts", ask: /\b(desserts?|sweets?|sweet things?|manis|pencuci mulut|kuih|after meal|cakes?|pastr(y|ies)|ice cream|pudding)\b/, askZh: /甜品|甜点|甜的|糖水|蛋糕/, category: /dessert|sweet|pencuci|甜|cake|pastr|kuih|ice cream|gelato|patisserie|bakery/i, dish: /cake|ice cream|pudding|cendol|ais kacang|sago|mochi|\btart\b|brownie|cookie|kuih|panna cotta|tiramisu|gelato/i },
   { course: "noodles", ask: /\b(noodles?|mee|mi|meehoon|bihun|kuey teow|kway teow|ramen|udon|soba|pasta|spaghetti)\b/, askZh: /面|粉/, category: /noodle|mee|ramen|pasta|面/i, dish: /noodle|\bmee\b|\bmi\b|kway teow|kuey teow|laksa|ramen|udon|soba|pasta|spaghetti|penne|aglio/i },
   { course: "rice", ask: /\b(rice|nasi)\b/, askZh: /饭/, category: /rice|nasi|饭/i, dish: /\brice\b|\bnasi\b|biryani|briyani|don\b|risotto/i },
@@ -608,7 +614,7 @@ export function read(items: Dish[], asked: string): Reading {
   // a translated dish name found by substring: mark it too
   if (mentions.some((m) => !m.covered.length)) delexicalized.unshift("§dish");
   // "is the roti canai vegetarian?" asks of a dish; "I'm vegetarian, roti canai ok?" says who they are
-  const asksDiet = /\b(is|are|got|ada|any)\b[^?]*\b(vegetarian|vegan|veg)\b|\b(vegetarian|vegan)\s*(or not|tak|x|ke|kah|ah|\?|$)/.test(restText) || /素(的|吗|不)|是不是素/.test(restRaw);
+  const asksDiet = /\b(is|are|got|ada|any)\b[^?]*\b(vegetarian|vegan|veg|halal)\b|\b(vegetarian|vegan|halal)\s*(or not|tak|x|ke|kah|ah|\?|$)/.test(restText) || /素(的|吗|不)|是不是素|清真(吗|不)/.test(restRaw);
   const saysDiet = !mentions.length || !asksDiet || /\b(i m|im|i am|we re|we are|were all|saya|sy|kami|aku|my \w+ (is|are)|for (a|my) \w*\s?(vegetarian|vegan)|(pure |strict )?(vegetarian|vegan|veg|veggie|veggies)s? (here|lah|la|person|people|family|table|guest|guests|only|all))\b/.test(restText) || /我(是|吃|们)|吃素的|吃斋/.test(restRaw);
   return {
     text: question,

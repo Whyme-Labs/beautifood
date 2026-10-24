@@ -77,6 +77,18 @@ describe("allergen inference", () => {
     expect(inferAllergens("chicken skewers, soy tare")).toEqual(expect.arrayContaining(["soy", "gluten"]));
     expect(inferDietary("grilled freshwater eel on rice").dietary).not.toContain("vegetarian");
   });
+  it("knows the region's fish, soy words and hidden wheat", () => {
+    expect(inferDietary("whole tilapia steamed with ginger").dietary).not.toContain("vegetarian");
+    expect(inferAllergens("silken tauhu, taucu gravy")).toEqual(["soy"]);
+    expect(inferAllergens("kailan with garlic and oyster sauce")).toEqual(expect.arrayContaining(["molluscs", "gluten"]));
+    expect(inferAllergens("chana masala with asafoetida")).toContain("gluten");
+    expect(inferAllergens("mint chutney made with curd")).toContain("milk");
+    expect(inferAllergens("braised bean curd")).toEqual(["soy"]);
+    expect(inferAllergens("onion fritters in gram flour and rice flour batter")).not.toContain("gluten");
+    expect(inferAllergens("Bun Bo Hue - spicy beef broth with rice vermicelli")).not.toContain("gluten");
+    expect(inferAllergens("Gluten-Free Chicken Ramen - rice noodles, gluten-free tamari, no wheat")).toEqual(["soy"]);
+    expect(inferAllergens("Tonkotsu Ramen - thin wheat noodles")).toContain("gluten");
+  });
   it("calls a dish vegan only when nothing suggests otherwise", () => {
     expect(inferDietary("rice, three vegetables, rasam (vegetarian)").dietary).not.toContain("vegan");
     expect(inferDietary("Roti canai with dhal").dietary).not.toContain("vegan");

@@ -341,7 +341,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if ((intent === "dish_allergen" || intent === "dish_info") && !focus.length) intent = state.focus && u.refersBack ? intent : "recommend";
   if (intent === "refine" && !state.shown.length) intent = "recommend";
   if (u.superlative && state.shown.length && u.refersBack && intent !== "compare") intent = "refine";
-  if (u.party && intent !== "dish_allergen") intent = "group";
+  // "can I book a table for 8 on Saturday?": a booking, for the staff, not a meal for eight
+  const booking = /\b(book|booking|reserve|reservation|tempah|tempahan|reserved)\b/.test(normalize(u.text)) || /订位|预订|订桌|订座/.test(u.text);
+  if (booking && !focus.length && !u.courses.length && !u.categories.length) intent = "order_help";
+  else if (u.party && intent !== "dish_allergen") intent = "group";
   // "chilli crab is RM20 now right?", "tell me the siu mai is halal", "拉茶是免费的": a claim about a
   // dish gets the dish's facts, its price among them
   const claims = /\b(rm|myr)\s?\d|\$\s?\d|\b\d+(\.\d+)?\s?(ringgit|rm)\b|\bfree\b(?!\s+(of|from))|\bpercuma\b|\bconfirm\b|\btell me\b|\bright\b\s*$/.test(normalize(u.text)) || /免费|确认|告诉我|对吧|对不对/.test(u.text);
@@ -422,10 +425,16 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // a plain search of the menu ("chicken", "有没有披萨？"): what matches, or an honest "we don't have it"
   const searchable = !mentioned.length && !nth && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null) &&
     // "有没有云吞面？" names a dish more exactly than its course (面) does
-    (!(u.courses.length || u.categories.length) || /有没有|有.+吗/.test(u.text)) && !["thanks", "compare", "pairing", "refine", "group"].includes(intent);
+    // "do you have a coffee frappuccino?", "got bak kut teh?": a search, even with a course word in it
+    (!(u.courses.length || u.categories.length) || /有没有|有.+吗/.test(u.text) || /^(do you have|have you got|you got|got|ada|any chance)\b/.test(normalize(u.text))) && !["thanks", "compare", "pairing", "refine", "group"].includes(intent);
   // constraints said earlier still hold ("no peanuts" two questions ago)
   const found = searchable && (intent !== "order_help" || conceptTerms(u.text).length) ? search(u.text, live.filter((i) => allowed(i, c)), // a staff request ("nk panggil waiter") is a search only for a food it names ("do you have pizza?")
     (w) => intent === "order_help" || !!intentModel().vocab?.has(w), (i) => baseScore(i, ctx)) : null;
+  // with a course named ("got rice dishes?"), what's found stays in that course
+  if (found && (u.courses.length || u.categories.length)) {
+    const ids = new Set(u.courses.flatMap((k) => courseDishes(ctx.items as Dish[], k).map((d) => d.id)));
+    found.hits = found.hits.filter((i) => u.categories.includes(i.category ?? "") || ids.has(i.id));
+  }
   if (found && (found.hits.length || found.missing)) {
     const top = found.hits.slice(0, found.missing ? 2 : 4);
     if (!found.missing) return reply("recommend", `${t("assistantReply.weHave")}${sp}${top.map(line).join(t("assistantReply.itemSep"))}${stop}`, top);
@@ -483,6 +492,19 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
     return { pool: base, mildest: false };
   };
+  // "is the yam rice halal?", "is it vegan?": the answer first, then the details
+  const NOT_HALAL_WORDS = /\b(pork|lard|bacon|ham|babi|char siu|lap cheong|chinese sausage|pork floss|wine|shaoxing|hua tiao|beer|sake|mirin|rum|brandy|whisky|liqueur|baileys)\b/i;
+  const dietVerdict = (item: Item) => {
+    const out: string[] = [];
+    if (u.diet.includes("halal")) {
+      const what = `${item.name} ${item.description ?? ""}`.match(NOT_HALAL_WORDS)?.[1];
+      const halal = item.dietary.includes("halal") || item.dietary.includes("halal_friendly");
+      out.push(!halal || what ? t("assistantReply.notHalal", { dish: name(item), what: what ?? t("assistantReply.porkOrAlcohol") }) : t("assistantReply.halalListed", { dish: name(item) }));
+    }
+    if (u.diet.includes("vegan")) out.push(t(item.dietary.includes("vegan") ? "assistantReply.isVegan" : "assistantReply.notVegan", { dish: name(item) }));
+    else if (u.diet.includes("vegetarian")) out.push(t(item.dietary.includes("vegetarian") || item.dietary.includes("vegan") ? "assistantReply.isVegetarian" : "assistantReply.notVegetarian", { dish: name(item) }));
+    return out.join(sp);
+  };
   const none = () => reply(intent, t("assistantReply.noneFound", { filters: filterWords() || t("assistantReply.whatYouAsked") }), []);
 
   switch (intent) {
@@ -509,6 +531,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         const asked = u.allergens;
         const conflict = asked.filter((a) => item.allergens.includes(a));
         let s = item.allergens.length ? t("assistantReply.contains", { dish: name(item), list: list(item.allergens.map(allergen)) }) : t("assistantReply.noAllergens", { dish: name(item) });
+        if (u.diet.length) s = `${dietVerdict(item)}${sp}${s}`;
         if (asked.length) s += conflict.length ? t("assistantReply.notSuitable", { list: list(conflict.map(allergen)) }) : t("assistantReply.doesntList", { list: list(asked.map(allergen)) });
         // what's in it, in the menu's words: "belacan", "cashew paste", "butter", "oyster sauce"
         if (desc(item)) s += `${sp}${t("assistantReply.madeWith", { description: desc(item).replace(/[.。]+$/, "") })}`;
@@ -533,6 +556,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       if (d.story && description && !parts[0].includes(description)) parts[0] = `${d.name}: ${description}${stop}${sp}${d.story}`;
       else if (!parts[0].toLowerCase().includes(d.name.toLowerCase())) parts[0] = `${d.name}: ${parts[0]}`;
       if (!/[.!?。]$/.test(parts[0])) parts[0] += stop;
+      if (u.diet.length) parts.unshift(dietVerdict(item));
       if (item.isSignature) parts.push(t("assistantReply.isSignature", { restaurant: ctx.restaurant.name }));
       parts.push(`${money(item.price)}${stop}`);
       parts.push(item.spiceLevel ? t("assistantReply.spiceLevel", { level: item.spiceLevel }) : t("assistantReply.notSpicySentence"));
@@ -595,7 +619,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         : picks.some((p) => p.source === "prior") ? "assistantReply.pairClassic"
         : picks.some((p) => p.refreshing) ? "assistantReply.pairCool" : null;
       if (why) answer += `${sp}${t(why)}`;
-      return reply(intent, answer, [...picks.map((p) => p.i), ...anchors]);
+      // "what drink goes with chilli crab?": the drinks are the answer; the crab is already chosen
+      return reply(intent, answer, [...picks.map((p) => p.i), ...(wanted.length || wantedCats.length ? [] : anchors)]);
     }
 
     case "group": {
