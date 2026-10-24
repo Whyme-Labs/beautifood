@@ -179,3 +179,17 @@ so none is new; they stay unread until a v5 replaces v4.
   which v4's unsafe answers had just shown up, so v5 leans a little towards what was just fixed.
 - Frozen and committed before any engine was scored on it. It replaces v4; v4 becomes dev.
 - Fingerprints: cases `2b4b070e93c06812` (497), menus and gold `e472d02d6f67efe9` (8 files).
+
+## First score on v5 (23ef4c2, the deployed engine, once)
+
+| | v5 |
+|---|---|
+| assistant, gold data | 82.9%, 2 unsafe (dish allergen questions, poke-salad-bar and siu-mei-roast) |
+| assistant, parser data | 82.7%, 1 unsafe |
+| allergy / diet / budget questions | 94.4% / 83.3% / 43.9% |
+| Chinese questions | 71.1% |
+| parser: missed allergens | 29 of 138 dishes' (recall 88%); 2 of the 29 suggested to the merchant |
+
+Lower than v4 (89.5%, with its unsafe answers fixed after reading them): the budget planner, which
+took v4's budget questions from 63% to 82%, carries over to only 44% of v5's, and the parser misses
+more on these kitchens. The 2 unsafe answers stay unread.
