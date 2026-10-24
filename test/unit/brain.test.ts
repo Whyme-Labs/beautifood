@@ -485,3 +485,17 @@ describe("an order spelled out item by item", () => {
     expect(basketOf("is the nasi lemak and teh tarik halal?", hawker as unknown as Dish[])).toBeNull();
   });
 });
+
+describe("Chinese dish names a menu doesn't list", () => {
+  it("finds the dish by what it's usually called, the longer name first", () => {
+    const plain = (hawker as unknown as Dish[]).map(({ translations: _t, ...d }) => d) as Dish[];
+    expect(read(plain, "海南鸡饭和椰浆饭哪个比较辣？").dishes.map((d) => d.name)).toEqual(["Hainanese Chicken Rice", "Nasi Lemak Ayam Rempah"]);
+    expect(read(plain, "鸡饭多少钱").dishes.map((d) => d.name)).toEqual(["Hainanese Chicken Rice"]);
+    expect(read(plain, "槟城叻沙辣吗").dishes.map((d) => d.name)).toEqual(["Penang Assam Laksa"]);
+  });
+  it("names it in the glossary when no translation engine is set up", async () => {
+    const { glossary } = await import("../../src/server/ai/translate");
+    expect(glossary("Tonkotsu Ramen", "zh")).toBe("豚骨拉面");
+    expect(glossary("Chicken Rice Ball Soup", "zh")).toBeNull();
+  });
+});

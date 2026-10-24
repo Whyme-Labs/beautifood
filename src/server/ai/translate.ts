@@ -7,6 +7,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { localeInfo } from "../../i18n/core";
 import type { ClaudeEnv } from "./claude";
+import { zhNamesOf } from "../../shared/dishNamesZh";
 
 export interface TranslateEnv extends ClaudeEnv {
   AI?: { run: (model: string, input: Record<string, unknown>) => Promise<unknown> };
@@ -226,6 +227,10 @@ export function glossary(text: string, to: string): string | null {
   const norm = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
   const whole = g[norm(text)];
   if (whole) return whole;
+  // a dish the glossary doesn't list by its full name: what it's usually called, when its whole
+  // name is that dish ("Hainanese Chicken Rice"), not one of its words ("Chicken Rice Ball Soup")
+  const usual = to === "zh" ? zhNamesOf(text) : null;
+  if (usual && norm(text.replace(/\(.*?\)/g, "")) === usual.key) return usual.names[0];
   const parts = text.split(/\s*[,;]\s*/).filter(Boolean);
   if (parts.length > 1) {
     const tr = parts.map((p) => g[norm(p.replace(/\(.*?\)/g, ""))]);

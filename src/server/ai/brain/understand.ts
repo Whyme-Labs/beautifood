@@ -4,6 +4,9 @@
 // pedas", "不辣"), and what it refers back to ("those", "that one"). The intent comes from the
 // neural model, reading the question with the dishes replaced by §dish so it works for any menu.
 import { ALLERGENS, type Allergen } from "../../../shared/allergens";
+import { zhNamesOf } from "../../../shared/dishNamesZh";
+
+const HAN_RE = /[\u3400-\u9fff]/;
 import { classify, loadModel, type Intent, type IntentGuess, type IntentModel, type IntentWeights } from "../../../shared/brain/intentModel";
 import { editDistance, normalize, osaDistance, tokens } from "../../../shared/brain/text";
 import { WEIGHTS } from "../../../shared/brain/weights.gen";
@@ -199,6 +202,8 @@ interface Mention {
   at: number;
   covered: number[];
   score: number;
+  /** Found by its usual Chinese name. */
+  zh?: string;
 }
 
 /**
@@ -213,6 +218,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
       if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2 });
+    // no Chinese name on this menu: what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice)
+    if (!dish.translations?.zh?.name && HAN_RE.test(raw)) {
+      const zh = zhNamesOf(dish.name)?.names.filter((x) => x.length > 1 && raw.includes(x)).sort((x, y) => y.length - x.length)[0];
+      if (zh) return void found.push({ dish, at: raw.indexOf(zh) / 100, covered: [], score: 1.9, zh });
+    }
     // one letter can be the whole difference: Kopi O is black, Kopi C has evaporated milk
     let name = ix.names[n].filter((w) => w.length > 1 || /\d/.test(w) || !/^[ai]$/.test(w));
     if (!name.length) return;
@@ -263,6 +273,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   // King Durian Cendol, not the plain Cendol whose one word it also contains
   const inside = (a: Mention, b: Mention) => a.covered.length > 0 && b.covered.length > a.covered.length && a.covered.every((i) => b.covered.includes(i));
   for (let k = found.length - 1; k >= 0; k--) if (found.some((b) => inside(found[k], b))) found.splice(k, 1);
+  // 海南鸡饭 is the Hainanese Chicken Rice, not also the plain Chicken Rice (鸡饭) inside it
+  for (let k = found.length - 1; k >= 0; k--) if (found[k].zh && found.some((b) => b.zh && b.zh !== found[k].zh && b.zh.includes(found[k].zh!))) found.splice(k, 1);
   // two dishes claiming the same words: the better match keeps them
   found.sort((a, b) => b.score - a.score);
   const claimed = new Set<number>();
