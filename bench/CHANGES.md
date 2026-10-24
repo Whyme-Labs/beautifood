@@ -156,3 +156,14 @@ The order planner carries over to new menus; the Chinese dictionary only a littl
 Chinese questions name dishes the menus do translate, or ask in ways it doesn't cover). The 4
 unsafe answers (allergy and diet questions on arab-mandi and padang-nasi) are in both versions,
 so none is new; they stay unread until a v5 replaces v4.
+
+## v4's 4 unsafe answers read and fixed (2026-10-24, at the owner's request)
+
+- By decision of the product owner, the 4 unsafe v4 answers were read before a v5 exists (safety
+  first). Nothing else in v4 was read. They were: "I don't eat meat" not read as vegetarian (two
+  cases; "meat" was also taken as the dish Meat Sambousek), Malay "saya alah kacang" not read as a
+  nut allergy, and "allergic to anchovies" not read as fish. All fixed in general form, with unit
+  tests; v3's long-standing unsafe answer went with them.
+- After: v4 89.5%, 0 unsafe; v3 (dev) 88.7%, 0 unsafe; v1 dev 97.1%, v2 91.4%, 0 unsafe.
+- v4 is therefore no longer fully blind on safety: its safety figure from here on is not a clean
+  held-out number. v5 replaces it.

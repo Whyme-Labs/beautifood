@@ -499,3 +499,20 @@ describe("Chinese dish names a menu doesn't list", () => {
     expect(glossary("Chicken Rice Ball Soup", "zh")).toBeNull();
   });
 });
+
+describe("safety phrasings found on v4", () => {
+  it("'I don't eat meat' is a vegetarian guest, even when a dish is called Meat Something", () => {
+    expect(read(hawker as unknown as Dish[], "I don't eat meat. Is the curry mee ok?").statedDiet).toContain("vegetarian");
+    const r = answerGuest(ctx, [{ role: "user", content: "I don't eat meat. Is the nasi lemak ayam rempah ok?" }]);
+    expect(r.items.map((i) => i.name)).not.toContain("Nasi Lemak Ayam Rempah");
+    expect(r.answer).toMatch(/isn't vegetarian/);
+  });
+  it("Malay 'alah kacang' is a nut allergy, and anchovies are fish", () => {
+    expect(read(hawker as unknown as Dish[], "Saya alah kacang. Satay ada kacang tak?").stated).toEqual(expect.arrayContaining(["peanuts", "tree_nuts"]));
+    expect(read(hawker as unknown as Dish[], "Allergic to anchovies. Is the nasi lemak ok?").stated).toContain("fish");
+  });
+  it("what they don't want isn't an item of an order", async () => {
+    const { basketOf } = await import("../../src/server/ai/brain/basket");
+    expect(basketOf("no pork, not spicy - a main dish please", hawker as unknown as Dish[])).toBeNull();
+  });
+});

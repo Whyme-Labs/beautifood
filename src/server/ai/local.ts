@@ -61,7 +61,7 @@ const ALLERGEN_WORDS: Record<Allergen, RegExp> = {
   crustaceans: /shellfish|crustacean|prawn|shrimp|crab|lobster/i,
   // "shellfish" is both: a shellfish allergy can be to prawns or to oysters and clams
   molluscs: /shellfish|mollusc|mollusk|squid|clam|oyster|mussel|scallop/i,
-  fish: /\bfish\b|seafood/i,
+  fish: /\bfish\b|seafood|anchov|\bbilis\b|salmon|\btuna\b|mackerel|sardine|bonito|\bcod\b|\beel\b|tilapia|grouper|seabass|sea bass/i,
   egg: /\beggs?\b/i,
   milk: /milk|dairy|lactose|cheese|cream/i,
   peanuts: /peanut/i,
@@ -108,7 +108,7 @@ const ALLERGEN_WORDS_ZH: Partial<Record<Allergen, RegExp>> = {
 export function mentionedAllergens(q: string): Allergen[] {
   const found = ALLERGENS.filter((a) => ALLERGEN_WORDS[a].test(q) || ALLERGEN_WORDS_ZH[a]?.test(q) || ALLERGEN_WORDS_MS[a]?.test(q));
   // "saya alergi kacang": allergic to nuts, so peanuts and tree nuts both
-  if (/alergi|allerg/i.test(q) && /\bkacang\b/i.test(q)) for (const a of ["peanuts", "tree_nuts"] as Allergen[]) if (!found.includes(a)) found.push(a);
+  if (/alergi|allerg|\balah\b|alahan/i.test(q) && /\bkacang\b/i.test(q)) for (const a of ["peanuts", "tree_nuts"] as Allergen[]) if (!found.includes(a)) found.push(a);
   // "nuts" alone should cover peanuts too
   if (found.includes("tree_nuts") && /\bnuts?\b/i.test(q) && !found.includes("peanuts")) found.push("peanuts");
   if (/seafood/i.test(q)) for (const a of ["crustaceans", "molluscs"] as Allergen[]) if (!found.includes(a)) found.push(a);

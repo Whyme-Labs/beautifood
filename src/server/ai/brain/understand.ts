@@ -98,7 +98,7 @@ export function useWeights(w: IntentWeights) {
 
 /** Food words too common to identify a dish on their own ("chicken" is not Hainanese Chicken Rice). */
 const GENERIC = new Set(
-  "chicken ayam beef daging lamb kambing pork babi fish ikan prawn udang rice nasi noodle noodles mee mi meehoon bihun fried goreng rebus bakar grilled steamed iced ice ais hot cold panas sejuk juice jus tea teh coffee kopi special set soup sup curry kari spicy sweet sour fresh the and with of a an in on sauce kuah sambal egg telur vegetable vegetables sayur tofu small large big vegetarian vegan veggie halal signature classic original house mini regular plain mild extra".split(" "),
+  "meat meats chicken ayam beef daging lamb kambing pork babi fish ikan prawn udang rice nasi noodle noodles mee mi meehoon bihun fried goreng rebus bakar grilled steamed iced ice ais hot cold panas sejuk juice jus tea teh coffee kopi special set soup sup curry kari spicy sweet sour fresh the and with of a an in on sauce kuah sambal egg telur vegetable vegetables sayur tofu small large big vegetarian vegan veggie halal signature classic original house mini regular plain mild extra".split(" "),
 );
 
 /** Places and styles a dish is named after: they describe it ("Penang Assam Laksa") but don't name it on their own ("the traffic on the Penang bridge"). */
@@ -581,7 +581,13 @@ export function read(items: Dish[], asked: string): Reading {
 
   const diet: Diet[] = [];
   if (/\b(vegan|plant based|plantbased)\b/.test(restText) || /纯素|全素/.test(restRaw)) diet.push("vegan");
-  else if (/\b(vegetarian|veggie|vegetarians|vege|veg|no meat|meatless|meat free|tak makan daging|sayur sayuran|sayuran|vegetarian food)\b/.test(restText) || /素|斋/.test(restRaw)) diet.push("vegetarian");
+  else if (
+    /\b(vegetarian|veggie|vegetarians|vege|veg|no meat|meatless|meat free|tak makan daging|sayur sayuran|sayuran|vegetarian food)\b/.test(restText) ||
+    /素|斋/.test(restRaw) ||
+    // "I don't eat meat" (read from the whole question: "meat" may be a word of a dish's name)
+    /\b(don t|dont|do not|never|cannot|can t|cant|doesn t|doesnt|tak|tidak|x) (eat|makan) (any )?(meat|daging)\b/.test(normalize(question))
+  )
+    diet.push("vegetarian");
   if (/\b(halal|no pork|tak makan babi|takde babi|muslim|muslims|pork free|non pork)\b/.test(restText) || /清真|无猪|不吃猪|没有猪/.test(restRaw)) diet.push("halal");
 
   const spice = spiceByClause(question, new Set(mentions.flatMap((m) => m.covered.map((i) => toks[i]))), restRaw);

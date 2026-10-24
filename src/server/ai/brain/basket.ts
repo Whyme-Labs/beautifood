@@ -61,6 +61,8 @@ export function basketOf(question: string, items: Dish[]): Slot[] | null {
     if (n !== undefined) (count = n), j++;
     const w = toks[j];
     if (!w) return null;
+    // "not spicy", "no pork", "tak nak udang": what they don't want isn't an item
+    if (/^(no|not|without|non|tak|x|bukan|tanpa|jangan|less|kurang)$/.test(toks[j - 1] ?? "")) return null;
     const course = COURSE_WORDS.find(([re]) => re.test(w));
     // "sayur apa sesuai?", "which drink?": a question about the course, not an item ordered
     if (course && /^(apa|what|which|mana|yang|yg)$/.test(toks[j + 1] ?? "")) return null;
