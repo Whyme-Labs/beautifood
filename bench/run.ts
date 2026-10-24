@@ -16,7 +16,7 @@ const arg = (k: string, d: string) => (process.argv.includes(k) ? process.argv[p
 const ENGINE = arg("--engine", "brain");
 // no default split: the test split is run once, on purpose, never by accident
 const SPLIT = arg("--split", "");
-const SET = arg("--set", "v1") as "v1" | "heldout";
+const SET = arg("--set", "v1") as Set;
 const DATA = arg("--data", "gold") as "gold" | "parser";
 
 type Item = AssistantContext["items"][number];
@@ -31,8 +31,12 @@ export interface Gold {
   note?: string;
 }
 
+/** Which case set: v1 (dev and test), v2 held-out, or v3 held-out (with its own menus, in v3/menus). */
+export type Set = "v1" | "heldout" | "v3";
+const menuFile = (menu: string, ext: string) => [`${DIR}menus/${menu}${ext}`, `${DIR}v3/menus/${menu}${ext}`].find((f) => existsSync(f)) ?? `${DIR}menus/${menu}${ext}`;
+
 export function loadGold(menu: string): Record<string, Gold> | null {
-  const f = `${DIR}menus/${menu}.gold.json`;
+  const f = menuFile(menu, ".gold.json");
   return existsSync(f) ? (JSON.parse(readFileSync(f, "utf8")) as Record<string, Gold>) : null;
 }
 
@@ -43,7 +47,7 @@ export function loadGold(menu: string): Record<string, Gold> | null {
  */
 export function loadMenu(menu: string, source: "gold" | "parser" = "gold"): AssistantContext {
   const zh = new Map<string, string>();
-  const text = readFileSync(`${DIR}menus/${menu}.txt`, "utf8")
+  const text = readFileSync(menuFile(menu, ".txt"), "utf8")
     .split("\n")
     .map((line) => {
       const [main, cn] = line.split(" | ");
@@ -85,9 +89,9 @@ export function loadMenu(menu: string, source: "gold" | "parser" = "gold"): Assi
   return { restaurant: { name: "Test Kitchen", cuisine: "", story: "", description: "" }, branchName: "Main", currency: "MYR", menuLanguage: "en", items } as unknown as AssistantContext;
 }
 
-/** `set`: "v1" (cases/, dev and test) or "heldout" (heldout/, v2: new authors and menus, all test). */
-export function loadCases(split = "all", set: "v1" | "heldout" = "v1"): Case[] {
-  const dir = `${DIR}${set === "v1" ? "cases" : "heldout"}`;
+/** `set`: "v1" (cases/, dev and test), "heldout" (heldout/, v2: new authors and menus, all test) or "v3" (v3/, the same again, on v3/menus). */
+export function loadCases(split = "all", set: Set = "v1"): Case[] {
+  const dir = `${DIR}${{ v1: "cases", heldout: "heldout", v3: "v3" }[set]}`;
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
     .filter((f) => f.endsWith(".json"))
@@ -251,7 +255,7 @@ export function summarise(rows: Row[]) {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   if (!["dev", "test", "all"].includes(SPLIT)) {
-    console.error("usage: npx tsx bench/run.ts --split dev|test|all [--set v1|heldout] [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
+    console.error("usage: npx tsx bench/run.ts --split dev|test|all [--set v1|heldout|v3] [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
     process.exit(1);
   }
   const cases = loadCases(SPLIT, SET);

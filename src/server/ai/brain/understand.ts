@@ -98,6 +98,11 @@ const GENERIC = new Set(
   "chicken ayam beef daging lamb kambing pork babi fish ikan prawn udang rice nasi noodle noodles mee mi meehoon bihun fried goreng rebus bakar grilled steamed iced ice ais hot cold panas sejuk juice jus tea teh coffee kopi special set soup sup curry kari spicy sweet sour fresh the and with of a an in on sauce kuah sambal egg telur vegetable vegetables sayur tofu small large big vegetarian vegan veggie halal signature classic original house mini regular plain mild extra".split(" "),
 );
 
+/** Places and styles a dish is named after: they describe it ("Penang Assam Laksa") but don't name it on their own ("the traffic on the Penang bridge"). */
+const ORIGIN = new Set(
+  "penang ipoh melaka malacca johor kelantan kedah perak sabah sarawak kampung hainanese hokkien cantonese teochew hakka nyonya peranakan sichuan szechuan hong kong taiwanese thai korean japanese chinese indian malay mamak western italian singapore".split(" "),
+);
+
 interface DishIndex {
   items: Dish[];
   names: string[][];
@@ -222,10 +227,10 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const at = covered.length ? spots.sort((a, b) => near(a) - near(b))[0] : spots[0];
       covered.push(at);
       weight += idf * g;
-      if (!GENERIC.has(w) && w !== "kacang" && !mentionedAllergens(w).length) strong = true;
+      if (!GENERIC.has(w) && !ORIGIN.has(w) && w !== "kacang" && !mentionedAllergens(w).length) strong = true;
       // an allergen word ("kacang" in Ais Kacang) alone names the allergen, not the dish
       // a word the menu's courses use ("skewers" in Yakitori & skewers) asks for the course, not one dish
-      if (df(w) === 1 && !GENERIC.has(w) && !ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, "")) && w.length >= 4 && w !== "kacang" && !mentionedAllergens(w).length) unique = true;
+      if (df(w) === 1 && !GENERIC.has(w) && !ORIGIN.has(w) && !ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, "")) && w.length >= 4 && w !== "kacang" && !mentionedAllergens(w).length) unique = true;
     }
     if (!covered.length) return;
     // only the course's own words ("breakfast" of The Big Breakfast in "vegetarian breakfast?") don't name it
@@ -596,7 +601,7 @@ export function read(items: Dish[], asked: string): Reading {
   if (mentions.some((m) => !m.covered.length)) delexicalized.unshift("§dish");
   // "is the roti canai vegetarian?" asks of a dish; "I'm vegetarian, roti canai ok?" says who they are
   const asksDiet = /\b(is|are|got|ada|any)\b[^?]*\b(vegetarian|vegan|veg)\b|\b(vegetarian|vegan)\s*(or not|tak|x|ke|kah|ah|\?|$)/.test(restText) || /素(的|吗|不)|是不是素/.test(restRaw);
-  const saysDiet = !mentions.length || !asksDiet || /\b(i m|im|i am|we re|we are|were all|saya|sy|kami|aku|my \w+ (is|are)|for (a|my) \w*\s?(vegetarian|vegan)|vegetarian here|vegan here)\b/.test(restText) || /我(是|吃|们)|吃素的|吃斋/.test(restRaw);
+  const saysDiet = !mentions.length || !asksDiet || /\b(i m|im|i am|we re|we are|were all|saya|sy|kami|aku|my \w+ (is|are)|for (a|my) \w*\s?(vegetarian|vegan)|(pure |strict )?(vegetarian|vegan|veg|veggie|veggies)s? (here|lah|la|person|people|family|table|guest|guests|only|all))\b/.test(restText) || /我(是|吃|们)|吃素的|吃斋/.test(restRaw);
   return {
     text: question,
     stated: allergens.filter((a) => governed(fixed, a)),

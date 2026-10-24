@@ -13,7 +13,7 @@ const sets: [string, string[]][] = [
   ["eval", [...EVAL_CASES, ...MORE_CASES].flatMap((c) => [c.question, ...(c.before ?? []).map((b) => b.question)]).map((q) => asRead(hawker, q))],
   ["held-out", HELD_OUT.map(([q]) => asRead(hawker, q))],
   ["final", FINAL_CASES.flatMap((c) => [c.question]).map((q) => asRead(hawker, q))],
-  ["bench", [...loadCases("all"), ...loadCases("all", "heldout")].flatMap((c) => [c.question, ...(c.before ?? []).map((b) => b.user)].map((q) => asRead(loadMenu(c.menu).items as unknown as Dish[], q)))],
+  ["bench", [...loadCases("all"), ...loadCases("all", "heldout"), ...loadCases("all", "v3")].flatMap((c) => [c.question, ...(c.before ?? []).map((b) => b.user)].map((q) => asRead(loadMenu(c.menu).items as unknown as Dish[], q)))],
 ];
 const seen = new Map<string, number>();
 for (const e of generate(2500)) {

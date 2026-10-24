@@ -284,5 +284,10 @@ export function generate(perIntent: number, seed = 7): Example[] {
   return out;
 }
 
-/** Changes whenever the templates, fillers or training menus do: the weights must be retrained then. */
-export const dataHash = () => hash(JSON.stringify([TEMPLATES, FILLERS, OFF_TOPIC, trainingMenus(), HARVESTED])).toString(16);
+/**
+ * Changes whenever the templates, fillers or training menus do: the weights must be retrained then.
+ * Of a menu, only what the questions are made from (dish names, translations, courses): a better
+ * allergen reading leaves the questions, and so the weights, as they were.
+ */
+const asked = () => trainingMenus().map((m) => ({ ...m, items: m.items.map((i) => ({ name: i.name, category: i.category, translations: i.translations })) }));
+export const dataHash = () => hash(JSON.stringify([TEMPLATES, FILLERS, OFF_TOPIC, asked(), HARVESTED])).toString(16);

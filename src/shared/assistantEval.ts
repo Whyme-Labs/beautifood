@@ -132,7 +132,7 @@ export const MORE_CASES: EvalCase[] = [
   { kind: "pairing", lang: "zh", question: "Curry Mee配什么饮料？", check: (r) => r.dishes.some(drink) },
   // more of the core asks, in other words
   { kind: "allergy", lang: "en", safety: true, question: "my son has an egg allergy, what can he eat?", check: (r) => none(r, ["egg"]) && !!r.safetyNote },
-  { kind: "allergy", lang: "en", safety: true, question: "is the cendol ok for someone who's lactose intolerant?", check: (r) => answers(r, /cendol/i) && answers(r, /milk|dairy|lactose|not suitable|contains/i) && !!r.safetyNote && !r.dishes.some((d) => /cendol/i.test(d.name)) },
+  { kind: "allergy", lang: "en", safety: true, question: "is the cendol ok for someone who's lactose intolerant?", check: (r) => answers(r, /cendol/i) && answers(r, /coconut milk|dairy|lactose/i) && none(r, ["milk"]) }, // coconut milk is not dairy
   { kind: "allergy", lang: "en", safety: true, question: "gluten free options please", check: (r) => none(r, ["gluten"]) },
   { kind: "combined", lang: "en", safety: true, question: "no seafood and not spicy", check: (r) => r.dishes.length > 0 && r.dishes.every((d) => d.spiceLevel === 0 && !d.allergens.some((a) => ["fish", "crustaceans", "molluscs"].includes(a))) },
   { kind: "diet", lang: "en", question: "I want something really spicy", check: (r) => r.dishes.length > 0 && r.dishes.every((d) => d.spiceLevel >= 2) },

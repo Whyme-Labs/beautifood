@@ -47,9 +47,42 @@ describe("menu parser", () => {
 
 describe("allergen inference", () => {
   it("word-boundary matching avoids false positives", () => {
-    expect(inferAllergens("Eggplant with garlic")).toContain("egg"); // conservative: flag for review
+    expect(inferAllergens("Eggplant with garlic")).not.toContain("egg");
+    expect(inferAllergens("Butterfly pea lemonade")).not.toContain("milk");
+    expect(inferAllergens("Toasted coconut sorbet")).not.toContain("gluten");
+    expect(inferAllergens("Two soft eggs")).toContain("egg");
     expect(inferAllergens("Coconut rice")).not.toContain("tree_nuts");
     expect(inferAllergens("Satay with peanut sauce")).toContain("peanuts");
+  });
+  it("reads what a dish leaves out, and what only sounds like an allergen", () => {
+    expect(inferAllergens("black coffee, no milk")).not.toContain("milk");
+    expect(inferAllergens("red curry made without shrimp paste or fish sauce, tofu")).toEqual(expect.not.arrayContaining(["crustaceans", "fish"]));
+    expect(inferAllergens("served with or without egg")).toContain("egg");
+    expect(inferAllergens("eggless vegan mayo, cashew-based vegan cheese")).toEqual(["tree_nuts"]);
+    expect(inferAllergens("chicken in coconut milk")).not.toContain("milk");
+    expect(inferAllergens("espresso, oat milk")).toEqual(["gluten"]);
+    expect(inferAllergens("house-made soya bean milk")).toEqual(["soy"]);
+    expect(inferAllergens("flat rice noodles, bean sprouts")).not.toContain("gluten");
+    expect(inferAllergens("flat rice noodles, dark soy sauce")).toEqual(expect.arrayContaining(["gluten", "soy"]));
+    expect(inferAllergens("fried fish cakes, kaffir lime")).toEqual(["fish"]);
+    expect(inferAllergens("glutinous rice flour balls")).not.toContain("gluten");
+    expect(inferAllergens("mushroom-based vegetarian oyster sauce")).not.toContain("molluscs");
+  });
+  it("knows ingredients a merchant won't spell out", () => {
+    expect(inferAllergens("grilled freshwater eel")).toContain("fish");
+    expect(inferAllergens("on an English muffin")).toContain("gluten");
+    expect(inferAllergens("semolina sweet")).toContain("gluten");
+    expect(inferAllergens("iced Milo")).toEqual(expect.arrayContaining(["gluten", "milk"]));
+    expect(inferAllergens("hollandaise")).toEqual(expect.arrayContaining(["egg", "milk"]));
+    expect(inferAllergens("chicken skewers, soy tare")).toEqual(expect.arrayContaining(["soy", "gluten"]));
+    expect(inferDietary("grilled freshwater eel on rice").dietary).not.toContain("vegetarian");
+  });
+  it("calls a dish vegan only when nothing suggests otherwise", () => {
+    expect(inferDietary("rice, three vegetables, rasam (vegetarian)").dietary).not.toContain("vegan");
+    expect(inferDietary("Roti canai with dhal").dietary).not.toContain("vegan");
+    expect(inferDietary("Fresh lime juice").dietary).toContain("vegan");
+    expect(inferDietary("Coconut sorbet (vegan)").dietary).toContain("vegan");
+    expect(inferDietary("chicken, not spicy").spiceLevel).toBe(0);
   });
   it("dietary flags", () => {
     expect(inferDietary("Nasi lemak with ayam rendang").dietary).not.toContain("vegetarian");

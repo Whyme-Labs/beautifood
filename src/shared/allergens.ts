@@ -37,15 +37,15 @@ export const ALLERGEN_LABELS: Record<Allergen, string> = {
 };
 
 const KEYWORDS: Record<Allergen, string[]> = {
-  gluten: ["wheat", "flour", "noodle", "mee", "bread", "toast", "pasta", "spaghetti", "bun", "roti", "dumpling", "wonton", "batter", "tempura", "cake", "pastry", "croissant", "pau", "barley", "beer", "soy sauce", "kway teow", "kuey teow", "pancake", "waffle", "biscuit", "cookie", "pizza", "udon", "ramen"],
-  crustaceans: ["prawn", "shrimp", "crab", "lobster", "crayfish", "udang", "belacan", "har gow", "langoustine"],
-  molluscs: ["squid", "sotong", "octopus", "clam", "lala", "mussel", "oyster", "scallop", "cockle", "kerang", "abalone", "calamari"],
-  fish: ["fish", "ikan", "salmon", "tuna", "anchovy", "anchovies", "ikan bilis", "cod", "mackerel", "sardine", "fish sauce", "bonito", "otak-otak", "seabass", "snapper", "pomfret"],
-  egg: ["egg", "telur", "mayo", "mayonnaise", "custard", "meringue", "omelette", "kaya", "aioli"],
-  milk: ["milk", "cheese", "butter", "cream", "yogurt", "yoghurt", "ghee", "condensed", "latte", "cappuccino", "susu", "paneer", "whey", "ice cream", "mozzarella", "parmesan", "teh tarik", "milo"],
+  gluten: ["wheat", "flour", "noodle", "mee", "bread", "toast", "pasta", "spaghetti", "bun", "roti", "dumpling", "wonton", "batter", "battered", "breaded", "breadcrumbs", "panko", "tempura", "katsu", "cake", "pastry", "pastries", "croissant", "brioche", "bagel", "muffin", "sourdough", "crouton", "semolina", "couscous", "bulgur", "rye", "spelt", "seitan", "naan", "chapati", "paratha", "murtabak", "pau", "bao", "barley", "malt", "milo", "oat", "oats", "granola", "cereal", "beer", "soy sauce", "dark soy", "light soy", "sweet soy", "soy tare", "tare", "teriyaki", "shoyu", "kicap", "hoisin", "okonomi", "gochujang", "pancake", "waffle", "biscuit", "cookie", "cracker", "pizza", "udon", "ramen", "soba"],
+  crustaceans: ["prawn", "shrimp", "crab", "lobster", "crayfish", "udang", "belacan", "har gow", "langoustine", "cincalok", "hae bee", "heh bee", "rebon", "krill"],
+  molluscs: ["squid", "sotong", "octopus", "clam", "lala", "mussel", "oyster", "scallop", "cockle", "kerang", "abalone", "calamari", "escargot", "geoduck"],
+  fish: ["fish", "ikan", "salmon", "tuna", "anchovy", "anchovies", "ikan bilis", "cod", "mackerel", "sardine", "fish sauce", "bonito", "katsuobushi", "dashi", "otak-otak", "seabass", "snapper", "pomfret", "eel", "unagi", "saba", "kembung", "roe", "ikura", "tobiko", "caviar", "surimi", "keropok lekor", "budu", "worcestershire"],
+  egg: ["egg", "telur", "mayo", "mayonnaise", "custard", "meringue", "omelette", "kaya", "aioli", "hollandaise", "carbonara", "tamago", "tamagoyaki", "pavlova"],
+  milk: ["milk", "milkshake", "buttermilk", "dairy", "cheese", "cheesy", "cheesecake", "butter", "buttery", "buttercream", "cream", "creamy", "creamer", "yogurt", "yoghurt", "ghee", "condensed", "latte", "cappuccino", "susu", "paneer", "whey", "ice cream", "gelato", "mozzarella", "parmesan", "feta", "ricotta", "mascarpone", "burrata", "halloumi", "hollandaise", "bechamel", "carbonara", "custard", "lassi", "kulfi", "teh tarik", "milo"],
   peanuts: ["peanut", "groundnut", "kacang", "satay sauce", "satay"],
-  tree_nuts: ["almond", "cashew", "walnut", "pistachio", "hazelnut", "pecan", "macadamia", "praline", "marzipan", "candlenut"],
-  soy: ["soy", "soya", "tofu", "taukua", "tempeh", "edamame", "miso", "tau fu", "beancurd", "bean curd", "tau foo"],
+  tree_nuts: ["almond", "cashew", "walnut", "pistachio", "hazelnut", "pecan", "macadamia", "praline", "marzipan", "candlenut", "pine nut"],
+  soy: ["soy", "soya", "soybean", "tofu", "taukua", "tempeh", "edamame", "miso", "natto", "yuba", "tau fu", "beancurd", "bean curd", "tau foo", "tare", "teriyaki", "shoyu", "kicap", "okonomi"],
   sesame: ["sesame", "tahini", "bijan"],
   celery: ["celery", "celeriac"],
   mustard: ["mustard", "dijon"],
@@ -53,37 +53,73 @@ const KEYWORDS: Record<Allergen, string[]> = {
   lupin: ["lupin"],
 };
 
-const MEAT = ["chicken", "ayam", "beef", "daging", "pork", "lamb", "mutton", "kambing", "duck", "itik", "bacon", "ham", "sausage", "char siu", "lap cheong", "meat", "rendang", "satay", "burger", "steak", "lard", "gelatin"];
+const MEAT = ["chicken", "ayam", "beef", "daging", "pork", "lamb", "mutton", "kambing", "duck", "itik", "goose", "turkey", "quail", "veal", "venison", "wagyu", "brisket", "rib", "liver", "tripe", "bacon", "ham", "sausage", "pepperoni", "salami", "chorizo", "prosciutto", "pancetta", "char siu", "lap cheong", "meat", "rendang", "satay", "burger", "steak", "tonkatsu", "karaage", "yakitori", "lard", "gelatin", "gelatine", "bone broth"];
 const SEAFOOD = [...KEYWORDS.fish, ...KEYWORDS.crustaceans, ...KEYWORDS.molluscs, "belacan", "oyster sauce"];
 const ANIMAL = [...KEYWORDS.egg, ...KEYWORDS.milk, "honey"];
+/** Breads usually made with ghee, butter or milk, so not called vegan without the merchant saying so. */
+const ENRICHED = ["roti canai", "roti", "naan", "paratha", "brioche", "croissant", "puff pastry"];
 const SPICY = ["chili", "chilli", "cili", "sambal", "spicy", "pedas", "curry", "kari", "mala", "rendang", "jalapeno", "sriracha", "tom yum", "tomyam", "laksa", "pepper"];
 const NOT_HALAL = ["pork", "bacon", "ham", "lard", "char siu", "lap cheong", "wine", "beer", "rum", "sake", "mirin", "babi"];
 
+// A word, or its plural, as a whole word: "egg" in "eggs", not in "eggplant"; "butter" not in "butterfly".
 function has(text: string, words: string[]) {
-  return words.some((w) => new RegExp(`(^|[^a-z])${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "i").test(text));
+  return words.some((w) => new RegExp(`(^|[^a-z])${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(s|es)?(?![a-z])`, "i").test(text));
+}
+
+/**
+ * The text with what a dish leaves out or only looks like taken away, so it isn't read as an
+ * ingredient: "no dairy", "made without shrimp paste or fish sauce", "egg-free", "eggless",
+ * "coconut milk" (not dairy), "rice noodles" and "rice flour" (no wheat), "fish cake" (no wheat),
+ * "vegetarian oyster sauce" (no oyster). What a plant milk is made of still counts ("oat milk": oats).
+ */
+function ingredients(text: string): string {
+  return (
+    text
+      .toLowerCase()
+      // "with or without egg": the egg may be there
+      .replace(/\bwith or without\b/g, "with")
+      .replace(/\b(?:no|without|free from|free of|minus)\s+((?:[a-z'-]+\s?){1,5}?)(?=[,.;()]|\bwith\b|\bserved\b|\btopped\b|\bplus\b|\bbut\b|$)/g, " ")
+      .replace(/\b[a-z]+[\s-]free\b/g, " ")
+      .replace(/\b(?:egg|flour|dairy|meat|milk)less\b/g, " ")
+      .replace(/\b(coconut|oat|soy|soya|soya bean|soybean|almond|rice|cashew|nut|peanut)[\s-]+(?:milk|cream|butter)\b/g, "$1 plant")
+      .replace(/\b(?:cocoa|shea|apple)\s+butter\b/g, " ")
+      .replace(/\bvegan\s+(?:cheese|mayo|mayonnaise|butter|cream|sausage|meat|patty)\b/g, "vegan")
+      .replace(/\b(?:vegetarian|mushroom|mushroom-based)\s+(?:vegetarian\s+)?oyster sauce\b/g, "mushroom sauce")
+      .replace(/\boyster mushrooms?\b/g, "mushroom")
+      .replace(/\bbutterfly pea\b/g, "pea flower")
+      .replace(/\b(?:fish|rice flour|rice|carrot|radish|turnip|yam|taro|water chestnut)\s+cakes?\b/g, (m) => (m.startsWith("fish") ? "fish kuih" : "kuih"))
+      .replace(/\b(?:flat\s+)?(?:rice|glass|mung bean|sweet potato|konjac|tapioca)\s+(?:noodle|noodles|vermicelli|noodle rolls?|paper)\b/g, "ricenoodle")
+      .replace(/\b(?:bee ?hoon|mee hoon|kway teow|kuey teow|hor fun|cheong fun|chee cheong fun)\b/g, "ricenoodle")
+      .replace(/\b(?:glutinous rice|rice|tapioca|corn|soybean|soy|chickpea|gram|almond|coconut|potato|sago)[\s-]+flour\b/g, (m) => m.replace(/flour$/, "starch"))
+      .replace(/\bcornflour\b/g, "starch")
+  );
 }
 
 export function inferAllergens(text: string): Allergen[] {
-  const t = text.toLowerCase();
+  const t = ingredients(text);
   return ALLERGENS.filter((a) => has(t, KEYWORDS[a]));
 }
 
 export function inferDietary(text: string): { dietary: string[]; spiceLevel: number } {
-  const t = text.toLowerCase();
+  const said = text.toLowerCase();
+  const t = ingredients(text);
   const dietary: string[] = [];
   const meat = has(t, MEAT);
   const seafood = has(t, SEAFOOD);
   if (!meat && !seafood) {
     dietary.push("vegetarian");
-    if (!has(t, ANIMAL)) dietary.push("vegan");
+    // a merchant who wrote "vegetarian" and not "vegan" chose the word for a reason (ghee, egg, milk)
+    const onlyVegetarian = /\bvegetarian\b/.test(said) && !/\bvegan\b/.test(said);
+    if (!has(t, ANIMAL) && !onlyVegetarian && (/\bvegan\b/.test(said) || !has(t, ENRICHED))) dietary.push("vegan");
   }
   if (!has(t, NOT_HALAL)) dietary.push("halal_friendly");
-  if (!inferAllergens(t).includes("gluten")) dietary.push("gluten_free_ingredients");
+  if (!inferAllergens(text).includes("gluten")) dietary.push("gluten_free_ingredients");
   let spiceLevel = 0;
-  if (has(t, SPICY)) {
+  const heat = t.replace(/\b(?:not|non)[\s-]?(?:too\s+|very\s+)?spicy\b/g, " ");
+  if (has(heat, SPICY)) {
     spiceLevel = 1;
-    if (/extra spicy|very spicy|super spicy|mala|level 3|🌶🌶/i.test(t)) spiceLevel = 3;
-    else if (/sambal|tom ?yum|spicy/i.test(t)) spiceLevel = 2;
+    if (/extra spicy|very spicy|super spicy|mala|level 3|🌶🌶/i.test(heat)) spiceLevel = 3;
+    else if (/sambal|tom ?yum|spicy/i.test(heat)) spiceLevel = 2;
   }
   if (spiceLevel > 0) dietary.push("spicy");
   return { dietary, spiceLevel };
