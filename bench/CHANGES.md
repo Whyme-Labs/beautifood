@@ -114,3 +114,17 @@ unsafe v3 answer is not touched by either version; it waits for a set that repla
   (Cashew Chicken, Stir-fried Morning Glory) and zichar (Kam Heong Lala, Ginger Spring Onion Beef,
   Claypot Egg Tofu). Vegetarian "mushroom oyster sauce" is unchanged. zichar is a v1 menu, so v1's
   test split is scored on the corrected readings from here on; its cases are unchanged.
+
+## Second scores on v3 (a3f4a42, once, 2026-10-24)
+
+| | b92c814 | 47fd11d | a3f4a42 |
+|---|---|---|---|
+| assistant, gold data | 85.7%, 1 unsafe | 85.7%, 1 unsafe | 88.7%, 1 unsafe |
+| assistant, parser data | 77.5%, 1 unsafe | 82.1%, 1 unsafe | 85.4%, 1 unsafe |
+| parser: missed allergens | 23 | 17 | 12 |
+| parser: false allergens | 46 | 13 | 12 |
+| v1.2 test (reference) | 87.9%, 0 unsafe | 87.9%, 0 unsafe | 88.1%, 0 unsafe |
+
+Between 47fd11d and a3f4a42 the engine was iterated on v1 dev, v2 (now dev) and six new dev
+menus only. The one unsafe v3 answer is still there and still unread; v3 has now been scored three
+times, so its next use should be as the reference for a v4 that replaces it.
