@@ -1,0 +1,357 @@
+{
+  "Claypot Chicken Rice": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "fish",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Lap cheong is pork sausage (not halal); salted fish = fish; dark soy sauce = soy + gluten; sesame oil."
+  },
+  "Claypot Ginger Chicken Rice": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated no pork, no alcohol. Light soy sauce = soy + gluten; sesame oil. Ginger is not chilli heat."
+  },
+  "Claypot Lap Cheong Rice": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork and pork liver sausage cured with rose wine (not halal; rose wine adds no allergen, v5 rule). Fried egg; dark soy sauce = soy + gluten."
+  },
+  "Claypot Vegetable Rice": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Sounds vegetarian but the rice is cooked with pork lard: not vegetarian, not halal. King oyster mushroom is not a mollusc. Dark soy sauce = soy + gluten."
+  },
+  "Steamed White Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Lei Cha Thunder Tea Rice": {
+    "allergens": [
+      "soy",
+      "peanuts",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu = soy; roasted peanuts and peanuts in the tea soup; sesame seeds. Chai poh and green tea add no allergen. Merchant tags vegan."
+  },
+  "Abacus Seeds": {
+    "allergens": [
+      "crustaceans",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Minced pork (not halal); dried shrimp = crustaceans; soy sauce = soy + gluten. Yam/tapioca dough has no wheat."
+  },
+  "Vegetarian Abacus Seeds": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Vegetarian mushroom sauce stated soy + wheat. Yam/tapioca dough has no wheat."
+  },
+  "Salt-baked Chicken": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "No pork, no alcohol stated; dang gui and sand ginger add no allergen; ginger sesame oil dip = sesame."
+  },
+  "Mui Choy Kau Yuk": {
+    "allergens": [
+      "mustard",
+      "soy",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork belly. Preserved mustard greens = mustard (safe reading: same plant as mustard seed). Nam yu and dark soy = soy (+ gluten from soy sauce); Shaoxing = sulphites + gluten, not halal."
+  },
+  "Hakka Wine Chicken": {
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Hakka yellow glutinous rice wine: not halal, no allergen (rice wine, v3 rule h / v5). Mee sua is wheat = gluten; sesame oil."
+  },
+  "Hakka Stuffed Tofu": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "fish",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Tofu = soy; minced pork (not halal); salted fish = fish; soy sauce = soy + gluten; oyster sauce = molluscs + gluten."
+  },
+  "Yong Tau Foo": {
+    "allergens": [
+      "soy",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Tofu and beancurd skin = soy; fish paste and ikan bilis soup = fish. Stated no pork, so halal from ingredients. A stuffed red chilli and chilli sauce on the side = mild."
+  },
+  "Fried Pork Belly with Nam Yu": {
+    "allergens": [
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork. Fermented red beancurd = soy; egg in the marinade. Sweet potato flour has no gluten."
+  },
+  "Hakka Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg noodles = wheat + egg; lard oil and minced pork (not halal); soy sauce = soy + gluten."
+  },
+  "Chilli Pan Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 3,
+    "note": "Wheat noodles; poached egg; ikan bilis = fish; minced pork in soy sauce (soy + gluten, not halal). Stated very spicy."
+  },
+  "Sayur Manis with Egg": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg; vegetarian, not vegan."
+  },
+  "Kangkung Belacan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan and dried shrimp = crustaceans, not vegetarian. Stated spicy."
+  },
+  "Braised Egg Tofu with Mushrooms": {
+    "allergens": [
+      "egg",
+      "soy",
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Sounds vegetarian but uses oyster sauce and pork bone stock: not vegetarian, not halal. Egg tofu = egg + soy; oyster sauce = molluscs + gluten."
+  },
+  "Garlic Choy Sum": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated no oyster sauce; garlic and salt only."
+  },
+  "Herbal Chicken Soup": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Rice wine: not halal, no allergen (rule h). Dang gui, wolfberries, red dates add none."
+  },
+  "Salted Vegetable Duck Soup": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Kiam chye is salted mustard greens = mustard (safe reading). Duck, no pork or alcohol stated. Mildly peppery = 1."
+  },
+  "Sweet Potato Ginger Soup": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sweet potato, ginger, brown sugar."
+  },
+  "Mua Chee": {
+    "allergens": [
+      "peanuts",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Crushed peanuts and sesame seeds; glutinous rice has no gluten."
+  },
+  "Almond Jelly": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Gelatine: not vegetarian; source not stated, so not halal (safe reading). Evaporated milk = milk. Almond essence, stated no nuts, so no tree nuts."
+  },
+  "Pu-erh Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea."
+  },
+  "Tieguanyin Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oolong tea."
+  },
+  "Chrysanthemum Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Flowers and rock sugar."
+  },
+  "Soy Bean Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy."
+  },
+  "Iced Barley Lime": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten (EU cereal rule)."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Tiger Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer: barley malt = gluten; alcohol, not halal."
+  },
+  "Guinness Stout": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer: barley = gluten; alcohol, not halal."
+  },
+  "Hakka Yellow Wine": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Glutinous rice wine: alcohol, not halal, no allergen (rule h)."
+  }
+}

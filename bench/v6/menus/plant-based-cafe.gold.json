@@ -1,0 +1,372 @@
+{
+  "Smashed Avo Toast": {
+    "allergens": [
+      "gluten",
+      "tree_nuts",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Sourdough = gluten; hazelnut = tree nuts; sesame dukkah. A little chilli = 1."
+  },
+  "Tofu Scramble Plate": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu, tempeh, soy sauce = soy; soy sauce and sourdough = gluten."
+  },
+  "Shakshuka": {
+    "allergens": [
+      "egg",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Eggs; feta = milk; pita = gluten. Mildly spicy = 1."
+  },
+  "Honey Granola Yoghurt Bowl": {
+    "allergens": [
+      "gluten",
+      "tree_nuts",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oats = gluten (EU cereal rule); almonds = tree nuts; yoghurt = milk; honey rules out vegan."
+  },
+  "Banana Oat Pancakes": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat and oats = gluten. Stated no egg, no dairy. Coconut whip is not milk."
+  },
+  "Vegan Nasi Lemak": {
+    "allergens": [
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Tempeh and soy protein = soy; roasted peanuts. Sambal stated belacan-free; seaweed is not fish. No wheat stated, so gluten-free. Spicy = 2."
+  },
+  "Buddhist Char Siu Rice": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Mock meat of wheat gluten and soy; soy glaze; sesame oil. Not spicy (no chilli stated). Only dish stated free of onion and garlic."
+  },
+  "Vegetarian Char Kway Teow": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Konjac mock prawns: no crustaceans. Egg, so not vegan. Dark soy sauce = soy + gluten. Spicy = 2."
+  },
+  "Vegan Curry Mee": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 3,
+    "note": "Wheat noodles and mock chicken = gluten; tofu puffs and mock chicken = soy. Eggless noodles; sambal belacan-free. Very spicy = 3 (only 3 on menu)."
+  },
+  "Jackfruit Tacos": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Cashew crema = tree nuts. Corn tortillas, no gluten. BBQ sauce ingredients stated (no Worcestershire, no soy). Mildly spicy = 1."
+  },
+  "Tempeh Buddha Bowl": {
+    "allergens": [
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tempeh, tamari, edamame = soy; tamari stated gluten-free; tahini = sesame. Not spicy."
+  },
+  "Cashew Cheese Mac": {
+    "allergens": [
+      "gluten",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat macaroni and breadcrumbs = gluten; cashew = tree nuts. No dairy. Smoked paprika is not chilli heat = 0."
+  },
+  "Rendang Mushroom Burger": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Brioche = gluten, egg, butter (milk); mayo = egg. Oyster mushroom is not a mollusc. Spicy = 2."
+  },
+  "Teriyaki Tofu Don": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Tofu and soy sauce = soy; soy sauce = gluten; sesame seeds; onsen egg. Mirin = not halal (rule h). Nori is not fish."
+  },
+  "Kale Caesar": {
+    "allergens": [
+      "gluten",
+      "tree_nuts",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Croutons = gluten; cashew = tree nuts; miso = soy + gluten. Stated no anchovy (no fish), no parmesan (no milk)."
+  },
+  "Walnut Pesto Linguine": {
+    "allergens": [
+      "gluten",
+      "tree_nuts",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Linguine = gluten; walnut = tree nuts; cheese = milk (stated vegetarian)."
+  },
+  "Crispy Tempeh Bites": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Tempeh and kicap manis = soy; kicap = gluten; sesame seeds. A little chilli = 1."
+  },
+  "Loaded Sweet Potato Fries": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Cashew = tree nuts. Mildly spicy = 1."
+  },
+  "Seitan Satay": {
+    "allergens": [
+      "gluten",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Seitan = wheat gluten; peanut sauce = peanuts. No soy stated (mock meat here is wheat only). Mildly spicy = 1."
+  },
+  "Lion's Mane Fried Chicken": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "No chicken: lion's mane mushroom. Buttermilk = milk (not vegan); wheat flour = gluten; mayo = egg; gochujang = soy + gluten. Spicy = 2."
+  },
+  "Popiah Basah": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "peanuts",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat skins = gluten; egg strips; peanuts; tofu and sweet bean sauce = soy (sweet bean sauce also gluten). Sounds vegan, but egg. A little chilli = 1."
+  },
+  "Raw Salted Caramel Cake": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Cashew and almond = tree nuts. Stated gluten-free."
+  },
+  "Raw Matcha Cheesecake": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Cashew and macadamia = tree nuts. No dairy despite the name."
+  },
+  "Chocolate Avocado Mousse": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black sesame brittle = sesame. No nuts, gluten or dairy stated."
+  },
+  "Banana Walnut Bread": {
+    "allergens": [
+      "milk",
+      "egg",
+      "tree_nuts",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter = milk; eggs; walnuts = tree nuts; wheat flour = gluten."
+  },
+  "Honey Coconut Panna Cotta": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Agar, not gelatine, so vegetarian; honey rules out vegan. Coconut milk is not milk or a tree nut."
+  },
+  "Oat Milk Latte": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oat milk = gluten (v5 rule: oats = gluten)."
+  },
+  "Flat White": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dairy milk."
+  },
+  "Gula Melaka Iced Latte": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oat milk = gluten."
+  },
+  "Honey Turmeric Latte": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Almond milk = tree nuts; honey rules out vegan. Black pepper is not chilli heat = 0."
+  },
+  "Matcha Soy Latte": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy milk."
+  },
+  "House Kombucha": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Trace alcohol under 0.5%: halal false, the safer reading (as v5 poke-salad-bar kombucha)."
+  },
+  "Cold-Pressed Green Juice": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Celery."
+  },
+  "Lemongrass Pandan Iced Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No listed allergen. Herbal, no tea leaves stated."
+  }
+}

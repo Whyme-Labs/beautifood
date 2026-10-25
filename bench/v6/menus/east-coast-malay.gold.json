@@ -1,0 +1,359 @@
+{
+  "Nasi Kerabu Ayam Percik": {
+    "allergens": [
+      "fish",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Serunding ikan (fish floss) and sambal budu (fermented anchovy) = fish; salted egg = egg. Kerisik is coconut, not a nut. Bean sprouts are mung bean. Mildly spicy = 1."
+  },
+  "Nasi Kerabu Ulam": {
+    "allergens": [
+      "fish",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Sounds vegetarian ('no meat') but fish floss and budu = fish, so not vegetarian. Salted egg = egg. Mildly spicy = 1."
+  },
+  "Nasi Dagang Ikan Tongkol": {
+    "allergens": [
+      "fish",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tongkol (tuna) curry = fish; hard-boiled egg. Glutinous rice has no gluten. Fenugreek is not listed as an allergen. Spicy = 2."
+  },
+  "Nasi Dagang Ayam": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken curry with coconut milk and kerisik (coconut); hard-boiled egg. No fish. Mild = 1."
+  },
+  "Nasi Tumpang": {
+    "allergens": [
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Omelette = egg; sambal udang = prawns (crustaceans). Beef floss and chicken curry. Spicy = 2."
+  },
+  "Nasi Putih": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Laksam": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Mackerel gravy = fish. Rice-flour noodles, no gluten. Coconut milk is not milk. Mildly spicy = 1."
+  },
+  "Laksa Kelantan": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Mackerel gravy and budu = fish. Rice noodles, no gluten. Mildly spicy = 1."
+  },
+  "Mee Goreng Kelantan": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "crustaceans",
+      "molluscs",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat noodles and kicap manis = gluten; kicap = soy; prawns = crustaceans; squid = molluscs; egg. Spicy = 2."
+  },
+  "Bihun Goreng Sayur": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Tofu and soy sauce = soy; soy sauce = gluten; egg, so vegetarian but not vegan. A little chilli = 1."
+  },
+  "Ayam Percik": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Coconut milk gravy, no listed allergen. Mildly spicy = 1."
+  },
+  "Gulai Ikan Tongkol": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tuna = fish. Kerisik is coconut. Spicy = 2."
+  },
+  "Solok Lada": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Stuffed chillies sound vegetarian, but the filling is mackerel fish paste = fish. Mildly spicy = 1."
+  },
+  "Ikan Kembung Bakar": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Mackerel = fish; belacan in the air asam = crustaceans. Spicy = 2."
+  },
+  "Daging Masak Hitam": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Kicap manis = soy + gluten. Mild = 1."
+  },
+  "Sotong Celup Tepung": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Squid = molluscs; wheat flour batter = gluten. Sweet chilli sauce = mild 1 (as thai-kitchen Tod Mun Pla)."
+  },
+  "Kerabu Pucuk Paku": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Sounds like a vegetable salad, but dried shrimp = crustaceans, so not vegetarian. Very spicy = 3 (the only 3 on the menu)."
+  },
+  "Sayur Lemak Labu": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated without dried shrimp; coconut milk is not milk. Vegan. Not spicy = 0."
+  },
+  "Sup Ayam Kampung": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Celery. Not spicy = 0."
+  },
+  "Telur Dadar": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Egg. Green chilli with no heat word = 1."
+  },
+  "Budu": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Budu is fermented anchovy = fish. Spicy = 2."
+  },
+  "Keropok Lekor": {
+    "allergens": [
+      "fish",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ikan parang = fish; wheat flour = gluten (hidden: often assumed sago only). Sweet chilli sauce = 1."
+  },
+  "Cucur Udang": {
+    "allergens": [
+      "crustaceans",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Prawns = crustaceans; wheat flour = gluten; egg. Chilli sauce = 1."
+  },
+  "Satar": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Fish paste = fish. No flour stated. Spicy = 2."
+  },
+  "Pulut Panggang": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Sounds like a sweet kuih, but filled with dried shrimp = crustaceans, not vegetarian. Glutinous rice has no gluten. A little chilli = 1."
+  },
+  "Akok": {
+    "allergens": [
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg; wheat flour = gluten. Coconut milk is not milk."
+  },
+  "Tepung Pelita": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice flour and coconut cream. No listed allergen."
+  },
+  "Nekbat": {
+    "allergens": [
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg; wheat flour = gluten."
+  },
+  "Ais Kacang": {
+    "allergens": [
+      "peanuts",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Roasted peanuts; evaporated milk. Red beans are not peanuts or soy."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Teh O Ais Limau": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No milk."
+  },
+  "Kopi O": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Hidden allergen: kampung beans roasted with butter = milk, so vegetarian but not vegan, although no milk is added."
+  },
+  "Kopi Susu": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter roast and condensed milk = milk."
+  },
+  "Sirap Bandung": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated and condensed milk."
+  },
+  "Air Kelapa Muda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut is not a tree nut."
+  }
+}

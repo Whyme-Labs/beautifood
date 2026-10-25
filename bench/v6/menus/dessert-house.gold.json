@@ -1,0 +1,366 @@
+{
+  "Cendol": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut milk is not milk. Rice-flour jelly, no gluten."
+  },
+  "Ais Kacang": {
+    "allergens": [
+      "peanuts",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Roasted peanuts topping; evaporated and condensed milk. Grass jelly has no gelatine."
+  },
+  "Mango Bingsu": {
+    "allergens": [
+      "milk",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk snow and condensed milk; baked cheesecake with egg and a wheat digestive-biscuit base. Baked, so no gelatine."
+  },
+  "Injeolmi Bingsu": {
+    "allergens": [
+      "milk",
+      "soy",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Roasted soybean powder = soy; sliced almonds = tree nuts; milk snow and condensed milk. Rice cake has no gluten."
+  },
+  "Chocolate Brownie Bingsu": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "egg",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Walnut brownie (wheat, egg, butter) = gluten, egg, milk, tree nuts; milk snow and soft serve."
+  },
+  "Durian Cendol": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Cendol plus durian; coconut milk is not milk."
+  },
+  "Musang King Durian Pancake": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Crepe of wheat flour, egg and milk; fresh cream."
+  },
+  "Durian Mochi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Whipped cream = milk; glutinous rice, stated gluten-free."
+  },
+  "Durian Pengat": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Durian, coconut milk, gula Melaka, sago."
+  },
+  "Red Bean Soup": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Red beans, tangerine peel, lotus seeds, rock sugar."
+  },
+  "Peanut Paste": {
+    "allergens": [
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanuts."
+  },
+  "Black Sesame Paste": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sesame; rice has no gluten."
+  },
+  "Almond Paste": {
+    "allergens": [
+      "tree_nuts",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ground almonds = tree nuts; egg white swirled in."
+  },
+  "Tau Foo Fah": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soybean curd."
+  },
+  "Black Sesame Tang Yuan": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Sounds vegetarian but the filling is made with pork lard: not vegetarian, not halal. Sesame. Glutinous rice has no gluten."
+  },
+  "Pulut Hitam": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black glutinous rice and coconut milk."
+  },
+  "Bubur Cha Cha": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sweet potato, yam, sago, coconut milk."
+  },
+  "Mango Pomelo Sago": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk (coconut milk is not milk)."
+  },
+  "Double-skin Milk Pudding": {
+    "allergens": [
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk and egg white."
+  },
+  "Ginger Milk Curd": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk; stated no egg. Ginger is not chilli heat."
+  },
+  "Caramel Egg Pudding": {
+    "allergens": [
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Eggs and milk."
+  },
+  "Mango Pudding": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Beef gelatine: not vegetarian; stated halal beef gelatine, so halal. Cream and evaporated milk = milk."
+  },
+  "Kuih Platter": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Seri muka custard and bingka ubi contain egg. Rice flour, tapioca and glutinous rice, no wheat; coconut is not milk."
+  },
+  "Ondeh-Ondeh": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice, gula Melaka, coconut."
+  },
+  "Kuih Ketayap": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Crepe of wheat flour and egg."
+  },
+  "Gula Melaka Soft Serve": {
+    "allergens": [
+      "milk",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk soft serve; crushed peanuts."
+  },
+  "Matcha Soft Serve": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk soft serve; waffle cone stated wheat and egg."
+  },
+  "Coconut Soft Serve": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated dairy-free; coconut is not a tree nut."
+  },
+  "Vegetable Curry Puff": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Sounds vegetarian but the pastry is made with pork lard: not vegetarian, not halal. Wheat flour. Mildly spicy = 1."
+  },
+  "Chee Cheong Fun": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Sweet sauce stated soy + wheat; sesame seeds; chilli sauce = mild. Merchant tags vegan."
+  },
+  "Nasi Lemak Bungkus": {
+    "allergens": [
+      "crustaceans",
+      "fish",
+      "peanuts",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan = crustaceans; ikan bilis = fish; fried peanuts; egg. Stated spicy."
+  },
+  "Kopi Peng": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Hong Kong Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk."
+  },
+  "Oat Milk Latte": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oat milk = gluten (oats, v3/v5 rule); stated dairy-free."
+  },
+  "Soya Cincau": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy milk; grass jelly."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea and lemon."
+  }
+}
