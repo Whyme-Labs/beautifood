@@ -490,6 +490,11 @@ function meatsAvoided(question: string): Meat[] {
   ).map(([m]) => m);
 }
 
+/** The course a single word asks for ("noodle", "kuih", "饭"), if any. */
+export function courseOfWord(word: string): Course | null {
+  return COURSES.find((c) => c.course !== "food" && (c.ask.test(word) || c.askZh.test(word)))?.course ?? null;
+}
+
 /** The menu's dishes for a course: by its category's name, or the dish's own name. */
 export function courseDishes(items: Dish[], course: Course): Dish[] {
   if (course === "food") return items.filter((i) => !isDrink(i));

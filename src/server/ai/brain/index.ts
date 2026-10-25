@@ -81,7 +81,10 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
       s.noMeat = [...new Set([...s.noMeat, ...u.noMeat])];
       if (u.minSpice !== null) s.maxSpice = null;
       if (u.dishes.length === 1) s.focus = u.dishes[0] as Item;
-      if (u.dishes.length && (ORDERING.test(normalize(h.content)) || ORDERING_ZH.test(h.content)))
+      // "I'll have the X", "add a Y", and a dish named without a question ("one nasi kerabu please",
+      // "Teh tarik kurang manis") are on the order; "is the X spicy?" isn't
+      const asks = /[?？]/.test(h.content) || QUESTION.test(normalize(h.content)) || QUESTION_ZH.test(h.content);
+      if (u.dishes.length && (ORDERING.test(normalize(h.content)) || ORDERING_ZH.test(h.content) || !asks))
         for (const [item, count] of countsOf(h.content, u.dishes)) {
           const had = s.order.find((o) => o.item.id === item.id);
           if (had) had.count += count;
@@ -97,6 +100,10 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
   }
   return s;
 }
+
+/** A question, not an order: "is it spicy", "what's in the X", "ada kacang tak", "辣吗". */
+const QUESTION = /^(what|whats|which|how|is|are|does|do|did|can|could|would|will|should|got|any|tell|describe|why|where|when|who)\b|\b(berapa|apa|mana|ke|kah|tak|or not|how much|what about)\b/;
+const QUESTION_ZH = /吗|呢|什么|哪|多少|有没有|怎么|是不是|能不能|可不可以|几/;
 
 // ---- picking dishes ----
 
@@ -317,7 +324,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // stated, even when the text is warning them about it
   // an order spelled out item by item ("one meat two veg"): "veg" there names an item, not a
   // vegetarian guest, unless they said they are one
-  const spelled = basketOf(u.text, live as Dish[], (u.amount ?? u.budget) !== null);
+  const spelled = basketOf(u.text, live as Dish[], (u.amount ?? u.budget) !== null, !u.party);
   // not a list of what they avoid ("allergic to fish, prawn, squid"), and not a group's "mains +
   // drinks" with no numbers (the group plan sizes that to the party)
   const basket =
@@ -637,9 +644,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const nt = normalize(u.text);
   if (state.shown.length && !mentioned.length && (/\b(cheaper|less expensive|lower price|lebih murah|murah sikit|murah sket)\b/.test(nt) || /更便宜|便宜一点|便宜点/.test(u.text)) && !/\b(which|mana)\b/.test(nt) && !/哪个|哪一/.test(u.text)) {
     const cap = Math.min(...state.shown.map((i) => i.price));
-    const kinds = new Set(state.shown.map((i) => i.category));
+    // the same kind of thing: a cheaper main for a main (from any of the menu's categories of them),
+    // a cheaper side for a side, drink for a drink, sweet for a sweet
+    const mains = new Set(courseDishes(ctx.items as Dish[], "mains").map((d) => d.id));
+    const kind = (i: Item) => (isDrink(i) ? "drink" : isDessert(i) ? "dessert" : mains.has(i.id) ? "main" : "side");
+    const kinds = new Set(state.shown.map(kind));
     let pool = live.filter((i) => i.price < cap && !state.shown.includes(i) && allowed(i, { ...c, budget: null }));
-    pool = u.courses.length || u.categories.length ? byCourse(pool, u.courses) : pool.filter((i) => kinds.has(i.category));
+    pool = u.courses.length || u.categories.length ? byCourse(pool, u.courses) : pool.filter((i) => kinds.has(kind(i)));
     const picks = ranked(pool).slice(0, 3);
     if (!picks.length) return reply("recommend", t("assistantReply.cheaperNone", { price: money(cap) }), []);
     return reply("recommend", `${t("assistantReply.cheaperIntro", { price: money(cap) })}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);

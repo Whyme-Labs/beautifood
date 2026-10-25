@@ -2,7 +2,7 @@
 // veg", "toast, eggs and two kopi", "food and a drink". Each item is a course word ("drink",
 // "veg", "dessert") or a word from the menu's own dish names ("ramen", "kopi"), with a count.
 import { normalize } from "../../../shared/brain/text";
-import { isDessert, isDrink, type Dish } from "./understand";
+import { courseDishes, courseOfWord, isDessert, isDrink, type Dish } from "./understand";
 
 export interface Slot {
   count: number;
@@ -17,7 +17,7 @@ export interface Slot {
 
 const NUMBER: Record<string, number> = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5, sebiji: 1, secawan: 1 };
 const SEP = /^(and|dan|n|plus|with|also|then)$/;
-const STOP = /^(and|the|with|dan|for|from|our|house|style|set|special)$/;
+const STOP = /^(and|the|with|dan|for|from|our|house|style|set|special|vegetarian|vegan|veggie|halal|spicy|mild|classic|signature)$/;
 
 const VEG_CATEGORY = /\b(veg|vegetables?|sayur|sayuran|greens)\b/i;
 const MEAT_CATEGORY = /\b(meat|meats|daging|poultry|chicken|ayam)\b/i;
@@ -43,7 +43,7 @@ const singular = (w: string) => w.replace(/(ies)$/, "y").replace(/(?<=[^s])s$/, 
  * The order spelled out in the question, when there is one (two items or more). With an amount to
  * spend ("RM35 for a bowl and a juice"), two items are an order even when neither is counted.
  */
-export function basketOf(question: string, items: Dish[], spend = false): Slot[] | null {
+export function basketOf(question: string, items: Dish[], spend = false, solo = true): Slot[] | null {
   const hasVeg = items.some((d) => VEG_CATEGORY.test(d.category ?? ""));
   const hasMeat = items.some((d) => MEAT_CATEGORY.test(d.category ?? ""));
   const byTray = (term: string, fits: (d: Dish) => boolean) =>
@@ -77,6 +77,10 @@ export function basketOf(question: string, items: Dish[], spend = false): Slot[]
     if (course) return { slot: { count, term: singular(w), course: true, counted: n !== undefined, fits: byTray(singular(w), course[1]) }, next: after(j + 1) };
     const dishes = nameWords.get(singular(w.replace(/_/g, " ")));
     if (dishes) return { slot: { count, term: singular(w), course: false, counted: n !== undefined, fits: (d) => dishes.includes(d) }, next: after(j + 1) };
+    // a course the menu has under another name ("a noodle and a coffee", "kuih and kopi"): its dishes
+    const other = solo && !/^(apa|mana|yang|yg)$/.test(toks[j + 1] ?? "") && !(n === undefined && /^(what|which)$/.test(toks[j - 1] ?? "")) ? courseOfWord(w) : null;
+    const inCourse = other ? new Set(courseDishes(items, other).map((d) => d.id)) : null;
+    if (inCourse?.size) return { slot: { count, term: singular(w), course: true, counted: n !== undefined, fits: (d) => inCourse.has(d.id) }, next: after(j + 1) };
     return null;
   };
   let best: Slot[] = [];

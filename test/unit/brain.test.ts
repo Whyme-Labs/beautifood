@@ -641,3 +641,46 @@ describe("finding the dishes a guest names", () => {
     expect(found(["Mushroom Lo Mein", "Fish Congee"], "Any main for me?")).toEqual([]);
   });
 });
+
+describe("the running order (v6 found, measured on counts only)", () => {
+  it("counts a dish named without a question as ordered ('one nasi lemak please')", () => {
+    const r = answerGuest(ctx, [
+      { role: "user", content: "One Nasi Lemak Ayam Rempah please" },
+      { role: "assistant", content: "Noted: Nasi Lemak Ayam Rempah (RM18.90)." },
+      { role: "user", content: "Teh tarik kurang manis" },
+      { role: "assistant", content: "Teh Tarik (RM5.50), less sweet." },
+      { role: "user", content: "and a Cendol. What's the total?" },
+    ]);
+    expect(r.answer).toContain(((1890 + 550 + 850) / 100).toFixed(2));
+  });
+  it("doesn't count a dish only asked about", () => {
+    const r = answerGuest(ctx, [
+      { role: "user", content: "Is the Rojak spicy?" },
+      { role: "assistant", content: "Rojak (RM10.50) is mildly spicy." },
+      { role: "user", content: "I'll have a Char Kway Teow and a Teh Tarik. Total?" },
+    ]);
+    expect(r.answer).toContain(((1690 + 550) / 100).toFixed(2));
+  });
+  it("plans an order from course words the planner didn't have ('a noodle and a dessert')", () => {
+    const r = answerGuest(ctx, [{ role: "user", content: "I have RM25, a noodle and a dessert" }]);
+    const shown = r.items.map((x) => ctx.items.find((i) => i.id === x.id)!);
+    expect(shown).toHaveLength(2);
+    expect(shown.some((i) => i.category === "Noodles")).toBe(true);
+    expect(shown.some((i) => i.category === "Desserts")).toBe(true);
+    expect(shown.reduce((s, i) => s + i.price, 0)).toBeLessThanOrEqual(2500);
+    expect(answerGuest(ctx, [{ role: "user", content: "Saya vegetarian, mi apa yang boleh?" }]).answer).not.toMatch(/Here's an order/);
+  });
+  it("finds something cheaper of the same kind, from any of the menu's categories of it", () => {
+    const r = answerGuest(ctx, [
+      { role: "user", content: "rice dish?" },
+      { role: "assistant", content: "Nasi Lemak Ayam Rempah (RM18.90)." },
+      { role: "user", content: "a bit pricey, anything cheaper?" },
+    ]);
+    const shown = r.items.map((x) => ctx.items.find((i) => i.id === x.id)!);
+    expect(shown.length).toBeGreaterThan(0);
+    for (const i of shown) {
+      expect(i.price).toBeLessThan(1890);
+      expect(isDrink(i as unknown as Dish)).toBe(false);
+    }
+  });
+});

@@ -361,3 +361,35 @@ kitchens and phrasings, because what it learnt wasn't drawn from any benchmark. 
 On v6, 6 cases fixed and none broken: compare 66.7% → 80.0%, Chinese 78.7% → 85.1%, dish info
 89.8% → 93.9%, search 75.0% → 87.5%, dish allergen 91.6% → 92.8%. Follow-up, memory and budget
 questions didn't move (62.9%, 65.2%, 60.3%), so dish names weren't what held those back. No v6 case read.
+
+## What held back budgets and follow-ups (diagnosed on v6 by counts only)
+
+No v6 case was read. Only aggregates of each failing case were looked at: which check failed, the
+engine stage, which answer path ran, whether a budget was read, how far a total was off, and what
+the earlier user turns looked like structurally (dishes named, an ordering verb or not). One slip:
+an early aggregate printed the first words of some answers (a few dish names); nothing else.
+
+- **The running bill (8 of the budget/follow-up/memory failures).** Every one got a bill with the
+  wrong total, 6 short by RM8.90–45.80, 7 of them multi-turn. In the earlier turns, 8 of 10 user
+  messages named a dish with no ordering verb ("one X please", "X kurang manis"), so they never
+  reached the order. Fix: a turn that names a dish and isn't a question is an order.
+- **"Anything cheaper?" (5).** One dish had been shown each time, and 7 of the 11 dishes expected
+  instead were in another of the menu's categories. Fix: something cheaper of the same kind (a main
+  from any category of mains, a side, a drink, a sweet), not the same category.
+- **A set within a total (3).** The amount was read, but the planner found fewer than two items:
+  it knew only a few course words. Fix: any course the brain reads (noodles, rice, soup, coffee,
+  kuih…) is an item; not for a party (a group's "drinks" are for everyone), and not "mi apa?".
+
+Dev unchanged by all three (98.0 / 95.1 / 93.4 / 94.9 / 92.8%, 0 unsafe): the readable sets don't
+have these phrasings. v6, scored after the first two fixes and again after the third:
+
+| | before | bill + cheaper | + course words |
+|---|---|---|---|
+| v6 overall | 85.8% | 86.5% | **86.7%, 0 unsafe** (parser data 84.3%) |
+| budget (58) | 60.3% | 65.5% | 67.2% |
+| follow-up (35) | 62.9% | 71.4% | 71.4% |
+| memory (23) | 65.2% | 73.9% | 73.9% |
+
+4 fixed, none broken. Still failing among these: 6 bills (now mostly a dish named in the final
+question that the bill doesn't take), 4 "cheaper" answers whose picks miss the expected ones
+(ranking), 2 group budgets.
