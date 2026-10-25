@@ -439,6 +439,8 @@ const MEAT_NAMES: [Meat, string, string][] = [
 /** "No pork", "I don't eat beef", "tak makan babi", "pork-free", "不吃猪肉": from the whole question (a dish may be named after the meat). */
 function meatsAvoided(question: string): Meat[] {
   const t = normalize(question);
+  // a pescatarian eats fish and seafood, no meat or poultry
+  if (/\b(pescatarian|pescetarian|pescatarians|pesco vegetarian|seafood only|fish only|only eat (fish|seafood))\b/.test(t) || /只吃海鲜|只吃鱼|海鲜素/.test(question)) return MEAT_NAMES.map(([m]) => m);
   return MEAT_NAMES.filter(([, en, zh]) =>
     new RegExp(`\\b(no|not|without|tanpa|tak|x|tidak|dont|don t|do not|never|cannot|cant|can t|avoid|minus|except|kecuali|tak boleh)\\s+(eat\\s+|makan\\s+|have\\s+|any\\s+|take\\s+)?(${en})\\b|\\b(${en})[\\s-]?free\\b|\\bnon[\\s-]?(${en})\\b`).test(t) ||
     new RegExp(`(不吃|不要|不含|没有|无|忌)${zh}`).test(question),

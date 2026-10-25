@@ -15,9 +15,14 @@ import type { Intent } from "../../../shared/brain/intentModel";
 import { allergyNote, type AssistantContext, type AssistantReply } from "../local";
 import type { TasteHint } from "../../taste/bridge";
 import { conceptsOf, conceptTerms, dishConceptLift, type ConceptId } from "./concepts";
-import { courseDishes, intentModel, isDessert, isDrink, MEAT_WORDS, read, understand, type Course, type Diet, type Dish, type Meat, type Understanding } from "./understand";
+import { kindOf } from "./reader";
+import { courseDishes, intentModel, isDessert, isDrink, MEAT_WORDS, modelTokens, read, understand, type Course, type Diet, type Dish, type Meat, type Understanding } from "./understand";
 
 type Item = AssistantContext["items"][number];
+
+/** How sure the reader must be that a message isn't about the food before it overrides the rules. */
+const READER_SURE = 0.8;
+const FOOD_INTENTS: Intent[] = ["recommend", "refine", "dish_allergen", "dish_info", "compare", "pairing"];
 
 export interface BrainReply extends AssistantReply {
   intent: Intent;
@@ -424,6 +429,12 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (u.choosing && !mentioned.length && !nth && state.shown.length >= 2 && hasFilters && !["compare", "pairing", "group"].includes(intent)) intent = "refine";
   // "I love BTS, what should I get?": a taste Qloo could place on this menu is a recommendation
   if (taste && ["out_of_scope", "about", "greeting"].includes(intent)) intent = "recommend";
+  // the reader: a message that isn't about the food isn't answered with dishes ("do you deliver
+  // through Grab?", "is your kitchen halal certified?", "hola amigo!"), unless it names a dish or
+  // asks for something the menu answers (a course, a budget, an allergy)
+  const kind = kindOf(modelTokens(u.delexicalized));
+  if (kind.kind !== "food" && kind.p >= READER_SURE && !mentioned.length && !nth && !taste && !u.party && u.budget === null && !u.courses.length && !u.categories.length && !u.stated.length && !u.avoid.length && FOOD_INTENTS.includes(intent))
+    intent = kind.kind === "service" ? "order_help" : (u.guess.ranked.find((x) => ["greeting", "thanks", "out_of_scope"].includes(x.intent))?.intent ?? "out_of_scope");
 
   // "what are you known for?", "chef's specials": the signatures, not the story
   if (u.signatures && !mentioned.length && ["about", "out_of_scope", "greeting", "recommend", "dish_info", "dish_allergen", "compare"].includes(intent)) intent = "recommend";

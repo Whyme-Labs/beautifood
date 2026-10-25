@@ -180,7 +180,7 @@ export function rng(seed: number) {
 const HAN = /\p{Script=Han}/u;
 
 /** How a guest might type a dish's name: in full, in lower case, a distinctive part of it, with a typo. */
-function dishSurface(d: Dish, zh: boolean, r: () => number): string {
+export function dishSurface(d: Dish, zh: boolean, r: () => number): string {
   if (zh && d.translations?.zh?.name && r() < 0.7) return d.translations.zh.name;
   const name = d.name.replace(/\(.*?\)/g, "").trim();
   const words = name.split(/\s+/);
@@ -191,7 +191,7 @@ function dishSurface(d: Dish, zh: boolean, r: () => number): string {
   return typo(name.toLowerCase(), r);
 }
 
-function typo(s: string, r: () => number): string {
+export function typo(s: string, r: () => number): string {
   const words = s.split(" ");
   const i = Math.floor(r() * words.length);
   const w = words[i];
@@ -201,8 +201,8 @@ function typo(s: string, r: () => number): string {
   return words.join(" ");
 }
 
-const PREFIX = ["", "", "", "", "hi, ", "excuse me, ", "boss, ", "sorry, ", "can i ask, ", "hey ", "um ", "eh ", "bro ", "hello, ", "quick question, ", "auntie, "];
-const SUFFIX = ["", "", "", "", "?", " please", " lah", " ah", " thanks", " leh", " ya", "??", "!", " pls", " ah?", " hor"];
+export const PREFIX = ["", "", "", "", "hi, ", "excuse me, ", "boss, ", "sorry, ", "can i ask, ", "hey ", "um ", "eh ", "bro ", "hello, ", "quick question, ", "auntie, "];
+export const SUFFIX = ["", "", "", "", "?", " please", " lah", " ah", " thanks", " leh", " ya", "??", "!", " pls", " ah?", " hor"];
 
 /** Off-topic questions built from parts, so "not about the menu" covers more than the templates. */
 const OFF_TOPIC = {
