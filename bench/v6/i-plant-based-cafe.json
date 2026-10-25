@@ -112,11 +112,14 @@
         "Buddhist Char Siu Rice",
         "Vegan Curry Mee",
         "Vegan Nasi Lemak",
-        "Seitan Satay"
+        "Seitan Satay",
+        "Vegetarian Char Kway Teow",
+        "Tofu Scramble Plate",
+        "Lion's Mane Fried Chicken"
       ],
       "minDishes": 1
     },
-    "note": "Mock char siu, mock chicken, soy-protein rendang and seitan."
+    "note": "Mock char siu, mock chicken, soy-protein rendang and seitan; konjac mock prawns, tempeh bacon and the lion's mane 'fried chicken' are also honest answers."
   },
   {
     "id": "v6i-plant-based-cafe-007",
@@ -169,14 +172,11 @@
     ],
     "question": "Is the shakshuka vegan?",
     "expect": {
-      "includes": [
-        "Shakshuka"
-      ],
       "says": [
         "egg|feta|telur|蛋|cheese|keju"
       ]
     },
-    "note": "Convention c."
+    "note": "Rule l: diet question about one dish that fails it, nothing stated: fact only, no card required. Eggs and feta."
   },
   {
     "id": "v6i-plant-based-cafe-010",
@@ -248,13 +248,11 @@
     ],
     "question": "Is the honey turmeric latte vegan?",
     "expect": {
-      "includes": [
-        "Honey Turmeric Latte"
-      ],
       "says": [
         "honey|madu|蜂蜜"
       ]
-    }
+    },
+    "note": "Rule l: fact only, no card required. Honey rules out vegan."
   },
   {
     "id": "v6i-plant-based-cafe-014",
@@ -326,9 +324,14 @@
       "vegetarian": true,
       "includesAny": [
         "Buddhist Char Siu Rice"
+      ],
+      "excludes": [
+        "Jackfruit Tacos",
+        "Loaded Sweet Potato Fries",
+        "Vegetarian Char Kway Teow"
       ]
     },
-    "note": "Only dish stated free of onion and garlic."
+    "note": "Buddhist Char Siu Rice is the only dish stated free of onion and garlic. Dishes whose menu line names onion, spring onion or chives (Jackfruit Tacos, Loaded Sweet Potato Fries, Vegetarian Char Kway Teow) are excluded."
   },
   {
     "id": "v6i-plant-based-cafe-018",
@@ -1240,9 +1243,13 @@
     "expect": {
       "says": [
         "mirin|kombucha|alcohol|alkohol|酒"
+      ],
+      "excludes": [
+        "Teriyaki Tofu Don",
+        "House Kombucha"
       ]
     },
-    "note": "Not everything: the teriyaki don has mirin and the kombucha has trace alcohol."
+    "note": "Not everything: the teriyaki don has mirin and the kombucha has trace alcohol. A whole-menu halal question is rule j, as hakka-053 and dessert-066: the two non-halal items may not be shown."
   },
   {
     "id": "v6i-plant-based-cafe-058",
@@ -2041,10 +2048,10 @@
         "Cashew Cheese Mac"
       ],
       "says": [
-        "腰果|cashew|植物"
+        "腰果|cashew|植物|no dairy|dairy.?free|no milk|不含奶|没有奶|无奶|不含乳|vegan|纯素|全素"
       ]
     },
-    "note": "芝士通心粉 is not on the menu; it means the Cashew Cheese Mac."
+    "note": "芝士通心粉 means the Cashew Cheese Mac. Cashew cheese, no dairy; broad says (convention c)."
   },
   {
     "id": "v6i-plant-based-cafe-099",

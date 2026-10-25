@@ -64,10 +64,12 @@
         "Matcha Soft Serve",
         "Iced Lemon Tea",
         "Soya Cincau",
-        "Kopi Peng"
+        "Kopi Peng",
+        "Tau Foo Fah",
+        "Hong Kong Milk Tea"
       ]
     },
-    "note": "Any cold item."
+    "note": "Any cold item. Tau Foo Fah (warm or cold) and Hong Kong Milk Tea (hot or iced) can be served cold."
   },
   {
     "id": "v6j-dessert-house-004",
@@ -90,10 +92,11 @@
         "Pulut Hitam",
         "Bubur Cha Cha",
         "Durian Pengat",
-        "Ginger Milk Curd"
+        "Ginger Milk Curd",
+        "Hong Kong Milk Tea"
       ]
     },
-    "note": "Warm tong sui."
+    "note": "Warm tong sui, Ginger Milk Curd, or a hot Hong Kong Milk Tea (hot or iced)."
   },
   {
     "id": "v6j-dessert-house-005",
@@ -1694,11 +1697,9 @@
     "question": "Very spicy please, what have you got?",
     "expect": {
       "maxDishes": 3,
-      "includesAny": [
-        "Nasi Lemak Bungkus"
-      ]
+      "minSpice": 1
     },
-    "note": "Nothing very spicy; nasi lemak (spicy) is the closest."
+    "note": "Nothing on the menu is very spicy (max 2). An honest 'nothing very spicy' must pass, so no dish is required; anything offered as the closest must have some heat (Nasi Lemak Bungkus is 2)."
   },
   {
     "id": "v6j-dessert-house-077",

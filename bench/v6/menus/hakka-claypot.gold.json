@@ -102,7 +102,6 @@
   },
   "Mui Choy Kau Yuk": {
     "allergens": [
-      "mustard",
       "soy",
       "gluten",
       "sulphites"
@@ -111,7 +110,7 @@
     "vegan": false,
     "halal": false,
     "spice": 0,
-    "note": "Pork belly. Preserved mustard greens = mustard (safe reading: same plant as mustard seed). Nam yu and dark soy = soy (+ gluten from soy sauce); Shaoxing = sulphites + gluten, not halal."
+    "note": "Pork belly. Preserved mustard greens (mui choy) are the leaf vegetable, not the mustard allergen: the regulated allergen is mustard seed and its products (v6 rule m). Nam yu and dark soy = soy (+ gluten from soy sauce); Shaoxing = sulphites + gluten, not halal."
   },
   "Hakka Wine Chicken": {
     "allergens": [
@@ -234,14 +233,12 @@
     "note": "Rice wine: not halal, no allergen (rule h). Dang gui, wolfberries, red dates add none."
   },
   "Salted Vegetable Duck Soup": {
-    "allergens": [
-      "mustard"
-    ],
+    "allergens": [],
     "vegetarian": false,
     "vegan": false,
     "halal": true,
     "spice": 1,
-    "note": "Kiam chye is salted mustard greens = mustard (safe reading). Duck, no pork or alcohol stated. Mildly peppery = 1."
+    "note": "Kiam chye is salted mustard greens, a leaf vegetable, not the mustard allergen (v6 rule m). No sulphites stated. Duck, no pork or alcohol stated. Mildly peppery = 1."
   },
   "Sweet Potato Ginger Soup": {
     "allergens": [],
@@ -270,7 +267,7 @@
     "vegan": false,
     "halal": false,
     "spice": 0,
-    "note": "Gelatine: not vegetarian; source not stated, so not halal (safe reading). Evaporated milk = milk. Almond essence, stated no nuts, so no tree nuts."
+    "note": "Gelatine: not vegetarian; source not stated, so not halal (v6 rule n: only gelatine stated halal, beef or fish is halal). Evaporated milk = milk. Almond essence, stated no nuts, so no tree nuts."
   },
   "Pu-erh Tea": {
     "allergens": [],

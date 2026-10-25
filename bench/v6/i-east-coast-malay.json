@@ -163,14 +163,11 @@
     ],
     "question": "The nasi kerabu ulam says no meat, so it's vegetarian right?",
     "expect": {
-      "includes": [
-        "Nasi Kerabu Ulam"
-      ],
       "says": [
         "fish|ikan|budu|serunding|anchov|not vegetarian|bukan vegetarian|鱼"
       ]
     },
-    "note": "Convention c: diet question, nothing stated. Fish floss and budu."
+    "note": "Rule l: diet question about one dish that fails it, nothing stated: fact only, no card required (as v4 taiwanese-080 for halal). Fish floss and budu."
   },
   {
     "id": "v6i-east-coast-malay-010",
@@ -257,14 +254,11 @@
     ],
     "question": "Is the Kopi O vegan? It's black coffee so no milk, right?",
     "expect": {
-      "includes": [
-        "Kopi O"
-      ],
       "says": [
         "butter|mentega|牛油|黄油|milk|dairy|not vegan|bukan vegan"
       ]
     },
-    "note": "Convention c. Kampung beans roasted with butter."
+    "note": "Rule l: fact only, no card required. Kampung beans roasted with butter: vegetarian, not vegan (rule o)."
   },
   {
     "id": "v6i-east-coast-malay-015",

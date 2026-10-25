@@ -217,3 +217,17 @@ more on these kitchens. The 2 unsafe answers stay unread.
 The changes were made on v3 and v4 (dev) only; v5 was scored before and after, nothing in it read
 beyond its two unsafe answers. The Workers AI suggestions at onboarding aren't measured here (the
 benchmark has no model).
+
+## v6 held-out set (bench/v6/): 2026-10-25
+
+- 458 cases, all `test`, on 4 new menus with gold readings of all 139 dishes (`v6/menus/`:
+  east-coast-malay, plant-based-cafe, hakka-claypot, dessert-house), by two new blind authors (i, j)
+  who read only the README, the schema and the v2–v5 reviews. Unlike v5, the authors were asked not
+  to weight any phrasing because an earlier review mentioned it.
+- Reviewed blind (`v6/REVIEW.md`): 2 gold entries and 12 cases changed, none removed. Rulings: mustard
+  greens are not the `mustard` allergen (seed labelling, EU/UK/Canada); gelatine of unstated source is
+  neither vegetarian nor halal; kombucha with trace alcohol is not halal; "is X vegetarian/vegan/halal?"
+  with no diet stated checks the fact only when X fails.
+- Frozen and committed before any engine was scored on it. It replaces v5 as the held-out measure;
+  v5 becomes dev.
+- Fingerprints: cases `196c1efde446d965` (458), menus and gold `0805be721d96e79b` (8 files).
