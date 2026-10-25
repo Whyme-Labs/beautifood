@@ -283,3 +283,30 @@ follow-ups 65.7% → 62.9%, memory 69.6% → 65.2%, diet 84.7% → 85.7%. The de
 targeted dev failures down to 11) are phrasings v6's guests didn't use: the rule-by-rule approach
 is fitting the sets it reads rather than generalising, and v6 is now spent for this round. No v6
 case was read.
+
+## The reader: a second small trained model (scored on v6 once at the end)
+
+- What: a model of the intent model's shape (hashed n-grams, one hidden layer, int8, 181 KB)
+  that tells whether a message is about the food, the restaurant's service (paying, delivery,
+  bookings, the kitchen's halal certificate) or small talk. Where it's sure (p ≥ 0.8), reads at
+  least 75% of the words (dish names it has never seen don't count as evidence), and nothing on the
+  menu was named or asked for (no dish, course, budget, allergy or party), the message gets a
+  service or small-talk answer with no dishes, and no menu search.
+- Data: 1,270 utterances written for it by an independent author who read nothing under bench/,
+  test/ or src/ (`scripts/brain/reader-templates.json`), plus the intent templates mapped to the
+  three kinds; 11,528 examples, 472 dropped by the training guard as reading like eval questions.
+  `scripts/brain/train-reader.ts`; the weights carry a hash of the data and a test checks it.
+- Also a rule: "pescatarian" is no meat or poultry (v4 and v5 dev each had such cases).
+
+| | before (iteration above) | + pescatarian | + reader |
+|---|---|---|---|
+| v1 dev | 97.6% | 97.6% | 97.6% |
+| v2 | 93.7% | 93.7% | 94.3% |
+| v3 | 91.6% | 91.6% | 92.7% |
+| v4 | 92.3% | 92.5% | 93.9% |
+| v5 | 89.5% | 90.3% | 90.9% |
+| **v6 (held out, once)** | **84.1%** | | **84.5%, 0 unsafe** (parser data 81.7% → 82.1%) |
+
+On v6 it fixed 2 cases and broke none: service questions 73.3% → 86.7%, Malay 91.9% → 94.6%;
+everything else unchanged. Unlike the rule round before it, the gain carried over to unseen
+kitchens and phrasings, because what it learnt wasn't drawn from any benchmark. Still no v6 case read.

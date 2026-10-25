@@ -604,3 +604,20 @@ describe("budgets, running bills and follow-ups (v5 as dev)", () => {
     expect(r.items.length).toBeGreaterThan(0);
   });
 });
+
+describe("the reader: food, service or small talk", () => {
+  it("answers a question about the restaurant's service, or a hello in another language, without dishes", () => {
+    for (const q of ["Do you deliver through Grab?", "Is your kitchen halal certified by JAKIM?", "can pay with touch n go or not", "Hola!", "grazie mille", "who win the match last night bro"])
+      expect(answerGuest(ctx, [{ role: "user", content: q }]).items, q).toEqual([]);
+  });
+  it("leaves food questions to the rules, dish names it has never seen included", () => {
+    expect(answerGuest(ctx, [{ role: "user", content: "halal food got?" }]).items.length).toBeGreaterThan(0);
+    expect(answerGuest(ctx, [{ role: "user", content: "anything for kids?" }]).items.length).toBeGreaterThan(0);
+    expect(answerGuest(ctx, [{ role: "user", content: "Got har gow or siu mai?" }]).answer).toMatch(/don't have/);
+  });
+  it("is trained on its current data", async () => {
+    const { READER_WEIGHTS } = await import("../../src/shared/brain/reader.gen");
+    const { readerDataHash } = await import("../../scripts/brain/reader-data");
+    expect(READER_WEIGHTS.dataHash).toBe(readerDataHash());
+  });
+});

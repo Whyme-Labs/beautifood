@@ -433,7 +433,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // through Grab?", "is your kitchen halal certified?", "hola amigo!"), unless it names a dish or
   // asks for something the menu answers (a course, a budget, an allergy)
   const kind = kindOf(modelTokens(u.delexicalized));
-  if (kind.kind !== "food" && kind.p >= READER_SURE && !mentioned.length && !nth && !taste && !u.party && u.budget === null && !u.courses.length && !u.categories.length && !u.stated.length && !u.avoid.length && FOOD_INTENTS.includes(intent))
+  const notFood = kind.kind !== "food" && kind.p >= READER_SURE && kind.known >= 0.75 && !mentioned.length && !nth && !taste && !u.party && u.budget === null && !u.courses.length && !u.categories.length && !u.stated.length && !u.avoid.length;
+  if (notFood && FOOD_INTENTS.includes(intent))
     intent = kind.kind === "service" ? "order_help" : (u.guess.ranked.find((x) => ["greeting", "thanks", "out_of_scope"].includes(x.intent))?.intent ?? "out_of_scope");
 
   // "what are you known for?", "chef's specials": the signatures, not the story
@@ -518,7 +519,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
 
   // a plain search of the menu ("chicken", "有没有披萨？"): what matches, or an honest "we don't have it"
-  const searchable = !mentioned.length && !nth && !focus.length && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null) &&
+  const searchable = !notFood && !mentioned.length && !nth && !focus.length && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null) &&
     // "有没有云吞面？" names a dish more exactly than its course (面) does
     // "do you have a coffee frappuccino?", "got bak kut teh?": a search, even with a course word in it
     (!(u.courses.length || u.categories.length) || /有没有|有.+吗/.test(u.text) || /^(do you have|have you got|you got|got|ada|any chance)\b/.test(normalize(u.text))) && !["thanks", "compare", "pairing", "refine", "group"].includes(intent);
