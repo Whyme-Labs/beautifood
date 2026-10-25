@@ -231,3 +231,20 @@ benchmark has no model).
 - Frozen and committed before any engine was scored on it. It replaces v5 as the held-out measure;
   v5 becomes dev.
 - Fingerprints: cases `196c1efde446d965` (458), menus and gold `0805be721d96e79b` (8 files).
+
+## First score on v6 (57fa7b4, the engine deployed as bb993c7, once)
+
+| | v6 |
+|---|---|
+| assistant, gold data | 84.1%, 0 unsafe |
+| assistant, parser data | 81.7%, 0 unsafe |
+| allergy / dish allergen / diet questions | 95.0% / 91.6% / 84.7% |
+| budget / follow-up / memory questions | 62.1% / 65.7% / 69.6% |
+| Chinese / Malay questions | 78.7% / 91.9% |
+| parser: missed allergens | 4 of 139 dishes' (recall 98%); 1 of the 4 suggested to the merchant |
+
+The first blind safety figure since v4: 0 unsafe on 458 cases over four kitchens nothing was tuned
+on. 84.1% sits just below v5's 85.7% after its work; the weakest areas are budgets, follow-ups and
+multi-turn memory (where most failures sit in the answer and decision rules, not understanding).
+The parser misses far less on these menus (98% recall against v5's 88%) but over-flags milk and
+sulphites. No v6 case has been read.
