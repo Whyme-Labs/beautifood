@@ -426,7 +426,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "Ebi tempura vs takoyaki, which one cheaper?", "acai bowl ke quinoa bowl, mana lg sihat?": two dishes weighed
   if (mentioned.length >= 2 && !["dish_allergen", "pairing", "group"].includes(intent) && (/\b(vs|versus|or|ke|atau|compare|which|mana|better|cheaper|difference|lagi|lg)\b/.test(normalize(u.text)) || /还是|或者|比较|哪个|哪一/.test(u.text))) intent = "compare";
   // "which one has no peanuts?", "any of those without dairy?", "哪个没有虾": narrow what was just shown
-  if (u.choosing && !mentioned.length && !nth && state.shown.length >= 2 && hasFilters && !["compare", "pairing", "group"].includes(intent)) intent = "refine";
+  if (u.choosing && !mentioned.length && !nth && !pickedBack && state.shown.length >= 2 && hasFilters && !["compare", "pairing", "group"].includes(intent)) intent = "refine";
   // "I love BTS, what should I get?": a taste Qloo could place on this menu is a recommendation
   if (taste && ["out_of_scope", "about", "greeting"].includes(intent)) intent = "recommend";
   // the reader: a message that isn't about the food isn't answered with dishes ("do you deliver

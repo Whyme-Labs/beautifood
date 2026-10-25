@@ -310,3 +310,18 @@ case was read.
 On v6 it fixed 2 cases and broke none: service questions 73.3% → 86.7%, Malay 91.9% → 94.6%;
 everything else unchanged. Unlike the rule round before it, the gain carried over to unseen
 kitchens and phrasings, because what it learnt wasn't drawn from any benchmark. Still no v6 case read.
+
+## A follow-up reader, tried and not shipped (v6 scored once)
+
+- A second reader of the same shape (new request / about the dishes just shown / about the one dish
+  being talked about / the bill), trained on 1,453 utterances written blind for it
+  (`scripts/brain/followup-templates.json`) plus the intent templates (15,519 examples, 481 dropped
+  by the guard). Used only where it was sure and the rules' word lists said nothing.
+- Dev: after two fixes ("那面呢？" asks for a course, not among the dishes shown; a question about the
+  one dish picked back isn't turned into narrowing the list), it changed 2 answers of ~2,460, both
+  still right. **v6: 84.5% → 84.5%, not one answer changed.**
+- Why: v6's failing follow-up, memory and budget cases (13, 8 and 23) are nearly all a dish or
+  "which of those" question that ends up a plain recommendation (dish_info/refine/pairing →
+  recommend), i.e. the reference is read but nothing is found to anchor it. Telling *that* a message
+  refers back isn't the gap. The reader is out of the Worker; its data and the trainer's support for
+  it (`train-reader.ts followup`) stay for the record. The `!pickedBack` guard stays (no change on any set).
