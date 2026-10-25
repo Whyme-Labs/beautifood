@@ -23,6 +23,8 @@ export function normalize(text: string): string {
   return text
     .normalize("NFKC")
     .toLowerCase()
+    // "açaí" is acai, "crème brûlée" creme brulee (Latin letters only: Han and Thai are left whole)
+    .replace(/[\u00c0-\u024f]/g, (c) => c.normalize("NFD").replace(/\p{M}/gu, ""))
     .replace(/[’‘`]/g, "'")
     .replace(/(\p{Script=Han})/gu, " $1 ")
     .replace(/[^\p{L}\p{N}'. ]+/gu, " ")

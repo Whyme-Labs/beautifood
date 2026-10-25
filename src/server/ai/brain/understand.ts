@@ -209,7 +209,19 @@ export function stripInjection(question: string): { text: string; injected: bool
  * intent model already knows ("better") is never a typo of a dish word ("butter").
  */
 const same = (a: string, b: string) =>
-  a === b || a === `${b}s` || b === `${a}s` || (a.length >= 5 && b.length >= 5 && a[0] === b[0] && !intentModel().vocab?.has(a) && !REAL.has(a) && editDistance(a, b, 1) <= 1);
+  a === b || a === `${b}s` || b === `${a}s` || MALAY_FOOD[a]?.includes(b) === true ||
+  // a typo: one letter off in a word of five or more, a letter left out of one ("perl" milk tea, not
+  // "main" for Mein), two in a long word ("samgyupsal")
+  (a[0] === b[0] && !intentModel().vocab?.has(a) && !REAL.has(a) &&
+    ((a.length >= 8 && b.length >= 8 && editDistance(a, b, 2) <= 2) || (a.length >= 5 && b.length >= 5 && editDistance(a, b, 1) <= 1) || (a.length === 4 && b.length === 5 && editDistance(a, b, 1) <= 1)));
+
+/** Malay food words and the English a menu writes them in ("fries keju", "cheong fun udang", "lala"). */
+const MALAY_FOOD: Record<string, string[]> = {
+  ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
+  ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
+  sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], susu: ["milk"],
+  keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
+};
 
 interface Mention {
   dish: Dish;
@@ -228,6 +240,8 @@ interface Mention {
 export function findDishes(items: Dish[], raw: string, toks: string[], skip = new Set<number>()): Mention[] {
   const ix = dishIndex(items);
   const found: Mention[] = [];
+  // a word many dishes share ("mee", "ramen" on a ramen menu, "Sarawak"): it doesn't tell them apart
+  const common = (i: number) => GENERIC.has(toks[i]) || ORIGIN.has(toks[i]) || (ix.df.get(toks[i]) ?? 0) >= 2;
   items.forEach((dish, n) => {
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
@@ -251,15 +265,20 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // distinctive words first; then each generic or place word at the occurrence nearest those (the
     // "bowl" of "quinoa bowl", not of "acai bowl" earlier; the "Sarawak" of "Sarawak Laksa", not of
     // "Sarawak Kolo Mee" before it)
+    // (and, among the rest, the rarest first: "kha" anchors Tom Kha Gai, so its "tom" is the one
+    // next to it, not the "tom" of "tom yum" before it)
     const late = (w: string) => (GENERIC.has(w) ? 2 : ORIGIN.has(w) ? 1 : 0);
-    for (const w of [...name].sort((a, b) => late(a) - late(b))) {
+    for (const w of [...name].sort((a, b) => late(a) - late(b) || df(a) - df(b))) {
       const idf = 1 / df(w);
       const g = GENERIC.has(w) ? 0.3 : 1;
       total += idf * g;
       const spots = toks.map((_, i) => i).filter((i) => !skip.has(i) && !covered.includes(i) && same(toks[i], w));
       if (!spots.length) continue;
-      const near = (i: number) => Math.min(...covered.map((c) => Math.abs(c - i)));
-      const at = covered.length ? spots.sort((a, b) => near(a) - near(b))[0] : spots[0];
+      // the first word goes where the name's other words are ("pho" of "pho ga", not of the "pho bo
+      // tai" before it; "japchae" of "vegetable japchae"), each later one next to those already placed
+      const others = toks.map((_, i) => i).filter((i) => name.some((x) => x !== w && same(toks[i], x)));
+      const near = (i: number) => Math.min(...(covered.length ? covered : others.length ? others : [i]).map((c) => Math.abs(c - i)));
+      const at = spots.sort((a, b) => near(a) - near(b) || a - b)[0];
       covered.push(at);
       weight += idf * g;
       if (!GENERIC.has(w) && !ORIGIN.has(w) && w !== "kacang" && !mentionedAllergens(w).length) strong = true;
@@ -282,7 +301,14 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a long name needs its words close together, not scattered across the question
     const spread = Math.max(...covered) - Math.min(...covered) + 1;
     // a partial match needs a word that names this dish, not just "ais" or an allergen like "kacang"
-    if (!(all || ((coverage >= 0.6 || unique || adjacentNamed) && strong)) || spread > name.length + 2) return;
+    if (!(all || ((coverage >= 0.6 || unique || adjacentNamed) && strong))) return;
+    if (spread > name.length + 2) {
+      // "tonkotsu vs shoyu chicken ramen": its own word names it; the "ramen" far off is the other's
+      const own = covered.filter((i) => !common(i));
+      if (!unique || !own.length || Math.max(...own) - Math.min(...own) + 1 > name.length + 2) return;
+      const w = own.reduce((sum, i) => sum + 1 / df(toks[i]), 0);
+      return void found.push({ dish, at: Math.min(...own), covered: own, score: w / total + own.length * 0.01 });
+    }
     found.push({ dish, at: Math.min(...covered), covered, score: (all ? 1 : coverage) + covered.length * 0.01 });
   });
   // a match that covers more of the question wins over one inside it: "durian cendol" is the Musang
@@ -293,10 +319,14 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   for (let k = found.length - 1; k >= 0; k--) if (found[k].zh && found.some((b) => b.zh && b.zh !== found[k].zh && b.zh.includes(found[k].zh!))) found.splice(k, 1);
   // two dishes claiming the same words: the better match keeps them
   found.sort((a, b) => b.score - a.score);
+  if (process.env.DISH_DEBUG) console.log(found.map((m) => [m.dish.name, m.covered.map((i) => toks[i]).join("+"), m.score.toFixed(2)]));
   const claimed = new Set<number>();
+  // ...unless what they share is only a common word ("mee" of "kolo mee vs kampua mee") and each has
+  // a word not generic of its own ("kolo")
   const kept = found.filter((m) => {
     if (m.covered.length && m.covered.every((i) => claimed.has(i))) return false;
-    if (m.covered.some((i) => claimed.has(i)) && m.score < 1) return false;
+    const shared = m.covered.filter((i) => claimed.has(i));
+    if (shared.length && m.score < 1 && !(shared.every(common) && m.covered.some((i) => !claimed.has(i) && !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))) return false;
     m.covered.forEach((i) => claimed.add(i));
     return true;
   });
@@ -588,7 +618,7 @@ export function read(items: Dish[], asked: string): Reading {
   const raw = question.normalize("NFKC").toLowerCase();
   const ix = dishIndex(items);
   // fix typos in the words we read constraints from, but never in a word of a dish's name
-  const toks = tokens(normalize(question), true).map((t) => (ix.df.has(t) ? t : correct(t)));
+  const toks = tokens(normalize(question), true).map((t) => (ix.df.has(t) || MALAY_FOOD[t] ? t : correct(t)));
   // "saya alergi kacang", "allergic to nuts": the word after is an allergen, not a dish (Ais Kacang)
   const skip = new Set<number>();
   toks.forEach((t, i) => {

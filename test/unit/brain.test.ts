@@ -621,3 +621,23 @@ describe("the reader: food, service or small talk", () => {
     expect(READER_WEIGHTS.dataHash).toBe(readerDataHash());
   });
 });
+
+describe("finding the dishes a guest names", () => {
+  const menu = (names: string[]) => names.map((name, n) => ({ id: `m${n}`, name, category: "Mains", description: "", price: 1000, allergens: [], dietary: [], spiceLevel: 0, isSignature: false })) as unknown as Dish[];
+  const found = (names: string[], q: string) => read(menu(names), q).dishes.map((d) => d.name);
+  it("finds both dishes compared when they share a word", () => {
+    expect(found(["Tom Yum Goong", "Tom Kha Gai"], "tom yum vs tom kha?")).toEqual(["Tom Yum Goong", "Tom Kha Gai"]);
+    expect(found(["Sarawak Kolo Mee", "Kampua Mee"], "Kolo mee vs kampua, what's the difference?")).toEqual(["Sarawak Kolo Mee", "Kampua Mee"]);
+    expect(found(["Tonkotsu Ramen", "Shoyu Chicken Ramen"], "tonkotsu vs shoyu chicken ramen?")).toEqual(["Tonkotsu Ramen", "Shoyu Chicken Ramen"]);
+    expect(found(["Pho Bo Tai", "Pho Ga"], "Pho bo tai or pho ga, which is lighter?")).toEqual(["Pho Bo Tai", "Pho Ga"]);
+  });
+  it("reads Malay food words, accents and typos", () => {
+    expect(found(["Crispy Prawn Cheong Fun", "Char Siu Cheong Fun"], "cheong fun udang tu apa?")).toEqual(["Crispy Prawn Cheong Fun"]);
+    expect(found(["Acai Bowl", "Granola Bowl"], "Does the açaí bowl have oats?")).toEqual(["Acai Bowl"]);
+    expect(found(["Samgyeopsal", "Beef Bulgogi"], "samgyupsal how much")).toEqual(["Samgyeopsal"]);
+    expect(found(["Brown Sugar Pearl Milk", "Classic Milk Tea"], "brwn sugar perl milk how much")).toEqual(["Brown Sugar Pearl Milk"]);
+  });
+  it("doesn't take a question word for a dish's ('main' isn't Mein)", () => {
+    expect(found(["Mushroom Lo Mein", "Fish Congee"], "Any main for me?")).toEqual([]);
+  });
+});
