@@ -202,3 +202,18 @@ more on these kitchens. The 2 unsafe answers stay unread.
   ends a clause (so "sensitivity here - which seafood main?" doesn't avoid the seafood).
 - After: v5 83.3%, 0 unsafe; v4 (dev) 89.5%, v3 88.7%, v2 91.4%, v1 dev 97.1%, 0 unsafe everywhere.
 - As with v4, v5's safety figure is no longer blind from here on.
+
+## v5 after the order, cheaper, mains and meat work (f807d9b, scored once at the end)
+
+| v5 | 0d49a1b (v5's safety fixes) | f807d9b |
+|---|---|---|
+| overall | 83.3%, 0 unsafe | 85.7%, 0 unsafe |
+| budget questions | 43.9% | 61.0% |
+| combined constraints | 36.0% | 64.0% |
+| diet questions | 83.3% | 86.5% |
+| group questions | 86.7% | 80.0% (one case fewer) |
+| Chinese questions | 71.1% | 73.3% |
+
+The changes were made on v3 and v4 (dev) only; v5 was scored before and after, nothing in it read
+beyond its two unsafe answers. The Workers AI suggestions at onboarding aren't measured here (the
+benchmark has no model).
