@@ -684,3 +684,37 @@ describe("the running order (v6 found, measured on counts only)", () => {
     }
   });
 });
+
+describe("changing the order, and something a bit cheaper", () => {
+  const ordered = [
+    { role: "user" as const, content: "One Char Kway Teow and a Teh Tarik please" },
+    { role: "assistant" as const, content: "Noted: Char Kway Teow (RM16.90) and Teh Tarik (RM5.50)." },
+  ];
+  const total = (q: string) => answerGuest(ctx, [...ordered, { role: "user", content: q }]).answer;
+  it("swaps, replaces and cancels before adding up", () => {
+    expect(total("Actually make it a Kopi O instead. Total?")).toContain("Total RM21.40");
+    expect(total("Swap the teh tarik for an Iced Barley, how much now?")).toContain("Total RM21.90");
+    expect(total("Change the char kway teow to curry mee, total?")).toContain("Total RM20.40");
+    expect(total("Can I have a Cendol instead of the Teh Tarik? Total?")).toContain("Total RM25.40");
+    expect(total("Cancel the teh tarik. Total?")).toContain("Total RM16.90");
+    expect(total("不要那个拉茶了，一共多少？")).toContain("Total RM16.90");
+    expect(total("No teh tarik, a Kopi O instead. Total?")).toContain("Total RM21.40");
+  });
+  it("reads quantities said around the dish", () => {
+    const say = (q: string) => answerGuest(ctx, [{ role: "user", content: q }]).answer;
+    expect(say("two plates of char kway teow and a teh tarik, total?")).toContain("Total RM39.30");
+    expect(say("teh tarik x2 and one curry mee, how much?")).toContain("Total RM25.90");
+    expect(say("dua pinggan nasi kerabu dan satu kopi o, berapa semua?")).toContain("Total RM39.50");
+  });
+  it("offers the nearest price below first", () => {
+    const r = answerGuest(ctx, [
+      { role: "user", content: "noodles?" },
+      { role: "assistant", content: "Char Kway Teow (RM16.90)." },
+      { role: "user", content: "hmm pricey, anything cheaper?" },
+    ]);
+    const prices = r.items.map((i) => i.price);
+    expect(prices[0]).toBe(1590);
+    expect(prices).toEqual([...prices].sort((a, b) => b - a));
+    for (const p of prices) expect(p).toBeLessThan(1690);
+  });
+});

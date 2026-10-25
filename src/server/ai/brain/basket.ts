@@ -140,9 +140,16 @@ export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
     const words = normalize(d.name).split(" ").filter((w) => w.length > 1);
     const at = toks.findIndex((t) => words.some((w) => singular(t) === singular(w)));
     if (at > 0) {
-      const before = toks[at - 1] === "x" ? toks[at - 2] : toks[at - 1];
-      n = NUMBER[before] ?? (/^\d$/.test(before ?? "") ? Number(before) : 1);
+      // "two nasi lemak", "2 x kopi", "two plates of nasi lemak", "dua pinggan nasi"
+      let k = at - 1;
+      while (k > 0 && /^(x|of|the|plates?|bowls?|cups?|glasses|glass|pieces?|pcs|orders?|servings?|portions?|sets?|pinggan|mangkuk|cawan|gelas|biji|ketul)$/.test(toks[k])) k--;
+      n = NUMBER[toks[k]] ?? (/^\d$/.test(toks[k] ?? "") ? Number(toks[k]) : 1);
     }
+    // "nasi lemak x2", "kopi ×3", "teh tarik times two"
+    const end = at >= 0 ? at + words.length : -1;
+    const after = end >= 0 ? normalize(text).split(" ").slice(end, end + 2).join(" ") : "";
+    const times = after.match(/^(?:x|×|times)\s*(\d|two|three|four|five|dua|tiga)\b|^x(\d)\b/);
+    if (times) n = NUMBER[times[1] ?? times[2]] ?? Number(times[1] ?? times[2]);
     for (const zh of Object.values(d.translations ?? {}).map((x) => x?.name).filter(Boolean) as string[]) {
       const m = text.match(new RegExp(`([一两二三四五\\d])[个份杯碗碟盘]?${zh.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
       if (m) n = ZH_NUMBER[m[1]] ?? Number(m[1]);

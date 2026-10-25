@@ -84,6 +84,7 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
       // "I'll have the X", "add a Y", and a dish named without a question ("one nasi kerabu please",
       // "Teh tarik kurang manis") are on the order; "is the X spicy?" isn't
       const asks = /[?？]/.test(h.content) || QUESTION.test(normalize(h.content)) || QUESTION_ZH.test(h.content);
+      if (editOrder(s.order, h.content, u.dishes as Item[])) continue;
       if (u.dishes.length && (ORDERING.test(normalize(h.content)) || ORDERING_ZH.test(h.content) || !asks))
         for (const [item, count] of countsOf(h.content, u.dishes)) {
           const had = s.order.find((o) => o.item.id === item.id);
@@ -99,6 +100,46 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
     }
   }
   return s;
+}
+
+const REMOVE = /\b(cancel|remove|drop|scratch|delete|don ?t want|no more|skip the|batal|buang|tak nak|tak jadi)\b|取消|不要了|不要那|删掉/;
+const SWAP = /\b(instead|change|swap|replace|switch|make it|make that|rather have|tukar|ganti)\b|换成|换|改成|改/;
+
+/**
+ * Applies a change to the order ("cancel the satay", "swap the kopi for a teh", "make it a teh
+ * instead", "change the laksa to curry mee"), and says whether the message was one. `named` is the
+ * dishes the message names, in the order it names them.
+ */
+export function editOrder(order: { item: Item; count: number }[], text: string, named: Item[]): boolean {
+  const t = normalize(text);
+  const drop = (i: Item) => {
+    const k = order.findIndex((o) => o.item.id === i.id);
+    if (k >= 0) order.splice(k, 1);
+    return k >= 0;
+  };
+  const add = (i: Item) => (order.some((o) => o.item.id === i.id) ? undefined : order.push({ item: i, count: 1 }));
+  if (!named.length || !order.length) return false;
+  const swap = SWAP.test(t) || SWAP.test(text);
+  // "no more the kopi" drops it; "no kopi, a teh instead" names only the new one, so it's a swap
+  if ((REMOVE.test(t) || REMOVE.test(text)) && (!swap || named.some((i) => order.some((o) => o.item.id === i.id)))) return named.map(drop).some(Boolean);
+  if (!swap) return false;
+  if (named.length >= 2) {
+    // "a teh instead of the kopi": the one after "instead of" goes; "swap the kopi for a teh": the first
+    const at = t.indexOf("instead of");
+    const where = (i: Item) => t.indexOf(normalize(i.name).split(" ")[0]);
+    const out = at >= 0 ? (named.find((i) => where(i) > at) ?? named[named.length - 1]) : named[0];
+    drop(out);
+    for (const i of named) if (i !== out) add(i);
+    return true;
+  }
+  // "make it a teh instead": in place of the last thing of its kind ordered (a drink for a drink)
+  const [next] = named;
+  if (order.some((o) => o.item.id === next.id)) return false;
+  const kind = (i: Item) => (isDrink(i) ? "drink" : isDessert(i) ? "dessert" : "food");
+  const same = [...order].reverse().find((o) => kind(o.item) === kind(next)) ?? order[order.length - 1];
+  drop(same.item);
+  add(next);
+  return true;
 }
 
 /** A question, not an order: "is it spicy", "what's in the X", "ada kacang tak", "辣吗". */
@@ -502,7 +543,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text);
   if (!u.budget && (totalWord || (howMuch && (mentioned.length >= 2 || state.order.length)))) {
     const bill = state.order.map((o) => ({ ...o }));
-    if (mentioned.length && (ordering || totalWord || howMuch))
+    // "swap the kopi for a teh, total?", "cancel the satay": the order as changed
+    const edited = editOrder(bill, u.text, mentioned);
+    if (mentioned.length && !edited && (ordering || totalWord || howMuch))
       for (const [item, count] of countsOf(u.text, mentioned)) {
         const had = bill.find((o) => o.item.id === item.id);
         if (had && !ordering) continue;
@@ -517,8 +560,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const adding = /\b(add|also|plus|tambah)\b/.test(normalize(u.text)) || /加/.test(u.text);
     if (adding && !state.order.length && state.shown.length && state.shown.length <= 2) for (const item of [...state.shown].reverse()) if (!bill.some((o) => o.item.id === item.id)) bill.unshift({ item, count: 1 });
     // "total for both?" with nothing ordered: the dishes just talked about
-    if (totalWord && bill.reduce((n, o) => n + o.count, 0) < 2) for (const item of state.shown) if (!bill.some((o) => o.item.id === item.id)) bill.push({ item, count: 1 });
-    if (bill.reduce((n, o) => n + o.count, 0) >= 2) {
+    if (totalWord && !edited && bill.reduce((n, o) => n + o.count, 0) < 2) for (const item of state.shown) if (!bill.some((o) => o.item.id === item.id)) bill.push({ item, count: 1 });
+    if (bill.reduce((n, o) => n + o.count, 0) >= (edited ? 1 : 2)) {
       const total = bill.reduce((sum, o) => sum + o.item.price * o.count, 0);
       const lines = bill.map((o) => (o.count > 1 ? `${o.count} × ${line(o.item)}` : line(o.item)));
       return reply("recommend", `${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}`, bill.map((o) => o.item));
@@ -651,7 +694,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const kinds = new Set(state.shown.map(kind));
     let pool = live.filter((i) => i.price < cap && !state.shown.includes(i) && allowed(i, { ...c, budget: null }));
     pool = u.courses.length || u.categories.length ? byCourse(pool, u.courses) : pool.filter((i) => kinds.has(kind(i)));
-    const picks = ranked(pool).slice(0, 3);
+    // the nearest below first: "anything cheaper?" wants something like it for a bit less, not the
+    // cheapest thing of its kind
+    const picks = [...pool].sort((a, b) => b.price - a.price || baseScore(b, ctx) - baseScore(a, ctx)).slice(0, 3);
     if (!picks.length) return reply("recommend", t("assistantReply.cheaperNone", { price: money(cap) }), []);
     return reply("recommend", `${t("assistantReply.cheaperIntro", { price: money(cap) })}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
   }

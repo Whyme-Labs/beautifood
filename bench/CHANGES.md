@@ -393,3 +393,31 @@ have these phrasings. v6, scored after the first two fixes and again after the t
 4 fixed, none broken. Still failing among these: 6 bills (now mostly a dish named in the final
 question that the bill doesn't take), 4 "cheaper" answers whose picks miss the expected ones
 (ranking), 2 group budgets.
+
+## The remaining bills and "cheaper" answers (diagnosed on v6 by counts and arithmetic only)
+
+- **Bills (6 failing).** 4 were exactly one dish too high: a dish ordered earlier that the final
+  message changed. 5 of the 6 final messages had words like instead / swap / change / cancel, and the
+  bill didn't apply edits; it kept the old dish and added the new one. Fix (`editOrder`, earlier
+  turns and the last one): "cancel/remove/no more X" drops it; "swap X for Y", "change X to Y",
+  "Y instead of X" replace; "make it Y (instead)" replaces the last thing of Y's kind; a bill left
+  with one dish is still a bill.
+- **"Cheaper" (4 failing).** The expected dishes were all in the pool of cheaper dishes of the same
+  kind, but ranked 10th–12th by popularity and 1st, 3rd and 4th by price nearest below. Fix: the
+  nearest price below first ("anything cheaper?" wants something like it for a bit less). One case
+  showed a side and expected a main: left.
+- Also, unscored on v6 before it was spent: quantities around the dish ("two plates of X", "X x2",
+  "dua pinggan X") and a removal said with a swap ("no X, a Y instead").
+
+Dev unchanged (98.0 / 95.1 / 93.4 / 94.9 / 92.8%, 0 unsafe). v6, scored after the edits and nearest
+price, and again after the quantities:
+
+| | before | edits + nearest price | + quantities |
+|---|---|---|---|
+| v6 overall | 86.7% | 87.3% | **87.3%, 0 unsafe** (parser data 84.9%) |
+| budget (58) | 67.2% | 72.4% | 72.4% |
+| follow-up (35) | 71.4% | 80.0% | 80.0% |
+| memory (23) | 73.9% | 82.6% | 82.6% |
+
+3 fixed (2 bills, 1 cheaper), none broken; the quantity change moved nothing. Still failing: 5 bills
+(2 short by an amount that is no dish's price, 1 a split bill, 2 other) and 3 "cheaper".
