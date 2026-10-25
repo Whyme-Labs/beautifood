@@ -325,3 +325,39 @@ kitchens and phrasings, because what it learnt wasn't drawn from any benchmark. 
   recommend), i.e. the reference is read but nothing is found to anchor it. Telling *that* a message
   refers back isn't the gap. The reader is out of the Worker; its data and the trainer's support for
   it (`train-reader.ts followup`) stay for the record. The `!pickedBack` guard stays (no change on any set).
+
+## Dish-name matching (scored on v6 once at the end)
+
+- Measured first, on the readable sets only (`bench/dishes.ts`): of the dishes a question names
+  (dish questions with no earlier turn), 383/422 (90.8%) were found; of the dishes an earlier answer
+  named, 216/216. So the gap was in the guest's words, not the conversation's.
+- Fixes, in general form with unit tests:
+  - a comparison finds both dishes: a name's rarest word anchors it and its other words go next to
+    it ("tom yum vs tom kha", "pho bo tai or pho ga"); two dishes may share a common word when each
+    has one of its own ("kolo mee vs kampua mee"); a dish's own word names it when its common word
+    is far off ("tonkotsu vs shoyu chicken ramen");
+  - Malay food words match the menu's English ("cheong fun udang", "fries keju"); accents dropped
+    ("açaí"); typos: two letters off in a long word ("samgyupsal"), a missing letter in a four-letter
+    one ("perl"), but not "main" for Mein;
+  - the Chinese dish dictionary from 262 to 989 entries (written by an independent author who read
+    nothing under bench/ or test/; one-word catch-alls like 吐司, 沙拉 left out, murtabak's wrong
+    曼煎糕 removed), consulted for every dish, not only those with no Chinese name: guests say 三杯鸡
+    for a menu's 三杯鸡饭, 千层面 for 牛肉千层面; a dictionary name that fits three dishes is a kind
+    of food (拉面), not a dish, and the menu's own name wins (its 卤肉饭);
+  - Chinese course words (汉堡, 披萨, 寿司, 卷饼…) name the menu's categories, and an allergy said in
+    one clause no longer hides the course asked in another ("我不能吃蛋，有什么汉堡？").
+- Found: 383 → 405 of 422 (96.0%). One dev case went the other way: "我对鸡蛋过敏，有什么早餐？" now
+  reads the Breakfast category, every dish of which has egg, and says so.
+
+| | before | after |
+|---|---|---|
+| v1 dev | 97.6% | 98.0% |
+| v2 | 94.3% | 95.1% |
+| v3 | 92.7% | 93.4% |
+| v4 | 93.9% | 94.9% |
+| v5 | 90.9% | 92.8% |
+| **v6 (held out, once)** | **84.5%** | **85.8%, 0 unsafe** (parser data 82.1% → 83.4%) |
+
+On v6, 6 cases fixed and none broken: compare 66.7% → 80.0%, Chinese 78.7% → 85.1%, dish info
+89.8% → 93.9%, search 75.0% → 87.5%, dish allergen 91.6% → 92.8%. Follow-up, memory and budget
+questions didn't move (62.9%, 65.2%, 60.3%), so dish names weren't what held those back. No v6 case read.

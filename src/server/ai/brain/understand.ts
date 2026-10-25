@@ -246,8 +246,9 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
       if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2, zh: tr.name });
-    // no Chinese name on this menu: what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice)
-    if (!dish.translations?.zh?.name && HAN_RE.test(raw)) {
+    // what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice), also when the menu's own
+    // name is longer than what a guest says (三杯鸡 for its 三杯鸡饭, 千层面 for its 牛肉千层面)
+    if (HAN_RE.test(raw)) {
       const zh = zhNamesOf(dish.name)?.names.filter((x) => x.length > 1 && raw.includes(x)).sort((x, y) => y.length - x.length)[0];
       if (zh) return void found.push({ dish, at: raw.indexOf(zh) / 100, covered: [], score: 1.9, zh });
     }
@@ -315,6 +316,18 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   // King Durian Cendol, not the plain Cendol whose one word it also contains
   const inside = (a: Mention, b: Mention) => a.covered.length > 0 && b.covered.length > a.covered.length && a.covered.every((i) => b.covered.includes(i));
   for (let k = found.length - 1; k >= 0; k--) if (found.some((b) => inside(found[k], b))) found.splice(k, 1);
+  // a usual Chinese name that fits three dishes or more is a kind of food (拉面, 卷饼), not one dish;
+  // and the menu's own Chinese name wins over a usual one (its 卤肉饭 is the Braised Pork Rice, not
+  // also the Mushroom Lu Rou Fan the dictionary calls that)
+  const usual = found.filter((m) => m.zh && m.score < 2);
+  const own = found.filter((m) => m.zh && m.score >= 2);
+  for (let k = found.length - 1; k >= 0; k--) {
+    const m = found[k];
+    if (!m.zh || m.score >= 2) continue;
+    // (a vegetarian version stays when the guest asks for one: "素食者可以吃泰式炒河粉吗？")
+    const variant = /\b(vegetarian|vegan|veggie)\b/i.test(m.dish.name) && /素/.test(raw);
+    if (usual.filter((x) => x.zh === m.zh).length >= 3 || (!variant && own.some((x) => x.dish !== m.dish && x.zh!.includes(m.zh!)))) found.splice(k, 1);
+  }
   // 海南鸡饭 is the Hainanese Chicken Rice, not also the plain Chicken Rice (鸡饭) inside it
   for (let k = found.length - 1; k >= 0; k--) if (found[k].zh && found.some((b) => b.zh && b.zh !== found[k].zh && b.zh.includes(found[k].zh!))) found.splice(k, 1);
   // two dishes claiming the same words: the better match keeps them
@@ -557,7 +570,7 @@ const CATEGORY_ZH: [RegExp, string[]][] = [
   [/奶茶/, ["milk tea"]], [/果茶/, ["fruit tea"]], [/小吃|零食/, ["snack", "small plate", "side"]], [/海鲜/, ["seafood"]], [/肉类|肉菜/, ["meat"]],
   [/蔬菜|青菜|素菜/, ["vegetable"]], [/咖啡/, ["coffee"]], [/甜品|甜点|糖水/, ["dessert", "sweet"]], [/饮料|饮品|喝的/, ["drink", "beverage"]],
   [/串烧|烤串|串/, ["skewer", "yakitori"]], [/丼|盖饭/, ["donburi", "don"]], [/拉面|面/, ["noodle", "ramen"]], [/饭/, ["rice"]], [/咖喱/, ["curr"]],
-  [/早餐|早午餐/, ["breakfast", "brunch"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]], [/炸/, ["fried"]], [/蒸/, ["steamed"]], [/烧烤|烤肉/, ["grill", "bbq", "barbecue"]], [/酱|蘸料/, ["sauce", "dip"]],
+  [/早餐|早午餐/, ["breakfast", "brunch"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]], [/炸/, ["fried"]], [/汉堡/, ["burger"]], [/披萨|比萨/, ["pizza"]], [/寿司/, ["sushi"]], [/塔可/, ["taco"]], [/卷饼/, ["wrap", "burrito"]], [/沙拉/, ["salad"]], [/意面|意大利面/, ["pasta"]], [/点心/, ["dim sum"]], [/蒸/, ["steamed"]], [/烧烤|烤肉/, ["grill", "bbq", "barbecue"]], [/酱|蘸料/, ["sauce", "dip"]],
 ];
 // "sauces" → "sauce", "dishes" → "dish", "noodles" → "noodle", "curries" → "curry"
 const singular = (w: string) => (w.length <= 3 ? w : /ies$/.test(w) ? w.replace(/ies$/, "y") : /(s|x|z|ch|sh)es$/.test(w) ? w.slice(0, -2) : /[^s]s$/.test(w) ? w.slice(0, -1) : w);
@@ -730,7 +743,7 @@ export function read(items: Dish[], asked: string): Reading {
     party,
     courses,
     // a word naming what they avoid ("no milk") doesn't ask for its category ("Milk teas")
-    categories: askedCategories(items, rest.filter((t, k) => !mentionedAllergens(t).some((a) => avoid.includes(a)) && !negatedAt(rest, k)), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? "" : restRaw),
+    categories: askedCategories(items, rest.filter((t, k) => !mentionedAllergens(t).some((a) => avoid.includes(a)) && !negatedAt(rest, k)), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? restRaw.replace(/[^，,。？?！!]*(不要|不能|不吃|不含|没有|无|过敏|别|忌|走)[^，,。？?！!]*/g, " ") : restRaw),
     appetite: light ? "light" : hearty ? "hearty" : null,
     superlative,
     refersBack: refersBack || ordinal !== null || choosing,
