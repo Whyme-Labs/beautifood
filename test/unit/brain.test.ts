@@ -516,3 +516,13 @@ describe("safety phrasings found on v4", () => {
     expect(basketOf("no pork, not spicy - a main dish please", hawker as unknown as Dish[])).toBeNull();
   });
 });
+
+describe("safety phrasings found on v5", () => {
+  it("'sulphite sensitivity' avoids sulphites, and octopus is a mollusc", () => {
+    expect(read(hawker as unknown as Dish[], "Sulphite sensitivity - is the rojak ok?").stated).toContain("sulphites");
+    expect(read(hawker as unknown as Dish[], "Allergic to octopus. Can I have the curry mee?").stated).toContain("molluscs");
+  });
+  it("a dash ends the clause an allergy is said in", () => {
+    expect(read(hawker as unknown as Dish[], "Sulphite sensitivity here - which seafood dish can I have?").avoid).not.toContain("fish");
+  });
+});

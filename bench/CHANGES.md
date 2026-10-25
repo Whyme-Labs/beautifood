@@ -193,3 +193,12 @@ so none is new; they stay unread until a v5 replaces v4.
 Lower than v4 (89.5%, with its unsafe answers fixed after reading them): the budget planner, which
 took v4's budget questions from 63% to 82%, carries over to only 44% of v5's, and the parser misses
 more on these kitchens. The 2 unsafe answers stay unread.
+
+## v5's 2 unsafe answers read and fixed (2026-10-25, at the owner's request)
+
+- Read before a v6 exists, by the owner's decision; nothing else in v5 was read. "Sulphite
+  sensitivity" wasn't a stated avoidance (only "sensitive" was), so the dish still came as a card;
+  "allergic to octopus" wasn't read as molluscs. Fixed in general form with unit tests; a dash now
+  ends a clause (so "sensitivity here - which seafood main?" doesn't avoid the seafood).
+- After: v5 83.3%, 0 unsafe; v4 (dev) 89.5%, v3 88.7%, v2 91.4%, v1 dev 97.1%, 0 unsafe everywhere.
+- As with v4, v5's safety figure is no longer blind from here on.

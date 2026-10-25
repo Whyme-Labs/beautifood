@@ -58,9 +58,9 @@ export const ALLERGY_NOTE = allergyNote();
 
 const ALLERGEN_WORDS: Record<Allergen, RegExp> = {
   gluten: /gluten|wheat|coeliac|celiac/i,
-  crustaceans: /shellfish|crustacean|prawn|shrimp|crab|lobster/i,
+  crustaceans: /shellfish|crustacean|prawn|shrimp|crab|lobster|crayfish|langoustine|krill|belacan|shrimp paste/i,
   // "shellfish" is both: a shellfish allergy can be to prawns or to oysters and clams
-  molluscs: /shellfish|mollusc|mollusk|squid|clam|oyster|mussel|scallop/i,
+  molluscs: /shellfish|mollusc|mollusk|squid|clam|oyster|mussel|scallop|octopus|cuttlefish|cockle|abalone|whelk|snail|escargot|geoduck/i,
   fish: /\bfish\b|seafood|anchov|\bbilis\b|salmon|\btuna\b|mackerel|sardine|bonito|\bcod\b|\beel\b|tilapia|grouper|seabass|sea bass/i,
   egg: /\beggs?\b/i,
   milk: /milk|dairy|lactose|cheese|cream/i,
