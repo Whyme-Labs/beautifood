@@ -554,3 +554,53 @@ describe("the bill, cheaper options, mains and meats they don't eat", () => {
     expect(read(hawker as unknown as Dish[], "no pork please").diet).not.toContain("halal");
   });
 });
+
+describe("budgets, running bills and follow-ups (v5 as dev)", () => {
+  const names = (r: { items: { name: string }[] }) => r.items.map((i) => i.name);
+  const shown = (a: string, b: string) => {
+    const [x, y] = [a, b].map((n) => ctx.items.find((i) => i.name === n)!);
+    return `${x.name} (RM${(x.price / 100).toFixed(2)}) or ${y.name} (RM${(y.price / 100).toFixed(2)}).`;
+  };
+  it("'cheapest X' is the one, not a list", () => {
+    expect(names(answerGuest(ctx, [{ role: "user", content: "Cheapest noodle?" }]))).toEqual(["Vegetarian Mee Goreng"]);
+  });
+  it("two items and money to spend are an order, serving words and a new sentence after it too", () => {
+    for (const q of ["RM20 for a laksa bowl and a drink", "I have RM20 for a main and a drink. What do you suggest?"]) {
+      const r = answerGuest(ctx, [{ role: "user", content: q }]);
+      expect(r.items).toHaveLength(2);
+      expect(r.answer).toMatch(/within your RM20\.00/);
+    }
+  });
+  it("'not a drink' doesn't ask for drinks", () => {
+    const r = answerGuest(ctx, [{ role: "user", content: "Lunch under RM16, a proper meal not a drink" }]);
+    expect(r.items.length).toBeGreaterThan(0);
+    for (const x of r.items) expect(isDrink(ctx.items.find((i) => i.id === x.id) as unknown as Dish)).toBe(false);
+  });
+  it("adds plain rice and the meal just suggested to the bill", () => {
+    const rice = { ...ctx, items: [...ctx.items, { ...ctx.items[4], id: "rice", name: "Steamed White Rice", price: 200, allergens: [] }] } as AssistantContext;
+    const r = answerGuest(rice, [{ role: "user", content: "One Char Kway Teow, one Curry Mee and 2 bowls of rice. How much?" }]);
+    expect(r.answer).toContain(((1690 + 1490 + 2 * 200) / 100).toFixed(2));
+    const added = answerGuest(ctx, [
+      { role: "user", content: "suggest something" },
+      { role: "assistant", content: `Try the ${shown("Curry Mee", "Rojak")}` },
+      { role: "user", content: "Add a Teh Tarik. What's the total?" },
+    ]);
+    expect(added.answer).toContain(((1490 + 1050 + 550) / 100).toFixed(2));
+  });
+  it("'the cheapest one' and 'either of them' are the dishes just shown", () => {
+    const before = [{ role: "user" as const, content: "noodles?" }, { role: "assistant" as const, content: shown("Char Kway Teow", "Curry Mee") }];
+    const cheapest = answerGuest(ctx, [...before, { role: "user", content: "the cheapest one got seafood?" }]);
+    expect(names(cheapest)).toEqual(["Curry Mee"]);
+    const either = answerGuest(ctx, [...before, { role: "user", content: "Do either of them have prawns? I'm allergic." }]);
+    expect(names(either)).toEqual(["Curry Mee"]);
+    expect(either.safetyNote).toBeTruthy();
+  });
+  it("remembers 'I don't drink alcohol' and 'no caffeine' (and a child's drink has neither)", () => {
+    expect(read(hawker as unknown as Dish[], "just so you know I don't drink alcohol").noAlcohol).toBe(true);
+    expect(read(hawker as unknown as Dish[], "which drinks are ok for my kid?").noAlcohol).toBe(true);
+    const r = answerGuest(ctx, [{ role: "user", content: "no caffeine pls, it's late. what can i get?" }]);
+    expect(names(r)).not.toContain("Teh Tarik");
+    expect(names(r)).not.toContain("Kopi O");
+    expect(r.items.length).toBeGreaterThan(0);
+  });
+});

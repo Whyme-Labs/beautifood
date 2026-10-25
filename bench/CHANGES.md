@@ -248,3 +248,38 @@ on. 84.1% sits just below v5's 85.7% after its work; the weakest areas are budge
 multi-turn memory (where most failures sit in the answer and decision rules, not understanding).
 The parser misses far less on these menus (98% recall against v5's 88%) but over-flags milk and
 sulphites. No v6 case has been read.
+
+## v5 becomes dev; budget, bill and follow-up work (scored on v6 once at the end)
+
+- Label fix (v5 is dev now): v5h-mexican-cantina-073's total was 61.70; the menu's prices
+  (26.90 + 16.90 + 18.00) make it 61.80.
+- Engine changes, each in general form with unit tests, made on v1 dev and v2–v5 only:
+  - "cheapest X" names the one (and any at the same price), not a list;
+  - two items with money to spend are an order ("RM35 for a bowl and a juice"), serving words go
+    with the item ("a taco plate"), and "a drink. What do you suggest?" is still an item;
+  - "not a drink" doesn't ask for drinks; "a main under RM25" looks past a Mains category that's all
+    dearer (and drinks past a dearer Special drinks); "bites" is a snack category;
+  - the bill takes plain rice ("2 bowls of rice") and, after "add …", the meal just suggested;
+    a place word ("Sarawak") is matched last, so two dishes sharing it are both found;
+  - "the cheapest one got seafood?", "do either of them have peanuts?" and "which one is for sharing?"
+    are about the dishes just shown; a group sharing gets the platters and half birds first;
+  - "I don't drink alcohol" is read, liqueurs (Baileys) count as alcohol, a child's drink has none;
+    "no caffeine" is a new constraint (no coffee or tea);
+  - a menu's categories by the guest's own words before synonyms ("starters" isn't also Sides);
+    grill/BBQ, 炸 (fried), 蒸, 酱 as category words; "sauces" → "sauce" when comparing.
+- The training guard now loads each menu once (the v6 addition had pushed it past the test timeout).
+
+| | before (57fa7b4) | after |
+|---|---|---|
+| v1 dev | 97.1% | 97.6% |
+| v2 | 92.2% | 93.7% |
+| v3 | 89.8% | 91.6% |
+| v4 | 92.1% | 92.3% |
+| v5 (now dev) | 85.7% | 89.5% |
+| **v6 (held out, once)** | **84.1%, 0 unsafe** | **84.1%, 0 unsafe** (parser data 81.7% → 81.7%) |
+
+0 unsafe on every set. On v6 the changes fixed one case and broke one: budgets 62.1% → 60.3%,
+follow-ups 65.7% → 62.9%, memory 69.6% → 65.2%, diet 84.7% → 85.7%. The dev gains (35 of the
+targeted dev failures down to 11) are phrasings v6's guests didn't use: the rule-by-rule approach
+is fitting the sets it reads rather than generalising, and v6 is now spent for this round. No v6
+case was read.

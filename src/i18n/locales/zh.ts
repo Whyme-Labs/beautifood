@@ -483,6 +483,7 @@ const zh = {
     spiciestOf: "其中{dish}最辣（辣度 {level}/3）。",
     mildestOf: "其中{dish}最不辣（辣度 {level}/3）。",
     popularOf: "其中{dish}最受欢迎。",
+    toShare: "适合分享",
     ofThose: "其中{filters}的有：",
     notHalal: "{dish}不是清真：含有{what}。",
     porkOrAlcohol: "猪肉或酒",

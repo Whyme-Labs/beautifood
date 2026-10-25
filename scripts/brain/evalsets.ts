@@ -24,13 +24,16 @@ export const asReadText = (delexicalized: string) =>
 
 /** Every eval and held-out question, as the model reads it: none may be trained on. */
 export function protectedQuestions(): Set<string> {
+  // each menu once (read() indexes a menu's dishes once per menu)
+  const menus = new Map<string, Dish[]>();
+  const menu = (m: string) => menus.get(m) ?? menus.set(m, loadMenu(m).items as unknown as Dish[]).get(m)!;
   return new Set([
     ...[...EVAL_CASES, ...MORE_CASES].flatMap((c) => [c.question, ...(c.before ?? []).map((b) => b.question)]).map((q) => asRead(hawker, q)),
     ...HELD_OUT.map(([q]) => asRead(hawker, q)),
     ...FINAL_CASES.flatMap((c) => [c.question, ...(c.before ?? []).map((b) => b.question)]).map((q) => asRead(cafeDishes, q)),
     // the benchmark, both splits (bench/): never trained on either
     ...(existsSync(new URL("../../bench/cases", import.meta.url)) ? [...loadCases("all"), ...loadCases("all", "heldout"), ...loadCases("all", "v3"), ...loadCases("all", "v4"), ...loadCases("all", "v5"), ...loadCases("all", "v6")] : []).flatMap((c) => {
-      const items = loadMenu(c.menu).items as unknown as Dish[];
+      const items = menu(c.menu);
       return [c.question, ...(c.before ?? []).map((b) => b.user)].map((q) => asRead(items, q));
     }),
   ]);

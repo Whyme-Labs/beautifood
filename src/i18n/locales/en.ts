@@ -485,6 +485,7 @@ const en = {
     spiciestOf: "Of those, {dish} is the spiciest (spice level {level} of 3).",
     mildestOf: "Of those, {dish} is the mildest (spice level {level} of 3).",
     popularOf: "Of those, {dish} is the most popular.",
+    toShare: "best to share",
     ofThose: "Of those, here's what's {filters}:",
     notHalal: "{dish} isn't halal-friendly: it has {what}.",
     porkOrAlcohol: "pork or alcohol",

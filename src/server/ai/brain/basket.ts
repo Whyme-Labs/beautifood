@@ -35,10 +35,15 @@ const COURSE_WORDS: [RegExp, (d: Dish) => boolean][] = [
   [/^(sides?|starters?|snacks?|appetisers?|appetizers?)$/, (d) => food(d) && /side|starter|snack|small|appeti/i.test(d.category ?? "")],
 ];
 
+const FILLER = /^(plates?|bowls?|sets?|cups?|glass|glasses|servings?|portions?|pieces?|pcs|orders?|pinggan|mangkuk|cawan|gelas)$/;
+
 const singular = (w: string) => w.replace(/(ies)$/, "y").replace(/(?<=[^s])s$/, "");
 
-/** The order spelled out in the question, when there is one (two items or more). */
-export function basketOf(question: string, items: Dish[]): Slot[] | null {
+/**
+ * The order spelled out in the question, when there is one (two items or more). With an amount to
+ * spend ("RM35 for a bowl and a juice"), two items are an order even when neither is counted.
+ */
+export function basketOf(question: string, items: Dish[], spend = false): Slot[] | null {
   const hasVeg = items.some((d) => VEG_CATEGORY.test(d.category ?? ""));
   const hasMeat = items.some((d) => MEAT_CATEGORY.test(d.category ?? ""));
   const byTray = (term: string, fits: (d: Dish) => boolean) =>
@@ -64,11 +69,14 @@ export function basketOf(question: string, items: Dish[]): Slot[] | null {
     // "not spicy", "no pork", "tak nak udang": what they don't want isn't an item
     if (/^(no|not|without|non|tak|x|bukan|tanpa|jangan|less|kurang)$/.test(toks[j - 1] ?? "")) return null;
     const course = COURSE_WORDS.find(([re]) => re.test(w));
-    // "sayur apa sesuai?", "which drink?": a question about the course, not an item ordered
-    if (course && /^(apa|what|which|mana|yang|yg)$/.test(toks[j + 1] ?? "")) return null;
-    if (course) return { slot: { count, term: singular(w), course: true, counted: n !== undefined, fits: byTray(singular(w), course[1]) }, next: j + 1 };
+    // "sayur apa sesuai?", "which drink?": a question about the course, not an item ordered ("a
+    // drink. What do you suggest?" is still one)
+    if (course && (/^(apa|mana|yang|yg)$/.test(toks[j + 1] ?? "") || (n === undefined && /^(what|which)$/.test(toks[j - 1] ?? "")))) return null;
+    // "a taco plate", "a rice bowl", "a cup of kopi": the serving word goes with the item
+    const after = (k: number) => (FILLER.test(toks[k] ?? "") ? k + 1 : k);
+    if (course) return { slot: { count, term: singular(w), course: true, counted: n !== undefined, fits: byTray(singular(w), course[1]) }, next: after(j + 1) };
     const dishes = nameWords.get(singular(w.replace(/_/g, " ")));
-    if (dishes) return { slot: { count, term: singular(w), course: false, counted: n !== undefined, fits: (d) => dishes.includes(d) }, next: j + 1 };
+    if (dishes) return { slot: { count, term: singular(w), course: false, counted: n !== undefined, fits: (d) => dishes.includes(d) }, next: after(j + 1) };
     return null;
   };
   let best: Slot[] = [];
@@ -88,7 +96,7 @@ export function basketOf(question: string, items: Dish[]): Slot[] | null {
     // a list of one course word and a dish word, or two counted ones; not "nasi lemak and teh" when
     // neither is counted nor a course (those are dishes named, for the other rules)
     const counted = run.filter((s) => s.course || s.count > 1).length;
-    if (run.length >= 2 && (counted >= 1 || run.length >= 3) && run.length > best.length) best = run;
+    if (run.length >= 2 && (counted >= 1 || run.length >= 3 || spend) && run.length > best.length) best = run;
   }
   return best.length >= 2 ? best : null;
 }
@@ -138,4 +146,21 @@ export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
     out.set(d, n);
   }
   return out;
+}
+
+const PLAIN_RICE = /^(steamed |plain |white |steamed white )?(rice|nasi putih|nasi kosong)$|^(white|plain|steamed) rice\b/i;
+
+/** "2 bowls of rice", "satu nasi putih", "两碗白饭": the menu's plain rice, and how many. */
+export function plainRice(text: string, delexicalized: string, items: Dish[]): { dish: Dish; count: number } | null {
+  const dish = items.find((d) => PLAIN_RICE.test(d.name.trim()));
+  if (!dish) return null;
+  // "rice" said on its own, not as a word of a dish named in the question ("Char Siu Rice")
+  if (/\b(rice|nasi putih|nasi kosong)\b/.test(delexicalized)) {
+    const m = normalize(text).match(/\b(\d|a|an|one|two|three|four|five|satu|dua|tiga|empat|lima)?\s*(?:bowls? of |plates? of |cups? of |mangkuk |pinggan )?(?:white |plain |steamed )?(?:rice|nasi putih|nasi kosong)\b/);
+    const n = m?.[1];
+    return { dish, count: n ? (NUMBER[n] ?? Number(n)) || 1 : 1 };
+  }
+  const zh = text.match(/([一两二三四五\d])?\s*[碗份]?(白饭|白米饭|饭)(?![\u4e00-\u9fff])/);
+  if (zh && !/[\u4e00-\u9fff]饭/.test(text.slice(Math.max(0, (zh.index ?? 0) + (zh[0].length - zh[2].length) - 1), (zh.index ?? 0) + zh[0].length)) ) return { dish, count: zh[1] ? (ZH_NUMBER[zh[1]] ?? Number(zh[1])) : 1 };
+  return null;
 }
