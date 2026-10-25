@@ -2,6 +2,7 @@
 // configured and falls back to the deterministic local engine otherwise (or on error).
 import { inferAllergens, inferDietary } from "../../shared/allergens";
 import { likelyAllergens, type Likely } from "../../shared/dishKnowledge";
+import { aiLikelyAllergens, type WorkersAi } from "./likelyAi";
 import { localizeItem } from "../../shared/menuI18n";
 import { formatMoney } from "../../shared/format";
 import { parseFloorText, parseMenuText, stationFor } from "../../shared/menuParser";
@@ -169,7 +170,7 @@ export interface OnboardingDraft {
  * and a floor plan (with merge groups and split configs). Nothing is saved until
  * the owner reviews and applies it.
  */
-export async function onboardingDraft(env: ClaudeEnv, input: OnboardingInput): Promise<OnboardingDraft> {
+export async function onboardingDraft(env: ClaudeEnv & { AI?: WorkersAi }, input: OnboardingInput): Promise<OnboardingDraft> {
   if (claudeEnabled(env)) {
     try {
       const x = await extractWithClaude(env, input);
@@ -202,7 +203,7 @@ export async function onboardingDraft(env: ClaudeEnv, input: OnboardingInput): P
   const menu = parseMenuText(input.menuText);
   const tables = parseFloorText(input.floorText);
   const cuisine = guessCuisine(`${input.about} ${input.menuText}`);
-  return finalizeDraft(
+  const draft = finalizeDraft(
     "local",
     cuisine,
     input.about.trim().split(/(?<=[.!?])\s+/).slice(0, 3).join(" "),
@@ -221,6 +222,13 @@ export async function onboardingDraft(env: ClaudeEnv, input: OnboardingInput): P
     tables,
     menu.warnings,
   );
+  // what a cook would know the parser can't: Workers AI's reading, as more suggestions to confirm
+  if (env.AI && draft.items.length) {
+    const ai = await aiLikelyAllergens(env.AI, draft.items);
+    if (ai)
+      draft.likely = draft.likely.map((mine, i) => [...mine, ...ai[i].filter((l) => !mine.some((m) => m.allergen === l.allergen) && !(draft.items[i].allergens ?? []).includes(l.allergen))]);
+  }
+  return draft;
 }
 
 function finalizeDraft(engine: OnboardingDraft["engine"], cuisine: string, story: string, items: ImportItem[], tables: TableInput[], warnings: string[]): OnboardingDraft {

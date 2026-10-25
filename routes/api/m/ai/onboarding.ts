@@ -25,7 +25,7 @@ export const POST = api(async (c) => {
   const input = await body(c, z.object({ about: z.string().max(4000).default(""), menuText: z.string().max(40_000).default(""), floorText: z.string().max(4000).default("") }));
   if (!input.about && !input.menuText && !input.floorText) fail(400, "empty", "Paste your menu, describe your floor, or tell us about your restaurant");
   const t = await getTenant(c.env.DB, s.tenantId);
-  return onboardingDraft(appEnv(), { ...input, restaurantName: t.name, currency: t.currency });
+  return onboardingDraft({ ...appEnv(), AI: (c.env as { AI?: never }).AI }, { ...input, restaurantName: t.name, currency: t.currency });
 });
 
 const Table = z.object({

@@ -186,3 +186,24 @@ describe("what a dish usually has that its text doesn't say", () => {
     expect(likelyAllergens("Sesame Glutinous Rice Balls", "glutinous rice dumplings with black sesame")).toEqual([]);
   });
 });
+
+describe("Workers AI's reading of a menu at onboarding", () => {
+  it("adds what a cook would know as suggestions, keeping only real allergens the text doesn't rule out", async () => {
+    const { aiLikelyAllergens } = await import("../../src/server/ai/likelyAi");
+    const ai = {
+      run: async () => ({
+        response: 'Sure: {"dishes":[{"n":1,"likely":[{"allergen":"fish","because":"fish sauce in the broth"},{"allergen":"msg","because":"x"}]},{"n":2,"likely":[{"allergen":"fish","because":"anchovy stock"}]},{"n":9,"likely":[{"allergen":"egg"}]}]}',
+      }),
+    };
+    const out = await aiLikelyAllergens(ai, [
+      { name: "Pho Bo", description: "beef broth, rice noodles" },
+      { name: "Vegan Laksa", description: "tofu, no fish sauce (vegan)" },
+    ]);
+    expect(out![0]).toEqual([{ allergen: "fish", because: { en: "fish sauce in the broth", zh: "fish sauce in the broth" } }]);
+    expect(out![1]).toEqual([]);
+  });
+  it("gives nothing, and never fails setup, when the model can't be reached", async () => {
+    const { aiLikelyAllergens } = await import("../../src/server/ai/likelyAi");
+    expect(await aiLikelyAllergens({ run: async () => { throw new Error("down"); } }, [{ name: "Pho Bo" }])).toBeNull();
+  });
+});

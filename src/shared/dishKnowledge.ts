@@ -75,12 +75,22 @@ export function likelyAllergens(name: string, description = ""): Likely[] {
     for (const allergen of allergens) {
       if (said.has(allergen) || out.some((x) => x.allergen === allergen)) continue;
       if ((vegan && ANIMAL.includes(allergen)) || (vegetarian && SEAFOOD.includes(allergen))) continue;
-      // what the text rules out ("no fish sauce", "gluten-free", "without peanuts") stays out
-      if (new RegExp(`\\b(no|without|free of|minus)\\s+[^,.;]*\\b(${WORDS[allergen]})`).test(text) || new RegExp(`\\b(${WORDS[allergen]})[\\s-]free\\b`).test(text)) continue;
+      if (ruledOut(text, allergen)) continue;
       out.push({ allergen, because: { en, zh } });
     }
   }
   return out;
+}
+
+/**
+ * Whether a dish's own words rule an allergen out: "no fish sauce", "gluten-free", "without peanuts",
+ * or "vegan" for the animal ones ("vegetarian" for seafood). Suggestions from anywhere respect it.
+ */
+export function ruledOut(text: string, allergen: Allergen): boolean {
+  const t = text.toLowerCase();
+  if (/\bvegan\b|纯素/.test(t) && ANIMAL.includes(allergen)) return true;
+  if (/\bvegetarian\b|素/.test(t) && SEAFOOD.includes(allergen)) return true;
+  return new RegExp(`\\b(no|without|free of|minus)\\s+[^,.;]*\\b(${WORDS[allergen]})`).test(t) || new RegExp(`\\b(${WORDS[allergen]})[\\s-]free\\b`).test(t);
 }
 
 /** The words a menu uses to rule an allergen out ("no fish sauce", "dairy-free"). */
