@@ -112,3 +112,30 @@ export function compose<T extends Dish>(asked: Slot[], ranked: T[], budget: numb
   }
   return chosen;
 }
+
+/** "I'll have", "add", "can I get", "nak", "我要", "来一个", "加一杯": the guest ordering what they name. */
+export const ORDERING = /\b(i ll|ill|i will|i want|i d like|id like|can i get|can i have|could i get|could i have|give me|add|i ll take|i ll have|i take|i have the|order|nak|saya nak|mau|plus|another)\b/;
+export const ORDERING_ZH = /我要|我想要|给我|来[一两二三四]?[个份杯碗碟盘]|加[一两二三四]?[个份杯碗碟盘]?|要[一两二三四][个份杯碗碟盘]|再来/;
+
+const ZH_NUMBER: Record<string, number> = { 一: 1, 两: 2, 二: 2, 三: 3, 四: 4, 五: 5 };
+
+/** How many of each named dish ("two cappuccinos", "一杯奶茶", "2 x kopi"); one when no number is said. */
+export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
+  const toks = normalize(text).split(" ");
+  const out = new Map<Dish, number>();
+  for (const d of dishes) {
+    let n = 1;
+    const words = normalize(d.name).split(" ").filter((w) => w.length > 1);
+    const at = toks.findIndex((t) => words.some((w) => singular(t) === singular(w)));
+    if (at > 0) {
+      const before = toks[at - 1] === "x" ? toks[at - 2] : toks[at - 1];
+      n = NUMBER[before] ?? (/^\d$/.test(before ?? "") ? Number(before) : 1);
+    }
+    for (const zh of Object.values(d.translations ?? {}).map((x) => x?.name).filter(Boolean) as string[]) {
+      const m = text.match(new RegExp(`([一两二三四五\\d])[个份杯碗碟盘]?${zh.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
+      if (m) n = ZH_NUMBER[m[1]] ?? Number(m[1]);
+    }
+    out.set(d, n);
+  }
+  return out;
+}

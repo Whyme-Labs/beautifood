@@ -526,3 +526,31 @@ describe("safety phrasings found on v5", () => {
     expect(read(hawker as unknown as Dish[], "Sulphite sensitivity here - which seafood dish can I have?").avoid).not.toContain("fish");
   });
 });
+
+describe("the bill, cheaper options, mains and meats they don't eat", () => {
+  const price = (name: string) => ctx.items.find((i) => i.name === name)!.price;
+  it("keeps what they order and adds it up, with quantities", () => {
+    const r = answerGuest(ctx, [
+      { role: "user", content: "I'll have the Char Kway Teow" },
+      { role: "assistant", content: "Good pick! Char Kway Teow is RM16.90." },
+      { role: "user", content: "and two teh tarik - what's the total?" },
+    ]);
+    expect(r.answer).toContain(((price("Char Kway Teow") + 2 * price("Teh Tarik")) / 100).toFixed(2));
+    expect(r.answer).toMatch(/2 × Teh Tarik/);
+  });
+  it("finds something cheaper than what was just shown, in the same course", () => {
+    const top = [...ctx.items].filter((i) => /noodle/i.test(i.category ?? "")).sort((a, b) => b.price - a.price)[0];
+    const r = answerGuest(ctx, [
+      { role: "user", content: "noodle recommendation?" },
+      { role: "assistant", content: `${top.name} (RM${(top.price / 100).toFixed(2)}).` },
+      { role: "user", content: "anything cheaper than that?" },
+    ]);
+    for (const x of r.items) expect(ctx.items.find((i) => i.id === x.id)!.price).toBeLessThan(top.price);
+  });
+  it("reads the meats a guest doesn't eat, and keeps them out", () => {
+    expect(read(hawker as unknown as Dish[], "I don't eat pork, what's good?").noMeat).toEqual(["pork"]);
+    expect(read(hawker as unknown as Dish[], "tak makan daging lembu").noMeat).toEqual(["beef"]);
+    expect(read(hawker as unknown as Dish[], "不吃猪肉，推荐什么？").noMeat).toEqual(["pork"]);
+    expect(read(hawker as unknown as Dish[], "no pork please").diet).not.toContain("halal");
+  });
+});

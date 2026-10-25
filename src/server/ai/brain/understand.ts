@@ -26,7 +26,17 @@ export interface Dish {
 }
 
 export type Diet = "vegetarian" | "vegan" | "halal";
-export type Course = "drinks" | "desserts" | "noodles" | "rice" | "sides" | "soup" | "food";
+export type Meat = "pork" | "beef" | "chicken" | "lamb" | "duck";
+/** The words a menu uses for each meat, so "no pork" also keeps out the char siu and the lard. */
+export const MEAT_WORDS: Record<Meat, RegExp> = {
+  pork: /\b(pork|babi|bacon|ham|lard|char siu|cha siu|siu yuk|lap cheong|chinese sausage|chashu|samgyeopsal|carnitas|chorizo|pepperoni|salami|prosciutto|pancetta|spare ?ribs?|trotters?|tonkotsu)\b/i,
+  beef: /\b(beef|daging lembu|lembu|brisket|wagyu|ribeye|sirloin|steak|oxtail|bulgogi beef|galbi|kalbi|rendang daging)\b/i,
+  chicken: /\b(chicken|ayam|poultry)\b/i,
+  lamb: /\b(lamb|mutton|kambing|goat)\b/i,
+  duck: /\b(duck|itik)\b/i,
+};
+
+export type Course = "drinks" | "desserts" | "noodles" | "rice" | "sides" | "soup" | "mains" | "food";
 export type Superlative = "cheapest" | "priciest" | "spiciest" | "mildest" | "popular";
 
 export interface Understanding {
@@ -72,6 +82,8 @@ export interface Understanding {
   manyAllergies: boolean;
   /** "no alcohol", "不要酒", "x minum arak". */
   noAlcohol: boolean;
+  /** Meats the guest doesn't eat ("no pork", "I don't eat beef", "tak makan babi", "不吃猪肉"). */
+  noMeat: Meat[];
   /** "what are you known for?", "chef's specials", "招牌": the signature dishes. */
   signatures: boolean;
   /** An allergy said, but no allergen the brain can name ("allergic to the thing in curries"). */
@@ -217,7 +229,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   items.forEach((dish, n) => {
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
-      if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2 });
+      if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2, zh: tr.name });
     // no Chinese name on this menu: what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice)
     if (!dish.translations?.zh?.name && HAN_RE.test(raw)) {
       const zh = zhNamesOf(dish.name)?.names.filter((x) => x.length > 1 && raw.includes(x)).sort((x, y) => y.length - x.length)[0];
@@ -405,12 +417,35 @@ const COURSES: CourseWords[] = [
   { course: "rice", ask: /\b(rice|nasi)\b/, askZh: /饭/, category: /rice|nasi|饭/i, dish: /\brice\b|\bnasi\b|biryani|briyani|don\b|risotto/i },
   { course: "sides", ask: /\b(sides?|snacks?|starters?|appeti[sz]ers?|small plates?|finger food|small bites?|side dish)\b/, askZh: /小吃|前菜|配菜/, category: /side|snack|starter|appeti|small plate|小吃|前菜/i, dish: /fries|salad|\bbread\b|wings/i },
   { course: "soup", ask: /\b(soups?|sup)\b/, askZh: /汤/, category: /soup|汤/i, dish: /soup|\bsup\b|broth/i },
-  { course: "food", ask: /\b(food|makanan|something to eat|eat|mains?|main course|meal)\b/, askZh: /吃的|主食|主菜/, category: /./, dish: /./ },
+  { course: "mains", ask: /\b(mains?|main course|main courses|main dish|main dishes|entrees?|lauk utama)\b/, askZh: /主菜/, category: /./, dish: /./ },
+  { course: "food", ask: /\b(food|makanan|something to eat|eat|meal)\b/, askZh: /吃的|主食/, category: /./, dish: /./ },
 ];
+
+const SIDE_LIKE = /\b(sides?|starters?|appeti[sz]ers?|snacks?|small plates?|mezze|meze|dips?|banchan|sauces?|condiments?|add[- ]?ons?|extras?|breads?|toppings?)\b/i;
+const PLAIN = /^(white rice|steamed rice|plain rice|rice|nasi putih|arabic bread|pita|naan|roti|chapati|garlic bread|bread)$/i;
+
+const MEAT_NAMES: [Meat, string, string][] = [
+  ["pork", "pork|babi|pig", "猪"],
+  ["beef", "beef|daging lembu|lembu|cow", "牛"],
+  ["chicken", "chicken|ayam", "鸡"],
+  ["lamb", "lamb|mutton|kambing", "羊"],
+  ["duck", "duck|itik", "鸭"],
+];
+
+/** "No pork", "I don't eat beef", "tak makan babi", "pork-free", "不吃猪肉": from the whole question (a dish may be named after the meat). */
+function meatsAvoided(question: string): Meat[] {
+  const t = normalize(question);
+  return MEAT_NAMES.filter(([, en, zh]) =>
+    new RegExp(`\\b(no|not|without|tanpa|tak|x|tidak|dont|don t|do not|never|cannot|cant|can t|avoid|minus|except|kecuali|tak boleh)\\s+(eat\\s+|makan\\s+|have\\s+|any\\s+|take\\s+)?(${en})\\b|\\b(${en})[\\s-]?free\\b|\\bnon[\\s-]?(${en})\\b`).test(t) ||
+    new RegExp(`(不吃|不要|不含|没有|无|忌)${zh}`).test(question),
+  ).map(([m]) => m);
+}
 
 /** The menu's dishes for a course: by its category's name, or the dish's own name. */
 export function courseDishes(items: Dish[], course: Course): Dish[] {
   if (course === "food") return items.filter((i) => !isDrink(i));
+  // a main: not a drink, a sweet, a side or starter, or plain rice or bread on its own
+  if (course === "mains") return items.filter((i) => !isDrink(i) && !isDessert(i) && !SIDE_LIKE.test(i.category ?? "") && !PLAIN.test(i.name));
   const c = COURSES.find((x) => x.course === course)!;
   const byCategory = items.filter((i) => c.category.test(i.category ?? ""));
   return byCategory.length ? byCategory : items.filter((i) => c.dish.test(i.name));
@@ -588,7 +623,8 @@ export function read(items: Dish[], asked: string): Reading {
     /\b(don t|dont|do not|never|cannot|can t|cant|doesn t|doesnt|tak|tidak|x) (eat|makan) (any )?(meat|daging)\b/.test(normalize(question))
   )
     diet.push("vegetarian");
-  if (/\b(halal|no pork|tak makan babi|takde babi|muslim|muslims|pork free|non pork)\b/.test(restText) || /清真|无猪|不吃猪|没有猪/.test(restRaw)) diet.push("halal");
+  // halal is no pork and no alcohol; "no pork" alone is a meat they don't eat (noMeat, below)
+  if (/\b(halal|muslim|muslims)\b/.test(restText) || /清真/.test(restRaw)) diet.push("halal");
 
   const spice = spiceByClause(question, new Set(mentions.flatMap((m) => m.covered.map((i) => toks[i]))), restRaw);
   const party = partyOf(restText, restRaw);
@@ -667,6 +703,7 @@ export function read(items: Dish[], asked: string): Reading {
     })(),
     asksSeasonal: /\b(seasonal|season|limited|limited time|limited edition|festive|whats new|what s new|new items?|musim|edisi terhad|bermusim)\b/.test(restText) || /季节|限定|限时|新品|应季|当季/.test(restRaw),
     manyAllergies: !allergens.length && (/\b(allergic|allergies|alergi)\b.*\b(everything|all|lots|so many|many things|semua)\b/.test(restText) || /什么都过敏|很多过敏|好多过敏/.test(restRaw)),
+    noMeat: meatsAvoided(question),
     noAlcohol: /\b(no|not|without|tak|x|tak nak|dont|don t|non|cannot|cant|tidak|no more)\s+(minum\s+)?(alcohol|alcoholic|arak|alkohol|beer|booze|liquor|drinking)\b|\b(alcohol free|non alcoholic|nonalcoholic|mocktail|mocktails)\b/.test(restText) || /不要酒|不喝酒|无酒精|不含酒|没有酒精|不能喝酒/.test(restRaw) ||
       // a guest under 18 is never offered a drink
       /\b(i m|im|i am|we re|we are|she s|he s|my (son|daughter|kid) is)\s+(1[0-7]|underage|under age|a minor|minor)\b|\bunder 18\b|\bbawah umur\b/.test(restText) || /未成年/.test(restRaw),

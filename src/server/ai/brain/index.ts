@@ -9,13 +9,13 @@ import type { MenuItem } from "../../../shared/types";
 import { clockLabel, scheduleName, weekdayNames, type TimedMenu } from "../../../shared/schedule";
 import { formatters, translator, type MessageKey } from "../../../i18n/core";
 import { normalize } from "../../../shared/brain/text";
-import { basketOf, compose } from "./basket";
+import { basketOf, compose, countsOf, ORDERING, ORDERING_ZH } from "./basket";
 import { mentionedAllergens } from "../local";
 import type { Intent } from "../../../shared/brain/intentModel";
 import { allergyNote, type AssistantContext, type AssistantReply } from "../local";
 import type { TasteHint } from "../../taste/bridge";
 import { conceptsOf, conceptTerms, dishConceptLift, type ConceptId } from "./concepts";
-import { courseDishes, intentModel, isDessert, isDrink, read, understand, type Course, type Diet, type Dish, type Understanding } from "./understand";
+import { courseDishes, intentModel, isDessert, isDrink, MEAT_WORDS, read, understand, type Course, type Diet, type Dish, type Meat, type Understanding } from "./understand";
 
 type Item = AssistantContext["items"][number];
 
@@ -33,10 +33,14 @@ export interface DialogueState {
   maxSpice: number | null;
   /** "no alcohol" said earlier. */
   noAlcohol: boolean;
+  /** Meats they said they don't eat. */
+  noMeat: Meat[];
   /** Dishes the last answer named, in its order. */
   shown: Item[];
   /** The dish being talked about. */
   focus: Item | null;
+  /** What the guest has ordered so far in this conversation ("I'll have the Diavola", "add an es teh"). */
+  order: { item: Item; count: number }[];
 }
 
 /** Dishes an answer names, in the order it names them (by name or by the guest's-language label). */
@@ -46,16 +50,19 @@ export function dishesIn(ctx: AssistantContext, text: string): Item[] {
   return ctx.items
     .map((i) => {
       const names = [i.name, ...Object.values(i.translations ?? {}).map((x) => x?.name ?? "")].filter((x) => x.length > 1);
-      const at = Math.min(...names.map((x) => (/[a-z]/i.test(x) ? n.indexOf(` ${normalize(x.replace(/\(.*?\)/g, ""))} `) : t.indexOf(x.toLowerCase()))).map((x) => (x < 0 ? Infinity : x)));
-      return { i, at };
+      const hits = names
+        .map((x) => (/[a-z]/i.test(x) ? { at: n.indexOf(` ${normalize(x.replace(/\(.*?\)/g, ""))} `), len: normalize(x.replace(/\(.*?\)/g, "")).length + 1, latin: true } : { at: t.indexOf(x.toLowerCase()), len: x.length, latin: false }))
+        .filter((h) => h.at >= 0)
+        .sort((a, b) => a.at - b.at);
+      return { i, at: hits[0]?.at ?? Infinity, len: hits[0]?.len ?? 0, latin: hits[0]?.latin ?? true };
     })
-    .filter((x) => Number.isFinite(x.at))
+    .filter((x, _, all) => Number.isFinite(x.at) && !all.some((y) => y !== x && y.latin === x.latin && Number.isFinite(y.at) && y.len > x.len && y.at <= x.at && y.at + y.len >= x.at + x.len))
     .sort((a, b) => a.at - b.at)
     .map((x) => x.i);
 }
 
 export function dialogueState(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[]): DialogueState {
-  const s: DialogueState = { avoid: [], diet: [], maxSpice: null, noAlcohol: false, shown: [], focus: null };
+  const s: DialogueState = { avoid: [], diet: [], maxSpice: null, noAlcohol: false, noMeat: [], shown: [], focus: null, order: [] };
   for (const h of history) {
     if (h.role === "user") {
       const u = read(ctx.items as Dish[], h.content);
@@ -63,8 +70,15 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
       s.diet = [...new Set([...s.diet, ...u.diet])];
       if (u.maxSpice !== null) s.maxSpice = u.maxSpice;
       if (u.noAlcohol) s.noAlcohol = true;
+      s.noMeat = [...new Set([...s.noMeat, ...u.noMeat])];
       if (u.minSpice !== null) s.maxSpice = null;
       if (u.dishes.length === 1) s.focus = u.dishes[0] as Item;
+      if (u.dishes.length && (ORDERING.test(normalize(h.content)) || ORDERING_ZH.test(h.content)))
+        for (const [item, count] of countsOf(h.content, u.dishes)) {
+          const had = s.order.find((o) => o.item.id === item.id);
+          if (had) had.count += count;
+          else s.order.push({ item: item as Item, count });
+        }
     } else {
       const named = dishesIn(ctx, h.content);
       if (named.length) {
@@ -108,6 +122,7 @@ interface Constraints {
   minSpice: number | null;
   budget: number | null;
   noAlcohol?: boolean;
+  noMeat?: Meat[];
 }
 
 const ALCOHOL = /\b(beer|lager|stout|ale|sake|soju|wine|whisky|whiskey|highball|cocktail|gin|vodka|rum|tequila|shochu|umeshu|cider|alcohol|alcoholic)\b|啤酒|清酒|烧酒|葡萄酒|鸡尾酒|威士忌|梅酒/i;
@@ -122,6 +137,7 @@ function allowed(i: Item, c: Constraints) {
   if (c.minSpice !== null && i.spiceLevel < c.minSpice) return false;
   if (c.budget !== null && i.price > c.budget) return false;
   if (c.noAlcohol && isAlcoholic(i)) return false;
+  if (c.noMeat?.some((m) => MEAT_WORDS[m].test(`${i.name} ${i.description ?? ""}`))) return false;
   return true;
 }
 
@@ -277,6 +293,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     minSpice: u.minSpice,
     budget: u.budget,
     noAlcohol: u.noAlcohol || state.noAlcohol,
+    noMeat: [...new Set([...state.noMeat, ...u.noMeat])],
   };
   const safety = avoid.length || u.allergens.length ? allyNote(locale) : undefined;
   // a card is an "add to order" button: never one for a dish that breaks an allergy or diet the guest
@@ -291,7 +308,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const vegItem = !!basket?.some((b) => b.course && /^(veg|veggie|vegetable|sayur|sayuran)$/.test(b.term));
   const saysVegetarian = /\b(vegetarian|vegan|meatless|no meat|(i m|im|i am|we re|we are) (a )?veg)\b/.test(normalize(u.text)) || /素/.test(u.text);
   const notVeg = (d: Diet) => !(vegItem && d === "vegetarian" && !saysVegetarian && !state.diet.includes("vegetarian"));
-  const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet])].filter(notVeg) };
+  const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet])].filter(notVeg), noMeat: [...new Set([...state.noMeat, ...u.noMeat])] };
   // ...and none for a dish that isn't served right now (it can't be ordered yet)
   const safeCard = (i: Item) => i.servedNow !== false && allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
   const reply = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
@@ -320,6 +337,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (c.diet.includes("vegan")) w.push(t("assistantReply.vegan"));
     else if (c.diet.includes("vegetarian")) w.push(t("assistantReply.vegetarian"));
     if (c.diet.includes("halal")) w.push(t("assistantReply.halal"));
+    if (c.noMeat?.length) w.push(t("assistantReply.noMeat", { list: c.noMeat.map((m) => t(`assistantReply.meat.${m}` as MessageKey)).join(t("assistantReply.and")) }));
     if (c.maxSpice === 0) w.push(t("assistantReply.notSpicy"));
     else if (c.maxSpice === 1) w.push(t("assistantReply.mild"));
     else if (c.minSpice) w.push(t("assistantReply.spicy"));
@@ -361,6 +379,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // dish gets the dish's facts, its price among them
   const claims = /\b(rm|myr)\s?\d|\$\s?\d|\b\d+(\.\d+)?\s?(ringgit|rm)\b|\bfree\b(?!\s+(of|from))|\bpercuma\b|\bconfirm\b|\btell me\b|\bright\b\s*$/.test(normalize(u.text)) || /免费|确认|告诉我|对吧|对不对/.test(u.text);
   if (focus.length === 1 && claims && !u.allergens.length && !["compare", "pairing", "group"].includes(intent)) intent = "dish_info";
+  // "how much is the fish head curry?", "咖喱鱼头多少钱？" (鱼 there is the dish, not an allergy)
+  if (focus.length === 1 && !u.stated.length && (/\b(how much|price|harga|berapa)\b/.test(normalize(u.text)) || /多少钱|几钱|几多钱|价钱|价格/.test(u.text))) intent = "dish_info";
   // what's left once an instruction to the assistant is taken out, when it isn't plainly about the menu
   if (u.injected && !focus.length && !hasFilters && (unsure || !/\b(recommend|suggest|eat|order|food|dish|dishes|drink|menu|makan|minum|sedap)\b/.test(normalize(u.text)) && !/吃|喝|菜|推荐|点/.test(u.text))) intent = "out_of_scope";
   // unsure, nothing asked, and a thank-you said ("谢谢老板"): it's a thank-you
@@ -434,12 +454,26 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const sig = rank(live.filter((i) => !isDrink(i) && allowed(i, c))).slice(0, 3);
     if (later) return reply("recommend", t("assistantReply.menuLater", { menu: menuName(m), when: when(later), list: list(sig.map(line)) }), sig);
   }
-  // "total for both?", "berapa semua?", "一共多少？": what the dishes just talked about add up to
-  if (!u.budget && (/\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text))) {
-    const these = mentioned.length ? mentioned : state.shown;
-    if (these.length >= 2) {
-      const total = these.reduce((sum, i) => sum + i.price, 0);
-      return reply("recommend", `${these.map(line).join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}`, these);
+  // the bill so far: what they've ordered in this conversation, and what they name now ("and a Peroni
+  // with it - what's the total?", "a Margherita, a Carbonara and two Cappuccinos, how much?", "一共多少？")
+  const totalWord = /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text);
+  const howMuch = /\b(how much|berapa|price)\b/.test(normalize(u.text)) || /多少钱|几钱|几多钱|多少/.test(u.text);
+  const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text);
+  if (!u.budget && (totalWord || (howMuch && (mentioned.length >= 2 || state.order.length)))) {
+    const bill = state.order.map((o) => ({ ...o }));
+    if (mentioned.length && (ordering || totalWord || howMuch))
+      for (const [item, count] of countsOf(u.text, mentioned)) {
+        const had = bill.find((o) => o.item.id === item.id);
+        if (had && !ordering) continue;
+        if (had) had.count += count;
+        else bill.push({ item: item as Item, count });
+      }
+    // "total for both?" with nothing ordered: the dishes just talked about
+    if (totalWord && bill.reduce((n, o) => n + o.count, 0) < 2) for (const item of state.shown) if (!bill.some((o) => o.item.id === item.id)) bill.push({ item, count: 1 });
+    if (bill.reduce((n, o) => n + o.count, 0) >= 2) {
+      const total = bill.reduce((sum, o) => sum + o.item.price * o.count, 0);
+      const lines = bill.map((o) => (o.count > 1 ? `${o.count} × ${line(o.item)}` : line(o.item)));
+      return reply("recommend", `${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}`, bill.map((o) => o.item));
     }
   }
 
@@ -483,10 +517,19 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     : ranked(pool);
   // the course on this menu (so "desserts" with nothing dairy-free left is an honest "none", not mains)
   const byCourse = (pool: Item[], courses: Course[]) => {
-    // the menu's own categories first ("bowls", "skewers", 奶茶): they say exactly what's meant
-    if (u.categories.length) return pool.filter((i) => u.categories.includes(i.category ?? ""));
+    // the menu's own categories first ("bowls", "skewers", 奶茶): they say exactly what's meant; a
+    // course they don't cover is added ("mains + drinks" with a "Soft drinks & shakes" category)
+    const inCategory = new Set(ctx.items.filter((i) => u.categories.includes(i.category ?? "")).map((i) => i.id));
+    const joined = courses.length >= 2 && /\+|&|\band\b|\bdan\b|和/.test(u.text) && !/\b(go with|goes with|with my|with the|with it)\b/i.test(u.text);
+    if (inCategory.size && !joined) return pool.filter((i) => inCategory.has(i.id));
+    const ids = new Set<string>();
+    for (const k of courses) {
+      const dishes = courseDishes(ctx.items as Dish[], k);
+      if (inCategory.size && dishes.some((d) => inCategory.has(d.id))) continue;
+      for (const d of dishes) ids.add(d.id);
+    }
+    if (inCategory.size) return pool.filter((i) => inCategory.has(i.id) || ids.has(i.id));
     if (!courses.length) return pool;
-    const ids = new Set(courses.flatMap((k) => courseDishes(ctx.items as Dish[], k).map((d) => d.id)));
     return ids.size ? pool.filter((i) => ids.has(i.id)) : pool;
   };
   // spice as a guest means it: "spicy" is the hot ones (level 2 and up, or 1 when that's all there
@@ -544,6 +587,19 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const sum = spend !== null ? t("assistantReply.basketWithin", { total: money(total), budget: money(spend) }) : t("assistantReply.basketTotal", { total: money(total) });
     return { ...reply("recommend", `${t("assistantReply.basketIntro")}${sp}${lines.join(t("assistantReply.itemSep"))}${stop}${sp}${sum}`, order.map((o) => o.dish)), safetyNote: safety };
   }
+  // "anything cheaper than those?", "something cheaper but still noodles?", "有没有更便宜的？": below the
+  // cheapest just shown, in the same course
+  const nt = normalize(u.text);
+  if (state.shown.length && !mentioned.length && (/\b(cheaper|less expensive|lower price|lebih murah|murah sikit|murah sket)\b/.test(nt) || /更便宜|便宜一点|便宜点/.test(u.text)) && !/\b(which|mana)\b/.test(nt) && !/哪个|哪一/.test(u.text)) {
+    const cap = Math.min(...state.shown.map((i) => i.price));
+    const kinds = new Set(state.shown.map((i) => i.category));
+    let pool = live.filter((i) => i.price < cap && !state.shown.includes(i) && allowed(i, { ...c, budget: null }));
+    pool = u.courses.length || u.categories.length ? byCourse(pool, u.courses) : pool.filter((i) => kinds.has(i.category));
+    const picks = ranked(pool).slice(0, 3);
+    if (!picks.length) return reply("recommend", t("assistantReply.cheaperNone", { price: money(cap) }), []);
+    return reply("recommend", `${t("assistantReply.cheaperIntro", { price: money(cap) })}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
+  }
+
   switch (intent) {
     case "greeting":
     case "out_of_scope":
@@ -666,7 +722,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const totalAsked = u.budget === null || /\b(budget|bajet)\b/.test(normalize(u.text));
       const total = totalAsked ? u.amount : null;
       const perDish = totalAsked ? null : u.budget;
-      const pool = ranked(live.filter((i) => !isDrink(i) && allowed(i, { ...c, budget: perDish })));
+      // "table of 8, starters to share", "which soup base for the four of us": that course; else the meal
+      const asked = u.courses.filter((k) => k !== "food");
+      const pool = ranked(byCourse(live.filter((i) => (asked.includes("drinks") || !isDrink(i)) && allowed(i, { ...c, budget: perDish })), asked));
       // a dish each, near enough, spread over the courses: mains first, then a side and a sweet
       const want = Math.max(3, Math.min(n + (n >= 4 ? 0 : 1), 8));
       const picks: Item[] = [];
