@@ -497,3 +497,19 @@ after the confirmed-by-the-answer rule:
 - Frozen and committed before any engine was scored on it. It replaces v6 as the held-out measure;
   v6, whose results guided the last rounds (by counts only), becomes dev.
 - Fingerprints: cases `3e7ece3ea3a6c00a` (466), menus and gold `09b8257b6e14984d` (8 files).
+
+## First score on v7 (the engine deployed as c91acd5, once)
+
+| | v7 |
+|---|---|
+| assistant, gold data | 80.0%, **1 unsafe** (a Manglish question) |
+| assistant, parser data | 79.6%, 1 unsafe |
+| by menu | sushi-donburi 85.5%, turkish-grill 84.2%, chicken-rice-shop 77.9%, sichuan-mala 72.4% |
+| allergy / dish allergen / diet | 90.0% / 95.2% / 77.7% |
+| spice / budget / follow-up / memory | 60.9% / 70.6% / 69.0% / 80.0% |
+| Chinese / Malay / Manglish | 76.3% / 82.8% / 84.6% |
+| parser: missed allergens | 24 of 140 dishes' (recall 91%); 6 of the 24 suggested to the merchant |
+
+Well below v6's 88.9%, which the last rounds were diagnosed on (by counts only): those gains were
+partly fitted to v6. The first unsafe answer on a fresh set since v5; it stays unread for now. No v7
+case read.
