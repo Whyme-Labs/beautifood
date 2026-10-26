@@ -32,8 +32,8 @@ export interface Gold {
 }
 
 /** Which case set: v1 (dev and test), v2 held-out, or v3 held-out (with its own menus, in v3/menus). */
-export type Set = "v1" | "heldout" | "v3" | "v4" | "v5" | "v6";
-const menuFile = (menu: string, ext: string) => [`${DIR}menus/${menu}${ext}`, `${DIR}v3/menus/${menu}${ext}`, `${DIR}v4/menus/${menu}${ext}`, `${DIR}v5/menus/${menu}${ext}`, `${DIR}v6/menus/${menu}${ext}`].find((f) => existsSync(f)) ?? `${DIR}menus/${menu}${ext}`;
+export type Set = "v1" | "heldout" | "v3" | "v4" | "v5" | "v6" | "v7";
+const menuFile = (menu: string, ext: string) => [`${DIR}menus/${menu}${ext}`, `${DIR}v3/menus/${menu}${ext}`, `${DIR}v4/menus/${menu}${ext}`, `${DIR}v5/menus/${menu}${ext}`, `${DIR}v6/menus/${menu}${ext}`, `${DIR}v7/menus/${menu}${ext}`].find((f) => existsSync(f)) ?? `${DIR}menus/${menu}${ext}`;
 
 export function loadGold(menu: string): Record<string, Gold> | null {
   const f = menuFile(menu, ".gold.json");
@@ -91,7 +91,7 @@ export function loadMenu(menu: string, source: "gold" | "parser" = "gold"): Assi
 
 /** `set`: "v1" (cases/, dev and test), "heldout" (heldout/, v2: new authors and menus, all test) "v3" or "v4" (v3/, v4/: the same again, each on its own menus). */
 export function loadCases(split = "all", set: Set = "v1"): Case[] {
-  const dir = `${DIR}${{ v1: "cases", heldout: "heldout", v3: "v3", v4: "v4", v5: "v5", v6: "v6" }[set]}`;
+  const dir = `${DIR}${{ v1: "cases", heldout: "heldout", v3: "v3", v4: "v4", v5: "v5", v6: "v6", v7: "v7" }[set]}`;
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
     .filter((f) => f.endsWith(".json"))
@@ -255,7 +255,7 @@ export function summarise(rows: Row[]) {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   if (!["dev", "test", "all"].includes(SPLIT)) {
-    console.error("usage: npx tsx bench/run.ts --split dev|test|all [--set v1|heldout|v3|v4|v5|v6] [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
+    console.error("usage: npx tsx bench/run.ts --split dev|test|all [--set v1|heldout|v3|v4|v5|v6|v7] [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
     process.exit(1);
   }
   const cases = loadCases(SPLIT, SET);
