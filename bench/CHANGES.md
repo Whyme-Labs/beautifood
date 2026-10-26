@@ -480,3 +480,20 @@ after the confirmed-by-the-answer rule:
 | memory (23) | 82.6% | 91.3% | 95.7% |
 
 4 fixed, none broken.
+
+## v7 held-out set (bench/v7/): 2026-10-26
+
+- 466 cases, all `test`, on 4 new menus with gold readings of all 140 dishes (`v7/menus/`:
+  sushi-donburi, turkish-grill, sichuan-mala, chicken-rice-shop), by two new blind authors (k, l)
+  who read only the README, the schema and the v2–v6 reviews, never the engine or any case file.
+  Asked to cover what guests really type without leaning on any phrasing an earlier review
+  mentioned, including running orders with changes and split bills.
+- Reviewed blind (`v7/REVIEW.md`): no gold entry and 7 cases changed, none removed. Rulings kept as
+  the authors had them: wasabi is `mustard` where the menu says so; mirin and sake are not halal
+  ("alcohol-free mirin-style" is); Chinkiang black vinegar is gluten; chicken, duck and beef in a
+  kitchen that also serves pork are halal from their ingredients (an open question); impossible
+  requests accept an honest "none"; split shares accept either rounding. New: a Buddhist
+  vegetarian isn't shown alcohol.
+- Frozen and committed before any engine was scored on it. It replaces v6 as the held-out measure;
+  v6, whose results guided the last rounds (by counts only), becomes dev.
+- Fingerprints: cases `3e7ece3ea3a6c00a` (466), menus and gold `09b8257b6e14984d` (8 files).

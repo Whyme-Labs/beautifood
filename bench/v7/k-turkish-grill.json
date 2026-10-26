@@ -1626,10 +1626,9 @@
       "avoid": [
         "tree_nuts"
       ],
-      "safetyNote": true,
-      "category": "DESSERT"
+      "safetyNote": true
     },
-    "note": "Every dessert has pistachio or hazelnut; no dessert can be added safely (rule q)."
+    "note": "Every dessert has pistachio or hazelnut; no dessert can be added safely (rule q). No category check, so a recap showing the wrap or a nut-free sweet drink instead also passes."
   },
   {
     "id": "v7k-turkish-grill-080",

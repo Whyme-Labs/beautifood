@@ -498,11 +498,12 @@
         "Smashed Cucumber",
         "Wood Ear Salad",
         "Tomato and Egg Stir-fry",
-        "Egg Fried Rice"
+        "Egg Fried Rice",
+        "Tsingtao Beer"
       ],
       "minDishes": 1
     },
-    "note": "Vegan, and no dish whose line names garlic or spring onion."
+    "note": "Vegan, no dish whose line names garlic or spring onion, and no beer (Buddhist practice avoids alcohol)."
   },
   {
     "id": "v7l-sichuan-mala-024",
@@ -1966,7 +1967,7 @@
     ],
     "question": "Bajet RM20 je, nak makan pedas. Apa ada?",
     "expect": {
-      "maxTotal": 2000,
+      "maxPrice": 2000,
       "includesAny": [
         "Liangfen",
         "Saliva Chicken",
@@ -1977,7 +1978,7 @@
         "Chilli Oil Wontons"
       ]
     },
-    "note": "Spicy (2+) dishes under RM20."
+    "note": "Spicy (2+) dishes at RM20 or less. maxPrice, not maxTotal: 'Apa ada?' asks what there is, and a list of options under RM20 is honest."
   },
   {
     "id": "v7l-sichuan-mala-088",

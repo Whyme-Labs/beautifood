@@ -315,7 +315,9 @@
     "expect": {
       "vegetarian": true,
       "excludes": [
-        "Spicy Garlic Edamame"
+        "Spicy Garlic Edamame",
+        "Hakutsuru Junmai Sake",
+        "Asahi Super Dry"
       ],
       "minDishes": 1,
       "includesAny": [
@@ -325,7 +327,8 @@
         "Tofu Teriyaki Don",
         "Mochi Trio"
       ]
-    }
+    },
+    "note": "Excludes the garlic edamame (alliums) and the sake and beer: Buddhist vegetarian practice also avoids alcohol (fifth precept)."
   },
   {
     "id": "v7k-sushi-donburi-018",
@@ -442,10 +445,10 @@
         "Miso Soup"
       ],
       "says": [
-        "gluten|wheat|barley|gandum|麸质|小麦|miso"
+        "gluten|wheat|barley|gandum|麸质|小麦|大麦"
       ]
     },
-    "note": "Convention c; miso = soy + gluten."
+    "note": "Convention c; miso = soy + gluten. 'miso' was removed from the pattern: it matched the dish name, so any answer passed."
   },
   {
     "id": "v7k-sushi-donburi-023",
@@ -1805,10 +1808,16 @@
         "molluscs"
       ],
       "safetyNote": true,
-      "category": "STARTER",
-      "maxDishes": 3
+      "includesAny": [
+        "Edamame",
+        "Spicy Garlic Edamame",
+        "Chicken Karaage",
+        "Agedashi Tofu",
+        "Goma Wakame Salad",
+        "Miso Soup"
+      ]
     },
-    "note": "Chawanmushi (shrimp) must not be offered. Total depends on the starter chosen."
+    "note": "Chawanmushi (shrimp) must not be offered. The total depends on the starter chosen. No category check: a total recap may show the Teriyaki Chicken Don card again."
   },
   {
     "id": "v7k-sushi-donburi-082",
@@ -2472,10 +2481,12 @@
         "Salmon Avocado Temaki",
         "Aburi Salmon Mentai Nigiri",
         "Aburi Salmon Don",
-        "California Maki"
+        "California Maki",
+        "Hakutsuru Junmai Sake",
+        "Asahi Super Dry"
       ]
     },
-    "note": "Raw fish includes seared salmon and tobiko."
+    "note": "Raw fish includes seared salmon and tobiko. Alcohol is never an honest answer for a child (v4 taiwanese-084)."
   },
   {
     "id": "v7k-sushi-donburi-116",
