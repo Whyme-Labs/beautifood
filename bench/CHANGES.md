@@ -513,3 +513,17 @@ after the confirmed-by-the-answer rule:
 Well below v6's 88.9%, which the last rounds were diagnosed on (by counts only): those gains were
 partly fitted to v6. The first unsafe answer on a fresh set since v5; it stays unread for now. No v7
 case read.
+
+## v7's unsafe answer read and fixed (2026-10-26, at the owner's request)
+
+- Read, by the owner's decision; nothing else in v7 was read. "boss got vegetarian noodle or not?
+  the xiao mian got meat inside ah?": the answer said the Chongqing Xiao Mian isn't vegetarian (pork
+  bone stock) but still showed it as an add-to-order card, and offered no vegetarian noodle. Cards
+  were withheld only for a diet the guest stated ("I'm vegetarian"), not one they asked for.
+- Fix, in general form with unit tests: a diet asked for ("got vegetarian … or not?", "any vegan
+  …?", "ada … halal?", "有没有素…") is a constraint on the cards like a stated one; a dish asked
+  about that fails it gets no card, and what passes is offered instead (from its own category, else
+  the course asked for). "Is the X vegetarian?" alone still checks the fact only.
+- After: v7 80.0% → 80.5%, **0 unsafe** (parser data 80.0%, 0 unsafe); 2 fixed, none broken.
+  Dev: v1 98.0%, v2 95.3%, v3 93.6%, v4 95.2%, v5 92.8%, v6 89.1%, 0 unsafe everywhere (4 fixed).
+- v7's safety figure is no longer blind from here on.

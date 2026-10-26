@@ -780,3 +780,15 @@ describe("the last bills: accepting a suggestion, splitting, swapping for a vari
     ])).toContain("Total RM31.50");
   });
 });
+
+describe("a diet asked for, with a question about one dish (v7's unsafe answer)", () => {
+  it("shows no card for the dish that fails it, and offers ones that pass", () => {
+    const r = answerGuest(ctx, [{ role: "user", content: "boss got vegetarian noodle or not? the curry mee got meat inside ah?" }]);
+    expect(r.answer).toMatch(/isn't vegetarian/);
+    expect(r.items.map((i) => i.name)).not.toContain("Curry Mee");
+    expect(r.items.map((i) => i.name)).toContain("Vegetarian Mee Goreng");
+  });
+  it("still checks the fact alone when nothing is asked for ('is the curry mee vegetarian?')", () => {
+    expect(answerGuest(ctx, [{ role: "user", content: "is the curry mee vegetarian?" }]).answer).toMatch(/isn't vegetarian/);
+  });
+});

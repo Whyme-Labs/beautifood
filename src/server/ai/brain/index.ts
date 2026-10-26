@@ -384,7 +384,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const vegItem = !!basket?.some((b) => b.course && /^(veg|veggie|vegetable|sayur|sayuran)$/.test(b.term));
   const saysVegetarian = /\b(vegetarian|vegan|meatless|no meat|(i m|im|i am|we re|we are) (a )?veg)\b/.test(normalize(u.text)) || /素/.test(u.text);
   const notVeg = (d: Diet) => !(vegItem && d === "vegetarian" && !saysVegetarian && !state.diet.includes("vegetarian"));
-  const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet])].filter(notVeg), noMeat: [...new Set([...state.noMeat, ...u.noMeat])] };
+  // "got vegetarian noodle or not?", "any vegan dessert?", "ada makanan halal?": a diet asked for is a
+  // constraint on what's shown, like one stated, even when the question also asks about one dish
+  const nq = normalize(u.text);
+  const dietAsked = u.diet.filter((d) => new RegExp(`\\b(got|any|ada|have|has|do you have|is there|are there|which|what|recommend|suggest)\\b.{0,30}\\b${d === "vegetarian" ? "(vegetarian|veggie|vege|veg)" : d}\\b(?!\\s*(or not|ke|kah|tak)\\s*$)`).test(nq) || /有没有素|有素|有什么素|推荐.{0,4}素|有没有清真|有清真/.test(u.text));
+  const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet, ...dietAsked])].filter(notVeg), noMeat: [...new Set([...state.noMeat, ...u.noMeat])] };
   // ...and none for a dish that isn't served right now (it can't be ordered yet)
   const safeCard = (i: Item) => i.servedNow !== false && allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
   const reply = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
@@ -751,11 +755,15 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         return s;
       });
       for (const item of focus) if (notNowNote(item)) parts.push(notNowNote(item));
-      // and, when they're avoiding it, what they can have instead
-      const unsafe = focus.filter((i) => avoid.some((a) => i.allergens.includes(a)));
+      // and, when they're avoiding it or asked for a diet it doesn't meet, what they can have instead
+      const unsafe = focus.filter((i) => avoid.some((a) => i.allergens.includes(a)) || !allowed(i, { ...c, diet: said.diet, maxSpice: null, minSpice: null, budget: null }));
       // what they can have instead, when none of the dishes asked about is safe
       if (unsafe.length && unsafe.length === focus.length) {
-        const alt = ranked(live.filter((i) => !focus.includes(i) && i.category === unsafe[0].category && allowed(i, { ...c, avoid: [...new Set([...avoid, ...u.allergens])] }))).slice(0, 2);
+        // from the dish's own category, else the course asked for ("vegetarian noodle")
+        const fits = (i: Item) => !focus.includes(i) && allowed(i, { ...c, diet: said.diet, avoid: [...new Set([...avoid, ...u.allergens.filter((a) => said.avoid.includes(a) || avoid.includes(a))])], maxSpice: null, minSpice: null, budget: null });
+        const sameCategory = live.filter((i) => fits(i) && i.category === unsafe[0].category);
+        const inCourse = u.courses.length || u.categories.length ? byCourse(live.filter(fits), u.courses) : [];
+        const alt = ranked(sameCategory.length ? sameCategory : inCourse).slice(0, 2);
         if (alt.length) parts.push(t("assistantReply.insteadTry", { list: list(alt.map(line)) }));
         return { ...reply(intent, parts.join(sp), [...focus, ...alt]), safetyNote: allyNote(locale) };
       }
