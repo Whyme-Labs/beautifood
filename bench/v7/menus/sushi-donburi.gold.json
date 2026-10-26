@@ -1,0 +1,402 @@
+{
+  "Chawanmushi": {
+    "allergens": [
+      "egg",
+      "fish",
+      "crustaceans",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg custard; bonito dashi and kamaboko = fish; shrimp = crustaceans; light soy sauce = soy + gluten; mirin = not halal (rule h)."
+  },
+  "Miso Soup": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Bonito dashi = fish, so not vegetarian although it sounds it; miso = soy + gluten; tofu = soy. No mirin or sake: halal."
+  },
+  "Edamame": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soybeans. Merchant tag vegan."
+  },
+  "Spicy Garlic Edamame": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 3,
+    "note": "Soybeans; soy sauce = soy + gluten; sesame oil. 'very spicy' = 3."
+  },
+  "Chicken Karaage": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Soy sauce = soy + gluten; sake in the marinade = not halal; Japanese mayo = egg. Potato starch has no gluten."
+  },
+  "Agedashi Tofu": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Tofu and soy sauce = soy + gluten; dashi and bonito flakes = fish (not vegetarian); mirin = not halal."
+  },
+  "Goma Wakame Salad": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Sesame oil and seeds; no soy sauce named. 'mild' with chilli threads = 1."
+  },
+  "Salmon Nigiri": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salmon on vinegared rice. No wasabi or soy sauce in the description (table soy sauce is not part of the dish)."
+  },
+  "Aburi Salmon Mentai Nigiri": {
+    "allergens": [
+      "fish",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Salmon and cod roe = fish; mayo = egg. 'mild' = 1. No mirin or sake stated: halal from ingredients."
+  },
+  "Tamago Nigiri": {
+    "allergens": [
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Omelette = egg; dashi = fish, so not vegetarian although it sounds it; mirin = not halal."
+  },
+  "California Maki": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Surimi stated 'no real crab': fish + wheat starch (gluten) + egg white, no crustaceans (v3/v5 rule); mayo = egg; tobiko = fish."
+  },
+  "Spicy Salmon Maki": {
+    "allergens": [
+      "fish",
+      "egg",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Salmon; sriracha mayo = egg; tempura crumbs = wheat; sesame seeds. 'spicy' = 2."
+  },
+  "Kappa Maki": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Cucumber roll with sesame. Merchant tag vegan."
+  },
+  "Inari Sushi": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Tofu pouch and soy sauce = soy + gluten; simmered in dashi = fish (sounds vegetarian, is not); mirin = not halal."
+  },
+  "Ebi Tempura Temaki": {
+    "allergens": [
+      "crustaceans",
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Prawn = crustaceans; wheat and egg batter; mayo = egg; unagi sauce: soy sauce = soy + gluten, mirin = not halal. No sesame."
+  },
+  "Salmon Avocado Temaki": {
+    "allergens": [
+      "fish",
+      "sesame",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Salmon; sesame seeds; wasabi stated as horseradish and mustard = mustard (hidden allergen). 'mild' = 1."
+  },
+  "Salmon Sashimi": {
+    "allergens": [
+      "fish",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Salmon; wasabi (horseradish and mustard) = mustard. Wasabi served with it and no heat word: 1, as with a chilli condiment with no heat word (v6 scale). Shiso is not sesame."
+  },
+  "Sashimi Moriawase": {
+    "allergens": [
+      "fish",
+      "molluscs",
+      "crustaceans",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Salmon, tuna, yellowtail = fish; octopus = molluscs; sweet prawn = crustaceans; wasabi = mustard; spice 1 as Salmon Sashimi."
+  },
+  "Aburi Salmon Don": {
+    "allergens": [
+      "fish",
+      "egg",
+      "sesame",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Salmon and ikura = fish; tamago = egg (+ dashi); sesame seeds; shoyu tare: soy sauce = soy + gluten, mirin = not halal. Signature."
+  },
+  "Unagi Don": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Eel = fish; kabayaki sauce: soy sauce = soy + gluten, mirin and sake = not halal; sesame seeds. Signature."
+  },
+  "Chicken Katsu Don": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat flour, egg, breadcrumbs; egg; dashi = fish; soy sauce = soy + gluten. 'No pork, no lard' but mirin = not halal (rule h/j)."
+  },
+  "Katsu Curry Rice": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Cutlet: wheat, egg, breadcrumbs; roux of wheat flour and milk powder = milk. Stated no alcohol, no pork: halal. 'mild' = 1. No soy named."
+  },
+  "Oyakodon": {
+    "allergens": [
+      "egg",
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg; dashi = fish; soy sauce = soy + gluten. 'No pork, no lard' but mirin = not halal."
+  },
+  "Gyudon": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Dashi = fish; soy sauce = soy + gluten; onsen egg; mirin and sake = not halal."
+  },
+  "Teriyaki Chicken Don": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy sauce = soy + gluten; sesame seeds. Mirin-style seasoning stated alcohol-free and 'no alcohol': halal."
+  },
+  "Vegetable Tempura Don": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat and egg batter; tendon sauce: dashi = fish (sounds vegetarian, is not), soy sauce = soy + gluten, mirin = not halal. Okra, no chilli."
+  },
+  "Tofu Teriyaki Don": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Tofu, edamame, soy sauce = soy + gluten. Merchant tag vegan; mirin = not halal (rule h)."
+  },
+  "Mochi Trio": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice and potato starch, no gluten; black sesame paste = sesame. Merchant tag vegan."
+  },
+  "Matcha Ice Cream": {
+    "allergens": [
+      "milk",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk, cream, egg yolk; kinako = roasted soybean flour = soy (hidden)."
+  },
+  "Matcha Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk."
+  },
+  "Genmaicha": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Green tea with roasted brown rice; no wheat or barley."
+  },
+  "Iced Calpis Soda": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Calpis is a cultured milk drink = milk (hidden allergen in a soda)."
+  },
+  "Ramune": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soft drink."
+  },
+  "Hakutsuru Junmai Sake": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol = not halal. Rice wine has no allergen (rule h)."
+  },
+  "Asahi Super Dry": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Alcohol = not halal; barley malt = gluten."
+  }
+}

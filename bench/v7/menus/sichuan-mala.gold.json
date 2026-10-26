@@ -1,0 +1,397 @@
+{
+  "Fuqi Feipian": {
+    "allergens": [
+      "peanuts",
+      "sesame",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Beef shank and tripe; roasted peanuts; sesame; soy sauce = soy + gluten. No pork or alcohol, so halal from ingredients. Very spicy."
+  },
+  "Saliva Chicken": {
+    "allergens": [
+      "peanuts",
+      "sesame",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Crushed peanuts; sesame seeds; soy sauce = soy + gluten; Chinkiang vinegar (wheat bran) also gluten. Spicy."
+  },
+  "Liangfen": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Mung bean jelly (no wheat); soy sauce = soy + gluten; Chinkiang vinegar = gluten. No peanuts or sesame. Spicy."
+  },
+  "Smashed Cucumber": {
+    "allergens": [
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Sesame oil. Hidden gluten: Chinkiang black vinegar is brewed from glutinous rice with wheat bran, so not gluten-free. No soy sauce. A little chilli oil = 1."
+  },
+  "Wood Ear Salad": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Sesame oil. Rice vinegar, no soy sauce: gluten-free. Pickled chilli, mildly spicy."
+  },
+  "Century Egg Tofu": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Tofu and soy sauce = soy + gluten; century egg = egg; sesame oil. Pork floss: not vegetarian, not halal. Not spicy."
+  },
+  "Mala Xiang Guo": {
+    "allergens": [
+      "crustaceans",
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 3,
+    "note": "Prawns; fish balls; tofu skin and doubanjiang = soy; doubanjiang and instant noodles = gluten. Pork luncheon meat: not halal. Very spicy."
+  },
+  "Vegetable Mala Xiang Guo": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Sounds vegetarian but the mala base is beef tallow: not vegetarian. Tofu skin, doubanjiang = soy + gluten. Sweet potato glass noodles, king oyster mushroom (not a mollusc). Halal from ingredients (beef, no pork or alcohol). Very spicy."
+  },
+  "Shui Zhu Yu": {
+    "allergens": [
+      "fish",
+      "egg",
+      "soy",
+      "gluten",
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Fish; egg-white velveting; doubanjiang = soy + gluten; Chinese celery = celery. Halal from ingredients. Very spicy."
+  },
+  "Chongqing Laziji": {
+    "allergens": [
+      "sesame",
+      "soy",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 3,
+    "note": "Shaoxing = sulphites + gluten, not halal; soy sauce; sesame seeds. No peanuts. Very spicy."
+  },
+  "Tea-smoked Duck": {
+    "allergens": [
+      "sulphites",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Shaoxing wine marinade = sulphites + gluten, not halal. No soy sauce. Sichuan peppercorn only, described not spicy."
+  },
+  "Mapo Tofu": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tofu, fermented black beans, doubanjiang = soy + gluten. Minced beef (no pork): halal from ingredients. Spicy."
+  },
+  "Vegetarian Mapo Tofu": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Tofu and doubanjiang = soy + gluten; vegetable stock; merchant's vegan tag. Spicy."
+  },
+  "Kung Pao Chicken": {
+    "allergens": [
+      "peanuts",
+      "soy",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Roasted peanuts; soy sauce; Chinkiang vinegar; Shaoxing = sulphites + gluten, not halal. Mildly spicy."
+  },
+  "Twice-cooked Pork": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Pork belly; doubanjiang, sweet bean sauce, fermented black beans = soy + gluten. Spicy."
+  },
+  "Yu Xiang Eggplant": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Fish-fragrant sauce has no fish (stated). Minced pork: not vegetarian, not halal. Soy sauce and Chinkiang vinegar = soy + gluten. Mildly spicy."
+  },
+  "Dry-fried Green Beans": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Sounds vegetarian but has minced pork. Soy sauce = soy + gluten. Ya cai is preserved mustard green stems, not the mustard allergen (v6 rule m). Mildly spicy."
+  },
+  "Garlic Bok Choy": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but has oyster sauce = molluscs + gluten (rule g): not vegetarian, halal. Not spicy."
+  },
+  "Tomato and Egg Stir-fry": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg. Vegetarian, not vegan. Not spicy."
+  },
+  "Dan Dan Noodles": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame",
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Wheat noodles; soy sauce; sesame paste; crushed peanuts; minced pork: not halal. Spicy."
+  },
+  "Chongqing Xiao Mian": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 3,
+    "note": "Wheat noodles; soy sauce; roasted peanuts. Sounds like a vegetable noodle but the broth is pork bone stock: not vegetarian, not halal. Very spicy."
+  },
+  "Suan La Fen": {
+    "allergens": [
+      "peanuts",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Sweet potato glass noodles (no wheat) but hidden gluten from Chinkiang black vinegar (wheat bran). Roasted peanuts. Pickled mustard greens are not the mustard allergen (rule m). Vegetable broth, vegan. Spicy."
+  },
+  "Chilli Oil Wontons": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Wheat and egg wrappers; prawn = crustaceans; soy sauce; sesame seeds; pork: not halal. Spicy."
+  },
+  "Hot and Sour Soup": {
+    "allergens": [
+      "soy",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Tofu and soy sauce = soy + gluten; egg ribbons; Chinkiang vinegar. Pork strips and chicken stock: not halal. White pepper, mildly spicy."
+  },
+  "Egg Fried Rice": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg only. Vegetarian tag. Not spicy."
+  },
+  "Steamed Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain jasmine rice."
+  },
+  "Brown Sugar Bingfen": {
+    "allergens": [
+      "peanuts",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Ice-jelly seed jelly; roasted peanuts; sesame seeds. Vegan."
+  },
+  "Jiuniang Tangyuan": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Glutinous rice (no gluten); egg ribbons; fermented rice wine: not halal, no allergen (rule h)."
+  },
+  "Brown Sugar Ciba": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice (no gluten); roasted soybean flour = soy. Vegan."
+  },
+  "Sichuan Peppercorn Ice Cream": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk and cream; stated egg-free. Peppercorn tingle, stated not spicy."
+  },
+  "Sour Plum Drink": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Smoked plum, hawthorn, liquorice, osmanthus. No allergens."
+  },
+  "Chrysanthemum Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Chrysanthemum and rock sugar."
+  },
+  "Luo Han Guo Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Monk fruit, longan, winter melon."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan."
+  },
+  "Fresh Soy Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soybean milk = soy."
+  },
+  "Tsingtao Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer = gluten (barley malt); alcohol, not halal. Vegan as brewed (as v6 beers)."
+  }
+}

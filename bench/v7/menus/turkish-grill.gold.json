@@ -1,0 +1,354 @@
+{
+  "Mercimek Soup": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Butter = milk; bread = gluten; celery. Chicken stock: not vegetarian although it sounds it. Pul biber chilli butter, 'mild' = 1."
+  },
+  "Hummus": {
+    "allergens": [
+      "sesame",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tahini = sesame; lavash = wheat. Merchant tag vegan."
+  },
+  "Haydari": {
+    "allergens": [
+      "milk",
+      "tree_nuts",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Strained yoghurt = milk; walnuts = tree nuts (hidden in a dip); lavash = wheat."
+  },
+  "Ezme": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 3,
+    "note": "Vegetables, pepper, pomegranate molasses; no bread. 'very spicy' = 3."
+  },
+  "Meze Platter": {
+    "allergens": [
+      "sesame",
+      "milk",
+      "tree_nuts",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Hummus and babaganoush tahini = sesame; haydari and babaganoush yoghurt = milk; haydari walnuts = tree nuts; lavash = wheat. No ezme, no chilli."
+  },
+  "Sigara Borek": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Filo = wheat; feta = milk; egg."
+  },
+  "Mercimek Kofte": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "'Kofte' but lentil and bulgur (wheat) patties: vegan. Isot pepper, 'mild' = 1."
+  },
+  "Adana Kebab": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Bulgur pilav = wheat + butter; lavash = wheat. 'spicy' = 2. Signature."
+  },
+  "Urfa Kebab": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice pilav with wheat vermicelli (hidden gluten) and butter. 'not spicy' = 0."
+  },
+  "Chicken Shish Kebab": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt marinade = milk; rice pilav with wheat vermicelli and butter. Sweet paprika: 0."
+  },
+  "Lamb Shish Kebab": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice pilav with wheat vermicelli and butter."
+  },
+  "Iskender Kebab": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Pide bread = wheat; butter and yoghurt = milk. Signature."
+  },
+  "Mixed Grill for Two": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Pilavs stated with wheat and butter; lavash; chicken shish yoghurt. Includes spicy adana = 2."
+  },
+  "Grilled Sea Bass": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish only; rocket and sumac onion. The only gluten-free and milk-free main."
+  },
+  "Lahmacun": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat flatbread, beef. 'mildly spicy' = 1. Signature."
+  },
+  "Kiymali Pide": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flatbread; egg wash = egg. No cheese."
+  },
+  "Kasarli Pide": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat; kasar cheese and butter = milk; egg."
+  },
+  "Sucuklu Pide": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat; beef sucuk (no pork); kasar cheese = milk; egg. 'mildly spicy' = 1."
+  },
+  "Chicken Doner Wrap": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Lavash = wheat; garlic yoghurt sauce = milk. 'not spicy' = 0."
+  },
+  "Beef Doner Wrap": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Lavash = wheat; garlic mayonnaise = egg (no dairy). Hot chilli sauce, 'spicy' = 2."
+  },
+  "Imam Bayildi": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain bulgur = wheat. Merchant tag vegan."
+  },
+  "Rice Pilav": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds plain: chicken stock (not vegetarian), butter = milk, sehriye wheat vermicelli = gluten."
+  },
+  "Bulgur Pilav": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cracked wheat; butter. Vegetable stock: vegetarian, not vegan. Sweet pepper paste: 0."
+  },
+  "Shepherd Salad": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Vegetables, olive oil, lemon, pomegranate molasses. Green pepper is not chilli."
+  },
+  "Kunefe": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Kataifi = wheat; cheese and butter = milk; pistachio = tree nuts. Cheese dish, vegetarian by ingredients (rennet not stated, v4/v5 convention). Signature."
+  },
+  "Baklava": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Filo = wheat; butter = milk; pistachio = tree nuts."
+  },
+  "Sutlac": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk; ground hazelnut = tree nuts (hidden). Rice and rice flour, no wheat."
+  },
+  "Turkish Delight Plate": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pistachio = tree nuts. Corn starch set, no gelatine: vegan (merchant tag)."
+  },
+  "Ayran": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt = milk."
+  },
+  "Turkish Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black tea."
+  },
+  "Turkish Coffee": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coffee itself is plain, but it is served with pistachio lokum = tree nuts (hidden)."
+  },
+  "Salgam": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Made with bulgur = wheat (hidden gluten in a juice). Lactic fermentation, no alcohol stated: halal. 'not spicy' = 0."
+  },
+  "Mint Lemonade": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Lemon, mint, sugar, soda."
+  }
+}
