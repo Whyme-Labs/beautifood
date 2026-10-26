@@ -421,3 +421,31 @@ price, and again after the quantities:
 
 3 fixed (2 bills, 1 cheaper), none broken; the quantity change moved nothing. Still failing: 5 bills
 (2 short by an amount that is no dish's price, 1 a split bill, 2 other) and 3 "cheaper".
+
+## Group and total budgets (diagnosed on v6 by counts and word types only)
+
+4 of v6's 14 cases with a total budget (`maxTotal`) failed. No case was read: only what the brain
+read from each, and each question as a sequence of word types (number, money, joining word, course
+word, dish-name word, category word, other).
+
+- **3 sets within an amount, no party** ("over the total"): the planner found fewer than two
+  items. Two of the three began with a word of the menu's own category names (CAT) as an item.
+  Fix: a category word is an item ("bingsu and a drink under RM25").
+- **1 group plan** (4 people, an amount, "share a NAME and some CAT"): the expected dishes were the
+  ones the NAME word names, but the planner stopped at "some". Fix: "some / a few / several /
+  beberapa" is a quantity (a couple of different dishes for a party, one for one guest).
+- Which needed, for groups: a plural said without a number is one each, the same dish will do
+  ("4 of us … and drinks" → 4 × a drink); a category counted for a party is that many different
+  dishes ("two pizzas"). This replaces last round's "no course words for a party" guard.
+
+Dev unchanged (98.0 / 95.1 / 93.4 / 94.9 / 92.8%, 0 unsafe). v6, once:
+
+| | before | after |
+|---|---|---|
+| v6 overall | 87.3% | **88.0%, 0 unsafe** (parser data 84.9% → 85.8%) |
+| cases with a total budget (14) | 10 | 13 |
+| budget (58) | 72.4% | 77.6% |
+| group (23) | 82.6% | 87.0% |
+| combined (6) | 83.3% | 100% |
+
+3 fixed, none broken.

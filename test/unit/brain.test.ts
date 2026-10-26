@@ -718,3 +718,29 @@ describe("changing the order, and something a bit cheaper", () => {
     for (const p of prices) expect(p).toBeLessThan(1690);
   });
 });
+
+describe("orders for a total, alone or as a group", () => {
+  const dish = (name: string, category: string, price: number, n: number) => ({ id: `g${n}`, name, category, description: "", price, allergens: [], dietary: [], spiceLevel: 0, isSignature: false });
+  const menu = [
+    dish("Chicken Claypot Rice", "Claypot", 1890, 1), dish("Salted Fish Claypot Rice", "Claypot", 1990, 2),
+    dish("Margherita", "Pizzas", 2890, 3), dish("Pepperoni Supreme", "Pizzas", 3290, 4), dish("Spaghetti Aglio Olio", "Pasta", 2490, 5),
+    dish("Mango Bingsu", "Bingsu", 1690, 6), dish("Injeolmi Bingsu", "Bingsu", 1590, 7), dish("Iced Lemon Tea", "Drinks", 590, 8), dish("Kopi O", "Drinks", 450, 9),
+  ];
+  const g = { ...ctx, items: asItems(menu as never) } as unknown as AssistantContext;
+  const order = (q: string) => answerGuest(g, [{ role: "user", content: q }]);
+  it("takes a word of the menu's categories as an item", () => {
+    const r = order("Bingsu and a drink for under RM25?");
+    expect(r.items.map((i) => i.name).some((n) => /Bingsu/.test(n))).toBe(true);
+    expect(r.items.reduce((s, i) => s + i.price, 0)).toBeLessThanOrEqual(2500);
+  });
+  it("gives a party one each of a plural, and different dishes for a counted category", () => {
+    const r = order("4 of us, RM150 budget. Two pizzas, a pasta and drinks?");
+    expect(r.answer).toMatch(/4 × /);
+    expect(r.items.filter((i) => /Margherita|Pepperoni/.test(i.name))).toHaveLength(2);
+  });
+  it("reads 'some' as a couple of different ones for a party", () => {
+    const r = order("We are 4 with RM100, want to share a claypot and some bingsu");
+    expect(r.items.filter((i) => /Claypot/.test(i.name))).toHaveLength(1);
+    expect(r.items.filter((i) => /Bingsu/.test(i.name))).toHaveLength(2);
+  });
+});

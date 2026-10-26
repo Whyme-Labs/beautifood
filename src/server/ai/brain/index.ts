@@ -365,7 +365,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // stated, even when the text is warning them about it
   // an order spelled out item by item ("one meat two veg"): "veg" there names an item, not a
   // vegetarian guest, unless they said they are one
-  const spelled = basketOf(u.text, live as Dish[], (u.amount ?? u.budget) !== null, !u.party);
+  const spelled = basketOf(u.text, live as Dish[], (u.amount ?? u.budget) !== null, u.party);
   // not a list of what they avoid ("allergic to fish, prawn, squid"), and not a group's "mains +
   // drinks" with no numbers (the group plan sizes that to the party)
   const basket =
