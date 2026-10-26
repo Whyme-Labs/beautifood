@@ -496,6 +496,7 @@ const en = {
     notVegetarian: "{dish} isn't vegetarian.",
     basketIntro: "Here's an order for you:",
     basketTotal: "Total {total}.",
+    splitEach: "Split {count} ways, that's {each} each.",
     basketWithin: "Total {total}, within your {budget}.",
     basketNoFit: "I couldn't fit {list} into {budget} on today's menu. Our staff may be able to help.",
     noMeat: "without {list}",

@@ -449,3 +449,34 @@ Dev unchanged (98.0 / 95.1 / 93.4 / 94.9 / 92.8%, 0 unsafe). v6, once:
 | combined (6) | 83.3% | 100% |
 
 3 fixed, none broken.
+
+## The last bills (diagnosed on v6 by arithmetic and word types only)
+
+4 v6 totals were still wrong. For each, only the arithmetic was compared (which combination of the
+conversation's dishes makes the expected total, against what the bill had) and where each dish was
+named (an earlier guest turn, an earlier answer, the final message), never the wording.
+
+- **A dish the assistant chose (1).** It was named only in an earlier answer, which had added it
+  ("Added: Iced Lemon Tea") after the guest asked for "a drink" without naming one. Fix: what an
+  answer confirms (added / noted / got it / 已加…) is on the order.
+- **Taking a suggestion without naming it.** "ok I'll take that" after a one-dish suggestion adds
+  it (found with the case above, tested on my own conversations).
+- **Split (1).** "…split between 2" had no total word, so the bill never ran. Fix: "split between N",
+  "N ways", "bahagi 2", "两个人平分" is a bill, with each person's share.
+- **A swap for a variant (2).** The final message replaced the ordered dish with a related one (a
+  dish sharing a word with it, RM1–3 dearer) and added another, naming neither old dish; the swap
+  removed the wrong one. Fix: with no named dish on the order, the first new dish replaces the
+  ordered one it shares a word with (else the last of its kind), and the rest are added.
+
+Dev unchanged (98.0 / 95.1 / 93.4 / 94.9 / 92.8%, 0 unsafe). v6, after the last three and again
+after the confirmed-by-the-answer rule:
+
+| | before | split, variants, taking a suggestion | + what an answer confirms |
+|---|---|---|---|
+| v6 overall | 88.0% | 88.6% | **88.9%, 0 unsafe** (parser data 86.7%) |
+| failing on a total | 4 | 1 | **0** |
+| budget (58) | 77.6% | 82.8% | 84.5% |
+| follow-up (35) | 80.0% | 85.7% | 88.6% |
+| memory (23) | 82.6% | 91.3% | 95.7% |
+
+4 fixed, none broken.

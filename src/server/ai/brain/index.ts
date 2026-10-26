@@ -93,6 +93,9 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
         }
     } else {
       const named = dishesIn(ctx, h.content);
+      // "Added: Iced Lemon Tea (RM5.90)", "Noted, one Kopi O": what the answer confirmed is ordered
+      if (named.length && /\b(added|adding|noted|got it|confirmed|on your order|in your order|ditambah)\b/i.test(h.content) || /已加|已为你加|已点|记下了/.test(h.content))
+        for (const item of named) if (!s.order.some((o) => o.item.id === item.id)) s.order.push({ item, count: 1 });
       if (named.length) {
         s.shown = named;
         if (named.length === 1) s.focus = named[0];
@@ -102,6 +105,7 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
   return s;
 }
 
+const NUMBER_OF: Record<string, number> = { two: 2, three: 3, four: 4, five: 5, six: 6, dua: 2, tiga: 3, empat: 4, lima: 5 };
 const REMOVE = /\b(cancel|remove|drop|scratch|delete|don ?t want|no more|skip the|batal|buang|tak nak|tak jadi)\b|取消|不要了|不要那|删掉/;
 const SWAP = /\b(instead|change|swap|replace|switch|make it|make that|rather have|tukar|ganti)\b|换成|换|改成|改/;
 
@@ -123,22 +127,29 @@ export function editOrder(order: { item: Item; count: number }[], text: string, 
   // "no more the kopi" drops it; "no kopi, a teh instead" names only the new one, so it's a swap
   if ((REMOVE.test(t) || REMOVE.test(text)) && (!swap || named.some((i) => order.some((o) => o.item.id === i.id)))) return named.map(drop).some(Boolean);
   if (!swap) return false;
-  if (named.length >= 2) {
-    // "a teh instead of the kopi": the one after "instead of" goes; "swap the kopi for a teh": the first
+  const kind = (i: Item) => (isDrink(i) ? "drink" : isDessert(i) ? "dessert" : "food");
+  const words = (i: Item) => new Set(normalize(i.name).split(" ").filter((w) => w.length > 2));
+  // what a new dish replaces: the ordered one it shares a word with ("Kopi O Ais" for the Kopi O),
+  // else the last one of its kind (a drink for a drink)
+  const replaced = (next: Item) =>
+    [...order].reverse().find((o) => [...words(next)].some((w) => words(o.item).has(w))) ?? [...order].reverse().find((o) => kind(o.item) === kind(next)) ?? order[order.length - 1];
+  const onOrder = named.filter((i) => order.some((o) => o.item.id === i.id));
+  if (named.length >= 2 && onOrder.length) {
+    // "a teh instead of the kopi": the one after "instead of" goes; "swap the kopi for a teh": the one ordered
     const at = t.indexOf("instead of");
     const where = (i: Item) => t.indexOf(normalize(i.name).split(" ")[0]);
-    const out = at >= 0 ? (named.find((i) => where(i) > at) ?? named[named.length - 1]) : named[0];
+    const out = at >= 0 ? (named.find((i) => where(i) > at) ?? named[named.length - 1]) : onOrder[0];
     drop(out);
     for (const i of named) if (i !== out) add(i);
     return true;
   }
-  // "make it a teh instead": in place of the last thing of its kind ordered (a drink for a drink)
-  const [next] = named;
-  if (order.some((o) => o.item.id === next.id)) return false;
-  const kind = (i: Item) => (isDrink(i) ? "drink" : isDessert(i) ? "dessert" : "food");
-  const same = [...order].reverse().find((o) => kind(o.item) === kind(next)) ?? order[order.length - 1];
-  drop(same.item);
+  // "make it a teh instead", "change to the iced one, and a kuih": the first new dish in place of the
+  // one it replaces, the rest added
+  const [next, ...more] = named;
+  if (onOrder.length) return false;
+  drop(replaced(next).item);
   add(next);
+  for (const i of more) add(i);
   return true;
 }
 
@@ -538,7 +549,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // the bill so far: what they've ordered in this conversation, and what they name now ("and a Peroni
   // with it - what's the total?", "a Margherita, a Carbonara and two Cappuccinos, how much?", "一共多少？")
-  const totalWord = /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text);
+  // "split between 3", "bahagi 2", "三个人分": the bill, and each person's share
+  const split = normalize(u.text).match(/\b(?:split|share the bill|divide|bahagi|kongsi bil)\b(?:\s+(?:it|the bill|bill|between|among|amongst|by|for|into|in|antara|untuk))*\s+(\d|two|three|four|five|six|dua|tiga|empat|lima)\b/) ?? normalize(u.text).match(/\b(\d|two|three|four|five|six)\s+ways\b/);
+  const splitZh = u.text.match(/([两二三四五六\d])\s*个?人\s*(?:平)?分|分\s*成?\s*([两二三四五六\d])\s*份/);
+  const ways = split ? (NUMBER_OF[split[1]] ?? Number(split[1])) : splitZh ? ("两二三四五六".indexOf(splitZh[1] ?? splitZh[2]) >= 0 ? [2, 2, 3, 4, 5, 6]["两二三四五六".indexOf(splitZh[1] ?? splitZh[2])] : Number(splitZh[1] ?? splitZh[2])) : null;
+  const totalWord = !!ways || /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text);
   const howMuch = /\b(how much|berapa|price)\b/.test(normalize(u.text)) || /多少钱|几钱|几多钱|多少/.test(u.text);
   const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text);
   if (!u.budget && (totalWord || (howMuch && (mentioned.length >= 2 || state.order.length)))) {
@@ -552,6 +567,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         if (had) had.count += count;
         else bill.push({ item: item as Item, count });
       }
+    // "I'll take that, and a teh", "ok add it": the one dish the last answer suggested
+    const accepts = (ordering || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)));
+    if (accepts && !edited && state.shown.length === 1 && !bill.some((o) => o.item.id === state.shown[0].id) && !mentioned.includes(state.shown[0])) bill.push({ item: state.shown[0], count: 1 });
     // "2 bowls of rice", "satu nasi putih": the plain rice, when the menu has one
     const rice = plainRice(u.text, u.delexicalized.join(" "), live as Dish[]);
     if (rice && !bill.some((o) => o.item.id === rice.dish.id)) bill.push({ item: rice.dish as Item, count: rice.count });
@@ -564,7 +582,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (bill.reduce((n, o) => n + o.count, 0) >= (edited ? 1 : 2)) {
       const total = bill.reduce((sum, o) => sum + o.item.price * o.count, 0);
       const lines = bill.map((o) => (o.count > 1 ? `${o.count} × ${line(o.item)}` : line(o.item)));
-      return reply("recommend", `${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}`, bill.map((o) => o.item));
+      const each = ways && ways >= 2 ? `${sp}${t("assistantReply.splitEach", { count: ways, each: money(Math.ceil(total / ways)) })}` : "";
+      return reply("recommend", `${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${each}`, bill.map((o) => o.item));
     }
   }
 

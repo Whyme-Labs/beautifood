@@ -744,3 +744,39 @@ describe("orders for a total, alone or as a group", () => {
     expect(r.items.filter((i) => /Bingsu/.test(i.name))).toHaveLength(2);
   });
 });
+
+describe("the last bills: accepting a suggestion, splitting, swapping for a variant", () => {
+  const withIced = { ...ctx, items: [...ctx.items, { ...ctx.items[13], id: "koa", name: "Kopi O Ais", price: 550, sort: 99 }] } as AssistantContext;
+  const say = (h: { role: "user" | "assistant"; content: string }[]) => answerGuest(withIced, h).answer;
+  it("adds the dish just suggested when the guest takes it without naming it", () => {
+    expect(say([
+      { role: "user", content: "Two Char Kway Teow please" },
+      { role: "assistant", content: "Noted: 2 × Char Kway Teow (RM16.90)." },
+      { role: "user", content: "what dessert goes with it?" },
+      { role: "assistant", content: "Try the Cendol (RM8.50)." },
+      { role: "user", content: "ok I will take that, plus a Teh Tarik. Total?" },
+    ])).toContain("Total RM47.80");
+  });
+  it("counts what an answer confirmed it added ('Added: Kopi O')", () => {
+    expect(say([
+      { role: "user", content: "One Char Kway Teow please" },
+      { role: "assistant", content: "Noted: Char Kway Teow (RM16.90)." },
+      { role: "user", content: "and a drink, not too sweet" },
+      { role: "assistant", content: "Added: Kopi O (RM4.50)." },
+      { role: "user", content: "I'll have one Cendol too. Total?" },
+    ])).toContain("Total RM29.90");
+  });
+  it("splits the bill and says each share", () => {
+    const a = say([{ role: "user", content: "We had a Char Kway Teow, a Curry Mee and two Teh Tarik, split between 2 please" }]);
+    expect(a).toContain("Total RM42.80");
+    expect(a).toContain("RM21.40 each");
+    expect(answerGuest(withIced, [{ role: "user", content: "一个炒粿条和一杯拉茶，两个人平分" }], "zh").answer).toMatch(/每人/);
+  });
+  it("swaps an ordered dish for its variant and adds the rest", () => {
+    expect(say([
+      { role: "user", content: "A Nasi Kerabu and a Kopi O please" },
+      { role: "assistant", content: "Noted: Nasi Kerabu (RM17.50), Kopi O (RM4.50)." },
+      { role: "user", content: "Change to Kopi O Ais and add a Cendol. Total?" },
+    ])).toContain("Total RM31.50");
+  });
+});
