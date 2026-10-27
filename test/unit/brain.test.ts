@@ -792,3 +792,22 @@ describe("a diet asked for, with a question about one dish (v7's unsafe answer)"
     expect(answerGuest(ctx, [{ role: "user", content: "is the curry mee vegetarian?" }]).answer).toMatch(/isn't vegetarian/);
   });
 });
+
+describe("spice words aren't category names (v7: a 'Not spicy' section)", () => {
+  const dish = (name: string, category: string, spiceLevel: number, n: number) => ({ id: `s${n}`, name, category, description: "", price: 1500, allergens: [], dietary: [], spiceLevel, isSignature: false });
+  const menu = [dish("Mapo Tofu", "Sichuan classics", 3, 1), dish("Kung Pao Chicken", "Sichuan classics", 2, 2), dish("Tomato Egg", "Not spicy", 0, 3), dish("Steamed Fish", "Not spicy", 0, 4), dish("Sour Plum Drink", "Drinks", 0, 5)];
+  const g = { ...ctx, items: asItems(menu as never) } as unknown as AssistantContext;
+  it("'something spicy' asks for spicy dishes, not the Not spicy section", () => {
+    const r = answerGuest(g, [{ role: "user", content: "something spicy please" }]);
+    expect(r.items.map((i) => i.name)).toEqual(expect.arrayContaining(["Mapo Tofu", "Kung Pao Chicken"]));
+    expect(r.items.map((i) => i.name)).not.toContain("Tomato Egg");
+  });
+  it("reads 'no 花生' in a mixed sentence as avoiding peanuts, and 'with 虾' as wanting it", () => {
+    expect(read(hawker as unknown as Dish[], "我想要 something spicy but no 花生 can?").avoid).toContain("peanuts");
+    expect(read(hawker as unknown as Dish[], "我想要 spicy, without 牛奶").avoid).toContain("milk");
+    expect(read(hawker as unknown as Dish[], "I want something with 虾 please").avoid).not.toContain("crustaceans");
+  });
+  it("still reads the section's own words ('drinks')", () => {
+    expect(answerGuest(g, [{ role: "user", content: "what drinks do you have" }]).items.map((i) => i.name)).toEqual(["Sour Plum Drink"]);
+  });
+});

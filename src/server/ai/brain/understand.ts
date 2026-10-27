@@ -542,7 +542,9 @@ function governed(question: string, a: Allergen): boolean {
     // the Latin words: a cue up to four words before, or "free"/"-less" right after ("nut free")
     const toks = tokens(normalize(clause), true);
     return toks.some((t, i) => {
-      const here = mentionedAllergens(t).includes(a) || mentionedAllergens(`${t} ${toks[i + 1] ?? ""}`).includes(a);
+      // (a Chinese word is split into its characters: "no 花生" is "no", "花", "生")
+      const han = /[\u4e00-\u9fff]/.test(t) ? toks.slice(i, i + 3).filter((x) => /[\u4e00-\u9fff]/.test(x)).join("") : "";
+      const here = mentionedAllergens(t).includes(a) || mentionedAllergens(`${t} ${toks[i + 1] ?? ""}`).includes(a) || (!!han && mentionedAllergens(han).includes(a));
       if (!here) return false;
       if (toks.slice(Math.max(0, i - 4), i).some((w) => NEG_CUE.test(w))) return true;
       return /^(free|less|allergy|allergies|alahan)$/.test(toks[i + 1] ?? "");
@@ -580,10 +582,19 @@ const CATEGORY_ZH: [RegExp, string[]][] = [
 // "sauces" → "sauce", "dishes" → "dish", "noodles" → "noodle", "curries" → "curry"
 const singular = (w: string) => (w.length <= 3 ? w : /ies$/.test(w) ? w.replace(/ies$/, "y") : /(s|x|z|ch|sh)es$/.test(w) ? w.slice(0, -2) : /[^s]s$/.test(w) ? w.slice(0, -1) : w);
 
+const CONSTRAINT_WORD = /^(spicy|spice|spiced|pedas|mild|vegetarian|vegan|veggie|halal|gluten|dairy)$/;
+
 /** The menu's categories a question asks for, by their own words or a guest's synonym. */
 export function askedCategories(items: Dish[], words: string[], raw: string): string[] {
   const cats = [...new Set(items.map((i) => i.category).filter((c): c is string => !!c))];
-  const catWords = (c: string) => normalize(c).split(" ").filter((w) => w.length > 2 && !/^(and|the|our|house|dishes|dish|menu|all|day|plates?)$/.test(w)).map(singular);
+  // a category's words, but not the constraints in its name: "spicy" asks for spicy food, not the
+  // "Not spicy" section, and nor does anything negated in it ("No sugar", "Less sweet")
+  const catWords = (c: string) =>
+    normalize(c)
+      .replace(/\b(not|no|non|less|without|tak|bukan|kurang|zero)\s+\w+/g, " ")
+      .split(" ")
+      .filter((w) => w.length > 2 && !/^(and|the|our|house|dishes|dish|menu|all|day|plates?)$/.test(w) && !CONSTRAINT_WORD.test(w))
+      .map(singular);
   // the guest's own words first ("starters" is the Starters, not also the Sides), then synonyms
   const own = new Set<string>();
   const wanted = new Set<string>();

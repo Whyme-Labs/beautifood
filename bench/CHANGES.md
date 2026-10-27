@@ -527,3 +527,32 @@ case read.
 - After: v7 80.0% → 80.5%, **0 unsafe** (parser data 80.0%, 0 unsafe); 2 fixed, none broken.
   Dev: v1 98.0%, v2 95.3%, v3 93.6%, v4 95.2%, v5 92.8%, v6 89.1%, 0 unsafe everywhere (4 fixed).
 - v7's safety figure is no longer blind from here on.
+
+## v7's spice questions (diagnosed by counts and the menu's category names)
+
+- 25 of v7's 64 spice cases failed, 17 on sichuan-mala. Counts only: in 10 of the Sichuan failures
+  no dish was shown at all, and nearly every Sichuan question was read as asking for one category.
+  The menu (structure, not a case) has a section called **"Not spicy"**: "something spicy" matched
+  it by the word "spicy", and the engine looked for spicy dishes inside it. That section was read
+  in 24 Sichuan questions, 17 of them failing.
+- Fix: spice and diet words (spicy, pedas, mild, vegetarian, vegan, halal, gluten, dairy) are
+  constraints, not category words, and nothing negated in a category's name counts ("Not spicy",
+  "No sugar"). "Mala", "hot" and "sweet" stay category words (Mala specials, Hot drinks, Sweets).
+- That turned one already-failing case unsafe: "我想要 something spicy but no 花生 can?" now showed
+  spicy dishes, one with peanuts (before, it had shown none). Read, as the safety figure is
+  already unblinded and the regression was this change's. The English "no" wasn't read as
+  negating a Chinese allergen word, which the Latin reading splits into characters. Fixed: a cue
+  before a Chinese allergen word in mixed text counts ("no 花生", "without 牛奶"); "with 虾" is
+  still a request.
+
+Dev unchanged (98.0 / 95.3 / 93.6 / 95.2 / 92.8 / 89.1%, 0 unsafe). v7, after the category fix and
+again after the mixed-language one:
+
+| | before | category words | + "no 花生" |
+|---|---|---|---|
+| v7 overall | 80.5%, 0 unsafe | 82.4%, 1 unsafe | **82.6%, 0 unsafe** (parser data 81.8%) |
+| spice (64) | 60.9% | 73.4% | 75.0% |
+| sichuan-mala | 73.3% | 81.0% | 81.9% |
+| allergy (110) | 90.0% | 92.7% | 92.7% |
+
+10 fixed, none broken. Nothing else in v7 was read.
