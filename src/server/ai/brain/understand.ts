@@ -694,7 +694,7 @@ export function read(items: Dish[], asked: string): Reading {
   )
     diet.push("vegetarian");
   // halal is no pork and no alcohol; "no pork" alone is a meat they don't eat (noMeat, below)
-  if (/\b(halal|muslim|muslims)\b/.test(restText) || /清真/.test(restRaw)) diet.push("halal");
+  if (/\b(halal|muslim|muslims|moslem|orang islam)\b/.test(restText) || /清真|穆斯林|回教|伊斯兰/.test(restRaw)) diet.push("halal");
 
   const spice = spiceByClause(question, new Set(mentions.flatMap((m) => m.covered.map((i) => toks[i]))), restRaw);
   const party = partyOf(restText, restRaw);

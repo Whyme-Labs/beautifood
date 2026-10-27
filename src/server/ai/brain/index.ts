@@ -445,6 +445,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const hasFilters = !!(u.noAlcohol || u.noCaffeine || u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null || u.courses.length || u.categories.length || u.appetite);
   // safety first: a dish and an allergen (or "is it safe", "does it contain") is a question about that dish
   if (focus.length && (u.allergens.length || u.asksContents) && !["compare", "pairing", "group"].includes(intent)) intent = "dish_allergen";
+  // "I'm vegan, can I have the pad thai?": a stated diet and a question about one dish is about that dish
+  if (focus.length === 1 && u.statedDiet.length && intent === "recommend" && !u.courses.length && !u.categories.length && (/\b(can i|could i|can|ok|okay|safe|suitable|fine|boleh|is it|is the|does)\b/.test(normalize(u.text)) || /可以|能吃|能不能|行吗/.test(u.text))) intent = "dish_allergen";
   // "is the second one spicy?": a question about that dish
   if (nth && !["dish_allergen", "compare", "pairing"].includes(intent)) intent = "dish_info";
   if (intent === "compare" && focus.length + (mentioned.length ? 0 : state.shown.length) < 2) intent = focus.length ? "dish_info" : "recommend";
@@ -728,6 +730,18 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     case "greeting":
     case "out_of_scope":
     case "order_help": {
+      // "I'm Muslim, is this place halal?": certification is for the staff, but the menu says which
+      // dishes aren't halal and why, and which are
+      if (u.statedDiet.includes("halal") && !booking) {
+        const not = live.filter((i) => !i.dietary.includes("halal") && !i.dietary.includes("halal_friendly"));
+        const why = (i: Item) => `${name(i)} (${`${i.name} ${i.description ?? ""}`.match(NOT_HALAL_WORDS)?.[1] ?? t("assistantReply.porkOrAlcohol")})`;
+        const ok = ranked(live.filter((i) => allowed(i, c) && !isDrink(i))).slice(0, 3);
+        const parts = [t("assistantReply.staffHelpHalal")];
+        if (not.length) parts.push(t("assistantReply.notHalalDishes", { list: list(not.slice(0, 3).map(why)), more: not.length > 3 ? t("assistantReply.andMore", { count: not.length - 3 }) : "" }));
+        if (ok.length) parts.push(t("assistantReply.halalPicks", { list: list(ok.map(line)) }));
+        // (named, not shown as cards: it's a question about the restaurant, not a request for dishes)
+        return reply(intent, parts.join(sp), []);
+      }
       const sig = ranked(live).slice(0, 3);
       const ordering = /\b(order|cart|add|pesan|checkout|send)\b/.test(normalize(u.delexicalized.join(" "))) || /点餐|下单|加单/.test(u.delexicalized.join(""));
       const key = intent === "greeting" ? "assistantReply.help" : intent === "order_help" ? (ordering ? "assistantReply.orderHelp" : "assistantReply.staffHelp") : "assistantReply.outOfScope";

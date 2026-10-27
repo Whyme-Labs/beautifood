@@ -556,3 +556,35 @@ again after the mixed-language one:
 | allergy (110) | 90.0% | 92.7% | 92.7% |
 
 10 fixed, none broken. Nothing else in v7 was read.
+
+## v7's diet questions (diagnosed by counts and a fixed word list only)
+
+23 of v7's 112 diet cases failed. No case was read: only which check failed, what diet the engine
+read against what was expected, the menu data of any dish shown that a case excludes, which words
+of a fixed list of diet terms each question has, and what kind of fact a failing `says` wanted.
+
+- **穆斯林 (2).** 8 excluded dishes were shown to guests whose diet the engine didn't read at all;
+  two of those questions said 穆斯林 ("Muslim"), which wasn't read as halal (清真 was). Fix: 穆斯林,
+  回教, 伊斯兰, "orang Islam", "moslem" are a halal guest.
+- **"I'm Muslim, is this place halal?" (3).** A question about the restaurant, so a service answer
+  with nothing on the menu; the expected answer says which dishes aren't halal and why. Fix: for a
+  halal guest, the staff confirm certification, and the answer names the dishes that aren't halal
+  (with the menu's reason: pork, wine, mirin…) and halal-friendly picks, as text, not cards (the
+  older sets expect no cards for "is your restaurant halal certified?").
+- **A stated diet and one dish (2).** "I'm vegan, can I have the X?" got a list instead of a
+  verdict on X. Fix: a stated diet with "can I / is it / ok / boleh / 可以" about one dish is a
+  question about that dish (verdict, what's in it, what to have instead).
+- Tried and reverted: hiding the card of any dish asked about with a diet ("is the sake halal?").
+  It broke the older sets' convention (a diet question about one dish with nothing stated shows
+  that dish with the facts): v1 98.0 → 96.5%, v5 92.8 → 90.5%.
+
+Dev unchanged (98.0 / 95.3 / 93.6 / 95.2 / 92.8 / 89.3%, 0 unsafe). v7, once:
+
+| | before | after |
+|---|---|---|
+| v7 overall | 82.6% | **83.7%, 0 unsafe** (parser data 82.8%) |
+| diet (112) | 79.5% | 83.9% |
+| Chinese (38) | 76.3% | 81.6% |
+| service (16) | 87.5% | 100% |
+
+5 fixed, none broken.

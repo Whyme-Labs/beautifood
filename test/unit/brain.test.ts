@@ -811,3 +811,24 @@ describe("spice words aren't category names (v7: a 'Not spicy' section)", () => 
     expect(answerGuest(g, [{ role: "user", content: "what drinks do you have" }]).items.map((i) => i.name)).toEqual(["Sour Plum Drink"]);
   });
 });
+
+describe("diet questions (v7, from counts)", () => {
+  it("reads 穆斯林 as a halal guest", () => {
+    expect(read(hawker as unknown as Dish[], "我是穆斯林，推荐什么？").statedDiet).toContain("halal");
+  });
+  it("answers 'I'm Muslim, is this place halal?' with the dishes that aren't and why, as text, not cards", () => {
+    const siuMei = { ...ctx, items: asItems([
+      { id: "a", name: "Char Siu Rice", category: "Rice", description: "honey-glazed pork", price: 1490, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
+      { id: "b", name: "Steamed Chicken Rice", category: "Rice", description: "poached chicken", price: 1290, allergens: [], dietary: ["halal_friendly"], spiceLevel: 0, isSignature: false },
+    ] as never) } as unknown as AssistantContext;
+    const r = answerGuest(siuMei, [{ role: "user", content: "I'm Muslim, is this restaurant halal?" }]);
+    expect(r.answer).toMatch(/Char Siu Rice \((char siu|pork)\)/i);
+    expect(r.answer).toMatch(/Steamed Chicken Rice/);
+    expect(r.items).toEqual([]);
+  });
+  it("gives a verdict on the dish when a stated diet asks about it", () => {
+    const r = answerGuest(ctx, [{ role: "user", content: "I'm vegetarian, can I have the Curry Mee?" }]);
+    expect(r.answer).toMatch(/isn't vegetarian/);
+    expect(r.items.map((i) => i.name)).not.toContain("Curry Mee");
+  });
+});
