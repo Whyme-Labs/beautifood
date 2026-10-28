@@ -559,7 +559,8 @@ function governed(question: string, a: Allergen): boolean {
     if (zh) {
       for (let i = 0; i < zh.length; i++) {
         if (!mentionedAllergens(zh.slice(i, i + 2)).includes(a) && !mentionedAllergens(zh[i]).includes(a)) continue;
-        if (ZH_CUE.test(zh.slice(Math.max(0, i - 6), i)) || /过敏/.test(zh.slice(i))) return true;
+        // (有没有 asks whether there is one: "有没有辣椒虾？" wants the chilli prawns)
+        if (ZH_CUE.test(zh.slice(Math.max(0, i - 6), i).replace(/有没有|有冇/g, "")) || /过敏/.test(zh.slice(i))) return true;
       }
     }
     // the Latin words: a cue up to four words before, or "free"/"-less" right after ("nut free")
@@ -600,7 +601,7 @@ const CATEGORY_ZH: [RegExp, string[]][] = [
   [/奶茶/, ["milk tea"]], [/果茶/, ["fruit tea"]], [/小吃|零食/, ["snack", "small plate", "side"]], [/海鲜/, ["seafood"]], [/肉类|肉菜/, ["meat"]],
   [/蔬菜|青菜|素菜/, ["vegetable"]], [/咖啡/, ["coffee"]], [/甜品|甜点|糖水/, ["dessert", "sweet"]], [/饮料|饮品|喝的/, ["drink", "beverage"]],
   [/串烧|烤串|串/, ["skewer", "yakitori"]], [/丼|盖饭/, ["donburi", "don"]], [/拉面|面/, ["noodle", "ramen"]], [/饭/, ["rice"]], [/咖喱/, ["curr"]],
-  [/早餐|早午餐/, ["breakfast", "brunch"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]], [/炸/, ["fried"]], [/汉堡/, ["burger"]], [/披萨|比萨/, ["pizza"]], [/寿司/, ["sushi"]], [/塔可/, ["taco"]], [/卷饼/, ["wrap", "burrito"]], [/沙拉/, ["salad"]], [/意面|意大利面/, ["pasta"]], [/点心/, ["dim sum"]], [/蒸/, ["steamed"]], [/烧烤|烤肉/, ["grill", "bbq", "barbecue"]], [/酱|蘸料/, ["sauce", "dip"]],
+  [/早餐|早午餐/, ["breakfast", "brunch"]], [/粥/, ["congee", "porridge", "bubur"]], [/锅底/, ["soup base", "broth", "soup"]], [/饭团/, ["onigiri", "rice ball"]], [/(?<![奶果擂骨凉])茶(?!饭|餐)/, ["tea"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]], [/炸/, ["fried"]], [/汉堡/, ["burger"]], [/披萨|比萨/, ["pizza"]], [/寿司/, ["sushi"]], [/塔可/, ["taco"]], [/卷饼/, ["wrap", "burrito"]], [/沙拉/, ["salad"]], [/意面|意大利面/, ["pasta"]], [/点心/, ["dim sum"]], [/蒸/, ["steamed"]], [/烧烤|烤肉/, ["grill", "bbq", "barbecue"]], [/酱|蘸料/, ["sauce", "dip"]],
 ];
 // "sauces" → "sauce", "dishes" → "dish", "noodles" → "noodle", "curries" → "curry"
 const singular = (w: string) => (w.length <= 3 ? w : /ies$/.test(w) ? w.replace(/ies$/, "y") : /(s|x|z|ch|sh)es$/.test(w) ? w.slice(0, -2) : /[^s]s$/.test(w) ? w.slice(0, -1) : w);
