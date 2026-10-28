@@ -787,8 +787,15 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return { pool: top > 0 ? base.filter((i) => i.spiceLevel === top) : base, mildest: false };
     }
     if (u.superlative === "spiciest" && c.maxSpice === null) return { pool: base.filter((i) => i.spiceLevel >= (c.minSpice ?? 0)), mildest: false };
-    // a range ("a bit spicy but nothing crazy"): anything in it
-    if (c.minSpice !== null && c.maxSpice !== null && u.superlative !== "spiciest") return { pool: base.filter((i) => i.spiceLevel >= c.minSpice! && i.spiceLevel <= c.maxSpice!), mildest: false };
+    // a range ("a bit spicy but nothing crazy"): anything in it, else the mildest of the spicy ones
+    // above it ("a soup that's a bit spicy" where the only spicy soups are hotter)
+    if (c.minSpice !== null && c.maxSpice !== null && u.superlative !== "spiciest") {
+      const inRange = (i: Item) => i.spiceLevel >= c.minSpice! && i.spiceLevel <= c.maxSpice!;
+      const wanted = u.courses.length || u.categories.length ? byCourse(base, u.courses) : base;
+      if (wanted.some(inRange)) return { pool: base.filter(inRange), mildest: false };
+      const next = Math.min(...wanted.filter((i) => i.spiceLevel > c.maxSpice!).map((i) => i.spiceLevel), 9);
+      return { pool: next <= c.maxSpice + 1 ? base.filter((i) => i.spiceLevel >= c.minSpice! && i.spiceLevel <= next) : base.filter(inRange), mildest: false };
+    }
     if (c.minSpice !== null && u.superlative !== "spiciest") {
       const hot = base.filter((i) => i.spiceLevel >= c.minSpice! + 1);
       return { pool: hot.length ? hot : base.filter((i) => i.spiceLevel >= c.minSpice!), mildest: false };

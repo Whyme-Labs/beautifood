@@ -915,8 +915,8 @@ describe("finding both dishes of a comparison, and the one asked about", () => {
 });
 
 describe("a spice range", () => {
-  it("reads 'a bit spicy but nothing crazy' as some heat, up to medium", () => {
-    expect(read([], "A main that's a bit spicy but nothing crazy.")).toMatchObject({ minSpice: 1, maxSpice: 2 });
+  it("reads 'a bit spicy but nothing crazy' as some heat, but only a little", () => {
+    expect(read([], "A main that's a bit spicy but nothing crazy.")).toMatchObject({ minSpice: 1, maxSpice: 1 });
     expect(read([], "I want a bit of kick, but not too spicy")).toMatchObject({ minSpice: 1, maxSpice: 1 });
     expect(read([], "not too spicy please")).toMatchObject({ minSpice: null, maxSpice: 1 });
   });

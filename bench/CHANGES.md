@@ -642,3 +642,21 @@ v7 (held out, scored once, not read): 83.5 → **85.8%, 0 unsafe**. 14 fixed, 3 
 comparisons (a dish not found; a pick over the budget) and one spice question (too spicy). By
 tag: spice 75.0 → 81.2, diet 83.0 → 85.7, not on menu 89.5 → 94.7, adversarial 66.7 → 75.0,
 manglish 92.3 → 96.2; compare 70.6 → 64.7 and recommend 84.2 → 78.9 (one case each).
+
+## v7's three broken cases (2026-10-28, diagnosed from traces, not read)
+
+The last round broke three v7 cases. Without reading them, only their failed checks, tags, what
+the brain read and the dishes shown:
+
+- **A second dish found where none was named (1).** "Mixed Grill for Two" was found by the new
+  "pointed at" rule from "the grill", a section word. "The grill", "the wok", "from the …" name how
+  or where food is cooked, not one dish: those words no longer point at a dish.
+- **A comparison losing its first dish (1).** The rule keeping a dish's words from crossing "vs"
+  or "or" also blocked right-hand ellipsis ("steamed or roasted chicken rice"). Only placing a
+  word back across one is blocked now ("taiwanese beef noodle vs clear broth" still works).
+- **Too spicy (1).** "A bit spicy … nothing crazy" was widened to level 2. It is level 1 again,
+  and only when a course has nothing at level 1 does it take the next level up ("a soup that's a
+  bit spicy" at a hotpot whose spicy soups are hotter).
+
+Dev unchanged or better (98.8 / 97.5 / 96.9 / 98.2 / 97.2 / 95.2%, 0 unsafe; 1 more fixed).
+v7, once: 85.8 → **86.5%, 0 unsafe**; the 3 fixed, none broken.

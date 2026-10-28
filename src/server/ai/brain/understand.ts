@@ -220,6 +220,9 @@ const same = (a: string, b: string) =>
   (a[0] === b[0] && !intentModel().vocab?.has(a) && !REAL.has(a) &&
     ((a.length >= 8 && b.length >= 8 && editDistance(a, b, 2) <= 2) || (a.length >= 5 && b.length >= 5 && editDistance(a, b, 1) <= 1) || (a.length === 4 && b.length === 5 && editDistance(a, b, 1) <= 1)));
 
+/** Words for how or where food is cooked: "the grill", "the wok" is that, not one dish named by it. */
+const COOKING_PLACE = /^(grill|grills|bbq|barbecue|wok|oven|tandoor|charcoal|kitchen|bar|counter|smoker|pit|fryer|steamer|hotplate|teppan|robata)$/;
+
 /** Malay food words and the English a menu writes them in ("fries keju", "cheong fun udang", "lala"). */
 const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
@@ -279,9 +282,10 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const idf = 1 / df(w);
       const g = GENERIC.has(w) ? 0.3 : 1;
       total += idf * g;
-      // (not across a "vs" or "or" from its first word: "taiwanese beef noodle vs clear broth" leaves
-      // the beef noodle to the Taiwanese one)
-      const across = (a: number, b: number) => toks.slice(Math.min(a, b) + 1, Math.max(a, b)).some((x) => /^(vs|versus|or|atau|ke)$/.test(x));
+      // (not back across a "vs" or "or" from its first word: "taiwanese beef noodle vs clear broth"
+      // leaves the beef noodle to the Taiwanese one; forward is fine, "steamed or roasted chicken
+      // rice" shares its "chicken rice")
+      const across = (a: number, b: number) => b < a && toks.slice(b + 1, a).some((x) => /^(vs|versus|or|atau|ke)$/.test(x));
       const spots = toks.map((_, i) => i).filter((i) => !skip.has(i) && !covered.includes(i) && same(toks[i], w) && !(covered.length && across(covered[0], i)));
       if (!spots.length) continue;
       // the first word goes where the name's other words are ("pho" of "pho ga", not of the "pho bo
@@ -302,7 +306,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       weight += idf * g;
       // ...unless pointed at as a dish: "the mussels dish", "the kombucha", "berapa harga lala?"
       // (not "the double-boiled soups": a word followed by more of a section's name is the section)
-      const pointed = df(w) === 1 && !ix.courseWords.has(toks[at + 1] ?? "") && !ix.courseWords.has((toks[at + 1] ?? "").replace(/s$/, "")) && (/^(the|this|that|your|ur|harga|berapa)$/.test(toks[at - 1] ?? "") || /^(dish|one|tu|ni|itu|ini)$/.test(toks[at + 1] ?? ""));
+      const pointed = df(w) === 1 && !COOKING_PLACE.test(w) && !/^(from|on|off|in|at|to|by)$/.test(toks[at - 2] ?? "") && !ix.courseWords.has(toks[at + 1] ?? "") && !ix.courseWords.has((toks[at + 1] ?? "").replace(/s$/, "")) && (/^(the|this|that|your|ur|harga|berapa)$/.test(toks[at - 1] ?? "") || /^(dish|one|tu|ni|itu|ini)$/.test(toks[at + 1] ?? ""));
       if (!GENERIC.has(w) && !ORIGIN.has(w) && w !== "kacang" && (!mentionedAllergens(w).length || pointed)) strong = true;
       if (pointed) aimed = true;
       // an allergen word ("kacang" in Ais Kacang) alone names the allergen, not the dish
@@ -446,8 +450,6 @@ function spiceByClause(question: string, dishWords: Set<string>, raw: string) {
     if (r.max !== null) res = { max: res.max === null ? r.max : Math.min(res.max, r.max), min: r.min ?? (res.min !== null && res.min <= r.max ? res.min : null) };
     else if (r.min !== null && res.max === null) res = { max: null, min: Math.max(res.min ?? 0, r.min) };
   }
-  // "a bit spicy but nothing crazy", "a little kick, not too hot": some heat, up to medium
-  if (res.min === 1 && res.max === 1 && /\b(nothing|not|not too|tak|x)\s+(crazy|insane|gila|extreme|hot|fiery|too hot|too crazy)\b/i.test(normalize(question))) res = { min: 1, max: 2 };
   // the Chinese rules read the whole question
   if (res.max === null && res.min === null) res = spiceOf([], raw);
   return res;
