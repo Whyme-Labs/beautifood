@@ -152,8 +152,18 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
     } else {
       const named = dishesIn(ctx, h.content);
       // "Added: Iced Lemon Tea (RM5.90)", "Noted, one Kopi O": what the answer confirmed is ordered
-      if (named.length && /\b(added|adding|noted|got it|confirmed|on your order|in your order|ditambah)\b/i.test(h.content) || /已加|已为你加|已点|记下了/.test(h.content))
-        for (const item of named) if (!s.order.some((o) => o.item.id === item.id)) s.order.push({ item, count: 1 });
+      // (only what its "added" clause names: "Removed the X and added a Y" adds the Y)
+      const ADDED = /\b(added|adding|noted|got it|confirmed|on your order|in your order|ditambah)\b|已加|已为你加|已点|记下了/i;
+      for (const clause of h.content.split(/[.;。；]|\band\b(?= added| adding)/i))
+        if (ADDED.test(clause) && !/\b(removed|cancelled|canceled|took off|taken off|dibuang|dibatalkan)\b|取消|删掉/i.test(clause))
+          for (const item of dishesIn(ctx, clause)) if (orderable(item) && !s.order.some((o) => o.item.id === item.id)) s.order.push({ item, count: 1 });
+      // an answer listing the whole order, whose total is the sum of what it lists, is the order
+      const total = h.content.match(/(?:total|so far|in all|altogether|comes to|jumlah|合计|一共)[^\d]{0,12}RM\s?(\d+(?:\.\d{2})?)|RM\s?(\d+(?:\.\d{2})?)\s*(?:so far|in all|altogether|before service|before tax)/i) ?? h.content.match(/[:-]\s*RM\s?(\d+(?:\.\d{2})?)\.?\s*$/);
+      if (named.length >= 2 && total && !/\b(removed|cancelled|minus|without)\b/i.test(h.content)) {
+        const lines = [...countsOf(h.content.replace(/\b(\w[\w-]*)\s*x\s*(\d)\b/gi, "$1 x$2"), named as Dish[])].map(([item, count]) => ({ item: item as Item, count }));
+        const sum = lines.reduce((n, o) => n + o.item.price * o.count, 0);
+        if (Math.round(Number(total[1] ?? total[2]) * 100) === sum && lines.every((o) => orderable(o.item))) s.order = lines;
+      }
       // "So far: X (RM11.90), Stuffed Tofu x3 (RM1.80 each)… Total RM23.50": an answer that sums up the
       // order, when the guest's own turns gave none
       if (!s.order.length && named.length && /\b(so far|total|in all|altogether|that comes to|comes to|jumlah|semua)\b|合计|一共|总共/i.test(h.content) && !/\b(removed|cancelled|minus|without)\b/i.test(h.content))
@@ -517,6 +527,15 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // a certified or Muslim-friendly branch makes its dishes halal (or halal-friendly) unless they say otherwise
   if (ctx.halal) ctx = { ...ctx, items: withBranchHalal(ctx.items, ctx.halal) };
   const halalAt = ctx.halal?.standing ?? "none";
+  // "too hot for me lah, something milder?", "not spicy enough, got hotter?": spice against what was just shown
+  // (the mildest of the spicy ones shown: "too hot" is all of them)
+  const hot = state.shown.filter((i) => i.spiceLevel > 0);
+  const shownHeat = hot.length ? Math.min(...hot.map((i) => i.spiceLevel)) : state.shown.length ? 0 : null;
+  const rt = normalize(u.text);
+  if (shownHeat !== null && u.minSpice === null && /\b(milder|less spicy|not so spicy|too hot|too spicy|terlalu pedas|kurang pedas)\b/.test(rt) || shownHeat !== null && /太辣|不要那么辣|没那么辣/.test(u.text))
+    u = { ...u, maxSpice: Math.max(0, Math.min(u.maxSpice ?? 3, shownHeat! - 1)), superlative: u.superlative === "mildest" ? null : u.superlative };
+  else if (shownHeat !== null && /\b(hotter|spicier|more spicy|not spicy enough|lebih pedas|tak cukup pedas|x cukup pedas)\b/.test(rt) || shownHeat !== null && /更辣|不够辣/.test(u.text))
+    u = { ...u, minSpice: Math.min(3, Math.max(...state.shown.map((i) => i.spiceLevel)) + 1), maxSpice: null, superlative: u.superlative === "spiciest" ? null : u.superlative };
   const t = translator(locale);
   const f = formatters(locale);
   const en = locale === "en";
@@ -593,7 +612,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const dietAsked = u.diet.filter((d) => new RegExp(`\\b(got|any|ada|have|has|do you have|is there|are there|which|what|recommend|suggest)\\b.{0,30}\\b${d === "vegetarian" ? "(vegetarian|veggie|vege|veg)" : d}\\b(?!\\s*(or not|ke|kah|tak)\\s*$)`).test(nq) || /有没有素|有素|有什么素|推荐.{0,4}素|有没有清真|有清真/.test(u.text));
   const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet, ...dietAsked])].filter(notVeg), noMeat: [...new Set([...state.noMeat, ...u.noMeat])], noWords: [...new Set([...state.noWords, ...u.noWords])] };
   // ...and none for a dish that isn't served right now (it can't be ordered yet)
-  const safeCard = (i: Item) => i.servedNow !== false && !i.soldOut && allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
+  // (and no hotter than they said they can take: "saya tak tahan pedas", "my kid cannot take spicy")
+  const spiceLimit = state.maxSpice ?? (/\b(cannot|can t|cant|tak tahan|tak boleh|tidak tahan|x tahan|tak makan pedas|can t take|cannot take|no spicy)\b/.test(normalize(u.text)) || /不能吃辣|怕辣|不吃辣/.test(u.text) ? u.maxSpice : null);
+  const safeCard = (i: Item) => i.servedNow !== false && !i.soldOut && allowed(i, { ...said, maxSpice: spiceLimit, minSpice: null, budget: null });
   // a dish named that can't be had now: said first ("Sorry, the X is sold out today", "X is on our
   // Breakfast, served from 7:00 am"), never a card, and when it was the dish asked for, the closest
   // ones that can be had (its own section, what the guest can eat)
@@ -782,6 +803,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // ("the tea time price for the 6 piece set?": that dish, at its price now)
     const picks = mentioned.length ? mentioned : on ? rank(covered.filter((i) => allowed(i, c))).slice(0, 4) : [];
     return reply("recommend", `${head}${sp}${now}${picks.length ? `${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}` : ""}`, picks);
+  }
+  // "anything sold out today?", "apa yang dah habis?", "有什么卖完了？": what can't be had, and what's on later
+  if (!mentioned.length && (/\b(sold out|habis|finished|run out|ran out|out of stock|unavailable|not available)\b/.test(normalize(u.text)) && /\b(anything|what|which|any|apa|got|ada|is there|are there)\b/.test(normalize(u.text)) || /卖完|售罄|没有了/.test(u.text) && /什么|哪/.test(u.text))) {
+    const gone = ctx.items.filter((i) => i.active !== false && i.soldOut);
+    const later = ctx.items.filter((i) => i.active !== false && !i.soldOut && i.servedNow === false);
+    const text = [gone.length ? t("assistantReply.soldOutList", { list: list(gone.map(name)) }) : t("assistantReply.nothingSoldOut"), later.length ? t("assistantReply.notOnNowList", { list: list(later.slice(0, 6).map(name)) }) : ""].filter(Boolean).join(sp);
+    return reply("order_help", text, []);
   }
   if (u.asksDeals && !mentioned.length) {
     const course = u.categories.length ? live.filter((i) => u.categories.includes(i.category ?? "")) : u.courses.length ? live.filter((i) => u.courses.some((k) => courseDishes(ctx.items as Dish[], k).some((d) => d.id === i.id))) : live;
