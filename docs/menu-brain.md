@@ -90,6 +90,17 @@ guard on every model answer) every model scored 62/62 with 0 unsafe: on these ca
 never needs the fallback. LFM3 isn't on Workers AI or OpenRouter yet, and Transformers.js needs
 4.3.2 to load its ONNX build.
 
+On the benchmark (`bench/models.ts`, menu tools, the six dev sets):
+
+| | Menu brain | LFM3-1.7B |
+|---|---|---|
+| Alone, 30 cases per set (180) | 171/180 (95.0%), 0 unsafe | 71/180 (39.4%), 15 unsafe; 42 with no answer; ~27 s each |
+| As the brain's fallback (all 2,922) | 2,750 (94.1%), 0 unsafe | 2,735 (93.6%), 0 unsafe |
+
+The brain hands only 74 of 2,922 questions to a fallback (off-topic and adversarial ones it
+already answers right), and the model makes 15 of those worse. Its 172 failures are answers it was
+confident of, which a fallback never sees.
+
 The intent model has never seen the eval menu or the café: it trains only on the restaurants in
 `scripts/brain/menus.ts`. A test checks that no held-out question appears in the training
 templates.
