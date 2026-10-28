@@ -518,6 +518,23 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const when = (n: { weekday: number; time: string; today: boolean }) =>
     n.today ? t("assistantReply.fromToday", { time: clockLabel(n.time, locale) }) : t("assistantReply.fromDay", { day: weekdayNames(locale)[n.weekday], time: clockLabel(n.time, locale) });
   const until = (time: string | null | undefined) => (time ? t("assistantReply.untilTime", { time: clockLabel(time, locale) }) : "");
+  // a timed menu's or deal's windows in words: "weekdays (Mon–Fri) 3:00 pm–5:00 pm", "daily 5:00 pm–1:00 am",
+  // "8 Feb 2027 to 9 Mar 2027, daily 3:00 pm–7:30 pm"
+  const windowText = (ws: { days: number[]; from: string; to: string; start?: string; end?: string }[]) =>
+    ws
+      .map((w) => {
+        const d = [...w.days].sort().join(",");
+        const days = d === "0,1,2,3,4,5,6" ? t("assistantReply.daily") : d === "1,2,3,4,5" ? t("assistantReply.weekdays") : d === "0,6" ? t("assistantReply.weekends") : list(w.days.map((x) => weekdayNames(locale)[x]));
+        const hours = t("assistantReply.timeRange", { from: clockLabel(w.from, locale), to: clockLabel(w.to, locale) });
+        const season = w.start || w.end ? `${t("assistantReply.seasonDates", { start: w.start ? f.date(Date.parse(`${w.start}T12:00:00Z`), "UTC") : "", end: w.end ? f.date(Date.parse(`${w.end}T12:00:00Z`), "UTC") : "" })}, ` : "";
+        return `${season}${days} ${hours}`;
+      })
+      .join("; ");
+  const dealValue = (r: { kind: string; value: number; categories: string[]; items: string[] }) => {
+    const off = r.kind === "percent" ? t("assistantReply.percentOff", { value: r.value }) : t("assistantReply.amountOff", { value: money(r.value) });
+    const what = r.items.length ? list(r.items.map((id) => ctx.items.find((i) => i.id === id)).filter(Boolean).map((i) => name(i!))) : r.categories.length ? list(r.categories.map((c) => ctx.items.find((i) => i.categoryId === c)?.category ?? c)) : "";
+    return what ? t("assistantReply.onWhat", { value: off, what }) : off;
+  };
   const menuName = (m: { name: string; translations?: TimedMenu["translations"] }) => scheduleName(m, locale);
 
   const live = ctx.items.filter((i) => i.active && !i.soldOut && i.servedNow !== false);
@@ -553,8 +570,23 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const dietAsked = u.diet.filter((d) => new RegExp(`\\b(got|any|ada|have|has|do you have|is there|are there|which|what|recommend|suggest)\\b.{0,30}\\b${d === "vegetarian" ? "(vegetarian|veggie|vege|veg)" : d}\\b(?!\\s*(or not|ke|kah|tak)\\s*$)`).test(nq) || /有没有素|有素|有什么素|推荐.{0,4}素|有没有清真|有清真/.test(u.text));
   const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet, ...dietAsked])].filter(notVeg), noMeat: [...new Set([...state.noMeat, ...u.noMeat])], noWords: [...new Set([...state.noWords, ...u.noWords])] };
   // ...and none for a dish that isn't served right now (it can't be ordered yet)
-  const safeCard = (i: Item) => i.servedNow !== false && allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
-  const reply = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
+  const safeCard = (i: Item) => i.servedNow !== false && !i.soldOut && allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
+  // a dish named that can't be had now: said first ("Sorry, the X is sold out today", "X is on our
+  // Breakfast, served from 7:00 am"), never a card, and when it was the dish asked for, the closest
+  // ones that can be had (its own section, what the guest can eat)
+  const offNote = (i: Item) =>
+    i.soldOut
+      ? t("assistantReply.soldOutNow", { dish: name(i) })
+      : t("assistantReply.servedLater", { dish: name(i), menu: menuName(ctx.menus?.find((m) => m.id === i.nextServed?.menuId) ?? { name: "" }), when: i.nextServed ? when(i.nextServed) : "" });
+  const reply = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => {
+    const off = items.filter((i) => i.soldOut || i.servedNow === false);
+    if (!off.length || off.every((i) => answer.includes(offNote(i)))) return replied(intent, answer, items, extra);
+    const rest = items.filter((i) => !off.includes(i));
+    const instead = rest.length ? [] : rank(live.filter((i) => off.some((o) => o.category === i.category) && allowed(i, c))).slice(0, 2);
+    const also = instead.length ? `${sp}${t("assistantReply.insteadTry", { list: list(instead.map(line)) })}` : "";
+    return replied(intent, `${off.map(offNote).join(sp)}${sp}${answer}${also}`, [...rest, ...instead], extra);
+  };
+  const replied = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
     answer,
     items: items.filter(safeCard).slice(0, 6).map((i) => brief(i, reasonFor(i))),
     safetyNote: safety,
@@ -705,6 +737,29 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     return t("assistantReply.notNow", { dish: name(i), menu: m ? menuName(m) : n.menu, when: when(n) });
   };
   // "any promo?", "happy hour?", "优惠": the dishes on a deal now, or when the next one starts
+  // "when does tea time start?", "satay from what time until what time?", "is the pastry happy hour on
+  // weekends too?", "现在还有早午餐吗？": a deal or timed menu by its name, its days and hours
+  const named = (x: { name: string; translations?: Record<string, { name?: string }> }) => {
+    const n = normalize(x.name);
+    const zh = Object.values(x.translations ?? {}).map((y) => y?.name ?? "").filter((y) => y.length >= 2);
+    const syn: Record<string, RegExp> = { brunch: /早午餐/, breakfast: /早餐|sarapan/, lunch: /午餐|tengah hari/, supper: /宵夜|夜宵/, "tea time": /下午茶|minum petang/ };
+    return ` ${normalize(u.text)} `.includes(` ${n} `) || zh.some((z) => u.text.includes(z)) || Object.entries(syn).some(([k, re]) => n.includes(k) && re.test(u.text));
+  };
+  const asksWhen = /\b(when|what time|which time|start|starts|end|ends|until|till|open|hours|weekend|weekends|weekday|weekdays|today|tonight|still|now|bila|pukul|jam|sampai|hujung minggu|everyday|every day|daily)\b/.test(normalize(u.text)) || /几点|什么时候|到几点|周末|平日|现在|还有/.test(u.text);
+  const askedRule = (ctx.rules ?? []).find(named);
+  const askedMenu = (ctx.menus ?? []).find(named);
+  const coveredBy = (i: Item) => (askedRule ? askedRule.items.includes(i.id) || askedRule.categories.includes(i.categoryId) : (i.menuIds ?? []).includes(askedMenu?.id ?? ""));
+  if ((askedRule || askedMenu) && asksWhen && (!mentioned.length || mentioned.every(coveredBy))) {
+    const on = askedRule ? ctx.now?.deals.find((d) => d.id === askedRule.id) : ctx.now?.menus.find((m) => m.id === askedMenu!.id);
+    const next = askedRule ? ctx.now?.dealsNext?.find((d) => d.id === askedRule.id) : ctx.items.find((i) => (i.menuIds ?? []).includes(askedMenu!.id) && i.nextServed?.menuId === askedMenu!.id)?.nextServed;
+    const head = askedRule ? t("assistantReply.dealIs", { deal: scheduleName(askedRule, locale), value: dealValue(askedRule), window: windowText(askedRule.windows) }) : t("assistantReply.menuIs", { menu: menuName(askedMenu!), window: windowText(askedMenu!.windows) });
+    const now = on ? (on.until ? t("assistantReply.onNowUntil", { time: clockLabel(on.until, locale) }) : "") : next ? t("assistantReply.startsWhen", { when: when(next) }) : t("assistantReply.notOnNow");
+    // what it covers, now: the dishes and their prices (with the deal's when it's on)
+    const covered = askedRule ? live.filter((i) => i.deal?.id === askedRule.id || askedRule.items.includes(i.id) || askedRule.categories.includes(i.categoryId)) : live.filter((i) => (i.menuIds ?? []).includes(askedMenu!.id));
+    // ("the tea time price for the 6 piece set?": that dish, at its price now)
+    const picks = mentioned.length ? mentioned : on ? rank(covered.filter((i) => allowed(i, c))).slice(0, 4) : [];
+    return reply("recommend", `${head}${sp}${now}${picks.length ? `${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}` : ""}`, picks);
+  }
   if (u.asksDeals && !mentioned.length) {
     const course = u.categories.length ? live.filter((i) => u.categories.includes(i.category ?? "")) : u.courses.length ? live.filter((i) => u.courses.some((k) => courseDishes(ctx.items as Dish[], k).some((d) => d.id === i.id))) : live;
     const dealt = course.filter((i) => i.deal && allowed(i, c));
@@ -713,7 +768,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       for (const i of dealt) byDeal.set(i.deal!.id, [...(byDeal.get(i.deal!.id) ?? []), i]);
       const parts = [...byDeal].map(([id, xs]) => {
         const d = ctx.now?.deals.find((x) => x.id === id);
-        return `${t("assistantReply.dealsNow", { deal: d?.name ?? xs[0].deal!.name, until: until(d?.until) })}${sp}${rank(xs).slice(0, 4).map(line).join(t("assistantReply.itemSep"))}${stop}`;
+        const rule = ctx.rules?.find((r) => r.id === id);
+        return `${t("assistantReply.dealsNow", { deal: `${d?.name ?? xs[0].deal!.name}${rule ? ` (${dealValue(rule)})` : ""}`, until: until(d?.until) })}${sp}${rank(xs).slice(0, 4).map(line).join(t("assistantReply.itemSep"))}${stop}`;
       });
       return reply("recommend", parts.join(sp), rank(dealt).slice(0, 6));
     }
