@@ -60,7 +60,7 @@ describe("the menu brain on timed menus, seasons and deals", () => {
   it("serves a timed menu while it's on, and says when it's served when it isn't", () => {
     expect(ask(contextAt(KOPI_KAKI, at(6, "09:15", "2026-10-24")), "what's good for breakfast?").items.map((i) => i.name)).toContain("Kaya Butter Toast Set");
     const later = ask(contextAt(KOPI_KAKI, at(3, "16:20", "2026-10-21")), "can I still order breakfast?");
-    expect(later.answer).toMatch(/Breakfast is served from Thu 7:00\s?AM/);
+    expect(later.answer).toMatch(/Breakfast is served daily 7:00\s?AM–11:00\s?AM\. It starts from Thu 7:00\s?AM/);
     expect(later.items.map((i) => i.name)).not.toContain("Kaya Butter Toast Set");
   });
 
