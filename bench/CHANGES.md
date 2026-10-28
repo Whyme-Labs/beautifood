@@ -588,3 +588,26 @@ Dev unchanged (98.0 / 95.3 / 93.6 / 95.2 / 92.8 / 89.3%, 0 unsafe). v7, once:
 | service (16) | 87.5% | 100% |
 
 5 fixed, none broken.
+
+## A branch's halal standing (2026-10-28, a product change, not a benchmark fix)
+
+Halal is now something the merchant declares per branch (Settings → Halal): **certified** (by
+whom, certificate number, valid until), **Muslim-friendly** (no pork, lard or alcohol, not
+certified), **pork & lard free** (alcohol may be used), or **not declared**. Certification is per
+premises, so it lives on the branch. Guests see it as a badge on the branch page and the menu. A
+certificate past its date is shown as nothing, and the assistant says it has expired.
+
+The assistant answers from it. At a certified branch every dish that names no pork, lard or
+alcohol is halal (Muslim-friendly: halal-friendly), and "is this place halal?" says who certified
+it and until when. At a pork-free branch only the dishes with alcohol are named. With nothing
+declared, the answer is the same as before (the staff for the certificate, then the dish facts).
+A dish that names pork or alcohol is never called halal, whatever the branch declares. The word
+list for that now also reads the dish's translated names (猪, 叉烧, 酒) and a few more drinks
+(lager, stout, soju, gin…), and "beef bacon" / "chicken ham" aren't pork. "X isn't
+halal-friendly" now says "X is not halal" when the dish names what makes it so.
+
+No benchmark menu declares a standing, so the sets measure the not-declared path. Dev unchanged
+(98.0 / 95.3 / 93.6 / 95.2 / 92.8 / 89.3%, 0 unsafe). v7: 83.7 → **83.5%, 0 unsafe**, one case.
+The only v7 menu difference by word type is one untagged drink now read as "lager". The case
+failing is a `says /pork|not halal|…/`: the answer used to name the reason as "pork or alcohol"
+and now names it as "lager". Not read further; left as is.

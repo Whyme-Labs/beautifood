@@ -54,6 +54,36 @@ export interface BranchConfig {
   timezone: string;
   /** The branch's phone number, printed on its receipts (its address is on the branch itself). */
   phone: string;
+  /** What the branch declares about halal: guests and the assistant read it from here, not from dish names. */
+  halal: HalalInfo;
+}
+
+/**
+ * A branch's halal standing, as the merchant declares it. Certification is per premises (JAKIM or a
+ * state religious authority certifies the outlet, not the brand), so it lives on the branch.
+ * - certified: halal-certified premises, with the certifying body, certificate number and expiry
+ * - muslim_friendly: no pork, lard or alcohol in the kitchen, not certified
+ * - pork_free: no pork or lard, but alcohol (wine, mirin) may be used, not certified
+ * - none: nothing declared; dishes are judged by their own halal tags
+ */
+export type HalalStatus = "certified" | "muslim_friendly" | "pork_free" | "none";
+
+export interface HalalInfo {
+  status: HalalStatus;
+  /** "JAKIM", "JAIS", "MUIS"…: only for certified. */
+  certifier: string;
+  certNo: string;
+  /** YYYY-MM-DD, the certificate's expiry; "" if not given. */
+  validUntil: string;
+}
+
+export const DEFAULT_HALAL: HalalInfo = { status: "none", certifier: "", certNo: "", validUntil: "" };
+
+/** What a branch can claim today: a certificate past its expiry date is no longer a certificate. */
+export function halalStanding(h: HalalInfo | undefined, today: string): HalalStatus | "expired" {
+  const status = h?.status ?? "none";
+  if (status === "certified" && h?.validUntil && h.validUntil < today) return "expired";
+  return status;
 }
 
 export interface Modules {
@@ -108,6 +138,7 @@ export const DEFAULT_BRANCH_CONFIG: BranchConfig = {
   currency: "MYR",
   timezone: "Asia/Kuala_Lumpur",
   phone: "",
+  halal: DEFAULT_HALAL,
 };
 
 export type TableStatus = "free" | "seated" | "dirty" | "reserved" | "blocked" | "split";

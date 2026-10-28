@@ -1,4 +1,4 @@
-import { DEFAULT_BRANCH_CONFIG, DEFAULT_MODULES, type BranchConfig } from "../../shared/types";
+import { DEFAULT_BRANCH_CONFIG, DEFAULT_HALAL, DEFAULT_MODULES, type BranchConfig } from "../../shared/types";
 import { notFound } from "../errors";
 
 export interface TenantRow {
@@ -57,6 +57,7 @@ export function branchConfig(row: Pick<BranchRow, "config">, tenant?: Pick<Tenan
     weights: { ...DEFAULT_BRANCH_CONFIG.weights, ...(c.weights ?? {}) },
     booking: { ...DEFAULT_BRANCH_CONFIG.booking, ...(c.booking ?? {}) },
     modules: { ...DEFAULT_MODULES, ...(c.modules ?? {}) },
+    halal: { ...DEFAULT_HALAL, ...(c.halal ?? {}) },
     categories: c.categories?.length ? c.categories : DEFAULT_BRANCH_CONFIG.categories,
   };
 }

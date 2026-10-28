@@ -7,6 +7,7 @@ import { usePoll } from "../../../src/ui/hooks";
 import { Mins, Modal, Money, Stub, stockOf, useAction, useClassLabel } from "../../../src/ui/components";
 import { AssistantChat } from "../../../src/ui/chat";
 import { GuestBar } from "../../../src/ui/guest";
+import { HalalBadge } from "../../../src/ui/halalBadge";
 import { localizeItem } from "../../../src/shared/menuI18n";
 import { useI18n } from "../../../src/i18n/react";
 
@@ -72,6 +73,9 @@ export default function BranchPage(p: Props) {
           <div className="muted">
             {p.branch.name}
             {p.branch.address ? ` · ${p.branch.address}` : ""}
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <HalalBadge halal={p.halal} />
           </div>
           {story ? <p style={{ marginTop: 10, fontSize: 15 }}>{story}</p> : null}
         </section>

@@ -115,6 +115,8 @@ export async function updateBranchConfig(db: D1Database, ctx: BranchCtx, actor: 
   }
   if (cfg.strategy && !["fifo", "category_fifo", "best_fit", "smart"].includes(cfg.strategy)) fail(400, "invalid_strategy", "Unknown strategy");
   if (cfg.qrMode && !["static", "dynamic", "both"].includes(cfg.qrMode)) fail(400, "invalid_qr_mode", "Unknown QR mode");
+  // a halal certificate names who issued it: guests are told "certified by JAKIM", never just "certified"
+  if (cfg.halal?.status === "certified" && !cfg.halal.certifier?.trim()) fail(400, "halal_certifier_required", "Say which body certified this branch halal");
   const merged = branchConfig({ config: JSON.stringify(next) });
   if (merged.serviceChargePct < 0 || merged.serviceChargePct > 30 || merged.taxPct < 0 || merged.taxPct > 30) fail(400, "invalid_rates", "Rates must be between 0 and 30%");
   await new Tx(db, { tenantId: ctx.tenant.id, branchId: ctx.branch.id, actor })

@@ -6,6 +6,7 @@ import { Modal } from "../../../src/ui/components";
 import { MenuList } from "../../../src/ui/menuList";
 import { AssistantChat } from "../../../src/ui/chat";
 import { GuestBar } from "../../../src/ui/guest";
+import { HalalBadge } from "../../../src/ui/halalBadge";
 import { useI18n } from "../../../src/i18n/react";
 
 export default function MenuPage(p: Props) {
@@ -47,6 +48,7 @@ export default function MenuPage(p: Props) {
           <ArrowLeft size={16} /> {p.restaurant} {p.branch}
         </a>
         <h1>{t("menu.title")}</h1>
+        <HalalBadge halal={p.halal} />
         {p.menuDisplay ? <MenuList menu={p.menu as never} currency={p.currency} /> : <p className="muted">{t("menu.notPublished")}</p>}
       </main>
       <Modal open={chat} onClose={() => setChat(false)} title={t("assistant.title")}>

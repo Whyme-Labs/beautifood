@@ -14,6 +14,8 @@ import { dataHash, HARVESTED, TEMPLATES } from "../../scripts/brain/data";
 import { asReadText, evaluate, passesGate, protectedQuestions } from "../../scripts/brain/evalsets";
 import { harvest, rowsOf } from "../../scripts/brain/harvest";
 import { HELD_OUT } from "./brainIntents";
+import { withBranchHalal } from "../../src/server/ai/halal";
+import { halalStanding } from "../../src/shared/types";
 import { CAFE_MENU, FINAL_CASES } from "./brainFinal";
 
 const asItems = (dishes: Omit<Dish, "translations">[]) =>
@@ -809,6 +811,51 @@ describe("spice words aren't category names (v7: a 'Not spicy' section)", () => 
   });
   it("still reads the section's own words ('drinks')", () => {
     expect(answerGuest(g, [{ role: "user", content: "what drinks do you have" }]).items.map((i) => i.name)).toEqual(["Sour Plum Drink"]);
+  });
+});
+
+describe("the branch's halal standing", () => {
+  const dishes = asItems([
+    { id: "a", name: "Ayam Goreng", category: "Mains", description: "fried chicken", price: 1290, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "b", name: "Drunken Chicken", category: "Mains", description: "chicken steeped in shaoxing wine", price: 1590, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "c", name: "Beef Bacon Toast", category: "Mains", description: "toast with beef bacon", price: 990, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "d", name: "Lime Juice", category: "Drinks", description: "fresh lime", price: 490, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
+  ] as never);
+  const at = (status: "certified" | "muslim_friendly" | "pork_free" | "none", extra: object = {}) =>
+    ({ ...ctx, items: dishes, halal: { status, certifier: status === "certified" ? "JAKIM" : "", certNo: "", validUntil: "", standing: status, ...extra } }) as unknown as AssistantContext;
+  const ask = (c: AssistantContext, q: string) => answerGuest(c, [{ role: "user", content: q }]);
+
+  it("tags every dish halal at a certified branch, except one that names pork or alcohol", () => {
+    const tags = withBranchHalal(dishes as never, { status: "certified", certifier: "JAKIM", certNo: "", validUntil: "", standing: "certified" }).map((i) => i.dietary.includes("halal"));
+    expect(tags).toEqual([true, false, true, true]);
+    expect(withBranchHalal(dishes as never, { status: "pork_free", certifier: "", certNo: "", validUntil: "", standing: "pork_free" })).toBe(dishes);
+  });
+  it("an expired certificate is no certificate", () => {
+    expect(halalStanding({ status: "certified", certifier: "JAKIM", certNo: "", validUntil: "2026-01-31" }, "2026-02-01")).toBe("expired");
+    expect(halalStanding({ status: "certified", certifier: "JAKIM", certNo: "", validUntil: "2026-01-31" }, "2026-01-31")).toBe("certified");
+    expect(halalStanding(undefined, "2026-01-31")).toBe("none");
+  });
+  it("answers 'is this place halal?' from what the branch declares", () => {
+    expect(ask(at("certified", { certNo: "MS 1500", validUntil: "2027-03-31" }), "I'm Muslim, is this place halal?").answer).toMatch(/halal-certified by JAKIM \(certificate MS 1500\), valid until 31 Mar 2027.*Drunken Chicken \(shaoxing\)/);
+    expect(ask(at("muslim_friendly"), "I'm Muslim, is this place halal?").answer).toMatch(/isn't halal-certified, but it's Muslim-friendly/);
+    const porkFree = ask(at("pork_free"), "I'm Muslim, is this place halal?").answer;
+    expect(porkFree).toMatch(/pork- and lard-free, but it isn't halal-certified/);
+    expect(porkFree).toMatch(/Drunken Chicken \(shaoxing\)/);
+    expect(porkFree).not.toMatch(/Ayam Goreng \(/);
+    expect(ask(at("none"), "I'm Muslim, is this place halal?").answer).toMatch(/Our staff can tell you about the kitchen's halal certification/);
+    expect(ask(at("certified", { standing: "expired" }), "I'm Muslim, is this place halal?").answer).toMatch(/certificate has expired/);
+  });
+  it("answers a dish's halal question from the branch's standing", () => {
+    expect(ask(at("certified"), "is the ayam goreng halal?").answer).toMatch(/Ayam Goreng is halal: this branch is halal-certified by JAKIM/);
+    expect(ask(at("certified"), "is the drunken chicken halal?").answer).toMatch(/Drunken Chicken is not halal: it has shaoxing/);
+    expect(ask(at("muslim_friendly"), "is the ayam goreng halal?").answer).toMatch(/Ayam Goreng is Muslim-friendly/);
+    expect(ask(at("pork_free"), "is the ayam goreng halal?").answer).toMatch(/Ayam Goreng has no pork or lard/);
+    expect(ask(at("none"), "is the ayam goreng halal?").answer).toMatch(/Ayam Goreng is not halal/);
+  });
+  it("recommends from the whole menu to a Muslim guest at a certified branch", () => {
+    const names = ask(at("certified"), "I'm Muslim, what mains do you recommend?").items.map((i) => i.name);
+    expect(names).toContain("Ayam Goreng");
+    expect(names).not.toContain("Drunken Chicken");
   });
 });
 

@@ -9,6 +9,8 @@ import { parseFloorText, parseMenuText, stationFor } from "../../shared/menuPars
 import type { BranchCtx } from "../domain/context";
 import { menuAt, type ImportItem } from "../domain/menu";
 import { clockAt } from "../../shared/schedule";
+import { halalStanding } from "../../shared/types";
+import { withBranchHalal } from "./halal";
 import type { TableInput } from "../domain/floor";
 import { localParts } from "../ids";
 import { answerWithClaude, claudeEnabled, extractWithClaude, narrateWithClaude, type ClaudeEnv } from "./claude";
@@ -69,6 +71,8 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
   ]);
   const popularity = new Map(pop.results.map((p) => [p.item_id, p.n]));
   const catName = new Map(menu.categories.map((c) => [c.id, c.name]));
+  const clock = clockAt(at, ctx.config.timezone);
+  const halal = { ...ctx.config.halal, standing: halalStanding(ctx.config.halal, clock.date ?? "") };
   return {
     restaurant: { name: ctx.tenant.name, cuisine: ctx.tenant.cuisine, story: ctx.tenant.story, description: ctx.tenant.description },
     branchName: ctx.branch.name,
@@ -77,8 +81,9 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
     now: menu.now,
     menus: menu.menus,
     rules: menu.rules,
-    clock: clockAt(at, ctx.config.timezone),
-    items: menu.items.map((i) => ({ ...i, category: catName.get(i.categoryId), popularity: popularity.get(i.id) ?? 0 })),
+    clock,
+    halal,
+    items: withBranchHalal(menu.items, halal).map((i) => ({ ...i, category: catName.get(i.categoryId), popularity: popularity.get(i.id) ?? 0 })),
     ...basket,
     ...chat,
     platform,

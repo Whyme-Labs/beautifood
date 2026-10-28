@@ -25,6 +25,14 @@ const Patch = z
     requireStaffConfirmFirstRound: z.boolean(),
     preorderFire: z.enum(["on_seat", "on_call"]),
     booking: z.object({ enabled: z.boolean(), slotMinutes: z.number().int().min(10).max(120), durationMinutes: z.number().int().min(15).max(480), openHour: z.number().int().min(0).max(23), closeHour: z.number().int().min(1).max(24), leadMinutes: z.number().int().min(0) }).partial(),
+    halal: z
+      .object({
+        status: z.enum(["certified", "muslim_friendly", "pork_free", "none"]),
+        certifier: z.string().trim().max(60),
+        certNo: z.string().trim().max(40),
+        validUntil: z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]),
+      })
+      .partial(),
     modules: z.object({ menuDisplay: z.boolean(), queuePreorder: z.boolean(), tableQr: z.boolean(), bookings: z.boolean(), loyalty: z.boolean(), eReceipt: z.boolean(), campaigns: z.boolean(), aiAssistant: z.boolean(), kiosk: z.boolean() }).partial(),
   })
   .partial()
@@ -42,5 +50,6 @@ export const PATCH = api(async (c) => {
   if (patch.weights) merged.weights = { ...ctx.config.weights, ...patch.weights };
   if (patch.booking) merged.booking = { ...ctx.config.booking, ...patch.booking };
   if (patch.modules) merged.modules = { ...ctx.config.modules, ...patch.modules };
+  if (patch.halal) merged.halal = { ...ctx.config.halal, ...patch.halal };
   return { config: await updateBranchConfig(c.env.DB, ctx, actorOf(staff), merged as never) };
 });

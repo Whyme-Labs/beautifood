@@ -9,9 +9,12 @@ import { ReceiptSettingsCard } from "../../src/ui/receiptSettings";
 import { CustomFieldsCard } from "../../src/ui/customFields";
 import { LOCALES, type MessageKey } from "../../src/i18n/core";
 import { useI18n } from "../../src/i18n/react";
-import type { BranchConfig } from "../../src/shared/types";
+import { halalStanding, type BranchConfig, type HalalStatus } from "../../src/shared/types";
 
 const STRATEGIES = ["smart", "best_fit", "category_fifo", "fifo"] as const;
+const HALAL: HalalStatus[] = ["certified", "muslim_friendly", "pork_free", "none"];
+// the bodies that certify premises in Malaysia, Singapore and Brunei (any other can be typed)
+const CERTIFIERS = ["JAKIM", "JAIS", "JAWI", "JAIJ", "JAIPP", "MAIK", "JHEAINS", "MUIS", "MUIB"];
 
 export default function Settings() {
   const s = useStaff();
@@ -31,7 +34,7 @@ export default function Settings() {
     run(async () => {
       await api(`/api/m/branches/${s.branchId}/settings`, {
         method: "PATCH",
-        body: { categories: c.categories, strategy: c.strategy, maxSkips: c.maxSkips, qrMode: c.qrMode, staticQrSelfSeat: c.staticQrSelfSeat, serviceChargePct: c.serviceChargePct, taxPct: c.taxPct, taxInclusive: c.taxInclusive, cashRounding: c.cashRounding, maxWaiting: c.maxWaiting, holdCalledMinutes: c.holdCalledMinutes, autoCloseOnPay: c.autoCloseOnPay, preorderFire: c.preorderFire, booking: c.booking, modules: c.modules },
+        body: { categories: c.categories, strategy: c.strategy, maxSkips: c.maxSkips, qrMode: c.qrMode, staticQrSelfSeat: c.staticQrSelfSeat, serviceChargePct: c.serviceChargePct, taxPct: c.taxPct, taxInclusive: c.taxInclusive, cashRounding: c.cashRounding, maxWaiting: c.maxWaiting, holdCalledMinutes: c.holdCalledMinutes, autoCloseOnPay: c.autoCloseOnPay, preorderFire: c.preorderFire, booking: c.booking, modules: c.modules, halal: c.halal },
       });
       await api("/api/m/tenant", { method: "PATCH", body: { onboarding: { queueReviewed: true } } });
       await s.reload();
@@ -166,6 +169,46 @@ export default function Settings() {
         <label className="inline">
           <input type="checkbox" checked={c.autoCloseOnPay} onChange={(e) => set({ autoCloseOnPay: e.target.checked })} /> {t("staff.settings.bill.autoClose")}
         </label>
+      </section>
+      <section className="card col" data-testid="halal-settings">
+        <h2>{t("staff.settings.halal.title")}</h2>
+        <p className="hint" style={{ margin: 0 }}>{t("staff.settings.halal.lead")}</p>
+        <div className="col" role="radiogroup" aria-label={t("staff.settings.halal.title")} style={{ gap: 6 }}>
+          {HALAL.map((h) => (
+            <label key={h} className="inline" style={{ alignItems: "flex-start" }}>
+              <input type="radio" name="halal" checked={c.halal.status === h} onChange={() => set({ halal: { ...c.halal, status: h } })} data-testid={`halal-${h}`} />
+              <span>
+                <b>{t(`staff.settings.halal.status.${h}` as MessageKey)}</b>
+                <br />
+                <span className="muted" style={{ fontSize: 13 }}>{t(`staff.settings.halal.hint.${h}` as MessageKey)}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+        {c.halal.status === "certified" && (
+          <>
+            <div className="row" style={{ alignItems: "flex-end" }}>
+              <label>
+                {t("staff.settings.halal.certifier")}
+                <input list="halal-certifiers" value={c.halal.certifier} maxLength={60} required onChange={(e) => set({ halal: { ...c.halal, certifier: e.target.value } })} data-testid="halal-certifier" />
+                <datalist id="halal-certifiers">
+                  {CERTIFIERS.map((x) => (
+                    <option key={x} value={x} />
+                  ))}
+                </datalist>
+              </label>
+              <label>
+                {t("staff.settings.halal.certNo")}
+                <input value={c.halal.certNo} maxLength={40} onChange={(e) => set({ halal: { ...c.halal, certNo: e.target.value } })} />
+              </label>
+              <label>
+                {t("staff.settings.halal.validUntil")}
+                <input type="date" value={c.halal.validUntil} onChange={(e) => set({ halal: { ...c.halal, validUntil: e.target.value } })} data-testid="halal-valid-until" />
+              </label>
+            </div>
+            {halalStanding(c.halal, new Date().toISOString().slice(0, 10)) === "expired" && <p className="alert bad" style={{ margin: 0 }}>{t("staff.settings.halal.expired")}</p>}
+          </>
+        )}
       </section>
       <section className="card col">
         <h2>{t("staff.settings.modules.title")}</h2>

@@ -16,6 +16,7 @@ import { allergyNote, type AssistantContext, type AssistantReply } from "../loca
 import type { TasteHint } from "../../taste/bridge";
 import { conceptsOf, conceptTerms, dishConceptLift, type ConceptId } from "./concepts";
 import { kindOf } from "./reader";
+import { alcoholWord, notHalalWord, withBranchHalal } from "../halal";
 import { courseDishes, intentModel, isDessert, isDrink, MEAT_WORDS, modelTokens, read, understand, type Course, type Diet, type Dish, type Meat, type Understanding } from "./understand";
 
 type Item = AssistantContext["items"][number];
@@ -332,6 +333,9 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
  * a boost on dishes, applied after every filter, so it changes the order, never what's safe.
  */
 export function respond(ctx: AssistantContext, u: Understanding, state: DialogueState, locale: string, taste?: TasteHint): BrainReply {
+  // a certified or Muslim-friendly branch makes its dishes halal (or halal-friendly) unless they say otherwise
+  if (ctx.halal) ctx = { ...ctx, items: withBranchHalal(ctx.items, ctx.halal) };
+  const halalAt = ctx.halal?.standing ?? "none";
   const t = translator(locale);
   const f = formatters(locale);
   const en = locale === "en";
@@ -676,13 +680,19 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     return { pool: base, mildest: false };
   };
   // "is the yam rice halal?", "is it vegan?": the answer first, then the details
-  const NOT_HALAL_WORDS = /\b(pork|lard|bacon|ham|babi|char siu|lap cheong|chinese sausage|pork floss|wine|shaoxing|hua tiao|beer|sake|mirin|rum|brandy|whisky|liqueur|baileys)\b/i;
+  const certifier = ctx.halal?.certifier || t("assistantReply.halalBody");
   const dietVerdict = (item: Item) => {
     const out: string[] = [];
     if (u.diet.includes("halal")) {
-      const what = `${item.name} ${item.description ?? ""}`.match(NOT_HALAL_WORDS)?.[1];
+      const what = notHalalWord(item);
       const halal = item.dietary.includes("halal") || item.dietary.includes("halal_friendly");
-      out.push(!halal || what ? t("assistantReply.notHalal", { dish: name(item), what: what ?? t("assistantReply.porkOrAlcohol") }) : t("assistantReply.halalListed", { dish: name(item) }));
+      const dish = name(item);
+      if (what || (!halal && halalAt !== "pork_free")) out.push(t("assistantReply.notHalal", { dish, what: what ?? t("assistantReply.porkOrAlcohol") }));
+      // what the branch declares decides what can be said: certified, Muslim-friendly, pork-free, or only the dish's own tag
+      else if (halalAt === "certified") out.push(t("assistantReply.halalCertifiedDish", { dish, certifier }));
+      else if (halalAt === "muslim_friendly") out.push(t("assistantReply.muslimFriendlyDish", { dish }));
+      else if (halalAt === "pork_free" && !halal) out.push(t("assistantReply.porkFreeDish", { dish }));
+      else out.push(t("assistantReply.halalListed", { dish }));
     }
     if (u.diet.includes("vegan")) out.push(t(item.dietary.includes("vegan") ? "assistantReply.isVegan" : "assistantReply.notVegan", { dish: name(item) }));
     else if (u.diet.includes("vegetarian")) out.push(t(item.dietary.includes("vegetarian") || item.dietary.includes("vegan") ? "assistantReply.isVegetarian" : "assistantReply.notVegetarian", { dish: name(item) }));
@@ -730,13 +740,26 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     case "greeting":
     case "out_of_scope":
     case "order_help": {
-      // "I'm Muslim, is this place halal?": certification is for the staff, but the menu says which
-      // dishes aren't halal and why, and which are
+      // "I'm Muslim, is this place halal?": what the branch declares (certified by whom and until when,
+      // Muslim-friendly, pork-free), or, with nothing declared, the staff for the certificate; then
+      // which dishes aren't halal and why, and which are
       if (u.statedDiet.includes("halal") && !booking) {
-        const not = live.filter((i) => !i.dietary.includes("halal") && !i.dietary.includes("halal_friendly"));
-        const why = (i: Item) => `${name(i)} (${`${i.name} ${i.description ?? ""}`.match(NOT_HALAL_WORDS)?.[1] ?? t("assistantReply.porkOrAlcohol")})`;
+        const h = ctx.halal;
+        const head =
+          halalAt === "certified"
+            ? t("assistantReply.halalCertified", { certifier, no: h?.certNo ? t("assistantReply.halalCertNo", { no: h.certNo }) : "", until: h?.validUntil ? t("assistantReply.halalUntil", { date: f.date(Date.parse(`${h.validUntil}T00:00:00Z`), "UTC") }) : "" })
+            : halalAt === "expired"
+              ? t("assistantReply.halalExpired")
+              : halalAt === "muslim_friendly"
+                ? t("assistantReply.halalMuslimFriendly")
+                : halalAt === "pork_free"
+                  ? t("assistantReply.halalPorkFree")
+                  : t("assistantReply.staffHelpHalal");
+        // a pork-free kitchen's untagged dishes have no pork, so only the ones with alcohol are named
+        const not = halalAt === "pork_free" ? live.filter((i) => alcoholWord(i) || notHalalWord(i)) : live.filter((i) => notHalalWord(i) || (!i.dietary.includes("halal") && !i.dietary.includes("halal_friendly")));
+        const why = (i: Item) => `${name(i)} (${notHalalWord(i) ?? t("assistantReply.porkOrAlcohol")})`;
         const ok = ranked(live.filter((i) => allowed(i, c) && !isDrink(i))).slice(0, 3);
-        const parts = [t("assistantReply.staffHelpHalal")];
+        const parts = [head];
         if (not.length) parts.push(t("assistantReply.notHalalDishes", { list: list(not.slice(0, 3).map(why)), more: not.length > 3 ? t("assistantReply.andMore", { count: not.length - 3 }) : "" }));
         if (ok.length) parts.push(t("assistantReply.halalPicks", { list: list(ok.map(line)) }));
         // (named, not shown as cards: it's a question about the restaurant, not a request for dishes)

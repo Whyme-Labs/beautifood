@@ -7,6 +7,7 @@ import type { Clock, PriceRule, TimedMenu } from "../../shared/schedule";
 import { localizeItem } from "../../shared/menuI18n";
 import { formatters, translator, type MessageKey } from "../../i18n/core";
 import type { PlatformPairs } from "./brain/concepts";
+import type { Halal } from "./halal";
 
 export interface AssistantContext {
   restaurant: { name: string; cuisine: string; story: string; description: string };
@@ -32,6 +33,8 @@ export interface AssistantContext {
   /** From the assistant's own log: how often each dish was shown in the chat, and added from it. */
   chatShown?: Record<string, number>;
   chatAdded?: Record<string, number>;
+  /** The branch's halal standing (certified by whom, Muslim-friendly, pork-free, or nothing declared). */
+  halal?: Halal;
 }
 
 export interface AssistantReply {

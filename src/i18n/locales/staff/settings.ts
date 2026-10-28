@@ -56,6 +56,26 @@ export const en = {
     taxInclusive: "Menu prices include tax",
     autoClose: "Free the table automatically when the bill is paid",
   },
+  halal: {
+    title: "Halal",
+    lead: "Guests see this on the menu, and the assistant answers halal questions from it. Certification is per premises, so set it for each branch.",
+    status: {
+      certified: "Halal-certified",
+      muslim_friendly: "Muslim-friendly",
+      pork_free: "Pork & lard free",
+      none: "Not declared",
+    },
+    hint: {
+      certified: "This premises holds a halal certificate. Every dish is shown as halal unless it names pork, lard or alcohol.",
+      muslim_friendly: "Not certified, but the kitchen uses no pork, lard or alcohol.",
+      pork_free: "No pork or lard, but some dishes may be cooked with alcohol (wine, mirin).",
+      none: "Nothing is claimed for the branch. Each dish's own halal tag still shows.",
+    },
+    certifier: "Certified by",
+    certNo: "Certificate no.",
+    validUntil: "Valid until",
+    expired: "This certificate has expired: guests won't see it as halal-certified until you enter the renewed one.",
+  },
   modules: {
     title: "Modules",
     names: {
@@ -196,6 +216,26 @@ export const zh: Widen<typeof en> = {
     rounding: "现金凑整（分）",
     taxInclusive: "菜单价格已含税",
     autoClose: "买单后自动空出桌位",
+  },
+  halal: {
+    title: "清真",
+    lead: "顾客会在菜单上看到这项设置，AI 助手也据此回答清真问题。清真认证按店面颁发，请为每家分店分别设置。",
+    status: {
+      certified: "清真认证",
+      muslim_friendly: "穆斯林友好",
+      pork_free: "无猪肉、无猪油",
+      none: "未声明",
+    },
+    hint: {
+      certified: "本店面持有清真证书。除非菜品写明猪肉、猪油或酒，所有菜品都显示为清真。",
+      muslim_friendly: "没有认证，但厨房不使用猪肉、猪油或酒。",
+      pork_free: "不用猪肉和猪油，但部分菜品可能用酒（料酒、味醂）烹调。",
+      none: "不为分店作任何声明。各菜品自己的清真标签仍会显示。",
+    },
+    certifier: "认证机构",
+    certNo: "证书号",
+    validUntil: "有效期至",
+    expired: "这张证书已过期：在填入续期后的证书前，顾客不会看到清真认证。",
   },
   modules: {
     title: "功能模块",

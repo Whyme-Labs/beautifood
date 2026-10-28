@@ -1,6 +1,8 @@
 import { defineHandler, type InferProps } from "void";
 import { getBranch } from "../../../src/server/domain/context";
 import { menuAt } from "../../../src/server/domain/menu";
+import { halalStanding } from "../../../src/shared/types";
+import { clockAt } from "../../../src/shared/schedule";
 
 export type Props = InferProps<typeof loader>;
 
@@ -22,6 +24,7 @@ export const loader = defineHandler(async (c) => {
     currency: ctx.config.currency,
     categories: ctx.config.categories,
     modules: ctx.config.modules,
+    halal: { ...ctx.config.halal, standing: halalStanding(ctx.config.halal, clockAt(Date.now(), ctx.config.timezone).date ?? "") },
     signatures: menu.items.filter((i) => i.isSignature).slice(0, 4).map((i) => ({ id: i.id, name: i.name, price: i.price, description: i.description, story: i.story, translations: i.translations })),
   };
 });
