@@ -611,3 +611,34 @@ No benchmark menu declares a standing, so the sets measure the not-declared path
 The only v7 menu difference by word type is one untagged drink now read as "lager". The case
 failing is a `says /pork|not halal|…/`: the answer used to name the reason as "pork or alcohol"
 and now names it as "lager". Not read further; left as is.
+
+## Six fixes found by comparing the brain with LFM3-1.7B (2026-10-28)
+
+Scored as the brain's fallback on the six dev sets, LFM3-1.7B made it slightly worse (94.1 →
+93.6%): the brain hands a fallback only 74 of 2,922 questions, all of which it already answers
+right, and its 172 failures were answers it was confident of. So the work went into the brain,
+in the order of the dev failures (read case by case, as dev sets may be):
+
+1. **What a guest rules out or allows (8).** "tak ada babi/arak", "I don't like durian", "avoid
+   onion and garlic", "without rice"; "fish is fine", "eggs and milk are ok", pescatarians. A
+   description saying a dish is without something ("no pork, no alcohol") no longer counts as
+   having it.
+2. **A kind of dish or an ingredient asked for (21).** "Milkshake got which one ah?", "anything
+   with lamb or mutton?", "what fish/seafood do you have?", "Which claypot?", misspelt kinds, and
+   "cheaper but still beef".
+3. **Finding the dish (14 + 14 + 5).** Overlapping names in a comparison each get their own
+   words; "Is the X gluten free?" asks about the dish rather than stating an allergy; more usual
+   Chinese names; 有没有 asks for a dish instead of excluding it; Chinese kinds of dish.
+4. **Spice ranges (8).** "A bit spicy but nothing crazy" is spice 1–2.
+5. **The one dish asked about (9).** Pointed-at allergen or section words name the dish; yes/no
+   questions about one dish get a verdict; "What is X?" answers in the menu's words.
+6. **Service questions (14).** Bookings and how-the-restaurant-works questions go to the staff;
+   hellos in other languages; thanks with a dish named; "do you have <dish>?" is the dish by name.
+
+Dev, before → after (all 0 unsafe): v1 98.0 → 98.8, v2 95.3 → 97.5, v3 93.6 → 96.9, v4 95.2 →
+98.2, v5 92.8 → 97.0, v6 89.3 → 95.2%. 321 unit tests.
+
+v7 (held out, scored once, not read): 83.5 → **85.8%, 0 unsafe**. 14 fixed, 3 broken: two
+comparisons (a dish not found; a pick over the budget) and one spice question (too spicy). By
+tag: spice 75.0 → 81.2, diet 83.0 → 85.7, not on menu 89.5 → 94.7, adversarial 66.7 → 75.0,
+manglish 92.3 → 96.2; compare 70.6 → 64.7 and recommend 84.2 → 78.9 (one case each).
