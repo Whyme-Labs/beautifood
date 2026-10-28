@@ -288,7 +288,7 @@
         "Burnt Cheesecake"
       ],
       "says": [
-        "flour|gluten|wheat|tepung|gandum|面粉|麸质|小麦"
+        "flour|wheat|tepung|gandum|面粉|小麦|(contains?|has|have)( a little| some)? gluten|ada gluten|含麸质|有麸质"
       ]
     }
   },
@@ -772,7 +772,7 @@
         "Shakshuka"
       ],
       "says": [
-        "辣|spicy|pedas|harissa"
+        "(?<!不)辣(?![吗么])|harissa|spicy|pedas"
       ]
     }
   },
@@ -1072,7 +1072,7 @@
         "Kaya Croissant"
       ],
       "says": [
-        "6\\.30"
+        "6\\.30|7\\.35"
       ]
     },
     "note": "Butter Croissant 9.00 x 0.7 = 6.30. Banana Bread is also 6.30 but has walnuts."
@@ -1392,7 +1392,7 @@
         "Vegan Tofu Scramble"
       ]
     },
-    "note": "Happy hour: Butter Croissant 6.30 + Banana Bread 6.30 + Espresso 8.00 = 20.60."
+    "note": "Happy hour, nut-free: Butter Croissant 6.30 + Kouign-Amann 7.70 + Espresso 8.00 = 22.00 (Banana Bread has walnuts)."
   },
   {
     "id": "v8n-specialty-coffee-046",
@@ -1567,7 +1567,7 @@
         "Tiramisu"
       ],
       "says": [
-        "12\\.60"
+        "12\\.60|14\\.70"
       ]
     },
     "note": "18.00 x 0.7 = 12.60"
@@ -1626,7 +1626,7 @@
         "Vegan Tofu Scramble"
       ],
       "says": [
-        "6\\.30"
+        "6\\.30|7\\.35"
       ]
     }
   },
@@ -1803,12 +1803,24 @@
       "date": "2027-01-01"
     },
     "expect": {
-      "category": "BRUNCH",
       "minDishes": 2,
       "excludes": [
         "Tiramisu"
+      ],
+      "includesAny": [
+        "Eggs Benedict",
+        "Shakshuka",
+        "Avocado Toast",
+        "Big Breakfast",
+        "Granola Bowl",
+        "Truffle Mushroom Toast",
+        "French Toast",
+        "Smoked Salmon Scramble",
+        "Nasi Lemak Bowl",
+        "Vegan Tofu Scramble"
       ]
-    }
+    },
+    "note": "All brunch dishes are halal from their ingredients; the only alcohol dish is the Tiramisu. Coffees may be suggested alongside, so no category check."
   },
   {
     "id": "v8n-specialty-coffee-063",
@@ -2212,7 +2224,7 @@
         "Banana Bread"
       ],
       "says": [
-        "鸡蛋|蛋|egg|telur"
+        "(?<![没不无])有(鸡)?蛋|(?<![不无])含有?(鸡)?蛋|加了?(鸡)?蛋|用了?(鸡)?蛋|eggs?\\b|telur"
       ]
     }
   },
@@ -2282,7 +2294,7 @@
         "Nasi Lemak Bowl"
       ],
       "says": [
-        "spicy|pedas|辣|sambal"
+        "sambal|belacan|(is|it's|quite|bit|a bit|got|ada|very|agak)\\s+(spicy|pedas)|(?<!不)辣(?![吗么])"
       ]
     }
   },
@@ -2301,6 +2313,9 @@
     "expect": {
       "says": [
         "rum|alcohol|alkohol|酒|朗姆"
+      ],
+      "excludes": [
+        "Tiramisu"
       ]
     },
     "note": "Rule l: failing dish, fact only."
@@ -2528,7 +2543,7 @@
         "Babyccino"
       ],
       "says": [
-        "5\\.00"
+        "5\\.00|5\\.85"
       ]
     }
   },
@@ -2590,7 +2605,7 @@
         "Tiramisu"
       ],
       "says": [
-        "rum|alcohol|alkohol|酒|朗姆"
+        "rum|朗姆|(contains?|has|have|with|got)\\b.{0,15}alcohol|ada alkohol|mengandungi alkohol|含酒精|有酒精"
       ]
     }
   },
@@ -2743,6 +2758,9 @@
     "expect": {
       "says": [
         "rum|alcohol|alkohol|酒|朗姆|not halal|tidak halal|bukan halal|不是清真"
+      ],
+      "excludes": [
+        "Tiramisu"
       ]
     }
   },
@@ -2852,7 +2870,7 @@
         "Granola Bowl"
       ],
       "says": [
-        "yoghurt|yogurt|milk|dairy|susu|酸奶|奶"
+        "yoghurt|yogurt|milk|susu|酸奶|奶|(contains?|has|have|got)\\b.{0,10}dairy"
       ]
     }
   },

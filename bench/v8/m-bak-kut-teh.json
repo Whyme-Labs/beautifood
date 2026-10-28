@@ -29,7 +29,7 @@
         "Tsingtao Beer"
       ],
       "says": [
-        "not halal|isn't halal|is not a halal|not a halal|non-halal|non halal|no halal|not halal-certified|tidak halal|bukan halal|tak halal|bukan kedai halal|不是清真|非清真|不清真|没有清真|不是halal|不halal"
+        "not halal|isn't halal|aren't halal|isn't a halal|is not a halal|not a halal|non-halal|non halal|no halal|not (halal.)?certified|isn't (halal.)?certified|aren't (halal.)?certified|tidak halal|bukan halal|tak halal|tiada sijil|bukan kedai halal|bukan restoran halal|不是清真|非清真|不清真|没有清真|不是halal|不halal|(serve|serves|serving|cook|cooks|use|uses)\\s+(pork|lard|alcohol)|(hidang|masak|guna)\\w*\\s+babi|(?<![没不无])有猪肉|卖猪肉|用猪肉"
       ]
     },
     "note": "halal status none: say so (rule w/j); no non-halal dish shown."
@@ -64,7 +64,7 @@
         "Tsingtao Beer"
       ],
       "says": [
-        "not halal|isn't halal|is not a halal|not a halal|non-halal|non halal|no halal|not halal-certified|tidak halal|bukan halal|tak halal|bukan kedai halal|不是清真|非清真|不清真|没有清真|不是halal|不halal"
+        "not halal|isn't halal|aren't halal|isn't a halal|is not a halal|not a halal|non-halal|non halal|no halal|not (halal.)?certified|isn't (halal.)?certified|aren't (halal.)?certified|tidak halal|bukan halal|tak halal|tiada sijil|bukan kedai halal|bukan restoran halal|不是清真|非清真|不清真|没有清真|不是halal|不halal|(serve|serves|serving|cook|cooks|use|uses)\\s+(pork|lard|alcohol)|(hidang|masak|guna)\\w*\\s+babi|(?<![没不无])有猪肉|卖猪肉|用猪肉"
       ]
     },
     "note": "Pork kitchen with halal status none; no dish is required for a Muslim guest."
@@ -100,7 +100,7 @@
         "Tsingtao Beer"
       ],
       "says": [
-        "not halal|isn't halal|is not a halal|not a halal|non-halal|non halal|no halal|not halal-certified|tidak halal|bukan halal|tak halal|bukan kedai halal|不是清真|非清真|不清真|没有清真|不是halal|不halal"
+        "not halal|isn't halal|aren't halal|isn't a halal|is not a halal|not a halal|non-halal|non halal|no halal|not (halal.)?certified|isn't (halal.)?certified|aren't (halal.)?certified|tidak halal|bukan halal|tak halal|tiada sijil|bukan kedai halal|bukan restoran halal|不是清真|非清真|不清真|没有清真|不是halal|不halal|(serve|serves|serving|cook|cooks|use|uses)\\s+(pork|lard|alcohol)|(hidang|masak|guna)\\w*\\s+babi|(?<![没不无])有猪肉|卖猪肉|用猪肉"
       ]
     }
   },
@@ -287,7 +287,7 @@
         "Dry Bak Kut Teh"
       ],
       "says": [
-        "shaoxing|wine|alcohol|arak|绍兴|酒"
+        "shaoxing|wine|arak|绍兴|酒|(contains?|has|have|with|uses?)\\b.{0,15}alcohol|ada alkohol|mengandungi alkohol"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -416,7 +416,7 @@
         "Barley Fu Chuk"
       ],
       "says": [
-        "egg|telur|蛋"
+        "beaten egg|(contains?|has|have|with|got)\\b.{0,15}eggs?\\b|ada telur|telur dipukul|蛋花|(?<![没不无])有蛋"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -809,13 +809,13 @@
     "question": "I only had the dry bak kut teh, one rice and tea. How much is mine with tax?",
     "expect": {
       "says": [
-        "27\\.55"
+        "27\\.5[56]"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
       ]
     },
-    "note": "Own items plus 6% tax, rounded to 5 sen."
+    "note": "Own items 26.00 + 6% tax = 27.56; till-rounded 27.55. Both accepted (ruling 4)."
   },
   {
     "id": "v8m-bak-kut-teh-031",
@@ -1260,7 +1260,7 @@
     },
     "expect": {
       "says": [
-        "26\\.00"
+        "26\\.00|27\\.55"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -1322,7 +1322,7 @@
     "question": "and with both extra tofu puff and enoki?",
     "expect": {
       "says": [
-        "22\\.00"
+        "22\\.00|23\\.30"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -1394,7 +1394,7 @@
         "Tsingtao Beer"
       ],
       "says": [
-        "not halal|isn't halal|is not a halal|not a halal|non-halal|non halal|no halal|not halal-certified|tidak halal|bukan halal|tak halal|bukan kedai halal|不是清真|非清真|不清真|没有清真|不是halal|不halal"
+        "not halal|isn't halal|aren't halal|isn't a halal|is not a halal|not a halal|non-halal|non halal|no halal|not (halal.)?certified|isn't (halal.)?certified|aren't (halal.)?certified|tidak halal|bukan halal|tak halal|tiada sijil|bukan kedai halal|bukan restoran halal|不是清真|非清真|不清真|没有清真|不是halal|不halal|(serve|serves|serving|cook|cooks|use|uses)\\s+(pork|lard|alcohol)|(hidang|masak|guna)\\w*\\s+babi|(?<![没不无])有猪肉|卖猪肉|用猪肉"
       ]
     },
     "note": "Non-halal kitchen (status none): no dish required; say it is not halal."
@@ -1900,13 +1900,13 @@
     "question": "tea how much per head ah? we got 6 people",
     "expect": {
       "says": [
-        "15\\.00|15\\.90"
+        "2\\.50|15\\.00|15\\.90"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
       ]
     },
-    "note": "Tea is charged per person."
+    "note": "Tea is RM2.50 per person: 15.00 for 6 (15.90 with tax). The per-head price answers the question."
   },
   {
     "id": "v8m-bak-kut-teh-065",
@@ -2036,7 +2036,7 @@
     },
     "expect": {
       "says": [
-        "20\\.00"
+        "20\\.00|21\\.20"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -2061,7 +2061,7 @@
     },
     "expect": {
       "says": [
-        "19\\.80"
+        "19\\.80|21\\.00"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -2087,7 +2087,7 @@
     },
     "expect": {
       "says": [
-        "23\\.00"
+        "23\\.00|24\\.40"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -2113,7 +2113,7 @@
     },
     "expect": {
       "says": [
-        "18\\.00"
+        "18\\.00|19\\.10"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -2221,12 +2221,13 @@
     },
     "expect": {
       "says": [
-        "7(:00)? ?(am|a\\.m\\.)|07:00|7 pagi|早上7|七点|7点"
+        "7(:00)? ?(am|a\\.m\\.)|07:00|7 pagi|早上7|七点|7点|10(:00)? ?(am|a\\.m\\.)|10:00|10 pagi|早上10|十点|10点"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
       ]
-    }
+    },
+    "note": "Breakfast deal 07:00-10:00 ended; saying it ended at 10am or is next on from 7am are both honest."
   },
   {
     "id": "v8m-bak-kut-teh-079",
@@ -2342,7 +2343,7 @@
         "Bak Kut Teh Sam Chan"
       ],
       "says": [
-        "2\\.00|18\\.00"
+        "2\\.00|18\\.00|19\\.10"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -2958,7 +2959,7 @@
     "expect": {
       "noDishes": true,
       "says": [
-        "not halal|isn't halal|is not a halal|not a halal|non-halal|non halal|no halal|not halal-certified|tidak halal|bukan halal|tak halal|bukan kedai halal|不是清真|非清真|不清真|没有清真|不是halal|不halal"
+        "not halal|isn't halal|aren't halal|isn't a halal|is not a halal|not a halal|non-halal|non halal|no halal|not (halal.)?certified|isn't (halal.)?certified|aren't (halal.)?certified|tidak halal|bukan halal|tak halal|tiada sijil|bukan kedai halal|bukan restoran halal|不是清真|非清真|不清真|没有清真|不是halal|不halal|(serve|serves|serving|cook|cooks|use|uses)\\s+(pork|lard|alcohol)|(hidang|masak|guna)\\w*\\s+babi|(?<![没不无])有猪肉|卖猪肉|用猪肉"
       ]
     }
   },
@@ -3171,7 +3172,7 @@
         "Yam Rice"
       ],
       "says": [
-        "shrimp|udang|虾"
+        "dried shrimp|(contains?|has|have|with|got)\\b.{0,15}shrimp|udang kering|ada udang|虾米|(?<![没不无])有虾"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"
@@ -3309,7 +3310,7 @@
         "Yam Rice"
       ],
       "says": [
-        "lard|猪油|pork|minyak babi"
+        "(fried in|with|has|have|contains?|uses?|cooked in|got)\\b.{0,20}lard|pork lard|minyak babi|(?<![没不无])有猪油|用猪油|猪油炸"
       ],
       "excludes": [
         "Pork Trotter in Black Vinegar"

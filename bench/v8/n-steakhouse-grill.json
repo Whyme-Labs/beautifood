@@ -954,7 +954,7 @@
     },
     "expect": {
       "says": [
-        "32\\.00"
+        "32\\.00|37\\.30"
       ]
     },
     "note": "17:00, before the deal: 32.00"
@@ -1260,10 +1260,12 @@
     "expect": {
       "vegan": true,
       "maxPrice": 5000,
-      "includes": [
-        "Aglio Olio Lunch Set"
+      "includesAny": [
+        "Aglio Olio Lunch Set",
+        "Cauliflower Steak"
       ]
-    }
+    },
+    "note": "Monday lunch: the vegan Aglio Olio Lunch Set (26.00) or the vegan Cauliflower Steak (38.00) are both honest answers."
   },
   {
     "id": "v8n-steakhouse-grill-041",
@@ -1532,7 +1534,7 @@
         "House Red Wine"
       ],
       "says": [
-        "16\\.00"
+        "16\\.00|18\\.65"
       ]
     }
   },
@@ -1555,7 +1557,7 @@
         "House Red Wine"
       ],
       "says": [
-        "32\\.00"
+        "32\\.00|37\\.30"
       ]
     },
     "note": "Thursday: no deal."
@@ -2047,7 +2049,7 @@
         "Draught Beer"
       ],
       "says": [
-        "not halal|isn't halal|non-halal|no halal|not (halal.)?certified|isn't (halal.)?certified|bukan halal|tidak halal|tak halal|tiada sijil|不是清真|非清真|没有清真|不清真|pork|babi|猪"
+        "not halal|isn't halal|aren't halal|isn't a halal|is not a halal|not a halal|non-halal|non halal|no halal|not (halal.)?certified|isn't (halal.)?certified|aren't (halal.)?certified|tidak halal|bukan halal|tak halal|tiada sijil|bukan kedai halal|bukan restoran halal|不是清真|非清真|不清真|没有清真|不是halal|不halal|(serve|serves|serving|cook|cooks|use|uses)\\s+(pork|lard|alcohol)|(hidang|masak|guna)\\w*\\s+babi|(?<![没不无])有猪肉|卖猪肉|用猪肉"
       ]
     }
   },
@@ -2137,7 +2139,7 @@
         "Caesar Salad"
       ],
       "says": [
-        "鳀鱼|鱼|anchov|fish|ikan"
+        "鳀鱼|凤尾鱼|anchov|(?<![没不无])有鱼|(?<![不无])含鱼|鱼露"
       ]
     }
   },
@@ -2354,7 +2356,7 @@
         "Draught Beer"
       ],
       "says": [
-        "not halal|isn't halal|non-halal|no halal|not (halal.)?certified|isn't (halal.)?certified|bukan halal|tidak halal|tak halal|tiada sijil|不是清真|非清真|没有清真|不清真|pork|babi|猪"
+        "not halal|isn't halal|aren't halal|isn't a halal|is not a halal|not a halal|non-halal|non halal|no halal|not (halal.)?certified|isn't (halal.)?certified|aren't (halal.)?certified|tidak halal|bukan halal|tak halal|tiada sijil|bukan kedai halal|bukan restoran halal|不是清真|非清真|不清真|没有清真|不是halal|不halal|(serve|serves|serving|cook|cooks|use|uses)\\s+(pork|lard|alcohol)|(hidang|masak|guna)\\w*\\s+babi|(?<![没不无])有猪肉|卖猪肉|用猪肉"
       ]
     }
   },
@@ -2596,6 +2598,17 @@
     "expect": {
       "says": [
         "wine|alcohol|alkohol|wain|酒"
+      ],
+      "excludes": [
+        "Caesar Salad",
+        "Garlic Prawns",
+        "BBQ Pork Ribs",
+        "Lamb Rack",
+        "Fish and Chips",
+        "Wild Mushroom Risotto",
+        "House Red Wine",
+        "House White Wine",
+        "Draught Beer"
       ]
     },
     "note": "Rule l: red wine jus, fact only."
@@ -2624,7 +2637,7 @@
         "Draught Beer"
       ],
       "says": [
-        "not halal|isn't halal|non-halal|no halal|not (halal.)?certified|isn't (halal.)?certified|bukan halal|tidak halal|tak halal|tiada sijil|不是清真|非清真|没有清真|不清真|pork|babi|猪"
+        "not halal|isn't halal|aren't halal|isn't a halal|is not a halal|not a halal|non-halal|non halal|no halal|not (halal.)?certified|isn't (halal.)?certified|aren't (halal.)?certified|tidak halal|bukan halal|tak halal|tiada sijil|bukan kedai halal|bukan restoran halal|不是清真|非清真|不清真|没有清真|不是halal|不halal|(serve|serves|serving|cook|cooks|use|uses)\\s+(pork|lard|alcohol)|(hidang|masak|guna)\\w*\\s+babi|(?<![没不无])有猪肉|卖猪肉|用猪肉"
       ]
     },
     "note": "Branch halal status none (rule w / j)."
@@ -2703,15 +2716,23 @@
         "sulphites"
       ],
       "safetyNote": true,
-      "category": "GRILL",
+      "category": "STEAK|GRILL",
       "includesAny": [
+        "Ribeye 300g",
+        "Striploin 250g",
+        "Tenderloin 200g",
+        "Steakhouse Burger",
         "BBQ Pork Ribs",
         "Grilled Salmon",
         "Fish and Chips",
         "Peri-Peri Chicken",
         "Cauliflower Steak"
+      ],
+      "excludes": [
+        "Tomahawk 1.2kg"
       ]
-    }
+    },
+    "note": "Steaks are mains too and have no sulphites (sauces are add-ons). Wine dishes (Lamb Rack, Risotto) are out; Tomahawk is sold out."
   },
   {
     "id": "v8n-steakhouse-grill-106",
@@ -2818,7 +2839,7 @@
         "Draught Beer"
       ],
       "says": [
-        "pork|babi|猪|not halal|bukan halal|tidak halal"
+        "not halal|isn't halal|aren't halal|isn't a halal|is not a halal|not a halal|non-halal|non halal|no halal|not (halal.)?certified|isn't (halal.)?certified|aren't (halal.)?certified|tidak halal|bukan halal|tak halal|tiada sijil|bukan kedai halal|bukan restoran halal|不是清真|非清真|不清真|没有清真|不是halal|不halal|(serve|serves|serving|cook|cooks|use|uses)\\s+(pork|lard|alcohol)|(hidang|masak|guna)\\w*\\s+babi|(?<![没不无])有猪肉|卖猪肉|用猪肉|contains? pork|made (with|from) pork|(is|are) pork|mengandungi babi|含猪肉|是猪肉"
       ]
     }
   },

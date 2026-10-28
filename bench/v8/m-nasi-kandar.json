@@ -102,7 +102,7 @@
         "Roti Canai"
       ],
       "says": [
-        "no egg|egg-free|egg free|without egg|tiada telur|tak ada telur|tanpa telur|不含蛋|没有蛋|无蛋|doesn't|does not"
+        "no egg|egg-free|egg free|without egg|(doesn't|does not|don't) (have|contain|use|put)( any)? eggs?|tiada telur|tak ada telur|tanpa telur|tidak ada telur|不含蛋|没有蛋|无蛋"
       ],
       "excludes": [
         "Kari Kepala Ikan",
@@ -388,7 +388,7 @@
         "Milo Dinosaur"
       ],
       "says": [
-        "barley|malt|gluten|barli|麦芽|大麦|麸质"
+        "barley|malt|barli|麦芽|大麦|(contains?|has|have|got)( some)? gluten|ada gluten|mengandungi gluten|含麸质|有麸质"
       ],
       "excludes": [
         "Kari Kepala Ikan",
@@ -776,7 +776,7 @@
     "before": [
       {
         "user": "which drinks are cold?",
-        "assistant": "Cold ones: Milo Dinosaur (RM6.50), Limau Ais (RM2.50) and Sirap Bandung (RM3.00). Most hot drinks can also be made iced."
+        "assistant": "Cold ones: Milo Dinosaur (RM6.50) and Limau Ais (RM2.50). Sirap Bandung (RM3.00) and the teh and kopi can also be made iced for RM0.30 more."
       }
     ],
     "question": "is the second one sour?",
@@ -784,7 +784,11 @@
       "onlyFrom": [
         "Milo Dinosaur",
         "Limau Ais",
-        "Sirap Bandung"
+        "Sirap Bandung",
+        "Teh Tarik",
+        "Teh O",
+        "Kopi",
+        "Kopi O"
       ],
       "includes": [
         "Limau Ais"
@@ -792,7 +796,8 @@
       "says": [
         "sour|masam|酸|tangy|lime|limau|calamansi"
       ]
-    }
+    },
+    "note": "Earlier turn fixed: Sirap Bandung is hot or iced (modifier), not a cold drink. The second one is Limau Ais."
   },
   {
     "id": "v8m-nasi-kandar-026",
@@ -1940,7 +1945,7 @@
         "Bendi Goreng"
       ],
       "says": [
-        "虾|shrimp|udang"
+        "虾米|干虾|(?<![没不无])有虾|(?<![不无])含虾|shrimp|udang"
       ]
     },
     "note": "Bendi Goreng has dried shrimp (convention c, nothing stated)."
@@ -3681,7 +3686,7 @@
         "Teh Tarik"
       ],
       "says": [
-        "milk|susu|condensed|奶"
+        "condensed|evaporated|(has|have|with|contains?|got|made with|pulled with)\\b.{0,20}milk|susu|炼乳|奶"
       ],
       "excludes": [
         "Kari Kepala Ikan",
