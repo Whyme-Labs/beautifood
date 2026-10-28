@@ -88,4 +88,31 @@ test.describe("merchant console (browser)", () => {
     const after = await json(context.request.get(`/api/m/branches/${s.klcc.id}/orders/${order.id}`));
     expect(after.status).toBe("paid");
   });
+
+  test("halal settings: certify the branch by JAKIM, guests see the badge, then set it back", async ({ page, context }) => {
+    const s = await seededOwner(context);
+    const standing = async () => (await json(context.request.get(`/api/public/branches/${s.klcc.ref}`))).halal;
+    await open(page, "/m/settings");
+    const card = page.getByTestId("halal-settings");
+    await card.getByTestId("halal-certified").check();
+    await card.getByTestId("halal-certifier").fill("JAKIM");
+    await card.getByLabel("Certificate no.").fill("1234");
+    await card.getByTestId("halal-valid-until").fill("2099-12-31");
+    if (process.env.HALAL_SHOT) await card.screenshot({ path: process.env.HALAL_SHOT });
+    await page.getByRole("button", { name: "Save settings" }).click();
+    await expect.poll(async () => (await standing()).standing).toBe("certified");
+    expect(await standing()).toMatchObject({ certifier: "JAKIM", certNo: "1234", validUntil: "2099-12-31" });
+
+    await open(page, `/r/${s.klcc.ref}/menu`);
+    await expect(page.getByTestId("halal-badge")).toContainText("Halal-certified · JAKIM");
+    await expect(page.getByTestId("halal-badge")).toContainText("Cert. 1234");
+    if (process.env.HALAL_MENU_SHOT) await page.screenshot({ path: process.env.HALAL_MENU_SHOT, clip: { x: 0, y: 0, width: 1280, height: 360 } });
+
+    await open(page, "/m/settings");
+    await page.getByTestId("halal-settings").getByTestId("halal-none").check();
+    await page.getByRole("button", { name: "Save settings" }).click();
+    await expect.poll(async () => (await standing()).standing).toBe("none");
+    await open(page, `/r/${s.klcc.ref}/menu`);
+    await expect(page.getByTestId("halal-badge")).toHaveCount(0);
+  });
 });

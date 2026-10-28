@@ -5,7 +5,7 @@
 import { it } from "vitest";
 import { mkdirSync, writeFileSync, appendFileSync } from "node:fs";
 import { EVAL_CASES, dishesNamed, sampleDishes, score, type EvalReply } from "../../src/shared/assistantEval";
-import { answerWithModel, workersAiRest } from "../../src/server/ai/guestModel";
+import { answerWithModel, workersAiRest, type GuestModel } from "../../src/server/ai/guestModel";
 import type { AssistantContext, AssistantReply } from "../../src/server/ai/local";
 import { answerGuest } from "../../src/server/ai/brain";
 import { guard } from "../../src/server/ai/index";
@@ -21,10 +21,14 @@ type Case = (typeof EVAL_CASES)[number];
 type Mode = "inline" | "tools";
 
 /**
- * Two ways to reach the models: through the deployed Worker's own AI binding (EVAL_URL + EVAL_KEY,
- * no extra token), or the Workers AI REST API (CF_ACCOUNT_ID + CF_API_TOKEN with Workers AI access).
+ * Three ways to reach the models: through the deployed Worker's own AI binding (EVAL_URL + EVAL_KEY,
+ * no extra token), the Workers AI REST API (CF_ACCOUNT_ID + CF_API_TOKEN with Workers AI access), or
+ * any OpenAI-style chat API (EVAL_BASE_URL, e.g. a local llama-server for an edge model, with
+ * EVAL_API_KEY if it wants one).
  */
 function asker(): (model: string, c: Case, mode: Mode) => Promise<Answer> {
+  const base = process.env.EVAL_BASE_URL;
+  if (base) return (model, c, mode) => askWith({ provider: "openai", model, baseUrl: base, apiKey: process.env.EVAL_API_KEY ?? "none" }, c, mode);
   const url = process.env.EVAL_URL;
   const key = process.env.EVAL_KEY;
   if (url && key)
@@ -42,23 +46,26 @@ function asker(): (model: string, c: Case, mode: Mode) => Promise<Answer> {
     };
   const account = process.env.CF_ACCOUNT_ID;
   const token = process.env.CF_API_TOKEN;
-  if (!account || !token) throw new Error("Set EVAL_URL + EVAL_KEY, or CF_ACCOUNT_ID + CF_API_TOKEN");
+  if (!account || !token) throw new Error("Set EVAL_BASE_URL, EVAL_URL + EVAL_KEY, or CF_ACCOUNT_ID + CF_API_TOKEN");
   const ai = workersAiRest(account, token);
-  return async (model, c, mode) => {
-    const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.question }, { role: "assistant" as const, content: b.answer }]), { role: "user" as const, content: c.question }];
-    const uses: Usage[] = [];
-    const t0 = Date.now();
-    let r: AssistantReply;
-    let error: string | null = null;
-    try {
-      r = await answerWithModel({ provider: "workers-ai", model, ai }, ctx, history, c.lang, (u) => uses.push(u), { mode });
-    } catch (e) {
-      error = (e as Error).message;
-      r = { answer: `(error) ${error}`, items: [], engine: "model" };
-    }
-    const local = answerGuest(ctx, history, c.lang);
-    return { model: r, deployed: local.confident !== false || error ? local : guard(ctx, c.question, r, local, c.lang), uses, ms: Date.now() - t0, error };
-  };
+  return (model, c, mode) => askWith({ provider: "workers-ai", model, ai }, c, mode);
+}
+
+/** One guest case through a model, and through the assistant as deployed (the menu brain first). */
+async function askWith(m: Exclude<GuestModel, { provider: "anthropic" }>, c: Case, mode: Mode): Promise<Answer> {
+  const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.question }, { role: "assistant" as const, content: b.answer }]), { role: "user" as const, content: c.question }];
+  const uses: Usage[] = [];
+  const t0 = Date.now();
+  let r: AssistantReply;
+  let error: string | null = null;
+  try {
+    r = await answerWithModel(m, ctx, history, c.lang, (u) => uses.push(u), { mode });
+  } catch (e) {
+    error = (e as Error).message;
+    r = { answer: `(error) ${error}`, items: [], engine: "model" };
+  }
+  const local = answerGuest(ctx, history, c.lang);
+  return { model: r, deployed: local.confident !== false || error ? local : guard(ctx, c.question, r, local, c.lang), uses, ms: Date.now() - t0, error };
 }
 
 // a model's own words count as a safety note by the same rule as the on-device lab
