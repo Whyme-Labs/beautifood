@@ -437,9 +437,12 @@ function spiceByClause(question: string, dishWords: Set<string>, raw: string) {
   for (const c of clauses) {
     // "pedas tak?", "pedas x?": a question tag at the end of a clause asks, it doesn't negate
     const r = spiceOf(c.length >= 2 && /^(tak|x|ke)$/.test(c[c.length - 1]) ? c.slice(0, -1) : c, "");
-    if (r.max !== null) res = { max: res.max === null ? r.max : Math.min(res.max, r.max), min: null };
+    // a range keeps both ends ("a bit of kick, but not too spicy")
+    if (r.max !== null) res = { max: res.max === null ? r.max : Math.min(res.max, r.max), min: r.min ?? (res.min !== null && res.min <= r.max ? res.min : null) };
     else if (r.min !== null && res.max === null) res = { max: null, min: Math.max(res.min ?? 0, r.min) };
   }
+  // "a bit spicy but nothing crazy", "a little kick, not too hot": some heat, up to medium
+  if (res.min === 1 && res.max === 1 && /\b(nothing|not|not too|tak|x)\s+(crazy|insane|gila|extreme|hot|fiery|too hot|too crazy)\b/i.test(normalize(question))) res = { min: 1, max: 2 };
   // the Chinese rules read the whole question
   if (res.max === null && res.min === null) res = spiceOf([], raw);
   return res;
@@ -452,13 +455,16 @@ function spiceOf(toks: string[], raw: string): { max: number | null; min: number
   if (/很辣|特辣|超辣|最辣|重辣|大辣|越辣越好/.test(raw)) return { max: null, min: 2 };
   let res: { max: number | null; min: number | null } = { max: null, min: null };
   toks.forEach((t, i) => {
-    if (!/^(spic\w*|pedas|chil+i\w*|cili|heat|sambal|spice)$/.test(t)) return;
+    // ("a bit of kick", "a little heat": spice too)
+    if (!/^(spic\w*|pedas|chil+i\w*|cili|heat|sambal|spice)$/.test(t) && !(t === "kick" && toks.slice(Math.max(0, i - 3), i).some((w) => /^(bit|little|abit|slight|some|of)$/.test(w)))) return;
     const before = toks.slice(Math.max(0, i - 4), i);
     const after = toks.slice(i + 1, i + 3);
     if (before.some((w) => NEG.test(w)) || /^(cant|cannot)$/.test(before[0] ?? "")) {
       // "not too spicy", "tak pedas sangat": a little is fine
       res = before.includes("too") || before.includes("very") || after.includes("sangat") || after.includes("sgt") ? { max: 1, min: null } : { max: 0, min: null };
-    } else if (before.some((w) => /^(little|bit|abit|slightly|medium|sikit|mild|bit)$/.test(w)) || after.some((w) => /^(sikit|sedikit)$/.test(w))) res = { max: 1, min: null };
+    } else if (before.some((w) => /^mild$/.test(w))) res = { max: 1, min: null };
+    // "a bit spicy", "a little kick", "medium spicy", "pedas sikit": some heat, not much
+    else if (before.some((w) => /^(little|bit|abit|slightly|medium|sikit)$/.test(w)) || after.some((w) => /^(sikit|sedikit)$/.test(w))) res = { max: before.includes("medium") ? 2 : 1, min: 1 };
     else if (before.some((w) => /^(very|extra|super|really|so|most|damn|sangat|paling)$/.test(w)) || after.some((w) => /^(gila|giler|sangat|sgt|nak mampus)$/.test(w)) || t === "spiciest") res = { max: null, min: 2 };
     else if (res.max === null) res = { max: null, min: 1 };
   });

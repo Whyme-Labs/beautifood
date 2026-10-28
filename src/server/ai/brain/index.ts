@@ -431,7 +431,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const c: Constraints = {
     avoid,
     diet: [...new Set([...state.diet, ...u.diet])],
-    maxSpice: u.minSpice !== null ? null : (u.maxSpice ?? state.maxSpice),
+    maxSpice: u.minSpice !== null ? u.maxSpice : (u.maxSpice ?? state.maxSpice),
     minSpice: u.minSpice,
     budget: u.budget,
     noAlcohol: u.noAlcohol || state.noAlcohol,
@@ -734,6 +734,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return { pool: top > 0 ? base.filter((i) => i.spiceLevel === top) : base, mildest: false };
     }
     if (u.superlative === "spiciest" && c.maxSpice === null) return { pool: base.filter((i) => i.spiceLevel >= (c.minSpice ?? 0)), mildest: false };
+    // a range ("a bit spicy but nothing crazy"): anything in it
+    if (c.minSpice !== null && c.maxSpice !== null && u.superlative !== "spiciest") return { pool: base.filter((i) => i.spiceLevel >= c.minSpice! && i.spiceLevel <= c.maxSpice!), mildest: false };
     if (c.minSpice !== null && u.superlative !== "spiciest") {
       const hot = base.filter((i) => i.spiceLevel >= c.minSpice! + 1);
       return { pool: hot.length ? hot : base.filter((i) => i.spiceLevel >= c.minSpice!), mildest: false };

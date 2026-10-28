@@ -914,6 +914,19 @@ describe("finding both dishes of a comparison, and the one asked about", () => {
   });
 });
 
+describe("a spice range", () => {
+  it("reads 'a bit spicy but nothing crazy' as some heat, up to medium", () => {
+    expect(read([], "A main that's a bit spicy but nothing crazy.")).toMatchObject({ minSpice: 1, maxSpice: 2 });
+    expect(read([], "I want a bit of kick, but not too spicy")).toMatchObject({ minSpice: 1, maxSpice: 1 });
+    expect(read([], "not too spicy please")).toMatchObject({ minSpice: null, maxSpice: 1 });
+  });
+  it("shows only dishes in the range", () => {
+    const levels = answerGuest(ctx, [{ role: "user", content: "Something a bit spicy but nothing crazy?" }]).items.map((i) => ctx.items.find((d) => d.id === i.id)!.spiceLevel);
+    expect(levels.length).toBeGreaterThan(0);
+    expect(levels.every((l) => l >= 1 && l <= 2)).toBe(true);
+  });
+});
+
 describe("the branch's halal standing", () => {
   const dishes = asItems([
     { id: "a", name: "Ayam Goreng", category: "Mains", description: "fried chicken", price: 1290, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
