@@ -268,6 +268,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     let total = 0;
     let unique = false;
     let strong = false;
+    let aimed = false;
     // distinctive words first; then each generic or place word at the occurrence nearest those (the
     // "bowl" of "quinoa bowl", not of "acai bowl" earlier; the "Sarawak" of "Sarawak Laksa", not of
     // "Sarawak Kolo Mee" before it)
@@ -299,14 +300,18 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const at = spots.sort((a, b) => near(a) - near(b) || a - b)[0];
       covered.push(at);
       weight += idf * g;
-      if (!GENERIC.has(w) && !ORIGIN.has(w) && w !== "kacang" && !mentionedAllergens(w).length) strong = true;
+      // ...unless pointed at as a dish: "the mussels dish", "the kombucha", "berapa harga lala?"
+      // (not "the double-boiled soups": a word followed by more of a section's name is the section)
+      const pointed = df(w) === 1 && !ix.courseWords.has(toks[at + 1] ?? "") && !ix.courseWords.has((toks[at + 1] ?? "").replace(/s$/, "")) && (/^(the|this|that|your|ur|harga|berapa)$/.test(toks[at - 1] ?? "") || /^(dish|one|tu|ni|itu|ini)$/.test(toks[at + 1] ?? ""));
+      if (!GENERIC.has(w) && !ORIGIN.has(w) && w !== "kacang" && (!mentionedAllergens(w).length || pointed)) strong = true;
+      if (pointed) aimed = true;
       // an allergen word ("kacang" in Ais Kacang) alone names the allergen, not the dish
       // a word the menu's courses use ("skewers" in Yakitori & skewers) asks for the course, not one dish
-      if (df(w) === 1 && !GENERIC.has(w) && !ORIGIN.has(w) && !ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, "")) && w.length >= 4 && w !== "kacang" && !mentionedAllergens(w).length) unique = true;
+      if (df(w) === 1 && !GENERIC.has(w) && !ORIGIN.has(w) && ((!ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, ""))) || pointed) && w.length >= 4 && w !== "kacang" && (!mentionedAllergens(w).length || pointed)) unique = true;
     }
     if (!covered.length) return;
     // only the course's own words ("breakfast" of The Big Breakfast in "vegetarian breakfast?") don't name it
-    if (covered.length < name.length && covered.every((i) => ix.courseWords.has(toks[i]) || ix.courseWords.has(toks[i].replace(/s$/, "")))) return;
+    if (!aimed && covered.length < name.length && covered.every((i) => ix.courseWords.has(toks[i]) || ix.courseWords.has(toks[i].replace(/s$/, "")))) return;
     // two or more of its words side by side ("steamed fish", "mee goreng") name it, generic or not
     const inOrder = [...covered].sort((a, b) => a - b);
     const adjacent = inOrder.length >= 2 && inOrder.every((c, i) => i === 0 || c === inOrder[i - 1] + 1);

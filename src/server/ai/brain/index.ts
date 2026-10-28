@@ -518,6 +518,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (focus.length && (u.allergens.length || u.asksContents) && !["compare", "pairing", "group"].includes(intent)) intent = "dish_allergen";
   // "I'm vegan, can I have the pad thai?": a stated diet and a question about one dish is about that dish
   if (focus.length === 1 && u.statedDiet.length && intent === "recommend" && !u.courses.length && !u.categories.length && (/\b(can i|could i|can|ok|okay|safe|suitable|fine|boleh|is it|is the|does)\b/.test(normalize(u.text)) || /可以|能吃|能不能|行吗/.test(u.text))) intent = "dish_allergen";
+  // "Coeliac. Can I have the bliss balls?", "Is the hibiscus drink vegan?", "Is the black pepper beef
+  // too spicy for a 6 year old?": a yes-or-no about the one dish, not a pairing or a list (unless
+  // they ask what goes with it)
+  const pairs = /\b(go|goes|going) (well )?with\b|\b(pair|pairs|pairing|match|matches)\b|\bwith (my|the|it|this|that)\b|\bto (drink|eat) with\b/.test(normalize(u.text)) || /配|搭/.test(u.text);
+  const yesNo = /^(is|are|does|do|can|could|would|will)\b/.test(normalize(u.text)) || /\b(can i|could i|is it|is the|are the|is that|boleh|ok|okay|safe|suitable)\b/.test(normalize(u.text)) || /可以吗|能吃吗|行吗|吗[?？]?$/.test(u.text);
+  // ("the hibiscus drink" names its course too)
+  const ownCourse = !u.categories.length || (focus.length === 1 && u.categories.every((k) => k === focus[0].category));
+  if (focus.length === 1 && mentioned.length <= 1 && !pairs && yesNo && ["recommend", "pairing", "compare", "dish_info"].includes(intent) && ownCourse && (!u.courses.length || (focus.length === 1 && u.courses.every((k) => courseDishes(ctx.items as Dish[], k).some((d) => d.id === focus[0].id))))) {
+    if (u.allergens.length || u.diet.length || u.stated.length) intent = "dish_allergen";
+    else if (/\b(spicy|spicey|spicier|pedas|hot|mild|spice)\b/.test(normalize(u.text)) || /辣/.test(u.text)) intent = "dish_info";
+  }
   // "is the second one spicy?": a question about that dish
   if (nth && !["dish_allergen", "compare", "pairing"].includes(intent)) intent = "dish_info";
   if (intent === "compare" && focus.length + (mentioned.length ? 0 : state.shown.length) < 2) intent = focus.length ? "dish_info" : "recommend";
@@ -664,6 +675,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
   }
 
+  // "what is egg coffee?", "what is cheese tofu?": the dishes whose name or description has the whole
+  // phrase, in the menu's words
+  const whatPhrase = !mentioned.length && !nth && normalize(u.text).match(/^(?:what s|whats|what is|what are|wat is|apa itu|apa tu)\s+(?:a |an |the )?(.{3,40}?)\s*$/)?.[1];
+  if (whatPhrase && !notFood) {
+    const withIt = live.filter((i) => ` ${normalize(`${i.name} ${i.description ?? ""}`)} `.includes(` ${whatPhrase} `));
+    if (withIt.length && withIt.length <= 3) {
+      const two = withIt.slice(0, 2);
+      return reply("dish_info", two.map((i) => `${line(i)}${desc(i) ? `: ${desc(i).replace(/[.。]+$/, "")}` : ""}`).join(t("assistantReply.itemSep")) + stop, two);
+    }
+  }
+
   // a plain search of the menu ("chicken", "有没有披萨？"): what matches, or an honest "we don't have it"
   const searchable = !notFood && !mentioned.length && !nth && !focus.length && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null || u.noMeat.length || u.noWords.length || u.noAlcohol) &&
     // "有没有云吞面？" names a dish more exactly than its course (面) does
@@ -679,6 +701,15 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   if (found && (found.hits.length || found.missing)) {
     const top = found.hits.slice(0, found.missing ? 2 : 4);
+    // "what is midin?", "what is cheese tofu?", "apa itu umai?": what the dishes with it are, in the
+    // menu's words (the one whose description has the whole phrase first)
+    const whatIs = /^(what s|whats|what is|what are|wat is|apa itu|apa tu|apa benda)\b/.test(normalize(u.text)) || /是什么|什么是|是啥/.test(u.text);
+    if (!found.missing && whatIs && found.hits.length <= 3) {
+      const phrase = normalize(u.text).replace(/^(what s|whats|what is|what are|wat is|apa itu|apa tu|apa benda)\s+(a |an |the )?/, "").trim();
+      const byPhrase = [...found.hits].sort((a, b) => Number(normalize(`${b.name} ${b.description ?? ""}`).includes(phrase)) - Number(normalize(`${a.name} ${a.description ?? ""}`).includes(phrase)));
+      const two = byPhrase.slice(0, 2);
+      return reply("dish_info", two.map((i) => `${line(i)}${desc(i) ? `: ${desc(i).replace(/[.。]+$/, "")}` : ""}`).join(t("assistantReply.itemSep")) + stop, two);
+    }
     if (!found.missing) return reply("recommend", `${t("assistantReply.weHave")}${sp}${top.map(line).join(t("assistantReply.itemSep"))}${stop}`, top);
     // nothing by that name: the closest is the course it belongs to
     if (!top.length && (u.categories.length || u.courses.length)) {
