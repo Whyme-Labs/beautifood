@@ -373,8 +373,9 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const rest = toks.filter((t, i) => !used.has(i) && t.length > 2 && !GENERIC.has(t) && !/^(how|much|what|which|the|and|berapa|harga|price|got|ada|have|is|are|does|with)$/.test(t));
     for (const m of same_) {
       const desc = normalize(`${m.dish.name} ${m.dish.description ?? ""}`).split(" ");
-      if (rest.some((t) => desc.some((w) => same(t, w)))) m.score += 0.2;
-      if (/\b(vegetarian|vegan|veggie)\b/i.test(m.dish.name) && !toks.some((t) => /^(vegetarian|vegan|veggie|vege|veg)$/.test(t)) && !/素/.test(raw)) m.score -= 0.15;
+      // (only one of them keeps the words, so the guest's words decide it outright)
+      if (rest.some((t) => desc.some((w) => same(t, w)))) m.score += 1;
+      if (/\b(vegetarian|vegan|veggie)\b/i.test(m.dish.name) && !toks.some((t) => /^(vegetarian|vegan|veggie|vege|veg)$/.test(t)) && !/素/.test(raw)) m.score -= 1;
     }
   }
   // two dishes claiming the same words: the better match keeps them
