@@ -1070,3 +1070,38 @@ describe("diet questions (v7, from counts)", () => {
     expect(r.items.map((i) => i.name)).not.toContain("Curry Mee");
   });
 });
+
+describe("the kind of dish asked for, and a running order (v7, from counts)", () => {
+  const shop = { ...ctx, items: asItems([
+    { id: "a", name: "Stir-fried Cabbage", category: "Vegetables & tauhu", description: "cabbage with garlic", price: 250, allergens: [], dietary: ["vegan", "vegetarian"], spiceLevel: 0, isSignature: true },
+    { id: "b", name: "Braised Tauhu", category: "Vegetables & tauhu", description: "tofu in soy gravy", price: 300, allergens: ["soy"], dietary: ["vegan", "vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "c", name: "Beef Rendang", category: "Meats", description: "slow-cooked beef in coconut and spices", price: 900, allergens: [], dietary: [], spiceLevel: 2, isSignature: true },
+    { id: "d", name: "Vegetable Curry", category: "Curries & rice", description: "potato, carrot and long beans in curry", price: 700, allergens: [], dietary: ["vegan", "vegetarian"], spiceLevel: 1, isSignature: true },
+    { id: "e", name: "Tomato Rice Set", category: "Curries & rice", description: "tomato rice with dhal and pickles", price: 800, allergens: [], dietary: ["vegan", "vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "f", name: "Iced Lemon Tea", category: "Drinks", description: "black tea with lemon", price: 350, allergens: [], dietary: ["vegan", "vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "g", name: "Fried Wings", category: "Snacks", description: "crispy chicken wings", price: 1200, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+  ] as never) } as unknown as AssistantContext;
+  const ask = (...qs: string[]) => {
+    const h: { role: "user" | "assistant"; content: string }[] = [];
+    let r = answerGuest(shop, [{ role: "user", content: qs[0] }]);
+    for (const q of qs) (h.push({ role: "user", content: q }), (r = answerGuest(shop, h)), h.push({ role: "assistant", content: r.answer }));
+    return r;
+  };
+  it("puts the dish with the guest's word first within the section asked for", () => {
+    expect(ask("which tauhu dish do you recommend?").items[0].name).toBe("Braised Tauhu");
+    expect(ask("which rice dish is good?").items[0].name).toBe("Tomato Rice Set");
+  });
+  it("doesn't read a kind of dish from a word the guest rules out, or from what the food goes with", () => {
+    expect(read(shop.items as unknown as Dish[], "I don't eat meat at all, any greens?").categories).not.toContain("Meats");
+    expect(read(shop.items as unknown as Dish[], "not spicy rendang for my son?").categories).toEqual([]);
+    expect(ask("anything to snack on with an iced lemon tea?").items.map((i) => i.name)).toContain("Fried Wings");
+  });
+  it("keeps the order across turns: swaps, counts set, one taken off, the one picked from a list", () => {
+    expect(ask("beef rendang and a iced lemon tea", "remove the iced lemon tea, make it braised tauhu", "total?").answer).toMatch(/Total RM12\.00/);
+    expect(ask("2 beef rendang and an iced lemon tea", "make that 3 beef rendang", "how much altogether").answer).toMatch(/Total RM30\.50/);
+    expect(ask("beef rendang x2 and iced lemon tea x2", "remove one rendang", "how much?").answer).toMatch(/Total RM16\.00/);
+    expect(ask("tomato rice set", "actually make it two", "how much for that").answer).toMatch(/Total RM16\.00/);
+    expect(ask("beef rendang and vegetable curry", "what's the bill?").answer).toMatch(/Total RM16\.00/);
+    expect(ask("beef rendang and vegetable curry", "we're splitting between 2").answer).toMatch(/RM8\.00 each/);
+  });
+});

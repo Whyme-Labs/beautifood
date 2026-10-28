@@ -19,6 +19,12 @@ Some line with no price
 
 describe("menu parser", () => {
   const parsed = parseMenuText(MENU);
+  it("takes the price with its currency, though the name has a number in it", () => {
+    const at = (line: string) => parseMenuText(`SETS\n${line}`).items.map((i) => [i.name, i.price]);
+    expect(at("Ampang 6-Piece Set - RM11.90 - six pieces in soup")).toEqual([["Ampang 6-Piece Set", 1190]]);
+    expect(at("Wings 8 pcs - RM12 - crispy")).toEqual([["Wings 8 pcs", 1200]]);
+    expect(at("Ais Kacang - 6.50 - shaved ice, add durian RM1")).toEqual([["Ais Kacang", 650]]);
+  });
   it("extracts categories and items with prices in minor units", () => {
     expect(parsed.categories).toEqual(["Noodles", "Drinks"]);
     expect(parsed.items.map((i) => [i.name, i.price])).toEqual([

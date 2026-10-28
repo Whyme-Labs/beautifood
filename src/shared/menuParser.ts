@@ -27,6 +27,8 @@ export interface ParsedMenu {
 }
 
 const PRICE_RE = /^(.*?)\s*(?:\.{2,}|[-–—:|])?\s*(?:RM|MYR|S\$|SGD|USD|\$|€|£)?\s*(\d{1,4}(?:[.,]\d{1,2})?)\s*(?:(?:[-–—|]|\s{2,})\s*(.+))?$/i;
+// a price with its currency is the price, though the name has a number ("Ampang 6-Piece Set - RM11.90")
+const MARKED_PRICE_RE = /^(.*?)\s*(?:\.{2,}|[-–—:|])?\s*(?:RM|MYR|S\$|SGD|USD|\$|€|£)\s*(\d{1,4}(?:[.,]\d{1,2})?)\s*(?:(?:[-–—|]|\s{2,})\s*(.+))?$/i;
 const SIGNATURE_RE = /(★|⭐|\*|\(signature\)|signature|chef'?s (special|pick|recommend\w*)|best ?seller|must[- ]try|house special)/i;
 
 export function stationFor(category: string, name: string): string {
@@ -73,7 +75,9 @@ export function parseMenuText(text: string): ParsedMenu {
       lastItem = null;
       continue;
     }
-    const m = line.match(PRICE_RE);
+    // (not when a plain price comes first: "Ais Kacang - 6.50 - add durian RM1")
+    const marked = line.match(MARKED_PRICE_RE);
+    const m = marked && !/(^|\s)\d{1,4}(?:[.,]\d{1,2})?(\s|$)/.test(marked[1]) ? marked : line.match(PRICE_RE);
     if (m && m[1] && cleanName(m[1]).length > 0) {
       const name = cleanName(m[1]);
       const price = Math.round(parseFloat(m[2].replace(",", ".")) * 100);

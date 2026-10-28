@@ -680,6 +680,23 @@ const negatedAt = (toks: string[], k: number) =>
   // "...or not? small plates": "or not" ends a question, it negates nothing after it
   (/^(not|no|tak|x|bukan|without|less|kurang)$/.test(toks[k - 1] ?? "") && !/^(or|ke|atau)$/.test(toks[k - 2] ?? "")) || (/^(too|so|very|terlalu|sangat|that|a|an|any)$/.test(toks[k - 1] ?? "") && /^(not|no|tak|x|bukan)$/.test(toks[k - 2] ?? ""));
 
+/**
+ * "I don't eat meat or seafood at all, any greens?", "tak makan daging": a word ruled out by a
+ * negation cue with only verbs and fillers between (not "not spicy burger", "no egg, meat dish?").
+ */
+const NEAR_NEG = /^(not|no|never|dont|doesnt|cant|cannot|wont|avoid|without|tak|x|tanpa|tidak|bukan|jangan|hate|kecuali|takde|tiada)$/;
+const BETWEEN = /^(i|we|really|even|eat|eating|eats|have|take|want|like|any|much|more|makan|minum|suka|nak|do|does|to|too|so|very)$/;
+const negatedNear = (toks: string[], k: number) => {
+  for (let j = k - 1; j >= Math.max(0, k - 4); j--) {
+    // ("got vegan one or not? small plates": "or not" ends a question)
+    if (NEAR_NEG.test(toks[j])) return !/^(or|ke|atau)$/.test(toks[j - 1] ?? "");
+    if (!BETWEEN.test(toks[j])) return false;
+  }
+  return false;
+};
+/** "what's good to snack on with a beer?": what the food goes with, when a course is asked for, isn't what's asked. */
+const goesWith = (toks: string[], k: number) => /^(a|an|my|our|the|some|your|cold|iced)$/.test(toks[k - 1] ?? "") && toks[k - 2] === "with" || /^(with|alongside)$/.test(toks[k - 1] ?? "") && /^(go|goes|pair|pairs|along)$/.test(toks[k - 2] ?? "");
+
 /** Whether the guest plainly asks for allergen `a`'s food ("what seafood should we get?", "奶茶有哪些？"). */
 function requested(question: string, a: Allergen): boolean {
   // a food typed on its own ("tofu", "udang?", "豆腐") is a search for it; a class word ("peanuts",
@@ -870,7 +887,7 @@ export function read(items: Dish[], asked: string): Reading {
     party,
     courses,
     // a word naming what they avoid ("no milk") doesn't ask for its category ("Milk teas")
-    categories: askedCategories(items, rest.filter((t, k) => !mentionedAllergens(t).some((a) => avoid.includes(a)) && !negatedAt(rest, k) && !ruledOut(t)), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? restRaw.replace(/[^，,。？?！!]*(不要|不能|不吃|不含|没有|无|过敏|别|忌|走)[^，,。？?！!]*/g, " ") : restRaw),
+    categories: askedCategories(items, rest.filter((t, k) => !mentionedAllergens(t).some((a) => avoid.includes(a)) && !negatedAt(rest, k) && !negatedNear(rest, k) && !(courses.some((c) => c !== "drinks") && goesWith(rest, k)) && !ruledOut(t)), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? restRaw.replace(/[^，,。？?！!]*(不要|不能|不吃|不含|没有|无|过敏|别|忌|走)[^，,。？?！!]*/g, " ") : restRaw),
     appetite: light ? "light" : hearty ? "hearty" : null,
     superlative,
     refersBack: refersBack || ordinal !== null || choosing,

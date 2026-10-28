@@ -89,6 +89,12 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
       // "Teh tarik kurang manis") are on the order; "is the X spicy?" isn't
       const asks = /[?？]/.test(h.content) || QUESTION.test(normalize(h.content)) || QUESTION_ZH.test(h.content);
       if (editOrder(s.order, h.content, u.dishes as Item[])) continue;
+      // "I'll take the first one", "the second one please": the dish of the last answer it points at
+      const picked = !u.dishes.length && u.ordinal !== null && s.shown.length ? s.shown.at(u.ordinal) : undefined;
+      if (picked && (ORDERING.test(normalize(h.content)) || !asks)) {
+        if (!s.order.some((o) => o.item.id === picked.id)) s.order.push({ item: picked, count: 1 });
+        continue;
+      }
       if (u.dishes.length && (ORDERING.test(normalize(h.content)) || ORDERING_ZH.test(h.content) || !asks))
         for (const [item, count] of countsOf(h.content, u.dishes)) {
           const had = s.order.find((o) => o.item.id === item.id);
@@ -111,7 +117,8 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
 
 const NUMBER_OF: Record<string, number> = { two: 2, three: 3, four: 4, five: 5, six: 6, dua: 2, tiga: 3, empat: 4, lima: 5 };
 const REMOVE = /\b(cancel|remove|drop|scratch|delete|don ?t want|no more|skip the|batal|buang|tak nak|tak jadi)\b|取消|不要了|不要那|删掉/;
-const SWAP = /\b(instead|change|swap|replace|switch|make it|make that|rather have|tukar|ganti)\b|换成|换|改成|改/;
+const SWAP = /\b(instead|change|swap|replace|switch|make it|make that|rather have|tukar|ganti|jadikan)\b|换成|换|改成|改/;
+const COUNT_SAID = /\b(\d+|one|two|three|four|five|six|satu|dua|tiga|empat|lima)\b/;
 
 /**
  * Applies a change to the order ("cancel the satay", "swap the kopi for a teh", "make it a teh
@@ -126,10 +133,48 @@ export function editOrder(order: { item: Item; count: number }[], text: string, 
     return k >= 0;
   };
   const add = (i: Item) => (order.some((o) => o.item.id === i.id) ? undefined : order.push({ item: i, count: 1 }));
-  if (!named.length || !order.length) return false;
+  if (!order.length) return false;
   const swap = SWAP.test(t) || SWAP.test(text);
-  // "no more the kopi" drops it; "no kopi, a teh instead" names only the new one, so it's a swap
-  if ((REMOVE.test(t) || REMOVE.test(text)) && (!swap || named.some((i) => order.some((o) => o.item.id === i.id)))) return named.map(drop).some(Boolean);
+  const removing = REMOVE.test(t) || REMOVE.test(text);
+  const ordered = (i: Item) => order.some((o) => o.item.id === i.id);
+  // a change that names no dish of the order plainly: the ordered one its words name ("remove one
+  // pasta" with two pastas on the menu), else, said with "it"/"that" and a number, the last one
+  // ordered ("actually make it two")
+  if ((removing || swap) && !named.some(ordered)) {
+    const said = new Set(t.split(" ").filter((w) => w.length > 3));
+    const byWords = order.filter((o) => normalize(o.item.name).split(" ").some((w) => said.has(w) || said.has(w.replace(/(es|s)$/, ""))));
+    if (byWords.length === 1) named = [byWords[0].item, ...named.filter((i) => !ordered(i))];
+    else if (!named.length && swap && COUNT_SAID.test(t) && /\b(it|that|them|those)\b/.test(t)) {
+      const last = order[order.length - 1];
+      last.count = countsOf(text.replace(/\b(it|that|them|those)\b/gi, last.item.name), [last.item as Dish]).get(last.item as Dish) ?? last.count;
+      return true;
+    }
+  }
+  if (!named.length) return false;
+  // "make that 3 roti telur", "jadikan dua": the count it is now, not more of it
+  if (swap && named.length === 1 && ordered(named[0]) && COUNT_SAID.test(t)) {
+    const n = countsOf(text, named as Dish[]).get(named[0] as Dish) ?? 1;
+    order.find((o) => o.item.id === named[0].id)!.count = n;
+    return true;
+  }
+  // "remove the milo, make it a kopi o": the ordered ones go, the new ones come
+  if ((REMOVE.test(t) || REMOVE.test(text)) && swap && named.some(ordered) && named.some((i) => !ordered(i))) {
+    const [out, inn] = [named.filter(ordered), named.filter((i) => !ordered(i))];
+    for (const i of out) drop(i);
+    for (const i of inn) add(i);
+    return true;
+  }
+  // "no more the kopi" drops it; "remove one teh tarik" of two takes one off; "no kopi, a teh
+  // instead" names only the new one, so it's a swap
+  if (removing && (!swap || named.some(ordered))) {
+    const less = (i: Item) => {
+      const o = order.find((x) => x.item.id === i.id);
+      const n = COUNT_SAID.test(t) ? countsOf(text, [i as Dish]).get(i as Dish) : undefined;
+      if (o && n !== undefined && n < o.count) return ((o.count -= n), true);
+      return drop(i);
+    };
+    return named.map(less).some(Boolean);
+  }
   if (!swap) return false;
   const kind = (i: Item) => (isDrink(i) ? "drink" : isDessert(i) ? "dessert" : "food");
   const words = (i: Item) => new Set(normalize(i.name).split(" ").filter((w) => w.length > 2));
@@ -280,7 +325,7 @@ const SYNONYMS: Record<string, string[]> = {
   seafood: ["fish", "ikan", "prawn", "shrimp", "udang", "squid", "sotong", "calamari", "octopus", "mussel", "clam", "lala", "kerang", "crab", "ketam", "lobster", "oyster", "scallop", "salmon", "tuna", "seabass", "snapper", "garoupa", "tilapia", "cod"],
   shellfish: ["prawn", "shrimp", "udang", "crab", "ketam", "lobster", "mussel", "clam", "lala", "kerang", "oyster", "scallop", "squid", "sotong", "calamari", "octopus"], udang: ["prawn", "shrimp"], prawn: ["udang", "shrimp"], shrimp: ["prawn", "udang"],
   sotong: ["squid", "calamari"], squid: ["sotong", "calamari"], daging: ["beef"], beef: ["daging"], kambing: ["mutton", "lamb"], mutton: ["kambing", "lamb"], lamb: ["kambing", "mutton"],
-  telur: ["egg"], egg: ["telur"], sayur: ["vegetable", "vegetables", "greens"], tauhu: ["tofu"], tofu: ["tauhu"], mee: ["noodle", "noodles", "mi"], mi: ["mee", "noodle"], noodle: ["mee", "mi"],
+  telur: ["egg"], egg: ["telur"], sayur: ["vegetable", "vegetables", "greens"], greens: ["vegetable", "vegetables", "sayur", "kailan", "choy", "spinach", "bayam", "kangkung", "broccoli", "lettuce", "fern", "midin", "pucuk"], vegetable: ["vegetables", "sayur", "greens"], tauhu: ["tofu"], tofu: ["tauhu"], mee: ["noodle", "noodles", "mi"], mi: ["mee", "noodle"], noodle: ["mee", "mi"],
   nasi: ["rice"], rice: ["nasi"], keju: ["cheese"], cheese: ["keju"], keledek: ["sweet potato"], babi: ["pork"], pork: ["babi"], ketam: ["crab"], crab: ["ketam"], kopi: ["coffee"], coffee: ["kopi"],
   teh: ["tea"], tea: ["teh"], milkshake: ["shake", "milkshake"], milkshakes: ["shake", "milkshake"], shake: ["milkshake"], smoothie: ["smoothie", "shake"], burger: ["burger", "burgr"], wrap: ["wrap", "burrito"], kelapa: ["coconut"], coconut: ["kelapa"], mangga: ["mango"], mango: ["mangga"], pisang: ["banana"], banana: ["pisang"],
 };
@@ -660,7 +705,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // the bill so far: what they've ordered in this conversation, and what they name now ("and a Peroni
   // with it - what's the total?", "a Margherita, a Carbonara and two Cappuccinos, how much?", "一共多少？")
   // "split between 3", "bahagi 2", "三个人分": the bill, and each person's share
-  const split = normalize(u.text).match(/\b(?:split|share the bill|divide|bahagi|kongsi bil)\b(?:\s+(?:it|the bill|bill|between|among|amongst|by|for|into|in|antara|untuk))*\s+(\d|two|three|four|five|six|dua|tiga|empat|lima)\b/) ?? normalize(u.text).match(/\b(\d|two|three|four|five|six)\s+ways\b/);
+  const split = normalize(u.text).match(/\b(?:split|splitting|share the bill|divide|dividing|bahagi|kongsi bil)\b(?:\s+(?:it|the bill|bill|between|among|amongst|by|for|into|in|antara|untuk))*\s+(\d|two|three|four|five|six|dua|tiga|empat|lima)\b/) ?? normalize(u.text).match(/\b(\d|two|three|four|five|six)\s+ways\b/);
   const splitZh = u.text.match(/([两二三四五六\d])\s*个?人\s*(?:平)?分|分\s*成?\s*([两二三四五六\d])\s*份/);
   const ways = split ? (NUMBER_OF[split[1]] ?? Number(split[1])) : splitZh ? ("两二三四五六".indexOf(splitZh[1] ?? splitZh[2]) >= 0 ? [2, 2, 3, 4, 5, 6]["两二三四五六".indexOf(splitZh[1] ?? splitZh[2])] : Number(splitZh[1] ?? splitZh[2])) : null;
   // "how much each?", "per person?", "每人多少？" with the party said: the share each ("one nasi lemak
@@ -672,7 +717,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const shares = ways ?? (perPerson && party && party >= 2 ? party : null);
   // "including tax", "after service charge", "nett": the bill as the till will total it
   const withCharges = /\b(tax|taxes|sst|gst|service charge|service|nett|after tax|incl|including tax|including service|plus tax|with tax)\b/.test(nt1) || /税|服务费/.test(u.text);
-  const totalWord = !!shares || /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text);
+  // ("what's the bill?" with an order open is its total; "bill please" asks the staff for it)
+  const billSoFar = state.order.length > 0 && /\b(whats|what s|what is|how much is|hows|how s) (the|my|our) (bill|damage)\b|\bbill (so far|now|come to)\b/.test(nt1);
+  const totalWord = !!shares || billSoFar || /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text);
   const howMuch = /\b(how much|berapa|price)\b/.test(normalize(u.text)) || /多少钱|几钱|几多钱|多少/.test(u.text);
   const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text);
   // ("how much for two nasi lemak?", "we're 3, one nasi lemak each": one dish, more than one of it)
@@ -1132,6 +1179,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const spiced = bySpice(live);
       let pool = byCourse(spiced.pool, u.courses);
       let termDrinks = false;
+      // (the guest's words order what fits, even when one also names a dish: "which tauhu dish?")
+      const typed = askedTerms(u.text, live, c.avoid, u.noWords).words;
       // "which milkshake?", "anything with lamb or mutton?", "what fish do you have?": the dishes with it
       if (!mentioned.length && !nth && !u.signatures) {
         const asked = askedTerms(u.text, live, c.avoid, u.noWords);
@@ -1187,7 +1236,12 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
           return reply("recommend", `${intro}${filters ? `${sp}${t("assistantReply.allAre", { filters })}` : ""}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}${sp}${t("assistantReply.tasteNote", { liked: taste.liked })}`, picks, { taste: { liked: taste.liked, because: taste.because, source: "Qloo" } });
         }
       }
-      const order = u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : ranked(pool);
+      // within what fits, a dish whose own name or description has the guest's words comes first: "which
+      // tauhu dish?" in a "Vegetables & tauhu" section, "a rice dish" among "Curries & rice"
+      const said = [...typed, ...normalize(u.text).split(" ").filter((w) => courseOfWord(w) && !NOT_A_TERM.has(w) && !u.noWords.includes(w))];
+      const relevance = (i: Item) => said.reduce((n, w) => n + (hasTerm({ ...i, description: "", category: "" }, w) ? 2 : hasTerm({ ...i, category: "" }, w) ? 1 : 0), 0);
+      const relevant = (xs: Item[]) => (xs.some((i) => relevance(i) > 0) ? [...xs].sort((a, b) => relevance(b) - relevance(a)) : xs);
+      const order = u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : relevant(ranked(pool));
       // food first: drinks are ordered most, but "anything vegetarian?" means a dish (one drink at most)
       const wantsDrinks = u.courses.includes("drinks") || (u.categories.length > 0 && pool.every(isDrink)) || termDrinks;
       // "the cheapest thing", "the priciest": the whole menu, drinks too
