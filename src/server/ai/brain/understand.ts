@@ -860,7 +860,7 @@ export function read(items: Dish[], asked: string): Reading {
     // "what deals are on?", not "give me 50% off" or "print a discount code" (that's for staff)
     asksDeals: !/\b(code|codes|voucher|coupon|pretend|give me \d+|print|generate|kod)\b/.test(restText) && /\b(promo|promos|promotion|promotions|deal|deals|discount|discounts|discounted|offer|offers|happy hour|happy hours|special price|on sale|diskaun|promosi|tawaran|potongan harga)\b/.test(restText) || /优惠|特价|折扣|打折|促销|欢乐时光|活动价/.test(restRaw),
     howMany: (() => {
-      const m = restText.match(/\b(?:just |only )?(one|1|a single|two|2|three|3|satu|dua|tiga)\s+(?:\w+\s+)?(drinks?|dish(?:es)?|things?|items?|options?|picks?|suggestions?|recommendations?|mains?|desserts?)\b/);
+      const m = restText.match(/\b(?:just |only )?(one|1|a single|two|2|three|3|satu|dua|tiga)\s+(?:\w+\s+)?(drinks?|dish(?:es)?|things?|items?|options?|picks?|suggestions?|recommendations?|mains?|desserts?)\b/) ?? restText.match(/\b(satu|dua|tiga)\s+(je|jer|saja|sahaja|aje)\b/);
       const z = restRaw.match(/(?:推荐|来|给我)?([一二两三1-3])(?:杯|个|道|样|款)/);
       const n = m ? ({ one: 1, "1": 1, "a single": 1, satu: 1, two: 2, "2": 2, dua: 2, three: 3, "3": 3, tiga: 3 } as Record<string, number>)[m[1]] : z ? ("一二两三".indexOf(z[1]) >= 0 ? [1, 2, 2, 3]["一二两三".indexOf(z[1])] : Number(z[1])) : null;
       return n ?? null;
