@@ -662,10 +662,21 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const split = normalize(u.text).match(/\b(?:split|share the bill|divide|bahagi|kongsi bil)\b(?:\s+(?:it|the bill|bill|between|among|amongst|by|for|into|in|antara|untuk))*\s+(\d|two|three|four|five|six|dua|tiga|empat|lima)\b/) ?? normalize(u.text).match(/\b(\d|two|three|four|five|six)\s+ways\b/);
   const splitZh = u.text.match(/([两二三四五六\d])\s*个?人\s*(?:平)?分|分\s*成?\s*([两二三四五六\d])\s*份/);
   const ways = split ? (NUMBER_OF[split[1]] ?? Number(split[1])) : splitZh ? ("两二三四五六".indexOf(splitZh[1] ?? splitZh[2]) >= 0 ? [2, 2, 3, 4, 5, 6]["两二三四五六".indexOf(splitZh[1] ?? splitZh[2])] : Number(splitZh[1] ?? splitZh[2])) : null;
-  const totalWord = !!ways || /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text);
+  // "how much each?", "per person?", "每人多少？" with the party said: the share each ("one nasi lemak
+  // each" is a count per person instead)
+  const nt1 = normalize(u.text);
+  const oneEach = /\b(one|1|a|satu)\s+(\w+\s+){0,4}each\b|\beach (have|get|having|getting|take|one)\b|\bsatu (seorang|sorang)\b/.test(nt1) || /每人一|一人一/.test(u.text);
+  const perPerson = !oneEach && (/\b(how much|berapa)\b.*\b(each|per person|per head|per pax|seorang|sorang)\b|\b(each|per person|per head|per pax) (pay|pays|paying)\b|\b(per person|per head|per pax|each of us)\b/.test(nt1) || /每人|每个人|一人多少/.test(u.text));
+  const party = u.party ?? null;
+  const shares = ways ?? (perPerson && party && party >= 2 ? party : null);
+  // "including tax", "after service charge", "nett": the bill as the till will total it
+  const withCharges = /\b(tax|taxes|sst|gst|service charge|service|nett|after tax|incl|including tax|including service|plus tax|with tax)\b/.test(nt1) || /税|服务费/.test(u.text);
+  const totalWord = !!shares || /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text);
   const howMuch = /\b(how much|berapa|price)\b/.test(normalize(u.text)) || /多少钱|几钱|几多钱|多少/.test(u.text);
   const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text);
-  if (!u.budget && (totalWord || (howMuch && (mentioned.length >= 2 || state.order.length)))) {
+  // ("how much for two nasi lemak?", "we're 3, one nasi lemak each": one dish, more than one of it)
+  const several = mentioned.length === 1 && ([...countsOf(u.text, mentioned).values()][0] > 1 || (oneEach && !!party && party >= 2));
+  if (!u.budget && (totalWord || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
     const bill = state.order.map((o) => ({ ...o }));
     // "swap the kopi for a teh, total?", "cancel the satay": the order as changed
     const edited = editOrder(bill, u.text, mentioned);
@@ -688,11 +699,25 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (adding && !state.order.length && state.shown.length && state.shown.length <= 2) for (const item of [...state.shown].reverse()) if (!bill.some((o) => o.item.id === item.id)) bill.unshift({ item, count: 1 });
     // "total for both?" with nothing ordered: the dishes just talked about
     if (totalWord && !edited && bill.reduce((n, o) => n + o.count, 0) < 2) for (const item of state.shown) if (!bill.some((o) => o.item.id === item.id)) bill.push({ item, count: 1 });
-    if (bill.reduce((n, o) => n + o.count, 0) >= (edited ? 1 : 2)) {
+    // "one nasi lemak each" for three: three of it
+    if (oneEach && party && party >= 2) for (const o of bill) if (mentioned.includes(o.item) && o.count === 1) o.count = party;
+    // "just the food", "without the drinks", "minus the satay", "not counting the kopi": what they leave out
+    const cut = /\b(just|only) (the )?(food|foods|makanan|mains?)\b|\bfood only\b|\b(without|minus|excluding|exclude|except|not counting|not including|tanpa|kecuali|tak kira)( the| all the)? (drinks?|beverages?|minuman|air)\b/.test(nt1) || /不算饮料|不含饮料|只算吃的|饮料不算/.test(u.text);
+    if (cut) for (let k = bill.length - 1; k >= 0; k--) if (isDrink(bill[k].item)) bill.splice(k, 1);
+    // (an item on the bill by a word of its name after the cue: "minus the satay", "without the kopi")
+    const after = [...nt1.matchAll(/\b(?:without|minus|excluding|exclude|except|not counting|not including|less|tanpa|kecuali|tak kira)(?: the| my| our)? (\w+)/g)].map((m) => m[1]);
+    if (after.length) for (let k = bill.length - 1; k >= 0; k--) if (normalize(bill[k].item.name).split(" ").some((w) => w.length > 2 && after.includes(w))) bill.splice(k, 1);
+    if (bill.reduce((n, o) => n + o.count, 0) >= (edited || cut || after.length || several ? 1 : 2)) {
       const total = bill.reduce((sum, o) => sum + o.item.price * o.count, 0);
       const lines = bill.map((o) => (o.count > 1 ? `${o.count} × ${line(o.item)}` : line(o.item)));
-      const each = ways && ways >= 2 ? `${sp}${t("assistantReply.splitEach", { count: ways, each: money(Math.ceil(total / ways)) })}` : "";
-      return reply("recommend", `${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${each}`, bill.map((o) => o.item));
+      // as the till totals it (crates/core/src/money.rs): service charge on the food, tax on both, cash rounding
+      const ch = { serviceChargePct: 10, taxPct: 6, taxInclusive: false, cashRounding: 5, ...ctx.charges };
+      const service = Math.round((total * ch.serviceChargePct) / 100);
+      const tax = ch.taxInclusive ? 0 : Math.round(((total + service) * ch.taxPct) / 100);
+      const due = withCharges ? Math.round((total + service + tax) / Math.max(1, ch.cashRounding)) * Math.max(1, ch.cashRounding) : total;
+      const charges = withCharges ? `${sp}${t("assistantReply.withCharges", { service: `${ch.serviceChargePct}%`, tax: `${ch.taxPct}%`, total: money(due) })}` : "";
+      const each = shares && shares >= 2 ? `${sp}${t("assistantReply.splitEach", { count: shares, each: money(Math.ceil(due / shares)) })}` : "";
+      return reply("recommend", `${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${charges}${each}`, bill.map((o) => o.item));
     }
   }
 

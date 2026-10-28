@@ -950,6 +950,29 @@ describe("service questions and one-dish questions", () => {
   });
 });
 
+describe("bills: what's left out, how many, each share, and the till's charges", () => {
+  const order = [{ role: "user" as const, content: "I'll have a nasi lemak, a teh tarik and a satay" }, { role: "assistant" as const, content: "Added: Nasi Lemak Ayam Rempah (RM18.90), Teh Tarik (RM5.50), Satay (6 sticks) (RM13.00)." }];
+  const ask = (q: string, h = order) => answerGuest(ctx, [...h, { role: "user", content: q }]).answer;
+  it("leaves out the drinks, or a dish, when asked", () => {
+    expect(ask("how much for just the food?")).toMatch(/Total RM31\.90/);
+    expect(ask("total without the drink?")).toMatch(/Total RM31\.90/);
+    expect(ask("what's the total minus the satay?")).toMatch(/Total RM24\.40/);
+  });
+  it("counts one dish more than once, and one each for the party", () => {
+    expect(ask("how much for two nasi lemak?", [])).toMatch(/2 × Nasi Lemak.*Total RM37\.80/);
+    expect(ask("we are 3, one nasi lemak each, how much?", [])).toMatch(/3 × Nasi Lemak.*Total RM56\.70/);
+  });
+  it("gives each person's share when the party is said", () => {
+    expect(ask("we're 3 people, how much per person?")).toMatch(/Split 3 ways, that's RM12\.47 each/);
+  });
+  it("adds service charge and tax as the till does", () => {
+    // 37.40 + 10% = 41.14, + 6% tax = 43.61, rounded to 5 sen
+    expect(ask("total including service and tax?")).toMatch(/With 10% service charge and 6% tax, RM43\.60/);
+    const inclusive = { ...ctx, charges: { serviceChargePct: 0, taxPct: 6, taxInclusive: true, cashRounding: 1 } } as AssistantContext;
+    expect(answerGuest(inclusive, [...order, { role: "user", content: "how much after tax?" }]).answer).toMatch(/RM37\.40\.$/);
+  });
+});
+
 describe("the branch's halal standing", () => {
   const dishes = asItems([
     { id: "a", name: "Ayam Goreng", category: "Mains", description: "fried chicken", price: 1290, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },

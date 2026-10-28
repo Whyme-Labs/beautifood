@@ -33,6 +33,8 @@ export interface AssistantContext {
   /** From the assistant's own log: how often each dish was shown in the chat, and added from it. */
   chatShown?: Record<string, number>;
   chatAdded?: Record<string, number>;
+  /** What the till adds to a bill at this branch (BranchConfig): service charge, tax, cash rounding. */
+  charges?: { serviceChargePct: number; taxPct: number; taxInclusive: boolean; cashRounding: number };
   /** The branch's halal standing (certified by whom, Muslim-friendly, pork-free, or nothing declared). */
   halal?: Halal;
 }

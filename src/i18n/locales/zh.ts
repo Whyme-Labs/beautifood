@@ -515,6 +515,7 @@ const zh = {
     notVegetarian: "{dish}不是素食。",
     basketIntro: "帮你配好了：",
     basketTotal: "合计 {total}。",
+    withCharges: "加{service}服务费和{tax}税，共 {total}。",
     splitEach: "{count}人平分，每人 {each}。",
     basketWithin: "合计 {total}，在你的预算 {budget} 之内。",
     basketNoFit: "今天的菜单上，{list} 没办法控制在 {budget} 以内。店员或许可以帮你。",

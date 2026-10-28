@@ -83,6 +83,7 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
     rules: menu.rules,
     clock,
     halal,
+    charges: { serviceChargePct: ctx.config.serviceChargePct, taxPct: ctx.config.taxPct, taxInclusive: ctx.config.taxInclusive, cashRounding: ctx.config.cashRounding },
     items: withBranchHalal(menu.items, halal).map((i) => ({ ...i, category: catName.get(i.categoryId), popularity: popularity.get(i.id) ?? 0 })),
     ...basket,
     ...chat,
