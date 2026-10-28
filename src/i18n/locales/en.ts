@@ -520,6 +520,7 @@ const en = {
     splitEach: "Split {count} ways, that's {each} each.",
     basketWithin: "Total {total}, within your {budget}.",
     basketNoFit: "I couldn't fit {list} into {budget} on today's menu. Our staff may be able to help.",
+    noMeatAtAll: "without meat",
     noMeat: "without {list}",
     meat: { pork: "pork", beef: "beef", chicken: "chicken", lamb: "lamb", duck: "duck" },
     cheaperIntro: "Cheaper than {price}:",

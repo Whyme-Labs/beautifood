@@ -814,6 +814,48 @@ describe("spice words aren't category names (v7: a 'Not spicy' section)", () => 
   });
 });
 
+describe("what a guest rules out or allows", () => {
+  const menu = { ...ctx, items: asItems([
+    { id: "a", name: "Siu Mai", category: "Dim sum", description: "pork and prawn dumplings", price: 1290, allergens: ["crustaceans"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "b", name: "Har Gow", category: "Dim sum", description: "prawn dumplings", price: 1390, allergens: ["crustaceans"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "c", name: "Durian Pancake", category: "Desserts", description: "durian cream in a crepe", price: 1690, allergens: ["milk", "egg", "gluten"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: true },
+    { id: "d", name: "Mango Pudding", category: "Desserts", description: "mango and evaporated milk", price: 990, allergens: ["milk"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "e", name: "Steamed Fish", category: "Mains", description: "garoupa with ginger and soy", price: 3290, allergens: ["fish", "soy"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "f", name: "Jain Curry", category: "Mains", description: "potato and capsicum curry, no onion, no garlic", price: 1490, allergens: [], dietary: ["vegetarian", "vegan"], spiceLevel: 1, isSignature: false },
+    { id: "g", name: "Garlic Kailan", category: "Mains", description: "kailan with fried garlic and onion", price: 1290, allergens: [], dietary: ["vegetarian", "vegan"], spiceLevel: 0, isSignature: false },
+  ] as never) } as unknown as AssistantContext;
+  const names = (q: string) => answerGuest(menu, [{ role: "user", content: q }]).items.map((i) => i.name);
+  const dishes = menu.items as unknown as Dish[];
+
+  it("reads Malay 'tak ada babi' and 'tak ada arak' as no pork and no alcohol", () => {
+    expect(read(dishes, "ada makanan yg tak ada babi?").noMeat).toEqual(["pork"]);
+    expect(read(dishes, "Ada apa-apa yang tak ada babi dan tak ada arak?")).toMatchObject({ noMeat: ["pork"], noAlcohol: true });
+    expect(names("ada makanan yg tak ada babi?")).not.toContain("Siu Mai");
+  });
+  it("leaves out a food they don't like or avoid, even one the menu has a section for", () => {
+    expect(read(dishes, "I don't like durian, what else is good?").noWords).toEqual(["durian"]);
+    expect(names("I don't like durian, what else is good?")).not.toContain("Durian Pancake");
+    expect(names("I avoid onion and garlic, what can I have?")).not.toContain("Garlic Kailan");
+  });
+  it("keeps a dish the menu says is without the food", () => {
+    const vegan = names("I avoid onion and garlic, anything vegan?");
+    expect(vegan).toContain("Jain Curry");
+    expect(vegan).not.toContain("Garlic Kailan");
+  });
+  it("doesn't avoid what they say is fine", () => {
+    expect(read(dishes, "eggs and milk are fine but no meat or fish").avoid).toEqual(["fish"]);
+    expect(read(dishes, "I eat fish but no meat at all")).toMatchObject({ avoid: [], diet: [] });
+    expect(names("I don't eat meat but fish is fine. What do you recommend?")).toContain("Steamed Fish");
+  });
+  it("doesn't read 'can I eat prawns?' as allowing them, nor 有没有猪 as no pork", () => {
+    expect(read(dishes, "I'm allergic, can I eat prawns?").avoid).toContain("crustaceans");
+    expect(read(dishes, "有没有猪脚醋？").noMeat).toEqual([]);
+  });
+  it("doesn't rule out sugar, ice or spice as foods ('no sugar', 'no ice')", () => {
+    expect(read(dishes, "no sugar and no ice for my drink").noWords).toEqual([]);
+  });
+});
+
 describe("the branch's halal standing", () => {
   const dishes = asItems([
     { id: "a", name: "Ayam Goreng", category: "Mains", description: "fried chicken", price: 1290, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },

@@ -518,6 +518,7 @@ const zh = {
     splitEach: "{count}人平分，每人 {each}。",
     basketWithin: "合计 {total}，在你的预算 {budget} 之内。",
     basketNoFit: "今天的菜单上，{list} 没办法控制在 {budget} 以内。店员或许可以帮你。",
+    noMeatAtAll: "不含肉类",
     noMeat: "不含{list}",
     meat: { pork: "猪肉", beef: "牛肉", chicken: "鸡肉", lamb: "羊肉", duck: "鸭肉" },
     cheaperIntro: "比 {price} 便宜的有：",

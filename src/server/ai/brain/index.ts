@@ -43,6 +43,8 @@ export interface DialogueState {
   noCaffeine: boolean;
   /** Meats they said they don't eat. */
   noMeat: Meat[];
+  /** Other foods they said they won't have ("I don't like durian", "no onion"). */
+  noWords: string[];
   /** Dishes the last answer named, in its order. */
   shown: Item[];
   /** The dish being talked about. */
@@ -70,7 +72,7 @@ export function dishesIn(ctx: AssistantContext, text: string): Item[] {
 }
 
 export function dialogueState(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[]): DialogueState {
-  const s: DialogueState = { avoid: [], diet: [], maxSpice: null, noAlcohol: false, noCaffeine: false, noMeat: [], shown: [], focus: null, order: [] };
+  const s: DialogueState = { avoid: [], diet: [], maxSpice: null, noAlcohol: false, noCaffeine: false, noMeat: [], noWords: [], shown: [], focus: null, order: [] };
   for (const h of history) {
     if (h.role === "user") {
       const u = read(ctx.items as Dish[], h.content);
@@ -80,6 +82,7 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
       if (u.noAlcohol) s.noAlcohol = true;
       if (u.noCaffeine) s.noCaffeine = true;
       s.noMeat = [...new Set([...s.noMeat, ...u.noMeat])];
+      s.noWords = [...new Set([...s.noWords, ...u.noWords])];
       if (u.minSpice !== null) s.maxSpice = null;
       if (u.dishes.length === 1) s.focus = u.dishes[0] as Item;
       // "I'll have the X", "add a Y", and a dish named without a question ("one nasi kerabu please",
@@ -196,7 +199,15 @@ interface Constraints {
   noAlcohol?: boolean;
   noCaffeine?: boolean;
   noMeat?: Meat[];
+  noWords?: string[];
 }
+
+/**
+ * A food word as the menu may write it ("noodle" for "noodles", "onions" for "onion"), and not
+ * where the menu says the dish is without it ("no onion, no garlic", "onion-free", "tanpa santan").
+ */
+const wordIn = (w: string, text: string) =>
+  new RegExp(`\\b${w.replace(/(es|s)$/, "")}(s|es)?\\b`, "i").test(text.replace(/\b(no|without|minus|sans|tanpa|tiada|free of|free from)\s+(\w+\s+(and|or|dan|atau)\s+)?\w+|\b\w+[\s-]free\b/gi, " "));
 
 const ALCOHOL = /\b(beer|lager|stout|ale|sake|soju|wine|whisky|whiskey|highball|cocktail|gin|vodka|rum|tequila|shochu|umeshu|cider|alcohol|alcoholic|baileys|liqueur|brandy|cognac|kahlua|amaretto|prosecco|champagne|sangria|makgeolli|tuak|arak|toddy|ipa|pilsner|mezcal)\b|啤酒|清酒|烧酒|葡萄酒|鸡尾酒|威士忌|梅酒/i;
 const CAFFEINE = /\b(coffee|kopi|espresso|latte|cappuccino|americano|mocha|macchiato|flat white|tea|teas|teh|matcha|chai|oolong|earl grey|cola|energy drink|yerba)\b|咖啡|茶/i;
@@ -213,6 +224,7 @@ function allowed(i: Item, c: Constraints) {
   if (c.noAlcohol && isAlcoholic(i)) return false;
   if (c.noCaffeine && CAFFEINE.test(`${i.name} ${i.description ?? ""}`) && !/\b(decaf|caffeine[\s-]free|no caffeine)\b/i.test(`${i.name} ${i.description ?? ""}`)) return false;
   if (c.noMeat?.some((m) => MEAT_WORDS[m].test(`${i.name} ${i.description ?? ""}`))) return false;
+  if (c.noWords?.some((w) => wordIn(w, normalize(`${i.name} ${i.description ?? ""}`)))) return false;
   return true;
 }
 
@@ -374,6 +386,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     noAlcohol: u.noAlcohol || state.noAlcohol,
     noCaffeine: u.noCaffeine || state.noCaffeine,
     noMeat: [...new Set([...state.noMeat, ...u.noMeat])],
+    noWords: [...new Set([...state.noWords, ...u.noWords])],
   };
   const safety = avoid.length || u.allergens.length ? allyNote(locale) : undefined;
   // a card is an "add to order" button: never one for a dish that breaks an allergy or diet the guest
@@ -392,7 +405,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // constraint on what's shown, like one stated, even when the question also asks about one dish
   const nq = normalize(u.text);
   const dietAsked = u.diet.filter((d) => new RegExp(`\\b(got|any|ada|have|has|do you have|is there|are there|which|what|recommend|suggest)\\b.{0,30}\\b${d === "vegetarian" ? "(vegetarian|veggie|vege|veg)" : d}\\b(?!\\s*(or not|ke|kah|tak)\\s*$)`).test(nq) || /有没有素|有素|有什么素|推荐.{0,4}素|有没有清真|有清真/.test(u.text));
-  const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet, ...dietAsked])].filter(notVeg), noMeat: [...new Set([...state.noMeat, ...u.noMeat])] };
+  const said = { avoid: [...new Set([...state.avoid, ...u.stated])], diet: [...new Set([...state.diet, ...u.statedDiet, ...dietAsked])].filter(notVeg), noMeat: [...new Set([...state.noMeat, ...u.noMeat])], noWords: [...new Set([...state.noWords, ...u.noWords])] };
   // ...and none for a dish that isn't served right now (it can't be ordered yet)
   const safeCard = (i: Item) => i.servedNow !== false && allowed(i, { ...said, maxSpice: null, minSpice: null, budget: null });
   const reply = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
@@ -421,7 +434,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (c.diet.includes("vegan")) w.push(t("assistantReply.vegan"));
     else if (c.diet.includes("vegetarian")) w.push(t("assistantReply.vegetarian"));
     if (c.diet.includes("halal")) w.push(t("assistantReply.halal"));
-    if (c.noMeat?.length) w.push(t("assistantReply.noMeat", { list: c.noMeat.map((m) => t(`assistantReply.meat.${m}` as MessageKey)).join(t("assistantReply.and")) }));
+    // (every meat is "without meat": a pescatarian)
+    if (c.noMeat && c.noMeat.length >= Object.keys(MEAT_WORDS).length) w.push(t("assistantReply.noMeatAtAll"));
+    else if (c.noMeat?.length) w.push(t("assistantReply.noMeat", { list: c.noMeat.map((m) => t(`assistantReply.meat.${m}` as MessageKey)).join(t("assistantReply.and")) }));
+    if (c.noWords?.length) w.push(t("assistantReply.noMeat", { list: c.noWords.join(t("assistantReply.and")) }));
     if (c.maxSpice === 0) w.push(t("assistantReply.notSpicy"));
     else if (c.maxSpice === 1) w.push(t("assistantReply.mild"));
     else if (c.minSpice) w.push(t("assistantReply.spicy"));
@@ -598,7 +614,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
 
   // a plain search of the menu ("chicken", "有没有披萨？"): what matches, or an honest "we don't have it"
-  const searchable = !notFood && !mentioned.length && !nth && !focus.length && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null) &&
+  const searchable = !notFood && !mentioned.length && !nth && !focus.length && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null || u.noMeat.length || u.noWords.length || u.noAlcohol) &&
     // "有没有云吞面？" names a dish more exactly than its course (面) does
     // "do you have a coffee frappuccino?", "got bak kut teh?": a search, even with a course word in it
     (!(u.courses.length || u.categories.length) || /有没有|有.+吗/.test(u.text) || /^(do you have|have you got|you got|got|ada|any chance)\b/.test(normalize(u.text))) && !["thanks", "compare", "pairing", "refine", "group"].includes(intent);

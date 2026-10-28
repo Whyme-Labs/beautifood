@@ -86,6 +86,11 @@ export interface Understanding {
   noCaffeine: boolean;
   /** Meats the guest doesn't eat ("no pork", "I don't eat beef", "tak makan babi", "不吃猪肉"). */
   noMeat: Meat[];
+  /**
+   * Other foods they won't have, as words of this menu's dishes ("I don't like durian", "avoid
+   * onion and garlic", "any bowl without rice", "tak nak cili"): a dish naming one is left out.
+   */
+  noWords: string[];
   /** "what are you known for?", "chef's specials", "招牌": the signature dishes. */
   signatures: boolean;
   /** An allergy said, but no allergen the brain can name ("allergic to the thing in curries"). */
@@ -150,7 +155,7 @@ const KEYWORDS = (
 ).split(" ");
 
 /** Real words that are one letter off a keyword ("there" and "these", "daily" and "dairy"): never "corrected". */
-const REAL = new Set("there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story".split(" "));
+const REAL = new Set("there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story carb carbs keto protein calorie calories".split(" "));
 
 /**
  * Allergen words, which are worth correcting even when short ("egs", "nutz"): missing one is the
@@ -485,8 +490,9 @@ function meatsAvoided(question: string): Meat[] {
   // a pescatarian eats fish and seafood, no meat or poultry
   if (/\b(pescatarian|pescetarian|pescatarians|pesco vegetarian|seafood only|fish only|only eat (fish|seafood))\b/.test(t) || /只吃海鲜|只吃鱼|海鲜素/.test(question)) return MEAT_NAMES.map(([m]) => m);
   return MEAT_NAMES.filter(([, en, zh]) =>
-    new RegExp(`\\b(no|not|without|tanpa|tak|x|tidak|dont|don t|do not|never|cannot|cant|can t|avoid|minus|except|kecuali|tak boleh)\\s+(eat\\s+|makan\\s+|have\\s+|any\\s+|take\\s+)?(${en})\\b|\\b(${en})[\\s-]?free\\b|\\bnon[\\s-]?(${en})\\b`).test(t) ||
-    new RegExp(`(不吃|不要|不含|没有|无|忌)${zh}`).test(question),
+    new RegExp(`\\b(no|not|without|tanpa|tak|takde|tiada|x|tidak|bukan|dont|don t|do not|never|cannot|cant|can t|avoid|minus|except|kecuali|tak boleh|hate)\\s+(eat\\s+|makan\\s+|have\\s+|any\\s+|take\\s+|ada\\s+|like\\s+|suka\\s+|want\\s+|nak\\s+|guna\\s+|pakai\\s+|contain\\s+|mengandungi\\s+)?(${en})\\b|\\b(${en})[\\s-]?free\\b|\\bnon[\\s-]?(${en})\\b`).test(t) ||
+    // (not "有没有猪脚醋？", which asks whether there is one)
+    new RegExp(`(不吃|不要|不含|(?<!有)没有|无|忌)${zh}`).test(question),
   ).map(([m]) => m);
 }
 
@@ -639,6 +645,49 @@ function requested(question: string, a: Allergen): boolean {
   return question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && (REQUEST.test(clause) || REQUEST_ZH.test(clause)));
 }
 
+// "fish is fine", "eggs and milk are ok", "I eat fish", "seafood boleh": a food the guest says they
+// do have. Only an explicit word of it, in a clause with no avoid cue for it, counts
+const ALLOW = /\b(fine|ok|okay|alright|all right|no problem|no issue|not a problem|tak apa|takpe|takpa)\b|(?<!\b(can|could|may|should|do|boleh)\s)\bi (do |still |only )?eat\b|(?<!\b(can|could|may|should|do|boleh|you|u)\s(i|we)\s)\b(she|he|they|we) (eat|eats|makan)\b/;
+const ALLOW_ZH = /可以吃|能吃|没问题|没关系|吃(鱼|海鲜|蛋|鸡蛋|奶)/;
+function allowedSaid(question: string, a: Allergen): boolean {
+  return question.split(/[,;.!?，。；、]+|\s[-–—]\s|\b(?:but|tapi|then|though|although)\b|但是|不过/i).some((clause) => {
+    if (!clause || !mentionedAllergens(clause).includes(a) || ALLERGY_WORD.test(clause)) return false;
+    const n = normalize(clause);
+    if (!ALLOW.test(n) && !ALLOW_ZH.test(clause)) return false;
+    // "no fish is fine with me" still avoids it
+    return !tokens(n, true).some((t, i, toks) => mentionedAllergens(t).includes(a) && toks.slice(Math.max(0, i - 4), i).some((w) => NEG_CUE.test(w) && w !== "free" && w !== "boleh" && w !== "nak"));
+  });
+}
+
+// "I don't like durian", "avoid onion and garlic", "without rice", "tak nak cili", "hate coriander":
+// the words after a cue that this menu's dishes use, other than what is read elsewhere (allergens,
+// meats, alcohol, caffeine, spice, diets, courses) and words that change a dish rather than rule it out
+const EXCLUDE_CUE = /^(no|without|tanpa|avoid|avoiding|hate|except|exclude|minus|kecuali|skip)$/;
+const EXCLUDE_PHRASE = /\b(don t|dont|do not|doesn t|doesnt|can t|cant|cannot|tak|tidak|not|never)\s+(like|likes|want|eat|eats|have|suka|nak|mahu|makan|ada|a fan of|into|fond of)\b|\bnot (a )?(fan|big fan) of\b|\b(allergic|allergy) to\b/g;
+const EXCLUDE_SKIP = /^(the|a|an|any|some|too|much|so|very|eat|have|like|want|ada|nak|makan|suka|and|or|dan|atau|n|&|also|either|nor|of|in|my|food|foods|dish|dishes|stuff|thing|things|please|pls|thanks|la|lah|ah)$/;
+const EXCLUDE_KEEP = /^(sugar|ice|ais|salt|msg|oil|sauce|spicy|spice|pedas|sweet|manis|meat|daging|alcohol|arak|caffeine|coffee|kopi|problem|issue|thanks|thank|worries|idea|money|cash|time|rush|need|more|less|big|small|cold|hot|chilli|chili|cili|cabai)$/;
+function wordsAvoided(items: Dish[], question: string): string[] {
+  const vocab = new Set(items.flatMap((i) => normalize(`${i.name} ${i.description ?? ""}`).split(" ")).filter((w) => w.length > 2));
+  const t = normalize(question).replace(EXCLUDE_PHRASE, " without ");
+  const toks = t.split(" ").filter(Boolean);
+  const out: string[] = [];
+  toks.forEach((w, i) => {
+    if (!EXCLUDE_CUE.test(w)) return;
+    // the food words after the cue, through "and"/"or"/"," lists ("onion and garlic")
+    for (let j = i + 1, n = 0; j < toks.length && n < 4; j++) {
+      const x = toks[j];
+      if (EXCLUDE_SKIP.test(x)) continue;
+      const sing = singular(x);
+      const word = vocab.has(x) ? x : vocab.has(sing) ? sing : null;
+      if (!word || EXCLUDE_KEEP.test(word) || mentionedAllergens(x).length || MEAT_NAMES.some(([, en]) => new RegExp(`^(${en})$`).test(x)) || CONSTRAINT_WORD.test(x) || /^(drinks?|desserts?|mains?|sides?|food)$/.test(x)) break;
+      out.push(word);
+      n++;
+      if (!/^(and|or|dan|atau|n|&|nor)$/.test(toks[j + 1] ?? "")) break;
+    }
+  });
+  return [...new Set(out)];
+}
+
 export type Reading = Omit<Understanding, "intent" | "confidence" | "guess">;
 
 /** Everything but the intent: the slots, and the question as the intent model reads it. */
@@ -658,7 +707,10 @@ export function read(items: Dish[], asked: string): Reading {
       else break;
     }
   });
-  const mentions = findDishes(items, raw, toks, skip);
+  // a dish found only by words they rule out ("I avoid garlic" isn't the Garlic Kailan) isn't named
+  const noWords = wordsAvoided(items, question);
+  const ruledOut = (t: string) => noWords.some((w) => w === t || singular(w) === singular(t));
+  const mentions = findDishes(items, raw, toks, skip).filter((m) => !(noWords.length && m.covered.length && m.covered.every((i) => ruledOut(toks[i]))));
   const dishWords = new Set(mentions.flatMap((m) => m.covered));
   // the question without its dish names: "vegetarian" in Vegetarian Mee Goreng is not a diet ask
   const rest = toks.filter((_, i) => !dishWords.has(i));
@@ -680,7 +732,9 @@ export function read(items: Dish[], asked: string): Reading {
   const fixed = question.replace(/[A-Za-z']+/g, (w) => (ix.df.has(w.toLowerCase()) ? w : correct(w.toLowerCase().replace(/'/g, ""))));
   // the errors aren't equal: wrongly avoiding hides a dish, wrongly wanting can harm someone. So an
   // allergen is avoided unless the guest plainly asks for it (a request word, and no cue governing it)
-  const avoid = allergens.filter((a) => governed(fixed, a) || !requested(fixed, a));
+  // ...and not when they say they have it ("fish is fine", "eggs and milk are ok", "I eat fish")
+  const allowedFoods = allergens.filter((a) => allowedSaid(fixed, a) && !governed(fixed, a));
+  const avoid = allergens.filter((a) => !allowedFoods.includes(a) && (governed(fixed, a) || !requested(fixed, a)));
   // "anything 100% allergen free?": none of them at all
   if (/\b(allergen|allergy|allergic|alergen)[\s-]*free\b|\bno allergens?\b|\bwithout (any )?allergens?\b|\bfree (of|from) (all |any )?allergens\b|\btiada alergen\b/.test(restText) || /无过敏原|不含过敏原|没有过敏原/.test(restRaw)) avoid.push(...ALLERGENS);
 
@@ -693,6 +747,9 @@ export function read(items: Dish[], asked: string): Reading {
     /\b(don t|dont|do not|never|cannot|can t|cant|doesn t|doesnt|tak|tidak|x) (eat|makan) (any )?(meat|daging)\b/.test(normalize(question))
   )
     diet.push("vegetarian");
+  // "I don't eat meat but fish is fine", "I eat fish but no meat": a pescatarian, not a vegetarian
+  const pescatarian = diet.includes("vegetarian") && !/\b(vegetarian|veggie|vegetarians|vege)\b/.test(restText) && !/素|斋/.test(restRaw) && allowedFoods.some((a) => a === "fish" || a === "crustaceans" || a === "molluscs");
+  if (pescatarian) diet.splice(diet.indexOf("vegetarian"), 1);
   // halal is no pork and no alcohol; "no pork" alone is a meat they don't eat (noMeat, below)
   if (/\b(halal|muslim|muslims|moslem|orang islam)\b/.test(restText) || /清真|穆斯林|回教|伊斯兰/.test(restRaw)) diet.push("halal");
 
@@ -700,7 +757,8 @@ export function read(items: Dish[], asked: string): Reading {
   const party = partyOf(restText, restRaw);
   const budget = budgetOf(restText, restRaw);
   // "not sweet", "tak manis", "no dessert" doesn't ask for the course
-  const courseText = restText.replace(/\b(not|no|tak|x|bukan|without|less|kurang|dont want|don t want)\s+(too |so |very |terlalu |sangat |that |a |an |any )?\w+/g, " ");
+  // what they rule out ("I don't like durian", "no noodles") doesn't ask for its course or category
+  const courseText = restText.replace(/\b(not|no|tak|x|bukan|without|less|kurang|dont want|don t want)\s+(too |so |very |terlalu |sangat |that |a |an |any )?\w+/g, " ").split(" ").filter((t) => !ruledOut(t)).join(" ");
   const courseZh = restRaw.replace(/(不要|不太|不|别|少)[\u4e00-\u9fff]{1,2}/g, " ");
   const courses = COURSES.filter((c) => c.ask.test(courseText) || c.askZh.test(courseZh)).map((c) => c.course);
   // "no caffeine pls, it's late": a drink without it
@@ -759,7 +817,7 @@ export function read(items: Dish[], asked: string): Reading {
     party,
     courses,
     // a word naming what they avoid ("no milk") doesn't ask for its category ("Milk teas")
-    categories: askedCategories(items, rest.filter((t, k) => !mentionedAllergens(t).some((a) => avoid.includes(a)) && !negatedAt(rest, k)), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? restRaw.replace(/[^，,。？?！!]*(不要|不能|不吃|不含|没有|无|过敏|别|忌|走)[^，,。？?！!]*/g, " ") : restRaw),
+    categories: askedCategories(items, rest.filter((t, k) => !mentionedAllergens(t).some((a) => avoid.includes(a)) && !negatedAt(rest, k) && !ruledOut(t)), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? restRaw.replace(/[^，,。？?！!]*(不要|不能|不吃|不含|没有|无|过敏|别|忌|走)[^，,。？?！!]*/g, " ") : restRaw),
     appetite: light ? "light" : hearty ? "hearty" : null,
     superlative,
     refersBack: refersBack || ordinal !== null || choosing,
@@ -775,9 +833,10 @@ export function read(items: Dish[], asked: string): Reading {
     })(),
     asksSeasonal: /\b(seasonal|season|limited|limited time|limited edition|festive|whats new|what s new|new items?|musim|edisi terhad|bermusim)\b/.test(restText) || /季节|限定|限时|新品|应季|当季/.test(restRaw),
     manyAllergies: !allergens.length && (/\b(allergic|allergies|alergi)\b.*\b(everything|all|lots|so many|many things|semua)\b/.test(restText) || /什么都过敏|很多过敏|好多过敏/.test(restRaw)),
-    noMeat: meatsAvoided(question),
+    noMeat: pescatarian ? MEAT_NAMES.map(([m]) => m) : meatsAvoided(question),
+    noWords,
     noCaffeine: /\b(no|not|without|tak|x|less|zero|avoid|dont|don t|cannot|cant)\s+(want\s+|take\s+|have\s+|drink\s+|any\s+)?(caffeine|caffein|kafein|coffee|kopi)\b|\b(decaf|decaffeinated|caffeine free|non caffeinated|uncaffeinated)\b/.test(restText) || /不要咖啡因|无咖啡因|不含咖啡因|低咖啡因|不喝咖啡|不能喝咖啡/.test(restRaw),
-    noAlcohol: /\b(no|not|without|tak|x|tak nak|dont|don t|do not|non|cannot|cant|tidak|no more|never)\s+(minum\s+|drink\s+|take\s+|touch\s+|have\s+)?(alcohol|alcoholic|arak|alkohol|beer|booze|liquor|drinking)\b|\b(alcohol free|non alcoholic|nonalcoholic|mocktail|mocktails)\b/.test(restText) || /不要酒|不喝酒|无酒精|不含酒|没有酒精|不能喝酒/.test(restRaw) ||
+    noAlcohol: /\b(no|not|without|tanpa|tak|takde|tiada|x|tak nak|dont|don t|do not|non|cannot|cant|tidak|no more|never)\s+(minum\s+|drink\s+|take\s+|touch\s+|have\s+|ada\s+|guna\s+|pakai\s+)?(alcohol|alcoholic|arak|alkohol|beer|booze|liquor|drinking)\b|\b(alcohol free|non alcoholic|nonalcoholic|mocktail|mocktails)\b/.test(restText) || /不要酒|不喝酒|无酒精|不含酒|没有酒精|不能喝酒/.test(restRaw) ||
       // a guest under 18 is never offered a drink, nor is a child ordered for
       /\b(i m|im|i am|we re|we are|she s|he s|my (son|daughter|kid) is)\s+(1[0-7]|underage|under age|a minor|minor)\b|\bunder 18\b|\bbawah umur\b|\bfor (my|the|our) (kid|kids|child|children|son|daughter|boy|girl|little one|baby|toddler)\b|\b(untuk )?(anak|budak) (saya|aku|kecil)\b/.test(restText) || /未成年|小孩|孩子|儿子|女儿/.test(restRaw),
     signatures: /\b(known for|famous for|famous|signature|signatures|specials|speciality|specialty|specialities|starred|must try|must tries|terkenal|istimewa|paling terkenal|house special)\b/.test(restText) || /招牌|拿手|必点|特色菜|最有名|镇店/.test(restRaw),
