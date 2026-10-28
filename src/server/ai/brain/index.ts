@@ -284,6 +284,12 @@ const SYNONYMS: Record<string, string[]> = {
   nasi: ["rice"], rice: ["nasi"], keju: ["cheese"], cheese: ["keju"], keledek: ["sweet potato"], babi: ["pork"], pork: ["babi"], ketam: ["crab"], crab: ["ketam"], kopi: ["coffee"], coffee: ["kopi"],
   teh: ["tea"], tea: ["teh"], milkshake: ["shake", "milkshake"], milkshakes: ["shake", "milkshake"], shake: ["milkshake"], smoothie: ["smoothie", "shake"], burger: ["burger", "burgr"], wrap: ["wrap", "burrito"], kelapa: ["coconut"], coconut: ["kelapa"], mangga: ["mango"], mango: ["mangga"], pisang: ["banana"], banana: ["pisang"],
 };
+// the kinds of dish a guest names in Chinese, as menus write them in English
+const ZH_TERMS: [RegExp, string[]][] = [
+  [/粥/, ["congee", "porridge"]], [/(?<![奶果擂骨凉])茶(?!饭|餐|点)/, ["tea"]], [/肠粉/, ["cheong fun"]], [/饭团/, ["onigiri"]], [/啤酒/, ["beer"]], [/披萨|比萨/, ["pizza"]],
+  [/塔可/, ["taco"]], [/汉堡/, ["burger"]], [/沙拉/, ["salad"]], [/卷饼/, ["wrap", "burrito"]], [/寿司/, ["sushi"]], [/拉面/, ["ramen"]], [/咖喱/, ["curry"]], [/意面|意大利面/, ["pasta"]],
+  [/蛋糕/, ["cake"]], [/布丁/, ["pudding"]], [/奶昔/, ["shake", "milkshake"]], [/冰沙/, ["smoothie"]], [/咖啡/, ["coffee", "kopi"]], [/果汁/, ["juice"]], [/锅底/, ["soup base", "broth"]], [/薄饼/, ["thosai", "dosa"]],
+];
 const ZH_WORDS: [RegExp, string[]][] = [[/鸡/, ["chicken", "ayam"]], [/鱼/, ["fish", "ikan"]], [/虾/, ["prawn", "shrimp", "udang"]], [/豆腐/, ["tofu", "tauhu"]], [/牛/, ["beef"]], [/猪/, ["pork"]], [/羊/, ["mutton", "lamb"]], [/蛋/, ["egg"]], [/芒果/, ["mango"]], [/咖啡/, ["coffee", "kopi"]], [/椰/, ["coconut"]]];
 
 const words = (i: Item) => new Set(normalize(`${i.name} ${i.description ?? ""} ${i.category ?? ""}`).split(" ").flatMap((w) => [w, w.replace(/(es|s)$/, "")]));
@@ -359,7 +365,10 @@ function askedTerms(question: string, live: Item[], avoid: Allergen[], ruledOut:
   // (only a longer word the brain doesn't know: "cafe" isn't a misspelt "cake")
   const spelled = (w: string) => (live.some((i) => hasTerm(i, w)) || w.length < 5 || intentModel().vocab?.has(w) ? w : vocab.find((v) => v[0] === w[0] && osaDistance(w, v, w.length >= 8 ? 2 : 1) <= (w.length >= 8 ? 2 : 1)) ?? w);
   const inNames = (w: string) => live.filter((i) => hasTerm({ ...i, description: "", category: "" }, w)).length;
-  const words = toks
+  // a kind of dish said in Chinese ("有什么粥？", "推荐一个肠粉", "有什么茶？"), not one said without
+  const zh = question.replace(/(不要|不吃|不含|不加|(?<!有)没有|无|别|走)[\u4e00-\u9fff]{1,3}/g, " ");
+  const zhWords = ZH_TERMS.filter(([re]) => re.test(zh)).flatMap(([, ws]) => ws);
+  const words = [...toks, ...zhWords]
     .map(spelled)
     // "milkshake" asks for the milkshakes, though it has "milk" in it; "milk" alone is the allergen
     .filter((w) => (!mentionedAllergens(w).length || (inNames(w) > 0 && !ALLERGEN_WORD.test(w))) && live.some((i) => hasTerm(i, w)))
@@ -1015,14 +1024,26 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
           // the dish's own name says it best, then its description
           // each thing asked for by the dishes named by it (or in a section named by it: the Pizza
           // section's Margherita), else the ones whose description has it ("balls or seafood")
-          const named = (i: Item, w: string) => hasTerm({ ...i, description: "" }, w);
+          // (a section of one kind, "Pizza", names its dishes; one of two, "Cheong fun & congee", only
+          // when hardly any dish has the word in its own name: "Yakitori & skewers" for "skewers?")
+          const mixed = (c: string) => /&|\band\b|\/|,|\+|和/.test(c);
+          const own = (i: Item, w: string) => hasTerm({ ...i, description: "", category: "" }, w);
           const byWord = (w: string) => {
             const hits = pool.filter((i) => hasTerm(i, w));
-            return hits.some((i) => named(i, w)) ? hits.filter((i) => named(i, w)) : hits;
+            const few = hits.filter((i) => own(i, w)).length < 2;
+            const named = (i: Item) => hasTerm({ ...i, description: "", category: mixed(i.category ?? "") && !few ? "" : i.category }, w);
+            return hits.some(named) ? hits.filter(named) : hits;
           };
           const byAllergen = (a: Allergen) => pool.filter((i) => i.allergens.includes(a));
           // (when nothing they can have has it, the answer is as before: what they can have)
-          const narrowed = [...new Set([...asked.words.flatMap(byWord), ...asked.allergens.flatMap(byAllergen)])];
+          let narrowed = [...new Set([...asked.words.flatMap(byWord), ...asked.allergens.flatMap(byAllergen)])];
+          // "推荐一个肠粉": the cheong fun, though 粉 alone read as the noodles
+          if (!narrowed.length && u.courses.length && /[\u4e00-\u9fff]/.test(u.text)) {
+            const all = pool;
+            pool = spiced.pool;
+            narrowed = [...new Set([...asked.words.flatMap(byWord), ...asked.allergens.flatMap(byAllergen)])];
+            if (!narrowed.length) pool = all;
+          }
           if (narrowed.length) pool = pool.filter((i) => narrowed.includes(i));
           termDrinks = pool.length > 0 && narrowed.length > 0 && pool.every(isDrink);
         }
