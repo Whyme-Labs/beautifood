@@ -886,6 +886,34 @@ describe("asking for a kind of dish or an ingredient", () => {
   });
 });
 
+describe("finding both dishes of a comparison, and the one asked about", () => {
+  const menu = { ...ctx, items: asItems([
+    { id: "a", name: "Abacus Seeds", category: "Mains", description: "yam dumplings with dried shrimp", price: 1590, allergens: ["crustaceans", "gluten"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "b", name: "Vegetarian Abacus Seeds", category: "Mains", description: "yam dumplings with mushrooms", price: 1490, allergens: ["gluten"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "c", name: "Claypot Chicken Rice", category: "Claypot", description: "chicken, lap cheong", price: 2290, allergens: ["soy"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "d", name: "Claypot Ginger Chicken Rice", category: "Claypot", description: "chicken, young ginger", price: 2190, allergens: ["soy"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "e", name: "Baja Fish Tacos", category: "Tacos", description: "beer-battered fish", price: 2490, allergens: ["fish", "gluten"], dietary: [], spiceLevel: 1, isSignature: false },
+    { id: "f", name: "Grilled Fish Tacos", category: "Tacos", description: "grilled snapper", price: 2390, allergens: ["fish"], dietary: [], spiceLevel: 1, isSignature: false },
+  ] as never) } as unknown as AssistantContext;
+  const dishes = menu.items as unknown as Dish[];
+  const found = (q: string) => read(dishes, q).dishes.map((d) => d.name);
+
+  it("gives each of two overlapping names its own words", () => {
+    expect(found("Abacus seeds vs the vegetarian abacus seeds, what's different?")).toEqual(["Abacus Seeds", "Vegetarian Abacus Seeds"]);
+    expect(found("Which is cheaper, claypot chicken rice or ginger chicken rice?")).toEqual(["Claypot Chicken Rice", "Claypot Ginger Chicken Rice"]);
+    expect(found("Baja fish tacos vs grilled fish tacos?")).toEqual(["Baja Fish Tacos", "Grilled Fish Tacos"]);
+  });
+  it("shows the dish asked about when the guest only asks whether it has something", () => {
+    const r = answerGuest(menu, [{ role: "user", content: "Is the abacus seeds gluten free?" }]);
+    expect(r.answer).toMatch(/Abacus Seeds contains/);
+    expect(r.items.map((i) => i.name)).toContain("Abacus Seeds");
+  });
+  it("but not when they said it's their allergy", () => {
+    const r = answerGuest(menu, [{ role: "user", content: "I'm coeliac, is the abacus seeds ok?" }]);
+    expect(r.items.map((i) => i.name)).not.toContain("Abacus Seeds");
+  });
+});
+
 describe("the branch's halal standing", () => {
   const dishes = asItems([
     { id: "a", name: "Ayam Goreng", category: "Mains", description: "fried chicken", price: 1290, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },

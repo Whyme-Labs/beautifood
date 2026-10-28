@@ -278,12 +278,24 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const idf = 1 / df(w);
       const g = GENERIC.has(w) ? 0.3 : 1;
       total += idf * g;
-      const spots = toks.map((_, i) => i).filter((i) => !skip.has(i) && !covered.includes(i) && same(toks[i], w));
+      // (not across a "vs" or "or" from its first word: "taiwanese beef noodle vs clear broth" leaves
+      // the beef noodle to the Taiwanese one)
+      const across = (a: number, b: number) => toks.slice(Math.min(a, b) + 1, Math.max(a, b)).some((x) => /^(vs|versus|or|atau|ke)$/.test(x));
+      const spots = toks.map((_, i) => i).filter((i) => !skip.has(i) && !covered.includes(i) && same(toks[i], w) && !(covered.length && across(covered[0], i)));
       if (!spots.length) continue;
       // the first word goes where the name's other words are ("pho" of "pho ga", not of the "pho bo
       // tai" before it; "japchae" of "vegetable japchae"), each later one next to those already placed
       const others = toks.map((_, i) => i).filter((i) => name.some((x) => x !== w && same(toks[i], x)));
-      const near = (i: number) => Math.min(...(covered.length ? covered : others.length ? others : [i]).map((c) => Math.abs(c - i)));
+      // (the first by all its other words together, so "abacus seeds vs the vegetarian abacus seeds"
+      // gives each its own; a later one by the first placed, so "claypot chicken rice or ginger chicken
+      // rice" gives the ginger one the second "chicken rice")
+      const near = (i: number) =>
+        covered.length
+          ? Math.abs(covered[0] - i) + 0.01 * Math.min(...covered.map((c) => Math.abs(c - i)))
+          : name.filter((x) => x !== w).reduce((sum, x) => {
+              const at = toks.map((_, k) => k).filter((k) => same(toks[k], x));
+              return sum + (at.length ? Math.min(...at.map((k) => Math.abs(k - i) + (across(k, i) ? 10 : 0))) : 0);
+            }, 0);
       const at = spots.sort((a, b) => near(a) - near(b) || a - b)[0];
       covered.push(at);
       weight += idf * g;
@@ -311,6 +323,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     if (spread > name.length + 2) {
       // "tonkotsu vs shoyu chicken ramen": its own word names it; the "ramen" far off is the other's
       const own = covered.filter((i) => !common(i));
+      // "claypot chicken rice or ginger chicken rice": its words side by side, all but one it shares
+      // with the other dish, name it
+      const run = [...covered].sort((a, b) => a - b).reduce<number[][]>((runs, i) => (runs.length && i === runs[runs.length - 1].at(-1)! + 1 ? (runs[runs.length - 1].push(i), runs) : [...runs, [i]]), []).sort((a, b) => b.length - a.length)[0];
+      if (run.length >= 2 && run.length >= name.length - 1 && run.some((i) => !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))
+        return void found.push({ dish, at: run[0], covered: run, score: run.reduce((sum, i) => sum + 1 / df(toks[i]) * (GENERIC.has(toks[i]) ? 0.3 : 1), 0) / total + run.length * 0.01 });
       if (!unique || !own.length || Math.max(...own) - Math.min(...own) + 1 > name.length + 2) return;
       const w = own.reduce((sum, i) => sum + 1 / df(toks[i]), 0);
       return void found.push({ dish, at: Math.min(...own), covered: own, score: w / total + own.length * 0.01 });
@@ -738,6 +755,8 @@ export function read(items: Dish[], asked: string): Reading {
   // "anything 100% allergen free?": none of them at all
   if (/\b(allergen|allergy|allergic|alergen)[\s-]*free\b|\bno allergens?\b|\bwithout (any )?allergens?\b|\bfree (of|from) (all |any )?allergens\b|\btiada alergen\b/.test(restText) || /无过敏原|不含过敏原|没有过敏原/.test(restRaw)) avoid.push(...ALLERGENS);
 
+  const selfSaid = /\b(i m|im|i am|we re|we are|i have|i can t|i cant|i cannot|on a|for my|my)\b/.test(normalize(question)) || /我|孩子|小孩|儿子|女儿/.test(question);
+  const asksOfDish = hasDish && !ALLERGY_WORD.test(fixed) && !selfSaid && (/^(is|are|does|do)\s+(the|your|this|that|these|those|it)\b/i.test(question.trim()) || /^[^有我]{2,}有没有/.test(question.trim()) || /\bada\b.*\b(tak|ke|x)\s*[?？]?\s*$/i.test(normalize(question)));
   const diet: Diet[] = [];
   if (/\b(vegan|plant based|plantbased)\b/.test(restText) || /纯素|全素/.test(restRaw)) diet.push("vegan");
   else if (
@@ -802,7 +821,10 @@ export function read(items: Dish[], asked: string): Reading {
   const saysDiet = !mentions.length || !asksDiet || /\b(i m|im|i am|we re|we are|were all|saya|sy|kami|aku|i (vegetarian|vegan|veg)|my \w+ (is|are)|for (a|my) \w*\s?(vegetarian|vegan)|(pure |strict )?(vegetarian|vegan|veg|veggie|veggies)s? (here|lah|la|person|people|family|table|guest|guests|only|all))\b/.test(restText) || /我(是|吃|们)|吃素的|吃斋/.test(restRaw);
   return {
     text: question,
-    stated: allergens.filter((a) => governed(fixed, a)),
+    // "is the X gluten free?", "X有没有花生？", "X ada udang tak?": asking whether a dish they named has
+    // it isn't saying they avoid it (the dish is shown with the answer). Not "I'm dairy free, is X ok?",
+    // "is there a dairy-free lassi?" or "got dairy-free kaya toast?": those say what they need
+    stated: allergens.filter((a) => governed(asksOfDish ? fixed.replace(/有没有|有冇|含不含/g, "有").replace(/([\w]+)[\s-]free\b/gi, "$1").replace(/\b(tak|ke|x|or not)\s*[?？]?\s*$/i, "") : fixed, a)),
     statedDiet: saysDiet ? diet : [],
     delexicalized,
     dishes: mentions.map((m) => m.dish),
