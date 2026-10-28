@@ -794,14 +794,16 @@
         "Chicken Tikka",
         "Tandoori Fish",
         "Tandoori Chicken",
-        "Seekh Kebab"
+        "Seekh Kebab",
+        "Tandoori Prawns"
       ],
       "includesAny": [
         "Tandoori Chicken",
-        "Seekh Kebab"
+        "Seekh Kebab",
+        "Tandoori Prawns"
       ]
     },
-    "note": "Chicken Tikka and Tandoori Fish have mustard oil."
+    "note": "Chicken Tikka and Tandoori Fish have mustard oil. Reviewer: Tandoori Prawns (listed in the earlier turn) has no mustard either."
   },
   {
     "id": "v8o-north-indian-tandoor-024",
@@ -1056,7 +1058,7 @@
         "Mutton Rogan Josh"
       ],
       "says": [
-        "JAIS|Jabatan Agama Islam Selangor|雪兰莪"
+        "JAIS|Jabatan Agama Islam Selangor|雪兰莪|certified|bersijil|认证|\\byes\\b|\\bya\\b"
       ],
       "excludes": [
         "Tandoori Chicken",
@@ -1069,7 +1071,7 @@
         "Kulfi"
       ]
     },
-    "note": "Certified kitchen; rules j, w."
+    "note": "Certified kitchen; rules j, w. Reviewer: single-dish question, so the certifier name is not required; a yes or a certified kitchen passes."
   },
   {
     "id": "v8o-north-indian-tandoor-031",
@@ -1176,14 +1178,14 @@
     },
     "expect": {
       "minDishes": 2,
-      "maxTotal": 10000,
+      "maxTotal": 13870,
       "excludes": [
         "Chicken Thali",
         "Vegetarian Thali",
         "Kulfi"
       ]
     },
-    "note": "Extra dishes under RM100 food."
+    "note": "Extra dishes under RM100 food. Reviewer: maxTotal counts every dish shown, so it includes the Butter Chicken and 2 Garlic Naan already ordered (38.70) plus RM100 of extras."
   },
   {
     "id": "v8o-north-indian-tandoor-034",
@@ -1664,9 +1666,6 @@
       "time": "23:30"
     },
     "expect": {
-      "includes": [
-        "Plain Naan"
-      ],
       "says": [
         "tandoor menu|5(:00)? ?(pm|p\\.m\\.)|17[:.]00|5 petang|pukul 5|pukul lima|下午5|下午五|傍晚5|晚上5|五点|17点"
       ],
@@ -1681,9 +1680,16 @@
         "Chicken Thali",
         "Vegetarian Thali",
         "Kulfi"
+      ],
+      "includesAny": [
+        "Plain Naan",
+        "Butter Naan",
+        "Garlic Naan",
+        "Cheese Naan",
+        "Peshawari Naan"
       ]
     },
-    "note": "23:30: Tandoor ended 23:00, next from 5pm; naan still served."
+    "note": "23:30: Tandoor ended 23:00, next from 5pm; naan still served. Reviewer: \"a naan\" does not pick out the plain one."
   },
   {
     "id": "v8o-north-indian-tandoor-051",
@@ -2338,7 +2344,7 @@
     "question": "dal makhani vs dal tadka, which one is vegan?",
     "expect": {
       "says": [
-        "neither|none|both|tidak|bukan|都不|两个都|ghee|butter|cream"
+        "neither|none|not vegan|ghee|butter|cream|dairy|milk|都不|两个都不"
       ],
       "excludes": [
         "Tandoori Chicken",
@@ -2351,7 +2357,7 @@
         "Kulfi"
       ]
     },
-    "note": "Neither: butter/cream vs ghee (rule l: no card required)."
+    "note": "Neither: butter/cream vs ghee (rule l: no card required). Reviewer: dropped \"both\", which matched a wrong \"both are vegan\"."
   },
   {
     "id": "v8o-north-indian-tandoor-075",

@@ -56,8 +56,6 @@
         "Ham Macaroni Breakfast Set",
         "Satay Beef Noodle Breakfast Set",
         "Luncheon Meat Egg Noodle Breakfast Set",
-        "Ham Macaroni Breakfast Set",
-        "Luncheon Meat Egg Noodle Breakfast Set",
         "Pineapple Bun Tea Set",
         "Pineapple Bun with Butter",
         "Baked Pork Chop Rice",
@@ -1048,7 +1046,7 @@
         "assistant": "Egg Sandwich Tea Set is RM8.90 now with the tea time deal (usually RM10.90), until 5pm."
       }
     ],
-    "question": "add another one, and a red bean ice",
+    "question": "add another one, and a red bean ice. total?",
     "at": {
       "day": "Thu",
       "time": "16:45",
@@ -1058,7 +1056,8 @@
       "says": [
         "(^|[^0-9])(25\\.30|29\\.50)"
       ]
-    }
+    },
+    "note": "Reviewer: the question now asks for the total, which the says checks (it did not ask before)."
   },
   {
     "id": "v8p-cha-chaan-teng-039",
@@ -1159,9 +1158,10 @@
         "Satay Beef Noodle Breakfast Set"
       ],
       "says": [
-        "not (halal|certified)|no halal|isn't halal|non-halal|tidak (halal|mempunyai sijil)|bukan halal|tak halal|tiada sijil|不是清真|没有清真|非清真|不清真|pork|babi|猪"
+        "not (halal|certified)|not a halal|no halal|isn't halal|aren't (halal|certified)|are not (halal|certified)|non-halal|tidak (halal|mempunyai sijil|bersijil)|bukan (restoran |kedai )?halal|tak halal|tiada sijil|不是清真|没有清真|非清真|不清真|serves? pork|use[sd]? pork|we have pork|contains? pork|has pork|ada babi|guna babi|有猪肉|用猪肉|卖猪肉"
       ]
-    }
+    },
+    "note": "Reviewer: dropped bare \"pork|babi|猪\", which matched a wrong \"no pork, halal\"; kept the not-halal verdicts and \"serves pork\"."
   },
   {
     "id": "v8p-cha-chaan-teng-042",
@@ -1225,9 +1225,10 @@
         "Satay Beef Noodle Breakfast Set"
       ],
       "says": [
-        "not (halal|certified)|no halal|isn't halal|non-halal|tidak (halal|mempunyai sijil)|bukan halal|tak halal|tiada sijil|不是清真|没有清真|非清真|不清真|pork|babi|猪"
+        "not (halal|certified)|not a halal|no halal|isn't halal|aren't (halal|certified)|are not (halal|certified)|non-halal|tidak (halal|mempunyai sijil|bersijil)|bukan (restoran |kedai )?halal|tak halal|tiada sijil|不是清真|没有清真|非清真|不清真|serves? pork|use[sd]? pork|we have pork|contains? pork|has pork|ada babi|guna babi|有猪肉|用猪肉|卖猪肉"
       ]
-    }
+    },
+    "note": "Reviewer: dropped bare \"pork|babi|猪\", which matched a wrong \"no pork, halal\"; kept the not-halal verdicts and \"serves pork\"."
   },
   {
     "id": "v8p-cha-chaan-teng-044",
@@ -2636,13 +2637,13 @@
       "onlyFrom": [
         "Ham Macaroni Breakfast Set",
         "Satay Beef Noodle Breakfast Set",
-        "Luncheon Meat Egg Noodle Breakfast Set",
-        "Egg Tart"
+        "Luncheon Meat Egg Noodle Breakfast Set"
       ],
       "says": [
         "猪|pork|午餐肉|luncheon|是"
       ]
-    }
+    },
+    "note": "Reviewer: removed the sold-out Egg Tart from onlyFrom (rule r)."
   },
   {
     "id": "v8p-cha-chaan-teng-089",

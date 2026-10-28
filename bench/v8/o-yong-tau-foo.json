@@ -541,7 +541,9 @@
         "Crispy Fu Chuk",
         "Fu Chuk Roll",
         "Crab Stick",
-        "Fried Fish Skin"
+        "Fried Fish Skin",
+        "Stuffed Tau Pok",
+        "Stuffed Brinjal"
       ],
       "excludes": [
         "Fried Wantan",
@@ -550,7 +552,7 @@
         "Sotong Ball"
       ]
     },
-    "note": "Prawn allergy carried. Crab Stick is surimi with no real crab (no crustaceans)."
+    "note": "Prawn allergy carried. Crab Stick is surimi with no real crab (no crustaceans). Reviewer: Stuffed Tau Pok (fried tofu puff) and Stuffed Brinjal (pan-fried) are fried and prawn-free too."
   },
   {
     "id": "v8o-yong-tau-foo-019",
@@ -2397,10 +2399,10 @@
         "Sotong Ball"
       ],
       "says": [
-        "不是清真|没有清真|非清真|无清真|未.*认证|没有.*认证|没有猪|不含猪|无猪|pork.?free|not (halal.)?certified"
+        "不是清真|没有清真|非清真|无清真|不清真|未.*认证|没有.*认证|没.*认证|不是.*认证|not (halal.)?certified|no halal cert|uncertified|not halal|isn't halal"
       ]
     },
-    "note": "Rule j/w: pork-free, not certified; Shaoxing shiitake excluded."
+    "note": "Rule j/w: pork-free, not certified; Shaoxing shiitake excluded. Reviewer: says now checks the not-certified verdict; a bare pork-free answer no longer passes."
   },
   {
     "id": "v8o-yong-tau-foo-089",
@@ -2524,10 +2526,10 @@
         "Sotong Ball"
       ],
       "says": [
-        "babi|pork|sijil|certif"
+        "tiada sijil|tak ada sijil|takde sijil|tidak ada sijil|belum (ada )?sijil|tanpa sijil|tidak (di)?sijil|tidak mempunyai sijil|tidak bersijil|tak bersijil|bukan (restoran |kedai )?halal|tidak halal|tak halal|not (halal.)?certified|no halal cert|uncertified|not halal|isn't halal|tiada pensijilan|tidak mempunyai pensijilan"
       ]
     },
-    "note": "Rule j/w: pork-free, not certified."
+    "note": "Rule j/w: pork-free, not certified. Reviewer: says now checks the not-certified verdict (the old pattern also matched \"certified\")."
   },
   {
     "id": "v8o-yong-tau-foo-094",

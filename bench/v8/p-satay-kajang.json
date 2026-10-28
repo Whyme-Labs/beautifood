@@ -1531,9 +1531,10 @@
     },
     "expect": {
       "says": [
-        "belacan|shrimp paste|udang|虾"
+        "\\byes\\b|\\bya\\b|a little|a bit of|sikit|sedikit|contains|does have|it has|made with|has (a little )?belacan|ada (sedikit )?belacan"
       ]
-    }
+    },
+    "note": "Reviewer: the old pattern matched the question's own words, so \"no shrimp paste\" passed; now checks the yes."
   },
   {
     "id": "v8p-satay-kajang-053",
@@ -1850,7 +1851,6 @@
         "gluten"
       ],
       "safetyNote": true,
-      "category": "DRINK",
       "includesAny": [
         "Air Tebu",
         "Teh O Ais Limau",
@@ -1864,7 +1864,8 @@
       "excludes": [
         "Milo Ais"
       ]
-    }
+    },
+    "note": "Reviewer: removed category DRINK; the guest orders 20 Satay Ayam in this turn and an honest answer may confirm it (v7 sushi-081). includesAny keeps it to a drink."
   },
   {
     "id": "v8p-satay-kajang-064",
@@ -2631,9 +2632,14 @@
       "maxSpice": 0,
       "says": [
         "sikit|sedikit|mild|a little|slightly|kurang|少辣|微辣"
+      ],
+      "excludes": [
+        "Bubur Lambuk",
+        "Air Katira",
+        "Ais Kacang"
       ]
     },
-    "note": "Ayam Percik is mildly spicy (1); guest can't take spicy, so it is not shown as a card."
+    "note": "Ayam Percik is mildly spicy (1); guest can't take spicy, so it is not shown as a card. Reviewer: Bubur Lambuk is a spice-0 alternative but not served in November (rule s)."
   },
   {
     "id": "v8p-satay-kajang-087",
@@ -2741,9 +2747,23 @@
     },
     "expect": {
       "vegetarian": true,
-      "category": "DRINK",
-      "minDishes": 1
-    }
+      "includesAny": [
+        "Air Tebu",
+        "Teh O Ais Limau",
+        "Teh Tarik",
+        "Sirap Ais",
+        "Sirap Bandung",
+        "Kopi O",
+        "Air Kelapa",
+        "Milo Ais",
+        "Air Mata Kucing"
+      ],
+      "excludes": [
+        "Ais Kacang",
+        "Air Katira"
+      ]
+    },
+    "note": "Reviewer: category DRINK replaced by includesAny of the served vegetarian drinks; the guest orders the Tauhu Bakar in this turn and an honest answer may confirm it."
   },
   {
     "id": "v8p-satay-kajang-090",
