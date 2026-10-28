@@ -703,3 +703,30 @@ out, timed menus and deals with weekly windows, add-ons and sizes, the till's ch
 branch's halal standing; a case may say when it is asked (`at`). The menu is built as the server
 builds it (`menuNow`), so prices, what is served now and what's on are as a guest would see them.
 New tags: availability, deal, modifier, bill. No frozen set uses these, so no score changes.
+
+## v8 held-out set, frozen (2026-10-28)
+
+990 cases on 8 new menus (nasi-kandar, bak-kut-teh, specialty-coffee, steakhouse-grill,
+yong-tau-foo, north-indian-tandoor, satay-kajang, cha-chaan-teng) by four blind authors (m, n, o,
+p), each pair reviewed by a blind reviewer (`v8/REVIEW-mn.md`, `v8/REVIEW-op.md`: 0 gold changes,
+66 cases fixed, none deleted). Every menu has branch settings (sold out, timed menus, deals,
+add-ons, charges, halal standing). Weighted to what earlier sets had too few of: 295 multi-turn,
+201 bill, 113 availability, 76 deal, 63 add-on cases, 456 with a time of day, 136 in Chinese.
+Fingerprints: `v8 990 21b710c83a8655bd`, `v8 menus 24 4564ce6d016ef859`.
+
+Scored twice, read only as counts:
+
+| | Deployed brain (e073395) | This round's fixes (04c3dc4) |
+|---|---|---|
+| All | **63.6%** (60.7–66.6), 0 unsafe | **63.9%** (61.0–66.9), 0 unsafe |
+| Bill | 20.9% | 21.9% |
+| Add-ons | 11.1% | 11.1% |
+| Availability | 42.5% | 42.5% |
+| Follow-ups | 51.7% | 52.4% |
+| Chinese | 58.8% | 58.8% |
+
+(The baseline ran the deployed brain with this round's menu parser, which v8's menus need.) Of the
+357 failures, 262 are a missing fact and 186 of those an amount; no answer had the right figure in
+a form the check missed. Of the wrong totals, by arithmetic: most are running orders over several
+turns (a dish too many or missing, a count off), then add-on prices (the brain doesn't read
+add-ons), then splits not done.
