@@ -1,0 +1,144 @@
+{
+  "soldOut": [
+    "Pork Trotter in Black Vinegar"
+  ],
+  "rules": [
+    {
+      "name": "Breakfast set",
+      "kind": "amount",
+      "value": 300,
+      "categories": [
+        "SETS"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "07:00",
+          "to": "10:00"
+        }
+      ]
+    },
+    {
+      "name": "December lunch",
+      "kind": "percent",
+      "value": 10,
+      "categories": [
+        "BAK KUT TEH"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "11:00",
+          "to": "15:00",
+          "start": "2026-12-01",
+          "end": "2026-12-31"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Chinese Tea": [
+      {
+        "name": "Tea leaf",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tie Guan Yin",
+            "price": 0
+          },
+          {
+            "name": "Pu-erh",
+            "price": 0
+          },
+          {
+            "name": "Guk Po (pu-erh with chrysanthemum)",
+            "price": 0
+          },
+          {
+            "name": "Da Hong Pao",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Bak Kut Teh Pai Kut": [
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra tofu puff",
+            "price": 200
+          },
+          {
+            "name": "Extra enoki",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Bak Kut Teh Sam Chan": [
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra tofu puff",
+            "price": 200
+          },
+          {
+            "name": "Extra enoki",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Bak Kut Teh Mixed": [
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra tofu puff",
+            "price": 200
+          },
+          {
+            "name": "Extra enoki",
+            "price": 200
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

@@ -1,0 +1,400 @@
+{
+  "Stuffed Tofu": {
+    "allergens": [
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu = soy; fish paste = fish; stated no egg."
+  },
+  "Stuffed Tau Pok": {
+    "allergens": [
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Tau pok (tofu puff) = soy; fish paste."
+  },
+  "Stuffed Bitter Gourd": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish paste (ikan parang) = fish; tapioca starch, no wheat or egg stated."
+  },
+  "Stuffed Red Chilli": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish paste; described as mildly spicy."
+  },
+  "Stuffed Okra": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish paste (ikan parang) = fish; tapioca starch, no wheat or egg stated. Sold out (extra.json)."
+  },
+  "Stuffed Brinjal": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish paste (ikan parang) = fish; tapioca starch, no wheat or egg stated."
+  },
+  "Stuffed Shiitake": {
+    "allergens": [
+      "fish",
+      "molluscs",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Fish paste; oyster sauce = molluscs + gluten (rule g); Shaoxing = sulphites + gluten, not halal (rule h). Pork-free kitchen may use alcohol; this is the only alcohol dish."
+  },
+  "Fu Chuk Roll": {
+    "allergens": [
+      "soy",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Beancurd skin = soy; fish paste. Water chestnut adds nothing."
+  },
+  "Crispy Fu Chuk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Beancurd skin = soy; no filling, vegetable oil."
+  },
+  "Fish Ball": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated egg-free."
+  },
+  "Fried Fish Cake": {
+    "allergens": [
+      "fish",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish paste with wheat flour."
+  },
+  "Fried Wantan": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat and egg wrapper; fish paste; prawn."
+  },
+  "Sotong Ball": {
+    "allergens": [
+      "molluscs",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Squid = molluscs; fish paste. Sold out (extra.json)."
+  },
+  "Crab Stick": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Surimi, wheat starch, egg white; stated no real crab, so no crustaceans."
+  },
+  "Cheese Tofu": {
+    "allergens": [
+      "fish",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but is fish tofu (surimi); cheese = milk; soy protein."
+  },
+  "Vegetable Roll": {
+    "allergens": [
+      "crustaceans",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but has dried shrimp = crustaceans; wheat flour skin."
+  },
+  "Egg Tofu": {
+    "allergens": [
+      "egg",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg + soybean; vegetarian, not vegan."
+  },
+  "Kangkung": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy sauce = soy + gluten. Garlic oil, no chilli."
+  },
+  "Choy Sum": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten (rule g), so not vegetarian."
+  },
+  "Ampang 6-Piece Set": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish-paste pieces; tofu, tau pok, fu chuk and soybean soup = soy; ikan bilis = fish; sweet bean sauce = soy + gluten; rice vermicelli no gluten. Chilli sauce on the side + mildly spicy chilli piece = 1. Gold is the default clear-soup base; the curry laksa base is a modifier."
+  },
+  "Ampang 8-Piece Set": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "As the 6-piece set, plus fish ball and egg tofu (egg). Spice 1 as the 6-piece."
+  },
+  "Steamed Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Yellow Mee": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour and egg noodles."
+  },
+  "Chee Cheong Fun": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Name means 'pig intestine noodle' but it is vegan rice rolls; sweet bean sauce = soy + gluten; sesame seeds; chilli sauce with no heat word = 1."
+  },
+  "Fried Fish Skin": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salt and white pepper, no chilli."
+  },
+  "Sambal Belacan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Shrimp paste = crustaceans; very spicy."
+  },
+  "Tau Fu Fah": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Tau Fu Fah Gula Melaka": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut milk is not milk."
+  },
+  "Leng Chee Kang": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten."
+  },
+  "Egg Tart": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter pastry (wheat, butter), egg custard; stated no lard."
+  },
+  "Soya Bean Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Soya Cincau": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Lime Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Chrysanthemum Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Barley Ais": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Kopi O": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Beans roasted with butter = milk (rule o); vegetarian, not vegan."
+  },
+  "Milo Ais": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley = gluten; condensed milk."
+  }
+}

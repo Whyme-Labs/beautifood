@@ -1,0 +1,373 @@
+{
+  "Mushroom Soup": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Chicken stock: sounds vegetarian but is not. Cream; garlic bread = wheat and butter. Halal read from ingredients only (no pork or alcohol); the branch is not halal (status none)."
+  },
+  "Caesar Salad": {
+    "allergens": [
+      "fish",
+      "egg",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork bacon; anchovies = fish; egg yolk; parmesan; croutons = wheat."
+  },
+  "Garlic Prawns": {
+    "allergens": [
+      "crustaceans",
+      "sulphites",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Prawns; white wine = sulphites, not halal; baguette = gluten. 'A little spicy' = 1."
+  },
+  "Burrata Salad": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Burrata; pistachio = tree nuts."
+  },
+  "Ribeye 300g": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Herb butter = milk. Halal from ingredients only (beef, no pork or alcohol); sauce is a modifier and not part of the base dish."
+  },
+  "Striploin 250g": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Herb butter = milk. Halal from ingredients only."
+  },
+  "Tenderloin 200g": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Mashed potato with butter and cream. Halal from ingredients only."
+  },
+  "Tomahawk 1.2kg": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Beef, roast potatoes, garlic; no allergen stated. Sold out (extra.json)."
+  },
+  "Steakhouse Burger": {
+    "allergens": [
+      "gluten",
+      "sesame",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sesame brioche bun (wheat, egg, milk); cheddar. Pickles: no sulphites stated."
+  },
+  "BBQ Pork Ribs": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "mustard",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork; bourbon (alcohol); Worcestershire = fish + gluten (rule i); mustard; coleslaw mayo = egg; honey. Smoky, no heat word."
+  },
+  "Lamb Rack": {
+    "allergens": [
+      "mustard",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Dijon mustard; breadcrumbs = gluten; red wine jus = sulphites and not halal."
+  },
+  "Grilled Salmon": {
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salmon; lemon butter and mash = milk."
+  },
+  "Fish and Chips": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer batter = gluten, not halal; dory; tartar sauce egg mayo."
+  },
+  "Peri-Peri Chicken": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Coleslaw mayonnaise = egg. Bird's eye chilli, described as spicy. Halal from ingredients only."
+  },
+  "Wild Mushroom Risotto": {
+    "allergens": [
+      "milk",
+      "sulphites"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "White wine = sulphites, not halal; butter and parmesan. Arborio rice, no gluten. Merchant's vegetarian tag kept (rennet not stated)."
+  },
+  "Cauliflower Steak": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tahini = sesame. Chickpeas are not a listed allergen. Stated not spicy."
+  },
+  "Truffle Fries": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Parmesan."
+  },
+  "Mashed Potato": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter and cream."
+  },
+  "Creamed Spinach": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream and parmesan."
+  },
+  "Sautéed Mushrooms": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Beef dripping: sounds vegan but is not vegetarian. Halal from ingredients only."
+  },
+  "Garden Salad": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Balsamic and olive oil; no sulphites stated."
+  },
+  "Steak Lunch Set": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Black pepper sauce with butter = milk, beef stock. 'Mildly peppery' = 1. Iced lemon tea included."
+  },
+  "Chicken Chop Lunch Set": {
+    "allergens": [
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Mushroom cream sauce = milk; coleslaw mayo = egg."
+  },
+  "Dory Lunch Set": {
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dory; lemon butter and buttered vegetables."
+  },
+  "Aglio Olio Lunch Set": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Spaghetti = wheat. Chilli flakes, 'a little spicy' = 1."
+  },
+  "Chocolate Lava Cake": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour, eggs, butter, soy lecithin; ice cream with milk."
+  },
+  "Crème Brûlée": {
+    "allergens": [
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg yolks and cream; no flour."
+  },
+  "Apple Crumble": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oat and wheat crumble = gluten; ice cream with egg and milk."
+  },
+  "Mango Sorbet": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Fruit sorbet, dairy-free."
+  },
+  "House Red Wine": {
+    "allergens": [
+      "sulphites"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Grape wine = sulphites, not halal (rule h). Fining agents not stated."
+  },
+  "House White Wine": {
+    "allergens": [
+      "sulphites"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Grape wine = sulphites, not halal (rule h). Fining agents not stated."
+  },
+  "Draught Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer = gluten, not halal."
+  },
+  "Virgin Mojito": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No alcohol."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea, lemon, sugar."
+  },
+  "Soft Drink": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Canned soft drink."
+  },
+  "Americano": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coffee and water."
+  }
+}

@@ -1,0 +1,382 @@
+{
+  "Espresso": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coffee only."
+  },
+  "Long Black": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Espresso and water."
+  },
+  "Flat White": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk."
+  },
+  "Cafe Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk. Oat (gluten) or almond (tree nuts) milk are paid modifiers, not the base dish."
+  },
+  "Cappuccino": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk; cocoa dust adds no allergen."
+  },
+  "Mocha": {
+    "allergens": [
+      "milk",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk; chocolate sauce with soy lecithin = soy."
+  },
+  "Spanish Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk and fresh milk."
+  },
+  "Gula Melaka Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk; gula melaka is palm sugar."
+  },
+  "Pour Over of the Day": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Filter coffee, black."
+  },
+  "Cold Brew": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black, no milk."
+  },
+  "Matcha Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk."
+  },
+  "Hojicha Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk; low caffeine, not caffeine-free."
+  },
+  "Sparkling Yuzu": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey rules out vegan. Caffeine-free, no alcohol."
+  },
+  "Iced Chocolate": {
+    "allergens": [
+      "milk",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk and whipped cream; soy lecithin."
+  },
+  "Babyccino": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Marshmallow with beef gelatine: not vegetarian (gelatine), halal per stated beef source (as v4 Panna Cotta, rule n) in a pork-free kitchen."
+  },
+  "Eggs Benedict": {
+    "allergens": [
+      "egg",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Poached eggs, hollandaise (egg yolk, butter), English muffin = wheat. Beef bacon: pork-free, no alcohol."
+  },
+  "Shakshuka": {
+    "allergens": [
+      "egg",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Eggs, feta, sourdough. Described as spicy (harissa). Merchant's vegetarian tag kept (rennet not stated)."
+  },
+  "Avocado Toast": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "tree_nuts",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Sourdough, poached egg, dukkah with hazelnuts (tree nuts) and sesame. Pinch of chilli flakes, stated mild."
+  },
+  "Big Breakfast": {
+    "allergens": [
+      "egg",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Eggs; wheat rusk in the chicken sausage and sourdough = gluten; buttered toast = milk. Beef bacon, chicken sausage: no pork."
+  },
+  "Granola Bowl": {
+    "allergens": [
+      "gluten",
+      "tree_nuts",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oats = gluten; almonds = tree nuts; Greek yoghurt = milk; honey rules out vegan. Pumpkin seeds are not tree nuts."
+  },
+  "Truffle Mushroom Toast": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Chicken jus: sounds vegetarian but is not. Butter and ricotta = milk; sourdough = gluten."
+  },
+  "French Toast": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Brioche, egg and milk, mascarpone."
+  },
+  "Smoked Salmon Scramble": {
+    "allergens": [
+      "egg",
+      "milk",
+      "fish",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Eggs, cream, smoked salmon, sourdough. Capers: no sulphites stated."
+  },
+  "Nasi Lemak Bowl": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "fish",
+      "peanuts",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat flour batter; belacan = crustaceans; ikan bilis = fish; peanuts; egg. Coconut milk is not milk. Described as spicy."
+  },
+  "Vegan Tofu Scramble": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu = soy; sourdough = gluten. Stated no egg, no dairy."
+  },
+  "Roasted Tomato Soup": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Vegetable stock; sourdough on the side = gluten. No celery stated."
+  },
+  "Chicken Pesto Panini": {
+    "allergens": [
+      "tree_nuts",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cashew pesto = tree nuts (hidden); parmesan and mozzarella = milk; ciabatta = gluten."
+  },
+  "Butter Croissant": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, butter, egg wash."
+  },
+  "Kouign-Amann": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat and butter; no egg stated."
+  },
+  "Kaya Croissant": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter croissant; kaya with eggs; coconut milk is not milk. Sold out (extra.json)."
+  },
+  "Banana Bread": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Bread = wheat flour; eggs; brown butter; walnuts."
+  },
+  "Burnt Cheesecake": {
+    "allergens": [
+      "milk",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream cheese, cream, eggs, a little wheat flour."
+  },
+  "Tiramisu": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Dark rum = alcohol, not halal (the pork-free branch may use alcohol). Savoiardi = wheat and egg; mascarpone; egg yolk."
+  },
+  "Orange Almond Cake": {
+    "allergens": [
+      "tree_nuts",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Flourless, stated gluten-free; almonds; eggs; no dairy stated."
+  },
+  "Vegan Chocolate Cake": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour; soy lecithin. Coconut oil is not a tree nut."
+  }
+}

@@ -1,0 +1,526 @@
+{
+  "soldOut": [
+    "Kaya Croissant"
+  ],
+  "menus": [
+    {
+      "name": "Brunch",
+      "dishes": [
+        "Eggs Benedict",
+        "Shakshuka",
+        "Avocado Toast",
+        "Big Breakfast",
+        "Granola Bowl",
+        "Truffle Mushroom Toast",
+        "French Toast",
+        "Smoked Salmon Scramble",
+        "Nasi Lemak Bowl",
+        "Vegan Tofu Scramble"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "08:00",
+          "to": "15:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Pastry happy hour",
+      "kind": "percent",
+      "value": 30,
+      "categories": [
+        "PASTRIES & CAKES"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "17:00",
+          "to": "22:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Flat White": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          },
+          {
+            "name": "Almond milk",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Extra shot",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra shot",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Cafe Latte": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          },
+          {
+            "name": "Almond milk",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Extra shot",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra shot",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Cappuccino": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          },
+          {
+            "name": "Almond milk",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Extra shot",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra shot",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Mocha": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          },
+          {
+            "name": "Almond milk",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Extra shot",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra shot",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Spanish Latte": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          },
+          {
+            "name": "Almond milk",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Extra shot",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra shot",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Gula Melaka Latte": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          },
+          {
+            "name": "Almond milk",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Extra shot",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra shot",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Matcha Latte": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          },
+          {
+            "name": "Almond milk",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Hojicha Latte": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          },
+          {
+            "name": "Almond milk",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Iced Chocolate": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          },
+          {
+            "name": "Almond milk",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Espresso": [
+      {
+        "name": "Extra shot",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra shot",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Long Black": [
+      {
+        "name": "Extra shot",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra shot",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Cold Brew": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Big Breakfast": [
+      {
+        "name": "Eggs",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fried",
+            "price": 0
+          },
+          {
+            "name": "Scrambled",
+            "price": 0
+          },
+          {
+            "name": "Poached",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Avocado Toast": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Smoked salmon",
+            "price": 800
+          },
+          {
+            "name": "Beef bacon",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Eggs Benedict": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra poached egg",
+            "price": 300
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "pork_free"
+  }
+}

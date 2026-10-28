@@ -1,0 +1,102 @@
+{
+  "soldOut": [
+    "Kulfi"
+  ],
+  "menus": [
+    {
+      "name": "Tandoor",
+      "dishes": [
+        "Tandoori Chicken",
+        "Chicken Tikka",
+        "Seekh Kebab",
+        "Malai Tikka",
+        "Paneer Tikka",
+        "Tandoori Fish",
+        "Tandoori Prawns"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "17:00",
+          "to": "23:00"
+        }
+      ]
+    },
+    {
+      "name": "Lunch thali",
+      "dishes": [
+        "Chicken Thali",
+        "Vegetarian Thali"
+      ],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "12:00",
+          "to": "15:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Plain Naan": [
+      {
+        "name": "Upgrade",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Butter",
+            "price": 100
+          },
+          {
+            "name": "Cheese",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Garlic Naan": [
+      {
+        "name": "Upgrade",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Butter",
+            "price": 100
+          },
+          {
+            "name": "Cheese",
+            "price": 400
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "certified",
+    "certifier": "JAIS",
+    "certNo": "JAIS-HC-1048-2025",
+    "validUntil": "2027-08-31"
+  }
+}

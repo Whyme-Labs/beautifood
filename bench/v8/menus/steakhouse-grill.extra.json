@@ -1,0 +1,379 @@
+{
+  "soldOut": [
+    "Tomahawk 1.2kg"
+  ],
+  "menus": [
+    {
+      "name": "Lunch set",
+      "dishes": [
+        "Steak Lunch Set",
+        "Chicken Chop Lunch Set",
+        "Dory Lunch Set",
+        "Aglio Olio Lunch Set"
+      ],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "11:30",
+          "to": "14:30"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Wine Wednesday",
+      "kind": "percent",
+      "value": 50,
+      "categories": [],
+      "dishes": [
+        "House Red Wine",
+        "House White Wine"
+      ],
+      "windows": [
+        {
+          "days": [
+            3
+          ],
+          "from": "18:00",
+          "to": "23:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Ribeye 300g": [
+      {
+        "name": "Doneness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Medium Well",
+            "price": 0
+          },
+          {
+            "name": "Well Done",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Chimichurri",
+            "price": 400
+          },
+          {
+            "name": "Béarnaise",
+            "price": 500
+          },
+          {
+            "name": "Red Wine Jus",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Striploin 250g": [
+      {
+        "name": "Doneness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Medium Well",
+            "price": 0
+          },
+          {
+            "name": "Well Done",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Chimichurri",
+            "price": 400
+          },
+          {
+            "name": "Béarnaise",
+            "price": 500
+          },
+          {
+            "name": "Red Wine Jus",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Tenderloin 200g": [
+      {
+        "name": "Doneness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Medium Well",
+            "price": 0
+          },
+          {
+            "name": "Well Done",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Chimichurri",
+            "price": 400
+          },
+          {
+            "name": "Béarnaise",
+            "price": 500
+          },
+          {
+            "name": "Red Wine Jus",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Tomahawk 1.2kg": [
+      {
+        "name": "Doneness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Medium Well",
+            "price": 0
+          },
+          {
+            "name": "Well Done",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Chimichurri",
+            "price": 400
+          },
+          {
+            "name": "Béarnaise",
+            "price": 500
+          },
+          {
+            "name": "Red Wine Jus",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Steak Lunch Set": [
+      {
+        "name": "Doneness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Medium Well",
+            "price": 0
+          },
+          {
+            "name": "Well Done",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Steakhouse Burger": [
+      {
+        "name": "Doneness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Medium Well",
+            "price": 0
+          },
+          {
+            "name": "Well Done",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 300
+          },
+          {
+            "name": "Extra cheese",
+            "price": 300
+          },
+          {
+            "name": "Extra patty",
+            "price": 1800
+          }
+        ]
+      }
+    ],
+    "Caesar Salad": [
+      {
+        "name": "Add protein",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Grilled chicken",
+            "price": 800
+          },
+          {
+            "name": "Grilled prawns",
+            "price": 1200
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

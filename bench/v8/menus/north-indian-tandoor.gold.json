@@ -1,0 +1,399 @@
+{
+  "Tandoori Chicken": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Yoghurt marinade and mint-yoghurt chutney = milk; 'spicy'. On the Tandoor menu (17:00-23:00)."
+  },
+  "Chicken Tikka": {
+    "allergens": [
+      "milk",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Yoghurt = milk; mustard oil = mustard (rule m: oil counts); mildly spicy. Tandoor menu."
+  },
+  "Seekh Kebab": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Bound with egg; green chilli, 'spicy'. Tandoor menu."
+  },
+  "Malai Tikka": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream, cheese = milk; cashew = tree nuts; not spicy. Tandoor menu."
+  },
+  "Paneer Tikka": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Paneer (acid-set, no rennet) and yoghurt = milk; mildly spicy. Tandoor menu."
+  },
+  "Tandoori Fish": {
+    "allergens": [
+      "fish",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Mackerel = fish; mustard oil = mustard; gram flour is chickpea (no gluten). Tandoor menu."
+  },
+  "Tandoori Prawns": {
+    "allergens": [
+      "crustaceans",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Prawns; yoghurt; very spicy. Tandoor menu."
+  },
+  "Butter Chicken": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Butter, cream = milk; cashew = tree nuts; mild. A curry, served all day (not on the Tandoor menu)."
+  },
+  "Mutton Rogan Josh": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Yoghurt; spicy."
+  },
+  "Chicken Korma": {
+    "allergens": [
+      "tree_nuts",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cashew and almond; yoghurt; not spicy."
+  },
+  "Palak Paneer": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Paneer and cream; mild."
+  },
+  "Dal Makhani": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter and cream; not spicy. Lentils and kidney beans are not allergens."
+  },
+  "Chana Masala": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Vegetable oil, no dairy; spicy."
+  },
+  "Dal Tadka": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Sounds vegan but tempered in ghee = milk; dried chilli, 'mild'."
+  },
+  "Chicken Dum Biryani": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Yoghurt, ghee, raita = milk; spicy."
+  },
+  "Mutton Biryani": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Yoghurt, ghee, raita = milk; spicy."
+  },
+  "Vegetable Pulao": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but cooked in chicken stock."
+  },
+  "Jeera Rice": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ghee = milk."
+  },
+  "Plain Basmati Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Plain Naan": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, yoghurt, egg."
+  },
+  "Butter Naan": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, yoghurt, egg, butter."
+  },
+  "Garlic Naan": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, yoghurt, egg, butter."
+  },
+  "Cheese Naan": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, yoghurt, egg, mozzarella."
+  },
+  "Peshawari Naan": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, yoghurt, egg; almonds = tree nuts; coconut is not a tree nut."
+  },
+  "Tandoori Roti": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Whole wheat; stated no egg, no dairy."
+  },
+  "Cucumber Raita": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt."
+  },
+  "Papadum": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Lentil wafers; mint-coriander chutney with no yoghurt stated."
+  },
+  "Vegetable Samosa": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat pastry; mildly spicy."
+  },
+  "Bhel Puri": {
+    "allergens": [
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Roasted peanuts; gram-flour sev (no gluten); mildly spicy."
+  },
+  "Chicken Thali": {
+    "allergens": [
+      "milk",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Dal tadka (ghee), raita, jeera rice (ghee), gulab jamun = milk; plain naan = gluten, milk, egg; gulab jamun = gluten. Chicken curry is spicy. Lunch thali menu only (Mon-Fri 12:00-15:00)."
+  },
+  "Vegetarian Thali": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Ghee, raita, gulab jamun = milk; roti and gulab jamun = gluten; chana masala is spicy. Lunch thali menu only."
+  },
+  "Gulab Jamun": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk powder, ghee; wheat flour."
+  },
+  "Kulfi": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Reduced milk; pistachio. Sold out (extra.json)."
+  },
+  "Kheer": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk; almonds."
+  },
+  "Mango Lassi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0
+  },
+  "Masala Chai": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Spiced, not chilli-hot."
+  },
+  "Fresh Lime Soda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Rose Milk": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Basil seeds are not sesame."
+  },
+  "Mineral Water": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  }
+}

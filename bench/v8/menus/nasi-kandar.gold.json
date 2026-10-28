@@ -1,0 +1,338 @@
+{
+  "Nasi Putih": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Nasi Kandar Banjir": {
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Fish curry = fish; dhal tempered in ghee = milk; chicken curry, so not vegetarian. Described as spicy."
+  },
+  "Nasi Briyani": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Sounds like a plain rice but is cooked in chicken stock, so not vegetarian. Ghee + evaporated milk = milk; cashews = tree nuts. Mild."
+  },
+  "Ayam Goreng Berempah": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Rice flour coating, no wheat. 'A little chilli' = 1."
+  },
+  "Kari Ayam": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Coconut milk is not milk. Spicy."
+  },
+  "Kari Kepala Ikan": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Fish head curry. Spicy. Sold out in extra.json."
+  },
+  "Sotong Sambal": {
+    "allergens": [
+      "molluscs",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Squid = molluscs; belacan = crustaceans. Very spicy."
+  },
+  "Udang Masak Merah": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tiger prawns. Spicy."
+  },
+  "Daging Kambing": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Kicap manis = soy + gluten. Spicy."
+  },
+  "Ikan Goreng Berempah": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Mackerel; rice flour, no wheat. 'A little chilli' = 1."
+  },
+  "Telur Masin": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salted duck egg."
+  },
+  "Telur Dadar": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Omelette with green chilli, stated mild."
+  },
+  "Bendi Goreng": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Sounds vegetarian, but dried shrimp = crustaceans, not vegetarian. Mild."
+  },
+  "Kobis Goreng": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Mustard seeds = mustard (seed, not greens; rule m). Not spicy."
+  },
+  "Dhal Sayur": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ghee = milk, so vegetarian not vegan. Mild."
+  },
+  "Roti Canai": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat; margarine + condensed milk = milk; served with fish curry, so fish and not vegetarian. No egg in the dough. Mild. Supper menu only (18:00-03:00)."
+  },
+  "Roti Telur": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Roti canai dough + egg; fish curry on the side, so not vegetarian. Mild. Supper only."
+  },
+  "Roti Tisu": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat roti with condensed milk and butter; no curry. Supper only."
+  },
+  "Murtabak Daging": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat dough with condensed milk; egg; beef. Chicken curry dip and acar bawang add nothing. Mild. Supper only."
+  },
+  "Murtabak Ayam": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "As Murtabak Daging, with chicken. Mild. Supper only."
+  },
+  "Tosai": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Urad dal is a lentil, not soy. Chutney tempered with mustard seeds = mustard. Coconut is not a tree nut. Mild."
+  },
+  "Tosai Masala": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Masala tempered with mustard seeds = mustard. Mild."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed and evaporated milk."
+  },
+  "Teh O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk; butter-roasted beans (rule o)."
+  },
+  "Kopi O": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "'No milk added', but beans roasted with butter = milk (rule o). Vegetarian, not vegan."
+  },
+  "Milo Dinosaur": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley = gluten; milk solids and condensed milk = milk."
+  },
+  "Sirap Bandung": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated and condensed milk."
+  },
+  "Limau Ais": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Lassi Mangga": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt = milk; honey rules out vegan. Sold out in extra.json."
+  },
+  "Kesari": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Semolina = wheat; ghee = milk; cashews = tree nuts."
+  },
+  "Ais Kacang": {
+    "allergens": [
+      "milk",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk; crushed peanuts. Red beans are not soy."
+  },
+  "Pisang Goreng": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour batter, no egg, palm oil."
+  }
+}

@@ -1,0 +1,307 @@
+{
+  "Bak Kut Teh Pai Kut": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork. Soy sauce = soy + gluten. Tofu puffs = soy. Dang gui (angelica) is not celery. Herbal, not spicy."
+  },
+  "Bak Kut Teh Sam Chan": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork belly; soy sauce, tofu puffs."
+  },
+  "Bak Kut Teh Tai Kwat": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork bones; soy sauce."
+  },
+  "Bak Kut Teh Mixed": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork cuts and stomach; soy sauce, tofu puffs."
+  },
+  "Bak Kut Teh Intestine": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork intestine; soy sauce, tofu puffs."
+  },
+  "Dry Bak Kut Teh": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "molluscs",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Dried cuttlefish = molluscs; oyster sauce = molluscs + gluten (g); Shaoxing = sulphites + gluten, not halal; dark soy. Mildly spicy = 1."
+  },
+  "Pork Trotter in Black Vinegar": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Black vinegar with wheat bran = gluten (v7 Chinkiang ruling); dark soy; hard-boiled egg. Sold out in extra.json."
+  },
+  "Herbal Chicken Soup": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy sauce = soy + gluten. No pork, no alcohol, own pot: halal from ingredients (v6/v7 convention) in a kitchen whose branch halal status is none; no case requires it for a Muslim guest."
+  },
+  "Set Pai Kut": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pai Kut soup (soy sauce); yam rice has dried shrimp = crustaceans and pork lard; yau char kwai = wheat."
+  },
+  "Set Dry Bak Kut Teh": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "molluscs",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "As Dry Bak Kut Teh, plus plain rice and tea."
+  },
+  "Set Herbal Chicken": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "As Herbal Chicken Soup, plus plain rice and tea."
+  },
+  "Yam Rice": {
+    "allergens": [
+      "crustaceans",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Dried shrimp = crustaceans; pork lard, so not vegetarian or halal; light soy = soy + gluten."
+  },
+  "Plain Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Yau Char Kwai": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough, stated egg-free, palm oil."
+  },
+  "Braised Tofu Puff": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Sounds vegetarian but is braised in pork broth. Tofu + soy sauce."
+  },
+  "Braised Egg": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg braised in pork broth with soy sauce."
+  },
+  "Salted Vegetable": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Kiam chye (preserved mustard greens) is not the mustard allergen (rule m). Pork fat: not vegetarian or halal. A little chilli = 1."
+  },
+  "Garlic Lettuce": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten (g); lard oil: not vegetarian or halal."
+  },
+  "Stir-fried Choy Sum": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Garlic, salt, vegetable oil, stated no oyster sauce."
+  },
+  "Braised Peanuts": {
+    "allergens": [
+      "peanuts",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanuts; soy sauce."
+  },
+  "Chinese Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Charged per person."
+  },
+  "Chrysanthemum Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Soya Bean Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk. No butter roast stated."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey: vegetarian, not vegan."
+  },
+  "Luo Han Guo": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Tsingtao Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol, not halal."
+  },
+  "Grass Jelly": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Grass Jelly Soy Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Barley Fu Chuk": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten; beancurd skin = soy; beaten egg. Ginkgo is a seed, not a regulated tree nut."
+  }
+}

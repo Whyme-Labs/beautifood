@@ -1,0 +1,248 @@
+{
+  "soldOut": [
+    "Kari Kepala Ikan",
+    "Lassi Mangga"
+  ],
+  "menus": [
+    {
+      "name": "Supper",
+      "dishes": [
+        "Roti Canai",
+        "Roti Telur",
+        "Roti Tisu",
+        "Murtabak Daging",
+        "Murtabak Ayam"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "18:00",
+          "to": "03:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Tea time",
+      "kind": "percent",
+      "value": 20,
+      "categories": [
+        "MINUMAN"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "15:00",
+          "to": "17:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Roti Canai": [
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Telur (egg)",
+            "price": 100
+          },
+          {
+            "name": "Bawang (onion)",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas (hot)",
+            "price": 0
+          },
+          {
+            "name": "Ais (iced)",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa (regular)",
+            "price": 0
+          },
+          {
+            "name": "Besar (large)",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Teh O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas (hot)",
+            "price": 0
+          },
+          {
+            "name": "Ais (iced)",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa (regular)",
+            "price": 0
+          },
+          {
+            "name": "Besar (large)",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas (hot)",
+            "price": 0
+          },
+          {
+            "name": "Ais (iced)",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa (regular)",
+            "price": 0
+          },
+          {
+            "name": "Besar (large)",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas (hot)",
+            "price": 0
+          },
+          {
+            "name": "Ais (iced)",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa (regular)",
+            "price": 0
+          },
+          {
+            "name": "Besar (large)",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Sirap Bandung": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas (hot)",
+            "price": 0
+          },
+          {
+            "name": "Ais (iced)",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa (regular)",
+            "price": 0
+          },
+          {
+            "name": "Besar (large)",
+            "price": 100
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 0,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "certified",
+    "certifier": "JAKIM",
+    "certNo": "JAKIM-1500-0217-08/2025",
+    "validUntil": "2027-08-31"
+  }
+}
