@@ -660,3 +660,27 @@ the brain read and the dishes shown:
 
 Dev unchanged or better (98.8 / 97.5 / 96.9 / 98.2 / 97.2 / 95.2%, 0 unsafe; 1 more fixed).
 v7, once: 85.8 → **86.5%, 0 unsafe**; the 3 fixed, none broken.
+
+## What held back compare and budget on v7 (2026-10-28, diagnosed by arithmetic, not read)
+
+Dev sets were at 89–100% on both; v7 at 13/17 (compare) and 50/68 (budget). Of v7's 20 failing
+cases, 11 wanted a money amount; comparing the brain's total with it by arithmetic only: off by
+one dish's price (5), a share per person (3), service charge and tax (2), a dish counted wrong
+(1). The other budget failures were mostly "cheaper" with no number. Fixed, generally and with
+unit tests:
+
+- **Bills:** "just the food", "without the drink", "minus the satay", "how much is the food?";
+  "two nasi lemak", "one nasi lemak each" for the party, "nasi lemak 2, teh tarik 3", "another
+  teh tarik"; "how much per person?" with the party said; "including service and tax", totalled
+  as the till does (crates/core money.rs) with the branch's own rates.
+- **Cheaper / cheapest:** below a named dish ("Ayam percik is a bit pricey. Cheaper chicken
+  option?"); "but still beef" across courses; "the cheapest vegan main/dessert" over the whole
+  course; desserts include sweet soups and shaved ice, pasta includes macaroni and the rest.
+- **Compare and variants:** "how much cheaper?", "price difference", "how much more is X than
+  Y?" give the difference; "which is cheapest" of three; two dishes "for two people" are still a
+  comparison; "pad thai udang" is the prawn one; "siu yok" is Siu Yuk.
+
+Dev (0 unsafe): 98.8 / 97.6 / 97.1 / 98.2 / 97.4 / 96.7% (v2, v3, v5, v6 up). v7, scored twice:
+86.5 → **87.3%, 0 unsafe**, compare 13 → 14/17, budget 50 → 54/68; the second run's one broken
+case ("mixed grill for 2" read as two grills) was traced by its counts and fixed, and that one
+case alone checked passing afterwards (not a third full score).

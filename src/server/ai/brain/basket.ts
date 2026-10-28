@@ -163,7 +163,10 @@ export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
       while (k > 0 && /^(x|of|the|plates?|bowls?|cups?|glasses|glass|pieces?|pcs|orders?|servings?|portions?|sets?|pinggan|mangkuk|cawan|gelas|biji|ketul)$/.test(toks[k])) k--;
       n = NUMBER[toks[k]] ?? (/^\d$/.test(toks[k] ?? "") ? Number(toks[k]) : 1);
       // ("nasi lemak 2, teh tarik 3": the "2," closes the nasi lemak, it isn't the teh tarik's count)
-      if (n > 1 && k > 0 && /^\d$/.test(toks[k]) && new RegExp(`[a-z)]\\s+${toks[k]}\\s*[,;]`, "i").test(text)) n = 1;
+      // (only when the comma sits between that number and this dish)
+      const here = text.toLowerCase().search(new RegExp(`\\b${toks[at]}`));
+      const lead = here >= 0 ? text.slice(0, here).match(/(\d)\s*([,;]?)\s*(?:x\s*|of\s+|the\s+|plates?\s+of\s+)?$/i) : null;
+      if (n > 1 && lead && lead[2]) n = 1;
     }
     // "nasi lemak x2", "kopi ×3", "teh tarik times two"
     const end = at >= 0 ? at + words.length : -1;
@@ -179,7 +182,9 @@ export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
       const count = NUMBER[next] ?? (/^\d$/.test(next) ? Number(next) : undefined);
       const closes = j + 1 >= toks.length || /^(and|dan|n|plus|please|pls|total|how|berapa)$/.test(toks[j + 1]);
       const commaAfter = new RegExp(`\\b${next}\\s*(,|;|\\.|\\?|$)`, "i").test(text);
-      if (count && count > 1 && !normalize(d.name).split(" ").includes(next) && (closes || commaAfter)) n = count;
+      // (a number of its own name, said as a digit, isn't a count: "mixed grill for 2" is the Mixed Grill for Two)
+      const ownNumber = normalize(d.name).split(" ").some((w) => w === next || NUMBER[w] === count);
+      if (count && count > 1 && !ownNumber && toks[j - 1] !== "for" && (closes || commaAfter)) n = count;
     }
     // "another teh tarik", "satu lagi kopi": one more (added to what's on the order)
     if (at > 0 && /^(another|lagi)$/.test(toks[at - 1])) n = 1;

@@ -968,6 +968,12 @@ describe("bills: what's left out, how many, each share, and the till's charges",
     expect(ask("2 nasi lemak, 1 laksa and 3 teh tarik. Total?", [])).toMatch(/Total RM69\.80/);
     expect(ask("satay 6 sticks and a laksa, how much?", [])).toMatch(/Total RM28\.50/);
     expect(ask("another teh tarik, total?")).toMatch(/2 × Teh Tarik.*Total RM42\.90/);
+    // a number of the dish's own name isn't a count, and the next item keeps its own
+    const grill = { ...ctx, items: asItems([
+      { id: "g", name: "Mixed Grill for Two", category: "Grill", description: "", price: 6990, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
+      { id: "y", name: "Ayran", category: "Drinks", description: "", price: 790, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    ] as never) } as unknown as AssistantContext;
+    expect(answerGuest(grill, [{ role: "user", content: "mixed grill for 2, 2 ayran, total?" }]).answer).toMatch(/^Mixed Grill for Two \(RM69\.90\) \+ 2 × Ayran/);
   });
   it("gives each person's share when the party is said", () => {
     expect(ask("we're 3 people, how much per person?")).toMatch(/Split 3 ways, that's RM12\.47 each/);
