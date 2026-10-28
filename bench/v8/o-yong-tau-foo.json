@@ -2,7 +2,7 @@
   {
     "id": "v8o-yong-tau-foo-001",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -31,7 +31,7 @@
   {
     "id": "v8o-yong-tau-foo-002",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -60,7 +60,7 @@
   {
     "id": "v8o-yong-tau-foo-003",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -90,7 +90,7 @@
   {
     "id": "v8o-yong-tau-foo-004",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -119,7 +119,7 @@
   {
     "id": "v8o-yong-tau-foo-005",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -148,7 +148,7 @@
   {
     "id": "v8o-yong-tau-foo-006",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -182,7 +182,7 @@
   {
     "id": "v8o-yong-tau-foo-007",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -211,7 +211,7 @@
   {
     "id": "v8o-yong-tau-foo-008",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -241,7 +241,7 @@
   {
     "id": "v8o-yong-tau-foo-009",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -270,7 +270,7 @@
   {
     "id": "v8o-yong-tau-foo-010",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -303,7 +303,7 @@
   {
     "id": "v8o-yong-tau-foo-011",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -337,7 +337,7 @@
   {
     "id": "v8o-yong-tau-foo-012",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -366,7 +366,7 @@
   {
     "id": "v8o-yong-tau-foo-013",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -398,7 +398,7 @@
   {
     "id": "v8o-yong-tau-foo-014",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -427,7 +427,7 @@
   {
     "id": "v8o-yong-tau-foo-015",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -457,7 +457,7 @@
   {
     "id": "v8o-yong-tau-foo-016",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -487,7 +487,7 @@
   {
     "id": "v8o-yong-tau-foo-017",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -516,7 +516,7 @@
   {
     "id": "v8o-yong-tau-foo-018",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -557,7 +557,7 @@
   {
     "id": "v8o-yong-tau-foo-019",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -591,7 +591,7 @@
   {
     "id": "v8o-yong-tau-foo-020",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -622,7 +622,7 @@
   {
     "id": "v8o-yong-tau-foo-021",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "recommend",
@@ -652,7 +652,7 @@
   {
     "id": "v8o-yong-tau-foo-022",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -682,7 +682,7 @@
   {
     "id": "v8o-yong-tau-foo-023",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -722,7 +722,7 @@
   {
     "id": "v8o-yong-tau-foo-024",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -749,7 +749,7 @@
   {
     "id": "v8o-yong-tau-foo-025",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -781,7 +781,7 @@
   {
     "id": "v8o-yong-tau-foo-026",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -813,7 +813,7 @@
   {
     "id": "v8o-yong-tau-foo-027",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -843,7 +843,7 @@
   {
     "id": "v8o-yong-tau-foo-028",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -878,7 +878,7 @@
   {
     "id": "v8o-yong-tau-foo-029",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -908,7 +908,7 @@
   {
     "id": "v8o-yong-tau-foo-030",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -941,7 +941,7 @@
   {
     "id": "v8o-yong-tau-foo-031",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -972,7 +972,7 @@
   {
     "id": "v8o-yong-tau-foo-032",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "allergy",
@@ -1003,7 +1003,7 @@
   {
     "id": "v8o-yong-tau-foo-033",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1037,7 +1037,7 @@
   {
     "id": "v8o-yong-tau-foo-034",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1066,7 +1066,7 @@
   {
     "id": "v8o-yong-tau-foo-035",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1109,7 +1109,7 @@
   {
     "id": "v8o-yong-tau-foo-036",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1142,7 +1142,7 @@
   {
     "id": "v8o-yong-tau-foo-037",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1168,7 +1168,7 @@
   {
     "id": "v8o-yong-tau-foo-038",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1194,7 +1194,7 @@
   {
     "id": "v8o-yong-tau-foo-039",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1218,7 +1218,7 @@
   {
     "id": "v8o-yong-tau-foo-040",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -1239,7 +1239,7 @@
   {
     "id": "v8o-yong-tau-foo-041",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -1264,7 +1264,7 @@
   {
     "id": "v8o-yong-tau-foo-042",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -1285,7 +1285,7 @@
   {
     "id": "v8o-yong-tau-foo-043",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1321,7 +1321,7 @@
   {
     "id": "v8o-yong-tau-foo-044",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1344,7 +1344,7 @@
   {
     "id": "v8o-yong-tau-foo-045",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -1366,7 +1366,7 @@
   {
     "id": "v8o-yong-tau-foo-046",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "service",
@@ -1386,7 +1386,7 @@
   {
     "id": "v8o-yong-tau-foo-047",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "adversarial",
@@ -1408,7 +1408,7 @@
   {
     "id": "v8o-yong-tau-foo-048",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "budget",
@@ -1427,7 +1427,7 @@
   {
     "id": "v8o-yong-tau-foo-049",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1454,7 +1454,7 @@
   {
     "id": "v8o-yong-tau-foo-050",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1476,7 +1476,7 @@
   {
     "id": "v8o-yong-tau-foo-051",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "availability",
@@ -1498,7 +1498,7 @@
   {
     "id": "v8o-yong-tau-foo-052",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1525,7 +1525,7 @@
   {
     "id": "v8o-yong-tau-foo-053",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1551,7 +1551,7 @@
   {
     "id": "v8o-yong-tau-foo-054",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1577,7 +1577,7 @@
   {
     "id": "v8o-yong-tau-foo-055",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1607,7 +1607,7 @@
   {
     "id": "v8o-yong-tau-foo-056",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1634,7 +1634,7 @@
   {
     "id": "v8o-yong-tau-foo-057",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1655,7 +1655,7 @@
   {
     "id": "v8o-yong-tau-foo-058",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1678,7 +1678,7 @@
   {
     "id": "v8o-yong-tau-foo-059",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "modifier",
@@ -1700,7 +1700,7 @@
   {
     "id": "v8o-yong-tau-foo-060",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1723,7 +1723,7 @@
   {
     "id": "v8o-yong-tau-foo-061",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1753,7 +1753,7 @@
   {
     "id": "v8o-yong-tau-foo-062",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1778,7 +1778,7 @@
   {
     "id": "v8o-yong-tau-foo-063",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1808,7 +1808,7 @@
   {
     "id": "v8o-yong-tau-foo-064",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1834,7 +1834,7 @@
   {
     "id": "v8o-yong-tau-foo-065",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "deal",
@@ -1865,7 +1865,7 @@
   {
     "id": "v8o-yong-tau-foo-066",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1891,7 +1891,7 @@
   {
     "id": "v8o-yong-tau-foo-067",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1921,7 +1921,7 @@
   {
     "id": "v8o-yong-tau-foo-068",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -1937,7 +1937,7 @@
   {
     "id": "v8o-yong-tau-foo-069",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -1963,7 +1963,7 @@
   {
     "id": "v8o-yong-tau-foo-070",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "pairing",
@@ -1980,7 +1980,7 @@
   {
     "id": "v8o-yong-tau-foo-071",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -2009,7 +2009,7 @@
   {
     "id": "v8o-yong-tau-foo-072",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -2029,7 +2029,7 @@
   {
     "id": "v8o-yong-tau-foo-073",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -2046,7 +2046,7 @@
   {
     "id": "v8o-yong-tau-foo-074",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -2063,7 +2063,7 @@
   {
     "id": "v8o-yong-tau-foo-075",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -2095,7 +2095,7 @@
   {
     "id": "v8o-yong-tau-foo-076",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2118,7 +2118,7 @@
   {
     "id": "v8o-yong-tau-foo-077",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2144,7 +2144,7 @@
   {
     "id": "v8o-yong-tau-foo-078",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2166,7 +2166,7 @@
   {
     "id": "v8o-yong-tau-foo-079",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "compare",
@@ -2188,7 +2188,7 @@
   {
     "id": "v8o-yong-tau-foo-080",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2215,7 +2215,7 @@
   {
     "id": "v8o-yong-tau-foo-081",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2242,7 +2242,7 @@
   {
     "id": "v8o-yong-tau-foo-082",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2264,7 +2264,7 @@
   {
     "id": "v8o-yong-tau-foo-083",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "allergy",
@@ -2287,7 +2287,7 @@
   {
     "id": "v8o-yong-tau-foo-084",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -2317,7 +2317,7 @@
   {
     "id": "v8o-yong-tau-foo-085",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -2339,7 +2339,7 @@
   {
     "id": "v8o-yong-tau-foo-086",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "not_on_menu",
@@ -2359,7 +2359,7 @@
   {
     "id": "v8o-yong-tau-foo-087",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "dish_allergen",
@@ -2384,7 +2384,7 @@
   {
     "id": "v8o-yong-tau-foo-088",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -2407,7 +2407,7 @@
   {
     "id": "v8o-yong-tau-foo-089",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "dish_allergen",
@@ -2433,7 +2433,7 @@
   {
     "id": "v8o-yong-tau-foo-090",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "search",
@@ -2457,7 +2457,7 @@
   {
     "id": "v8o-yong-tau-foo-091",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2483,7 +2483,7 @@
   {
     "id": "v8o-yong-tau-foo-092",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2511,7 +2511,7 @@
   {
     "id": "v8o-yong-tau-foo-093",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2534,7 +2534,7 @@
   {
     "id": "v8o-yong-tau-foo-094",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -2559,7 +2559,7 @@
   {
     "id": "v8o-yong-tau-foo-095",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2575,7 +2575,7 @@
   {
     "id": "v8o-yong-tau-foo-096",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -2595,7 +2595,7 @@
   {
     "id": "v8o-yong-tau-foo-097",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2619,7 +2619,7 @@
   {
     "id": "v8o-yong-tau-foo-098",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -2640,7 +2640,7 @@
   {
     "id": "v8o-yong-tau-foo-099",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2660,7 +2660,7 @@
   {
     "id": "v8o-yong-tau-foo-100",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "recommend",
@@ -2686,7 +2686,7 @@
   {
     "id": "v8o-yong-tau-foo-101",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_info",
@@ -2711,7 +2711,7 @@
   {
     "id": "v8o-yong-tau-foo-102",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_info",
@@ -2733,7 +2733,7 @@
   {
     "id": "v8o-yong-tau-foo-103",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2751,7 +2751,7 @@
   {
     "id": "v8o-yong-tau-foo-104",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2774,7 +2774,7 @@
   {
     "id": "v8o-yong-tau-foo-105",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2797,7 +2797,7 @@
   {
     "id": "v8o-yong-tau-foo-106",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -2818,7 +2818,7 @@
   {
     "id": "v8o-yong-tau-foo-107",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -2837,7 +2837,7 @@
   {
     "id": "v8o-yong-tau-foo-108",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "course",
@@ -2854,7 +2854,7 @@
   {
     "id": "v8o-yong-tau-foo-109",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -2877,7 +2877,7 @@
   {
     "id": "v8o-yong-tau-foo-110",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "not_on_menu",
@@ -2896,7 +2896,7 @@
   {
     "id": "v8o-yong-tau-foo-111",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "service",
@@ -2911,7 +2911,7 @@
   {
     "id": "v8o-yong-tau-foo-112",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "smalltalk",
@@ -2926,7 +2926,7 @@
   {
     "id": "v8o-yong-tau-foo-113",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "off_topic",
@@ -2941,7 +2941,7 @@
   {
     "id": "v8o-yong-tau-foo-114",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "adversarial",
@@ -2956,7 +2956,7 @@
   {
     "id": "v8o-yong-tau-foo-115",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "adversarial",
@@ -2979,7 +2979,7 @@
   {
     "id": "v8o-yong-tau-foo-116",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -3010,7 +3010,7 @@
   {
     "id": "v8o-yong-tau-foo-117",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -3042,7 +3042,7 @@
   {
     "id": "v8o-yong-tau-foo-118",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -3068,7 +3068,7 @@
   {
     "id": "v8o-yong-tau-foo-119",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -3094,7 +3094,7 @@
   {
     "id": "v8o-yong-tau-foo-120",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -3119,7 +3119,7 @@
   {
     "id": "v8o-yong-tau-foo-121",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -3143,7 +3143,7 @@
   {
     "id": "v8o-yong-tau-foo-122",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -3164,7 +3164,7 @@
   {
     "id": "v8o-yong-tau-foo-123",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -3187,7 +3187,7 @@
   {
     "id": "v8o-yong-tau-foo-124",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -3214,7 +3214,7 @@
   {
     "id": "v8o-yong-tau-foo-125",
     "menu": "yong-tau-foo",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "smalltalk",

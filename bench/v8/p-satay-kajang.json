@@ -2,7 +2,7 @@
   {
     "id": "v8p-satay-kajang-001",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "recommend",
@@ -34,7 +34,7 @@
   {
     "id": "v8p-satay-kajang-002",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "signature",
@@ -65,7 +65,7 @@
   {
     "id": "v8p-satay-kajang-003",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "recommend",
@@ -98,7 +98,7 @@
   {
     "id": "v8p-satay-kajang-004",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "recommend",
@@ -130,7 +130,7 @@
   {
     "id": "v8p-satay-kajang-005",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "recommend",
@@ -169,7 +169,7 @@
   {
     "id": "v8p-satay-kajang-006",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -198,7 +198,7 @@
   {
     "id": "v8p-satay-kajang-007",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -227,7 +227,7 @@
   {
     "id": "v8p-satay-kajang-008",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -262,7 +262,7 @@
   {
     "id": "v8p-satay-kajang-009",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -289,7 +289,7 @@
   {
     "id": "v8p-satay-kajang-010",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "availability",
@@ -318,7 +318,7 @@
   {
     "id": "v8p-satay-kajang-011",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -347,7 +347,7 @@
   {
     "id": "v8p-satay-kajang-012",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -372,7 +372,7 @@
   {
     "id": "v8p-satay-kajang-013",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -401,7 +401,7 @@
   {
     "id": "v8p-satay-kajang-014",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -429,7 +429,7 @@
   {
     "id": "v8p-satay-kajang-015",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -458,7 +458,7 @@
   {
     "id": "v8p-satay-kajang-016",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -476,7 +476,7 @@
   {
     "id": "v8p-satay-kajang-017",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "availability",
@@ -506,7 +506,7 @@
   {
     "id": "v8p-satay-kajang-018",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -537,7 +537,7 @@
   {
     "id": "v8p-satay-kajang-019",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -568,7 +568,7 @@
   {
     "id": "v8p-satay-kajang-020",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "modifier",
@@ -599,7 +599,7 @@
   {
     "id": "v8p-satay-kajang-021",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -622,7 +622,7 @@
   {
     "id": "v8p-satay-kajang-022",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -645,7 +645,7 @@
   {
     "id": "v8p-satay-kajang-023",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -667,7 +667,7 @@
   {
     "id": "v8p-satay-kajang-024",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -696,7 +696,7 @@
   {
     "id": "v8p-satay-kajang-025",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -724,7 +724,7 @@
   {
     "id": "v8p-satay-kajang-026",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -758,7 +758,7 @@
   {
     "id": "v8p-satay-kajang-027",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -790,7 +790,7 @@
   {
     "id": "v8p-satay-kajang-028",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -819,7 +819,7 @@
   {
     "id": "v8p-satay-kajang-029",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -855,7 +855,7 @@
   {
     "id": "v8p-satay-kajang-030",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -877,7 +877,7 @@
   {
     "id": "v8p-satay-kajang-031",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -899,7 +899,7 @@
   {
     "id": "v8p-satay-kajang-032",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -921,7 +921,7 @@
   {
     "id": "v8p-satay-kajang-033",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -944,7 +944,7 @@
   {
     "id": "v8p-satay-kajang-034",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -972,7 +972,7 @@
   {
     "id": "v8p-satay-kajang-035",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1005,7 +1005,7 @@
   {
     "id": "v8p-satay-kajang-036",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1033,7 +1033,7 @@
   {
     "id": "v8p-satay-kajang-037",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1068,7 +1068,7 @@
   {
     "id": "v8p-satay-kajang-038",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -1107,7 +1107,7 @@
   {
     "id": "v8p-satay-kajang-039",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -1138,7 +1138,7 @@
   {
     "id": "v8p-satay-kajang-040",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1161,7 +1161,7 @@
   {
     "id": "v8p-satay-kajang-041",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1191,7 +1191,7 @@
   {
     "id": "v8p-satay-kajang-042",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1220,7 +1220,7 @@
   {
     "id": "v8p-satay-kajang-043",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1248,7 +1248,7 @@
   {
     "id": "v8p-satay-kajang-044",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1280,7 +1280,7 @@
   {
     "id": "v8p-satay-kajang-045",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1309,7 +1309,7 @@
   {
     "id": "v8p-satay-kajang-046",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1341,7 +1341,7 @@
   {
     "id": "v8p-satay-kajang-047",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1369,7 +1369,7 @@
   {
     "id": "v8p-satay-kajang-048",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1408,7 +1408,7 @@
   {
     "id": "v8p-satay-kajang-049",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1444,7 +1444,7 @@
   {
     "id": "v8p-satay-kajang-050",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1486,7 +1486,7 @@
   {
     "id": "v8p-satay-kajang-051",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -1517,7 +1517,7 @@
   {
     "id": "v8p-satay-kajang-052",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -1539,7 +1539,7 @@
   {
     "id": "v8p-satay-kajang-053",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -1569,7 +1569,7 @@
   {
     "id": "v8p-satay-kajang-054",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1592,7 +1592,7 @@
   {
     "id": "v8p-satay-kajang-055",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1629,7 +1629,7 @@
   {
     "id": "v8p-satay-kajang-056",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1660,7 +1660,7 @@
   {
     "id": "v8p-satay-kajang-057",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -1690,7 +1690,7 @@
   {
     "id": "v8p-satay-kajang-058",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1712,7 +1712,7 @@
   {
     "id": "v8p-satay-kajang-059",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1735,7 +1735,7 @@
   {
     "id": "v8p-satay-kajang-060",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -1758,7 +1758,7 @@
   {
     "id": "v8p-satay-kajang-061",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1787,7 +1787,7 @@
   {
     "id": "v8p-satay-kajang-062",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1826,7 +1826,7 @@
   {
     "id": "v8p-satay-kajang-063",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1870,7 +1870,7 @@
   {
     "id": "v8p-satay-kajang-064",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1912,7 +1912,7 @@
   {
     "id": "v8p-satay-kajang-065",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1940,7 +1940,7 @@
   {
     "id": "v8p-satay-kajang-066",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1972,7 +1972,7 @@
   {
     "id": "v8p-satay-kajang-067",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2012,7 +2012,7 @@
   {
     "id": "v8p-satay-kajang-068",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2039,7 +2039,7 @@
   {
     "id": "v8p-satay-kajang-069",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2082,7 +2082,7 @@
   {
     "id": "v8p-satay-kajang-070",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "allergy",
@@ -2110,7 +2110,7 @@
   {
     "id": "v8p-satay-kajang-071",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "allergy",
@@ -2146,7 +2146,7 @@
   {
     "id": "v8p-satay-kajang-072",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2176,7 +2176,7 @@
   {
     "id": "v8p-satay-kajang-073",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2209,7 +2209,7 @@
   {
     "id": "v8p-satay-kajang-074",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2234,7 +2234,7 @@
   {
     "id": "v8p-satay-kajang-075",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2262,7 +2262,7 @@
   {
     "id": "v8p-satay-kajang-076",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -2292,7 +2292,7 @@
   {
     "id": "v8p-satay-kajang-077",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -2325,7 +2325,7 @@
   {
     "id": "v8p-satay-kajang-078",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2358,7 +2358,7 @@
   {
     "id": "v8p-satay-kajang-079",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2398,7 +2398,7 @@
   {
     "id": "v8p-satay-kajang-080",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2438,7 +2438,7 @@
   {
     "id": "v8p-satay-kajang-081",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2469,7 +2469,7 @@
   {
     "id": "v8p-satay-kajang-082",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2508,7 +2508,7 @@
   {
     "id": "v8p-satay-kajang-083",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2547,7 +2547,7 @@
   {
     "id": "v8p-satay-kajang-084",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2584,7 +2584,7 @@
   {
     "id": "v8p-satay-kajang-085",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2615,7 +2615,7 @@
   {
     "id": "v8p-satay-kajang-086",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -2644,7 +2644,7 @@
   {
     "id": "v8p-satay-kajang-087",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2684,7 +2684,7 @@
   {
     "id": "v8p-satay-kajang-088",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2721,7 +2721,7 @@
   {
     "id": "v8p-satay-kajang-089",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2768,7 +2768,7 @@
   {
     "id": "v8p-satay-kajang-090",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2794,7 +2794,7 @@
   {
     "id": "v8p-satay-kajang-091",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_info",
@@ -2826,7 +2826,7 @@
   {
     "id": "v8p-satay-kajang-092",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2856,7 +2856,7 @@
   {
     "id": "v8p-satay-kajang-093",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -2895,7 +2895,7 @@
   {
     "id": "v8p-satay-kajang-094",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2937,7 +2937,7 @@
   {
     "id": "v8p-satay-kajang-095",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -2964,7 +2964,7 @@
   {
     "id": "v8p-satay-kajang-096",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "spice",
@@ -2988,7 +2988,7 @@
   {
     "id": "v8p-satay-kajang-097",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -3026,7 +3026,7 @@
   {
     "id": "v8p-satay-kajang-098",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -3062,7 +3062,7 @@
   {
     "id": "v8p-satay-kajang-099",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "followup",
@@ -3097,7 +3097,7 @@
   {
     "id": "v8p-satay-kajang-100",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -3129,7 +3129,7 @@
   {
     "id": "v8p-satay-kajang-101",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "pairing",
@@ -3150,7 +3150,7 @@
   {
     "id": "v8p-satay-kajang-102",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -3188,7 +3188,7 @@
   {
     "id": "v8p-satay-kajang-103",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -3218,7 +3218,7 @@
   {
     "id": "v8p-satay-kajang-104",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -3247,7 +3247,7 @@
   {
     "id": "v8p-satay-kajang-105",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -3275,7 +3275,7 @@
   {
     "id": "v8p-satay-kajang-106",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "compare",
@@ -3304,7 +3304,7 @@
   {
     "id": "v8p-satay-kajang-107",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -3330,7 +3330,7 @@
   {
     "id": "v8p-satay-kajang-108",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -3359,7 +3359,7 @@
   {
     "id": "v8p-satay-kajang-109",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -3385,7 +3385,7 @@
   {
     "id": "v8p-satay-kajang-110",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "not_on_menu",
@@ -3411,7 +3411,7 @@
   {
     "id": "v8p-satay-kajang-111",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "not_on_menu",
@@ -3437,7 +3437,7 @@
   {
     "id": "v8p-satay-kajang-112",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "service",
@@ -3456,7 +3456,7 @@
   {
     "id": "v8p-satay-kajang-113",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "smalltalk",
@@ -3475,7 +3475,7 @@
   {
     "id": "v8p-satay-kajang-114",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "adversarial",
@@ -3494,7 +3494,7 @@
   {
     "id": "v8p-satay-kajang-115",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "off_topic",
@@ -3513,7 +3513,7 @@
   {
     "id": "v8p-satay-kajang-116",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_info",
@@ -3541,7 +3541,7 @@
   {
     "id": "v8p-satay-kajang-117",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "dish_info",
@@ -3569,7 +3569,7 @@
   {
     "id": "v8p-satay-kajang-118",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "course",
@@ -3599,7 +3599,7 @@
   {
     "id": "v8p-satay-kajang-119",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -3634,7 +3634,7 @@
   {
     "id": "v8p-satay-kajang-120",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "adversarial",
@@ -3653,7 +3653,7 @@
   {
     "id": "v8p-satay-kajang-121",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "service",
@@ -3673,7 +3673,7 @@
   {
     "id": "v8p-satay-kajang-122",
     "menu": "satay-kajang",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",

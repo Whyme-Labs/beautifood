@@ -2,7 +2,7 @@
   {
     "id": "v8n-specialty-coffee-001",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -31,7 +31,7 @@
   {
     "id": "v8n-specialty-coffee-002",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -71,7 +71,7 @@
   {
     "id": "v8n-specialty-coffee-003",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -115,7 +115,7 @@
   {
     "id": "v8n-specialty-coffee-004",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -152,7 +152,7 @@
   {
     "id": "v8n-specialty-coffee-005",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -179,7 +179,7 @@
   {
     "id": "v8n-specialty-coffee-006",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -212,7 +212,7 @@
   {
     "id": "v8n-specialty-coffee-007",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -240,7 +240,7 @@
   {
     "id": "v8n-specialty-coffee-008",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -269,7 +269,7 @@
   {
     "id": "v8n-specialty-coffee-009",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -295,7 +295,7 @@
   {
     "id": "v8n-specialty-coffee-010",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -331,7 +331,7 @@
   {
     "id": "v8n-specialty-coffee-011",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -360,7 +360,7 @@
   {
     "id": "v8n-specialty-coffee-012",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -385,7 +385,7 @@
   {
     "id": "v8n-specialty-coffee-013",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -415,7 +415,7 @@
   {
     "id": "v8n-specialty-coffee-014",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "allergy",
@@ -448,7 +448,7 @@
   {
     "id": "v8n-specialty-coffee-015",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -479,7 +479,7 @@
   {
     "id": "v8n-specialty-coffee-016",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -517,7 +517,7 @@
   {
     "id": "v8n-specialty-coffee-017",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "manglish",
@@ -549,7 +549,7 @@
   {
     "id": "v8n-specialty-coffee-018",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -582,7 +582,7 @@
   {
     "id": "v8n-specialty-coffee-019",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -609,7 +609,7 @@
   {
     "id": "v8n-specialty-coffee-020",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -647,7 +647,7 @@
   {
     "id": "v8n-specialty-coffee-021",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -675,7 +675,7 @@
   {
     "id": "v8n-specialty-coffee-022",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -717,7 +717,7 @@
   {
     "id": "v8n-specialty-coffee-023",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -746,7 +746,7 @@
   {
     "id": "v8n-specialty-coffee-024",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -779,7 +779,7 @@
   {
     "id": "v8n-specialty-coffee-025",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "followup",
@@ -813,7 +813,7 @@
   {
     "id": "v8n-specialty-coffee-026",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "malay",
@@ -842,7 +842,7 @@
   {
     "id": "v8n-specialty-coffee-027",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "malay",
@@ -872,7 +872,7 @@
   {
     "id": "v8n-specialty-coffee-028",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "manglish",
@@ -900,7 +900,7 @@
   {
     "id": "v8n-specialty-coffee-029",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -934,7 +934,7 @@
   {
     "id": "v8n-specialty-coffee-030",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -960,7 +960,7 @@
   {
     "id": "v8n-specialty-coffee-031",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -993,7 +993,7 @@
   {
     "id": "v8n-specialty-coffee-032",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -1015,7 +1015,7 @@
   {
     "id": "v8n-specialty-coffee-033",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -1039,7 +1039,7 @@
   {
     "id": "v8n-specialty-coffee-034",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -1080,7 +1080,7 @@
   {
     "id": "v8n-specialty-coffee-035",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1115,7 +1115,7 @@
   {
     "id": "v8n-specialty-coffee-036",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -1150,7 +1150,7 @@
   {
     "id": "v8n-specialty-coffee-037",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1179,7 +1179,7 @@
   {
     "id": "v8n-specialty-coffee-038",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1211,7 +1211,7 @@
   {
     "id": "v8n-specialty-coffee-039",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -1245,7 +1245,7 @@
   {
     "id": "v8n-specialty-coffee-040",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "malay",
@@ -1276,7 +1276,7 @@
   {
     "id": "v8n-specialty-coffee-041",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -1299,7 +1299,7 @@
   {
     "id": "v8n-specialty-coffee-042",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -1324,7 +1324,7 @@
   {
     "id": "v8n-specialty-coffee-043",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1342,7 +1342,7 @@
   {
     "id": "v8n-specialty-coffee-044",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1360,7 +1360,7 @@
   {
     "id": "v8n-specialty-coffee-045",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -1397,7 +1397,7 @@
   {
     "id": "v8n-specialty-coffee-046",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "malay",
@@ -1415,7 +1415,7 @@
   {
     "id": "v8n-specialty-coffee-047",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "manglish",
@@ -1434,7 +1434,7 @@
   {
     "id": "v8n-specialty-coffee-048",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -1452,7 +1452,7 @@
   {
     "id": "v8n-specialty-coffee-049",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1472,7 +1472,7 @@
   {
     "id": "v8n-specialty-coffee-050",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1496,7 +1496,7 @@
   {
     "id": "v8n-specialty-coffee-051",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1531,7 +1531,7 @@
   {
     "id": "v8n-specialty-coffee-052",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1551,7 +1551,7 @@
   {
     "id": "v8n-specialty-coffee-053",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1575,7 +1575,7 @@
   {
     "id": "v8n-specialty-coffee-054",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1595,7 +1595,7 @@
   {
     "id": "v8n-specialty-coffee-055",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1633,7 +1633,7 @@
   {
     "id": "v8n-specialty-coffee-056",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1667,7 +1667,7 @@
   {
     "id": "v8n-specialty-coffee-057",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1691,7 +1691,7 @@
   {
     "id": "v8n-specialty-coffee-058",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "availability",
@@ -1724,7 +1724,7 @@
   {
     "id": "v8n-specialty-coffee-059",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "availability",
@@ -1744,7 +1744,7 @@
   {
     "id": "v8n-specialty-coffee-060",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1765,7 +1765,7 @@
   {
     "id": "v8n-specialty-coffee-061",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1787,7 +1787,7 @@
   {
     "id": "v8n-specialty-coffee-062",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "recommend",
@@ -1825,7 +1825,7 @@
   {
     "id": "v8n-specialty-coffee-063",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -1840,7 +1840,7 @@
   {
     "id": "v8n-specialty-coffee-064",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -1862,7 +1862,7 @@
   {
     "id": "v8n-specialty-coffee-065",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -1881,7 +1881,7 @@
   {
     "id": "v8n-specialty-coffee-066",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "pairing",
@@ -1897,7 +1897,7 @@
   {
     "id": "v8n-specialty-coffee-067",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -1913,7 +1913,7 @@
   {
     "id": "v8n-specialty-coffee-068",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -1949,7 +1949,7 @@
   {
     "id": "v8n-specialty-coffee-069",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "pairing",
@@ -1968,7 +1968,7 @@
   {
     "id": "v8n-specialty-coffee-070",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -1986,7 +1986,7 @@
   {
     "id": "v8n-specialty-coffee-071",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2003,7 +2003,7 @@
   {
     "id": "v8n-specialty-coffee-072",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2024,7 +2024,7 @@
   {
     "id": "v8n-specialty-coffee-073",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2041,7 +2041,7 @@
   {
     "id": "v8n-specialty-coffee-074",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "compare",
@@ -2059,7 +2059,7 @@
   {
     "id": "v8n-specialty-coffee-075",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -2078,7 +2078,7 @@
   {
     "id": "v8n-specialty-coffee-076",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "not_on_menu",
@@ -2093,7 +2093,7 @@
   {
     "id": "v8n-specialty-coffee-077",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "search",
@@ -2114,7 +2114,7 @@
   {
     "id": "v8n-specialty-coffee-078",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "allergy",
@@ -2147,7 +2147,7 @@
   {
     "id": "v8n-specialty-coffee-079",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -2167,7 +2167,7 @@
   {
     "id": "v8n-specialty-coffee-080",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "search",
@@ -2189,7 +2189,7 @@
   {
     "id": "v8n-specialty-coffee-081",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -2211,7 +2211,7 @@
   {
     "id": "v8n-specialty-coffee-082",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "dish_allergen",
@@ -2231,7 +2231,7 @@
   {
     "id": "v8n-specialty-coffee-083",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "chinese",
@@ -2252,7 +2252,7 @@
   {
     "id": "v8n-specialty-coffee-084",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "chinese",
@@ -2275,7 +2275,7 @@
   {
     "id": "v8n-specialty-coffee-085",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "chinese",
@@ -2301,7 +2301,7 @@
   {
     "id": "v8n-specialty-coffee-086",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "chinese",
@@ -2323,7 +2323,7 @@
   {
     "id": "v8n-specialty-coffee-087",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "malay",
@@ -2342,7 +2342,7 @@
   {
     "id": "v8n-specialty-coffee-088",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "malay",
@@ -2364,7 +2364,7 @@
   {
     "id": "v8n-specialty-coffee-089",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "malay",
@@ -2383,7 +2383,7 @@
   {
     "id": "v8n-specialty-coffee-090",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "malay",
@@ -2398,7 +2398,7 @@
   {
     "id": "v8n-specialty-coffee-091",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "malay",
@@ -2415,7 +2415,7 @@
   {
     "id": "v8n-specialty-coffee-092",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "manglish",
@@ -2437,7 +2437,7 @@
   {
     "id": "v8n-specialty-coffee-093",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "manglish",
@@ -2462,7 +2462,7 @@
   {
     "id": "v8n-specialty-coffee-094",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "manglish",
@@ -2488,7 +2488,7 @@
   {
     "id": "v8n-specialty-coffee-095",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "manglish",
@@ -2509,7 +2509,7 @@
   {
     "id": "v8n-specialty-coffee-096",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "manglish",
@@ -2530,7 +2530,7 @@
   {
     "id": "v8n-specialty-coffee-097",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "manglish",
@@ -2550,7 +2550,7 @@
   {
     "id": "v8n-specialty-coffee-098",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "signature",
@@ -2571,7 +2571,7 @@
   {
     "id": "v8n-specialty-coffee-099",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2591,7 +2591,7 @@
   {
     "id": "v8n-specialty-coffee-100",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -2612,7 +2612,7 @@
   {
     "id": "v8n-specialty-coffee-101",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2631,7 +2631,7 @@
   {
     "id": "v8n-specialty-coffee-102",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2652,7 +2652,7 @@
   {
     "id": "v8n-specialty-coffee-103",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2674,7 +2674,7 @@
   {
     "id": "v8n-specialty-coffee-104",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2691,7 +2691,7 @@
   {
     "id": "v8n-specialty-coffee-105",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2719,7 +2719,7 @@
   {
     "id": "v8n-specialty-coffee-106",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "service",
@@ -2733,7 +2733,7 @@
   {
     "id": "v8n-specialty-coffee-107",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "smalltalk",
@@ -2747,7 +2747,7 @@
   {
     "id": "v8n-specialty-coffee-108",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "adversarial",
@@ -2767,7 +2767,7 @@
   {
     "id": "v8n-specialty-coffee-109",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "not_on_menu",
@@ -2781,7 +2781,7 @@
   {
     "id": "v8n-specialty-coffee-110",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "off_topic",
@@ -2795,7 +2795,7 @@
   {
     "id": "v8n-specialty-coffee-111",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "adversarial",
@@ -2809,7 +2809,7 @@
   {
     "id": "v8n-specialty-coffee-112",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "course",
@@ -2834,7 +2834,7 @@
   {
     "id": "v8n-specialty-coffee-113",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "budget",
@@ -2858,7 +2858,7 @@
   {
     "id": "v8n-specialty-coffee-114",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen",
@@ -2877,7 +2877,7 @@
   {
     "id": "v8n-specialty-coffee-115",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "search",
@@ -2909,7 +2909,7 @@
   {
     "id": "v8n-specialty-coffee-116",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2936,7 +2936,7 @@
   {
     "id": "v8n-specialty-coffee-117",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2960,7 +2960,7 @@
   {
     "id": "v8n-specialty-coffee-118",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2992,7 +2992,7 @@
   {
     "id": "v8n-specialty-coffee-119",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -3010,7 +3010,7 @@
   {
     "id": "v8n-specialty-coffee-120",
     "menu": "specialty-coffee",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",

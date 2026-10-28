@@ -730,3 +730,17 @@ Scored twice, read only as counts:
 a form the check missed. Of the wrong totals, by arithmetic: most are running orders over several
 turns (a dish too many or missing, a count off), then add-on prices (the brain doesn't read
 add-ons), then splits not done.
+
+## v8 split into dev and test (2026-10-28)
+
+v8's gaps (add-ons, availability, bills over several turns) are in what no earlier set tested, so
+they can't be worked on from the old dev sets. v8 is split by a rule fixed before looking at any
+case, not by score: each author's first menu in their brief is `dev` (read case by case), the
+second stays `test` (held out, scored at most twice a round, never read).
+
+- dev (491): nasi-kandar, specialty-coffee, yong-tau-foo, satay-kajang
+- test (499): bak-kut-teh, steakhouse-grill, north-indian-tandoor, cha-chaan-teng
+
+Only the split fields changed. New fingerprint of the test split: `v8 499 64558e523138af43`
+(menus unchanged, `4564ce6d016ef859`). Starting points, from the runs above (not re-scored): dev
+62.9% → 63.3%, test 64.3% → 64.5%, 0 unsafe (deployed brain → this round's fixes).
