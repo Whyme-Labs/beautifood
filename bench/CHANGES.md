@@ -684,3 +684,22 @@ Dev (0 unsafe): 98.8 / 97.6 / 97.1 / 98.2 / 97.4 / 96.7% (v2, v3, v5, v6 up). v7
 86.5 → **87.3%, 0 unsafe**, compare 13 → 14/17, budget 50 → 54/68; the second run's one broken
 case ("mixed grill for 2" read as two grills) was traced by its counts and fixed, and that one
 case alone checked passing afterwards (not a third full score).
+
+## The claim checker, and branch settings for v8 (2026-10-28)
+
+**Claims.** `bench/claims.ts` reads what an answer's words say about the dishes it names and checks
+it against the menu data, on every case of every set: the price given for a dish, a dish said to
+be free of an allergen or vegetarian, vegan or halal (unsafe if false), a dish said to contain an
+allergen or to be not spicy. It is conservative: a claim counts only when the sentence names the
+dish, it isn't hedged, conditional or negated, and it isn't the menu's description quoted back.
+Tuned on the dev sets only. On the brain it reads about 11,700 claims across all seven sets and
+finds none wrong, so no score moves (v1 98.8, v2 97.6, v3 97.1, v4 98.2, v5 97.4, v6 96.7%, v7
+87.6%, 0 unsafe; v7 scored once with it, counts only). On LFM3-1.7B answering alone (180 dev
+cases) it flags 7 answers, each confirmed against the gold, 2 of them unsafe (a dairy dessert
+called vegan, a dessert set with beef gelatine called vegetarian). `bench/models.ts` uses it too.
+
+**Branch settings.** A menu may have a `<menu>.extra.json` (README, "Branch settings"): dishes sold
+out, timed menus and deals with weekly windows, add-ons and sizes, the till's charges and the
+branch's halal standing; a case may say when it is asked (`at`). The menu is built as the server
+builds it (`menuNow`), so prices, what is served now and what's on are as a guest would see them.
+New tags: availability, deal, modifier, bill. No frozen set uses these, so no score changes.

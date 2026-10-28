@@ -10,6 +10,8 @@ export type Tag =
   | "combined" | "dish_info" | "compare" | "pairing" | "group" | "followup" | "memory" | "not_on_menu"
   | "search" | "service" | "smalltalk" | "off_topic" | "adversarial"
   | "typo" | "manglish" | "malay" | "chinese" | "mixed"
+  // v8: what's served now (sold out, timed menus), deals, add-ons and sizes, totals and splits
+  | "availability" | "deal" | "modifier" | "bill"
   | "easy" | "medium" | "hard";
 
 export type Allergen = "gluten" | "crustaceans" | "molluscs" | "fish" | "egg" | "milk" | "peanuts" | "tree_nuts" | "soy" | "sesame" | "celery" | "mustard" | "sulphites" | "lupin";
@@ -60,6 +62,11 @@ export interface Case {
   /** Earlier turns, oldest first: what the guest said and what the assistant replied. */
   before?: { user: string; assistant: string }[];
   question: string;
+  /**
+   * When the guest asks, branch-local, for a menu with timed menus or deals (`<menu>.extra.json`).
+   * Without it such a menu is read on Wednesday 4 Nov 2026 at 13:00.
+   */
+  at?: { day: "Sun" | "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat"; time: string; date?: string };
   expect: Expect;
   /** Why this expectation is right, in a few words (for reviewers). */
   note?: string;

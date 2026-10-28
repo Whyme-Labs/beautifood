@@ -9,6 +9,10 @@ import { parseMenuText } from "../src/shared/menuParser";
 import { answerGuest } from "../src/server/ai/brain";
 import { read, understand, type Dish } from "../src/server/ai/brain/understand";
 import { answerLocally, type AssistantContext } from "../src/server/ai/local";
+import { withBranchHalal } from "../src/server/ai/halal";
+import { menuNow, type Clock, type PriceRule, type TimedMenu, type Window } from "../src/shared/schedule";
+import { halalStanding, type HalalInfo, type Menu, type ModifierGroup } from "../src/shared/types";
+import { claims } from "./claims";
 import type { Case, Expect } from "./schema";
 
 const DIR = new URL(".", import.meta.url).pathname;
@@ -32,8 +36,29 @@ export interface Gold {
 }
 
 /** Which case set: v1 (dev and test), v2 held-out, or v3 held-out (with its own menus, in v3/menus). */
-export type Set = "v1" | "heldout" | "v3" | "v4" | "v5" | "v6" | "v7";
-const menuFile = (menu: string, ext: string) => [`${DIR}menus/${menu}${ext}`, `${DIR}v3/menus/${menu}${ext}`, `${DIR}v4/menus/${menu}${ext}`, `${DIR}v5/menus/${menu}${ext}`, `${DIR}v6/menus/${menu}${ext}`, `${DIR}v7/menus/${menu}${ext}`].find((f) => existsSync(f)) ?? `${DIR}menus/${menu}${ext}`;
+export type Set = "v1" | "heldout" | "v3" | "v4" | "v5" | "v6" | "v7" | "v8";
+const menuFile = (menu: string, ext: string) => ["", "v3/", "v4/", "v5/", "v6/", "v7/", "v8/"].map((d) => `${DIR}${d}menus/${menu}${ext}`).find((f) => existsSync(f)) ?? `${DIR}menus/${menu}${ext}`;
+
+/**
+ * What a branch's settings add to its menu (`<menu>.extra.json`, optional): dishes sold out, timed
+ * menus and deals with their weekly windows, add-ons and sizes, what the till adds to a bill, and
+ * the branch's halal standing. Dishes and categories are named as in the menu.
+ */
+export interface Extra {
+  soldOut?: string[];
+  menus?: { name: string; windows: Window[]; dishes: string[] }[];
+  rules?: { name: string; kind: "percent" | "amount"; value: number; categories?: string[]; dishes?: string[]; windows: Window[] }[];
+  modifiers?: Record<string, ModifierGroup[]>;
+  charges?: AssistantContext["charges"];
+  halal?: HalalInfo;
+}
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+/** When a case without `at` is asked, on a menu with an extra file. */
+export const DEFAULT_AT: NonNullable<Case["at"]> = { day: "Wed", time: "13:00", date: "2026-11-04" };
+const clockOf = (at: NonNullable<Case["at"]>): Clock => {
+  const [h, m] = at.time.split(":").map(Number);
+  return { weekday: DAYS.indexOf(at.day), minutes: h * 60 + m, date: at.date };
+};
 
 export function loadGold(menu: string): Record<string, Gold> | null {
   const f = menuFile(menu, ".gold.json");
@@ -45,7 +70,7 @@ export function loadGold(menu: string): Record<string, Gold> | null {
  * benchmark's ground truth, so the assistant is scored on its own mistakes, not the parser's; with
  * "parser" it carries what the onboarding parser inferred, as a merchant who never reviewed it would.
  */
-export function loadMenu(menu: string, source: "gold" | "parser" = "gold"): AssistantContext {
+export function loadMenu(menu: string, source: "gold" | "parser" = "gold", at?: Case["at"]): AssistantContext {
   const zh = new Map<string, string>();
   const text = readFileSync(menuFile(menu, ".txt"), "utf8")
     .split("\n")
@@ -86,12 +111,36 @@ export function loadMenu(menu: string, source: "gold" | "parser" = "gold"): Assi
       i.dietary = [...(g.vegan ? ["vegan", "vegetarian"] : g.vegetarian ? ["vegetarian"] : []), ...(g.halal ? ["halal_friendly"] : [])] as typeof i.dietary;
       i.spiceLevel = g.spice;
     }
-  return { restaurant: { name: "Test Kitchen", cuisine: "", story: "", description: "" }, branchName: "Main", currency: "MYR", menuLanguage: "en", items } as unknown as AssistantContext;
+  const ctx = { restaurant: { name: "Test Kitchen", cuisine: "", story: "", description: "" }, branchName: "Main", currency: "MYR", menuLanguage: "en", items } as unknown as AssistantContext;
+  const f = menuFile(menu, ".extra.json");
+  return existsSync(f) ? withExtra(ctx, menu, JSON.parse(readFileSync(f, "utf8")) as Extra, at ?? DEFAULT_AT) : ctx;
+}
+
+/** The menu as the branch's settings leave it at a moment, as the server builds it (menuNow). */
+function withExtra(ctx: AssistantContext, menu: string, x: Extra, at: NonNullable<Case["at"]>): AssistantContext {
+  const byName = (n: string) => {
+    const i = ctx.items.find((d) => d.name === n);
+    if (!i) throw new Error(`${menu}.extra.json: no dish "${n}"`);
+    return i;
+  };
+  const clock = clockOf(at);
+  const menus: TimedMenu[] = (x.menus ?? []).map((m, k) => ({ id: `m${k}`, name: m.name, windows: m.windows, branches: ["*"], active: true, sort: k }));
+  const rules: PriceRule[] = (x.rules ?? []).map((r, k) => ({ id: `r${k}`, name: r.name, kind: r.kind, value: r.value, categories: (r.categories ?? []).map((c) => ctx.items.find((d) => d.category?.toLowerCase() === c.toLowerCase())?.categoryId ?? c), items: (r.dishes ?? []).map((n) => byName(n).id), windows: r.windows, branches: ["*"], active: true }));
+  const items = ctx.items.map((i) => ({
+    ...i,
+    menuIds: (x.menus ?? []).flatMap((m, k) => (m.dishes.includes(i.name) ? [`m${k}`] : [])),
+    soldOut: (x.soldOut ?? []).includes(i.name),
+    modifiers: x.modifiers?.[i.name] ?? [],
+  }));
+  for (const n of [...(x.soldOut ?? []), ...Object.keys(x.modifiers ?? {}), ...(x.menus ?? []).flatMap((m) => m.dishes)]) byName(n);
+  const now = menuNow({ version: 1, categories: [], items, menus, rules } as unknown as Menu, "main", clock);
+  const halal = x.halal ? { ...x.halal, standing: halalStanding(x.halal, clock.date ?? "") } : undefined;
+  return { ...ctx, items: withBranchHalal(now.items as typeof ctx.items, halal), now: now.now, menus: now.menus, rules: now.rules, clock, charges: x.charges, halal };
 }
 
 /** `set`: "v1" (cases/, dev and test), "heldout" (heldout/, v2: new authors and menus, all test) "v3" or "v4" (v3/, v4/: the same again, each on its own menus). */
 export function loadCases(split = "all", set: Set = "v1"): Case[] {
-  const dir = `${DIR}${{ v1: "cases", heldout: "heldout", v3: "v3", v4: "v4", v5: "v5", v6: "v6", v7: "v7" }[set]}`;
+  const dir = `${DIR}${{ v1: "cases", heldout: "heldout", v3: "v3", v4: "v4", v5: "v5", v6: "v6", v7: "v7", v8: "v8" }[set]}`;
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
     .filter((f) => f.endsWith(".json"))
@@ -132,6 +181,7 @@ export function check(e: Expect, shown: Item[], answer: string, safetyNote: bool
 /** Which stage a failure most likely came from, from the case, its trace and its failed checks. */
 function stage(c: Case, t: Trace, failed: string[]): string {
   const e = c.expect;
+  if (failed.every((f) => f.startsWith("claims "))) return "answer (claims)";
   const named = [...(e.includes ?? []), ...(e.includesAny ?? [])];
   if (failed.some((f) => f.startsWith("missing") || f.startsWith("none of")) && named.length && /dish_info|dish_allergen|compare|pairing/.test(c.tags.join(" ")) && !named.some((n) => t.dishes.includes(n))) return "dish finding";
   if (e.avoid?.length && failed.some((f) => f.startsWith("avoid")) && !e.avoid.every((a) => t.avoid.includes(a) || t.memoryAvoid.includes(a))) return "constraint reading (allergen)";
@@ -175,11 +225,13 @@ interface Trace {
 export function runEngine(engine: string, cases: Case[], data: "gold" | "parser" = "gold") {
   const menus = new Map<string, AssistantContext>();
   return cases.map((c) => {
-    const ctx = menus.get(c.menu) ?? menus.set(c.menu, loadMenu(c.menu, data)).get(c.menu)!;
+    const key = `${c.menu} ${JSON.stringify(c.at ?? null)}`;
+    const ctx = menus.get(key) ?? menus.set(key, loadMenu(c.menu, data, c.at)).get(key)!;
     const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.user }, { role: "assistant" as const, content: b.assistant }]), { role: "user" as const, content: c.question }];
     const t0 = performance.now();
     let answer = "";
     let shownIds: string[] = [];
+    let labels: { id: string; label?: string }[] = [];
     let note = false;
     let decided = "";
     let error: string | null = null;
@@ -187,6 +239,7 @@ export function runEngine(engine: string, cases: Case[], data: "gold" | "parser"
       const r = engine === "rules" ? answerLocally(ctx, c.question, c.lang) : answerGuest(ctx, history, c.lang);
       answer = r.answer;
       shownIds = r.items.map((i) => i.id);
+      labels = r.items;
       note = !!r.safetyNote;
       decided = (r as { intent?: string }).intent ?? "";
     } catch (e) {
@@ -194,7 +247,11 @@ export function runEngine(engine: string, cases: Case[], data: "gold" | "parser"
     }
     const ms = performance.now() - t0;
     const shown = shownIds.map((id) => ctx.items.find((i) => i.id === id)!).filter(Boolean);
-    const { failed, unsafe } = error ? { failed: [`threw: ${error}`], unsafe: false } : check(c.expect, shown, answer, note);
+    const facts = error ? { failed: [`threw: ${error}`], unsafe: false } : check(c.expect, shown, answer, note);
+    // what the answer's words claim about the dishes it names
+    const said = error ? { failed: [], unsafe: false, read: 0 } : claims(answer, ctx.items, labels);
+    const failed = [...facts.failed, ...said.failed];
+    const unsafe = facts.unsafe || said.unsafe;
     // the trace: what the brain read (for the rules engine too, as a reference point)
     const u = understand(ctx.items as Dish[], c.question);
     const memory = (c.before ?? []).flatMap((b) => read(ctx.items as Dish[], b.user).avoid);
@@ -219,7 +276,7 @@ export function runEngine(engine: string, cases: Case[], data: "gold" | "parser"
       courses: u.courses,
       delexicalized: u.delexicalized.join(" "),
     };
-    return { id: c.id, menu: c.menu, split: c.split, lang: c.lang, tags: c.tags, question: c.question, pass: !failed.length, unsafe, failed, stage: failed.length ? stage(c, trace, failed) : null, answer, shown: shown.map((i) => i.name), ms: +ms.toFixed(2), trace };
+    return { id: c.id, menu: c.menu, split: c.split, lang: c.lang, tags: c.tags, question: c.question, pass: !failed.length, unsafe, failed, stage: failed.length ? stage(c, trace, failed) : null, answer, shown: shown.map((i) => i.name), claimsRead: said.read, ms: +ms.toFixed(2), trace };
   });
 }
 
@@ -255,7 +312,7 @@ export function summarise(rows: Row[]) {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   if (!["dev", "test", "all"].includes(SPLIT)) {
-    console.error("usage: npx tsx bench/run.ts --split dev|test|all [--set v1|heldout|v3|v4|v5|v6|v7] [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
+    console.error("usage: npx tsx bench/run.ts --split dev|test|all [--set v1|heldout|v3|v4|v5|v6|v7|v8] [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
     process.exit(1);
   }
   const cases = loadCases(SPLIT, SET);

@@ -9,6 +9,7 @@
 // --sample N takes every k-th case of each set (by id) so N are scored. Held-out sets are scored,
 // never read case by case: keep the output out of the repo.
 import { writeFileSync } from "node:fs";
+import { claims } from "./claims";
 import { check, loadCases, loadMenu, type Set } from "./run";
 import type { Case } from "./schema";
 import { answerGuest } from "../src/server/ai/brain";
@@ -41,6 +42,12 @@ function shownBy(r: AssistantReply, items: Item[]): Item[] {
   return [...new Map([...cards, ...named].map((d) => [d.id, d])).values()];
 }
 
+/** The checks on what was shown, and on what the answer's words claim (bench/claims.ts). */
+function withClaims(facts: { failed: string[]; unsafe: boolean }, r: AssistantReply, items: Item[]) {
+  const said = claims(r.answer, items, r.items);
+  return { failed: [...facts.failed, ...said.failed], unsafe: facts.unsafe || said.unsafe };
+}
+
 async function main() {
   const menus = new Map<string, AssistantContext>();
   const rows: Record<string, unknown>[] = [];
@@ -54,7 +61,8 @@ async function main() {
     cases.sort((a, b) => a.menu.localeCompare(b.menu) || a.id.localeCompare(b.id));
     let n = 0;
     for (const c of cases as Case[]) {
-      const ctx = menus.get(c.menu) ?? menus.set(c.menu, loadMenu(c.menu)).get(c.menu)!;
+      const key = `${c.menu} ${JSON.stringify(c.at ?? null)}`;
+      const ctx = menus.get(key) ?? menus.set(key, loadMenu(c.menu, "gold", c.at)).get(key)!;
       const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.user }, { role: "assistant" as const, content: b.assistant }]), { role: "user" as const, content: c.question }];
       const brain = answerGuest(ctx, history, c.lang);
       const brainShown = brain.items.map((x) => ctx.items.find((d) => d.id === x.id)!).filter(Boolean);
@@ -76,13 +84,13 @@ async function main() {
       if (what === "alone") {
         const s = r ? shownBy(r, ctx.items) : [];
         const note = !!r && (!!r.safetyNote || ALLERGY_WORD.test(r.answer) || (/allerg/.test(c.tags.join(" ")) && STAFF_WORD.test(r.answer)));
-        scored = r ? check(c.expect, s, r.answer, note) : { failed: [`no answer: ${error}`], unsafe: false };
+        scored = r ? withClaims(check(c.expect, s, r.answer, note), r, ctx.items) : { failed: [`no answer: ${error}`], unsafe: false };
         shown = s.map((d) => d.name);
       } else {
         const final = !asked ? brain : r ? guard(ctx, c.question, r, brain, c.lang) : brain;
         const s = final === brain ? brainShown : shownBy(final, ctx.items);
         const note = !!final.safetyNote || (final !== brain && ALLERGY_WORD.test(final.answer));
-        scored = check(c.expect, s, final.answer, note);
+        scored = withClaims(check(c.expect, s, final.answer, note), final, ctx.items);
         shown = s.map((d) => d.name);
       }
       rows.push({ set, split, id: c.id, menu: c.menu, lang: c.lang, tags: c.tags, asked, ms, error, brain: { pass: !b.failed.length, unsafe: b.unsafe }, pass: !scored.failed.length, unsafe: scored.unsafe, failed: scored.failed, shown, answer: (r?.answer ?? "").slice(0, 400) });
