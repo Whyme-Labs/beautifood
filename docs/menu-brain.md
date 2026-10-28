@@ -72,6 +72,24 @@ through the allergen guard and the same budgets as before (`src/server/ai/usage.
 For comparison, the earlier rules engine scored 18/22 on the core set. Llama 3.1 8B on Workers AI
 scored 22/22 as deployed, and Qwen3 0.6B on an iPhone scored 20/22.
 
+**Edge models, answering alone (2026-10-28).** Each was served by llama.cpp (`llama-server`, 4 CPU
+cores, thinking off) and scored with `EVAL_BASE_URL=… EVAL_SET=all npx vitest run --config
+vitest.eval.config.ts`, the menu either in the prompt ("inline") or behind the menu tools:
+
+| Model (GGUF) | Download | Core 22, best mode | All 62, inline | All 62, tools | Unsafe (inline / tools, of 62) | Seconds per answer |
+|---|---|---|---|---|---|---|
+| LFM3-1.7B Q4_K_M | 1.10 GB | 18/22 (tools) | 30 | 39 | 14 / 8 | 17 / 21 |
+| Qwen3-1.7B Q8_0 | 1.83 GB | 12/22 (inline) | 35 | 11 | 13 / 15 | 5 / 4 |
+| LFM2.5-1.2B Q4_K_M | 0.73 GB | 5/22 (inline) | 17 | 7 | 16 / 15 | 3 / 4 |
+
+Gemma 4 26B on Workers AI, the default server model, scored 17/22 alone with tools (1 unsafe).
+LFM3-1.7B is the first edge model that matches it with tools, but it is unsafe on its own (it
+misses allergens), answers Malay as Indonesian or reads Malay phrases as dish names, and writes
+long answers (about 300 tokens at 20 tokens/s here). As deployed (the brain first, the allergen
+guard on every model answer) every model scored 62/62 with 0 unsafe: on these cases the brain
+never needs the fallback. LFM3 isn't on Workers AI or OpenRouter yet, and Transformers.js needs
+4.3.2 to load its ONNX build.
+
 The intent model has never seen the eval menu or the café: it trains only on the restaurants in
 `scripts/brain/menus.ts`. A test checks that no held-out question appears in the training
 templates.
