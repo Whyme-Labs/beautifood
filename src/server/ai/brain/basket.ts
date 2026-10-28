@@ -156,7 +156,23 @@ export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
   for (const d of dishes) {
     let n = 1;
     const words = normalize(d.name).split(" ").filter((w) => w.length > 1);
-    const at = toks.findIndex((t) => words.some((w) => singular(t) === singular(w)));
+    // where the dish is named: the longest run of its name's words, and of those, one whose words the
+    // other dishes asked for don't share ("1 nasi briyani" after "2 nasi kandar banjir")
+    // (with its one-letter words: "Teh C Peng Special", "Teh O Ais Limau")
+    const all = normalize(d.name).split(" ");
+    const mine = (t: string) => all.some((w) => singular(t) === singular(w));
+    const others = new Set(dishes.filter((x) => x !== d).flatMap((x) => normalize(x.name).split(" ").map(singular)));
+    let at = -1;
+    let best = 0;
+    for (let i = 0; i < toks.length; i++) {
+      if (!mine(toks[i]) || (i > 0 && mine(toks[i - 1]))) continue;
+      let j = i;
+      while (j < toks.length && mine(toks[j])) j++;
+      const run = toks.slice(i, j);
+      if (!run.some((t) => t.length > 1 && !/^\d+$/.test(t))) continue;
+      const score = run.length * 2 + (run.some((t) => !others.has(singular(t))) ? 1 : 0);
+      if (score > best) (best = score), (at = i);
+    }
     if (at > 0) {
       // "two nasi lemak", "2 x kopi", "two plates of nasi lemak", "dua pinggan nasi"
       let k = at - 1;
