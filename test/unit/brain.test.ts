@@ -856,6 +856,36 @@ describe("what a guest rules out or allows", () => {
   });
 });
 
+describe("asking for a kind of dish or an ingredient", () => {
+  const menu = { ...ctx, items: asItems([
+    { id: "a", name: "Margherita", category: "Pizza", description: "tomato, mozzarella, basil", price: 2990, allergens: ["gluten", "milk"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: true },
+    { id: "b", name: "Rendang Beef Pizza", category: "Pizza", description: "beef rendang, red onion", price: 3690, allergens: ["gluten", "milk"], dietary: [], spiceLevel: 2, isSignature: false },
+    { id: "c", name: "Chocolate Milkshake", category: "Drinks", description: "chocolate ice cream and milk", price: 1490, allergens: ["milk"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "d", name: "Strawberry Oat Shake", category: "Drinks", description: "strawberries, oat milk", price: 1390, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "e", name: "Lamb Chop", category: "Mains", description: "grilled lamb with mint", price: 3890, allergens: [], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "f", name: "Garden Salad", category: "Starters", description: "leaves with fish sauce dressing", price: 1290, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "g", name: "Grilled Salmon", category: "Mains", description: "salmon fillet, lemon butter", price: 4290, allergens: ["fish", "milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "h", name: "Iced Lemon Tea", category: "Drinks", description: "lemon and black tea", price: 690, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: true },
+  ] as never) } as unknown as AssistantContext;
+  const names = (q: string) => answerGuest(menu, [{ role: "user", content: q }]).items.map((i) => i.name);
+
+  it("shows the dishes of the kind asked for, by name or by their section", () => {
+    expect(names("Milkshake got which one ah?")).toEqual(expect.arrayContaining(["Chocolate Milkshake", "Strawberry Oat Shake"]));
+    expect(names("Milkshake got which one ah?")).not.toContain("Lamb Chop");
+    expect(names("which pizza is the house favourite?")).toEqual(expect.arrayContaining(["Margherita", "Rendang Beef Pizza"]));
+  });
+  it("keeps the constraint and the kind together", () => {
+    expect(names("I'm allergic to dairy. Which milkshake can I have?")).toEqual(["Strawberry Oat Shake"]);
+  });
+  it("finds an ingredient, and a fish dish over one that only uses fish sauce", () => {
+    expect(names("anything with lamb or mutton?")).toEqual(["Lamb Chop"]);
+    expect(names("what fish do you have?")[0]).toBe("Grilled Salmon");
+  });
+  it("puts a misspelt kind right, but not a word it knows ('cafe' isn't 'cake')", () => {
+    expect(names("any piza?")).toEqual(expect.arrayContaining(["Margherita", "Rendang Beef Pizza"]));
+  });
+});
+
 describe("the branch's halal standing", () => {
   const dishes = asItems([
     { id: "a", name: "Ayam Goreng", category: "Mains", description: "fried chicken", price: 1290, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },

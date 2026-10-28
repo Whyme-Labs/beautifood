@@ -8,7 +8,7 @@ import { localizeItem } from "../../../shared/menuI18n";
 import type { MenuItem } from "../../../shared/types";
 import { clockLabel, scheduleName, weekdayNames, type TimedMenu } from "../../../shared/schedule";
 import { formatters, translator, type MessageKey } from "../../../i18n/core";
-import { normalize } from "../../../shared/brain/text";
+import { normalize, osaDistance, unsaid } from "../../../shared/brain/text";
 import { basketOf, compose, countsOf, ORDERING, ORDERING_ZH, plainRice } from "./basket";
 import { mentionedAllergens } from "../local";
 import type { Intent } from "../../../shared/brain/intentModel";
@@ -17,7 +17,7 @@ import type { TasteHint } from "../../taste/bridge";
 import { conceptsOf, conceptTerms, dishConceptLift, type ConceptId } from "./concepts";
 import { kindOf } from "./reader";
 import { alcoholWord, notHalalWord, withBranchHalal } from "../halal";
-import { courseDishes, intentModel, isDessert, isDrink, MEAT_WORDS, modelTokens, read, understand, type Course, type Diet, type Dish, type Meat, type Understanding } from "./understand";
+import { courseDishes, courseOfWord, intentModel, isDessert, isDrink, MEAT_WORDS, modelTokens, read, understand, type Course, type Diet, type Dish, type Meat, type Understanding } from "./understand";
 
 type Item = AssistantContext["items"][number];
 
@@ -206,12 +206,11 @@ interface Constraints {
  * A food word as the menu may write it ("noodle" for "noodles", "onions" for "onion"), and not
  * where the menu says the dish is without it ("no onion, no garlic", "onion-free", "tanpa santan").
  */
-const wordIn = (w: string, text: string) =>
-  new RegExp(`\\b${w.replace(/(es|s)$/, "")}(s|es)?\\b`, "i").test(text.replace(/\b(no|without|minus|sans|tanpa|tiada|free of|free from)\s+(\w+\s+(and|or|dan|atau)\s+)?\w+|\b\w+[\s-]free\b/gi, " "));
+const wordIn = (w: string, text: string) => new RegExp(`\\b${w.replace(/(es|s)$/, "")}(s|es)?\\b`, "i").test(unsaid(text));
 
 const ALCOHOL = /\b(beer|lager|stout|ale|sake|soju|wine|whisky|whiskey|highball|cocktail|gin|vodka|rum|tequila|shochu|umeshu|cider|alcohol|alcoholic|baileys|liqueur|brandy|cognac|kahlua|amaretto|prosecco|champagne|sangria|makgeolli|tuak|arak|toddy|ipa|pilsner|mezcal)\b|啤酒|清酒|烧酒|葡萄酒|鸡尾酒|威士忌|梅酒/i;
 const CAFFEINE = /\b(coffee|kopi|espresso|latte|cappuccino|americano|mocha|macchiato|flat white|tea|teas|teh|matcha|chai|oolong|earl grey|cola|energy drink|yerba)\b|咖啡|茶/i;
-export const isAlcoholic = (i: Dish) => !/\b(virgin|mocktail|non[\s-]?alcoholic|alcohol[\s-]?free|0\.0)\b/i.test(i.name) && ALCOHOL.test(`${i.name} ${i.description ?? ""} ${i.category ?? ""}`) || Object.values(i.translations ?? {}).some((x) => /酒/.test(x?.name ?? ""));
+export const isAlcoholic = (i: Dish) => !/\b(virgin|mocktail|non[\s-]?alcoholic|alcohol[\s-]?free|0\.0)\b/i.test(i.name) && ALCOHOL.test(unsaid(`${i.name} ${i.description ?? ""} ${i.category ?? ""}`)) || Object.values(i.translations ?? {}).some((x) => /酒/.test(x?.name ?? ""));
 
 function allowed(i: Item, c: Constraints) {
   if (c.avoid.some((a) => i.allergens.includes(a))) return false;
@@ -223,7 +222,7 @@ function allowed(i: Item, c: Constraints) {
   if (c.budget !== null && i.price > c.budget) return false;
   if (c.noAlcohol && isAlcoholic(i)) return false;
   if (c.noCaffeine && CAFFEINE.test(`${i.name} ${i.description ?? ""}`) && !/\b(decaf|caffeine[\s-]free|no caffeine)\b/i.test(`${i.name} ${i.description ?? ""}`)) return false;
-  if (c.noMeat?.some((m) => MEAT_WORDS[m].test(`${i.name} ${i.description ?? ""}`))) return false;
+  if (c.noMeat?.some((m) => MEAT_WORDS[m].test(unsaid(`${i.name} ${i.description ?? ""}`)))) return false;
   if (c.noWords?.some((w) => wordIn(w, normalize(`${i.name} ${i.description ?? ""}`)))) return false;
   return true;
 }
@@ -275,11 +274,15 @@ const NOT_SEARCH = new Set(
 );
 // the words a guest searches by, in the menu's language
 const SYNONYMS: Record<string, string[]> = {
-  ayam: ["chicken"], chicken: ["ayam"], ikan: ["fish"], fish: ["ikan"], udang: ["prawn", "shrimp"], prawn: ["udang", "shrimp"], shrimp: ["prawn", "udang"],
+  ayam: ["chicken"], chicken: ["ayam"], ikan: ["fish"],
+  // a kind of food covers its kinds ("seafood" is the prawns and squid too, "fish" the salmon)
+  fish: ["ikan", "salmon", "tuna", "cod", "seabass", "sea bass", "snapper", "garoupa", "grouper", "tilapia", "mackerel", "kembung", "pomfret", "bawal", "barramundi", "siakap", "trout", "saba", "unagi", "eel", "anchovies", "ikan bilis"],
+  seafood: ["fish", "ikan", "prawn", "shrimp", "udang", "squid", "sotong", "calamari", "octopus", "mussel", "clam", "lala", "kerang", "crab", "ketam", "lobster", "oyster", "scallop", "salmon", "tuna", "seabass", "snapper", "garoupa", "tilapia", "cod"],
+  shellfish: ["prawn", "shrimp", "udang", "crab", "ketam", "lobster", "mussel", "clam", "lala", "kerang", "oyster", "scallop", "squid", "sotong", "calamari", "octopus"], udang: ["prawn", "shrimp"], prawn: ["udang", "shrimp"], shrimp: ["prawn", "udang"],
   sotong: ["squid", "calamari"], squid: ["sotong", "calamari"], daging: ["beef"], beef: ["daging"], kambing: ["mutton", "lamb"], mutton: ["kambing", "lamb"], lamb: ["kambing", "mutton"],
   telur: ["egg"], egg: ["telur"], sayur: ["vegetable", "vegetables", "greens"], tauhu: ["tofu"], tofu: ["tauhu"], mee: ["noodle", "noodles", "mi"], mi: ["mee", "noodle"], noodle: ["mee", "mi"],
   nasi: ["rice"], rice: ["nasi"], keju: ["cheese"], cheese: ["keju"], keledek: ["sweet potato"], babi: ["pork"], pork: ["babi"], ketam: ["crab"], crab: ["ketam"], kopi: ["coffee"], coffee: ["kopi"],
-  teh: ["tea"], tea: ["teh"], kelapa: ["coconut"], coconut: ["kelapa"], mangga: ["mango"], mango: ["mangga"], pisang: ["banana"], banana: ["pisang"],
+  teh: ["tea"], tea: ["teh"], milkshake: ["shake", "milkshake"], milkshakes: ["shake", "milkshake"], shake: ["milkshake"], smoothie: ["smoothie", "shake"], burger: ["burger", "burgr"], wrap: ["wrap", "burrito"], kelapa: ["coconut"], coconut: ["kelapa"], mangga: ["mango"], mango: ["mangga"], pisang: ["banana"], banana: ["pisang"],
 };
 const ZH_WORDS: [RegExp, string[]][] = [[/鸡/, ["chicken", "ayam"]], [/鱼/, ["fish", "ikan"]], [/虾/, ["prawn", "shrimp", "udang"]], [/豆腐/, ["tofu", "tauhu"]], [/牛/, ["beef"]], [/猪/, ["pork"]], [/羊/, ["mutton", "lamb"]], [/蛋/, ["egg"]], [/芒果/, ["mango"]], [/咖啡/, ["coffee", "kopi"]], [/椰/, ["coconut"]]];
 
@@ -321,7 +324,9 @@ function search(question: string, live: Item[], knownWord: (w: string) => boolea
   const missing = content.filter((w) => !found.includes(w) && (conceptTerms(w).length || !knownWord(w)));
   if (!found.length && !missing.length) return null;
   // the dish's own name says it best, then its description, then its course
-  const score = (i: Item) => found.reduce((s, w) => s + (hasTerm({ ...i, description: "", category: "" }, w) ? 2 : hasTerm({ ...i, category: "" }, w) ? 1 : 0.5 * Number(hasTerm(i, w))), 0);
+  // ...and a description naming it only as a seasoning ("fish sauce", "dried shrimp") least
+  const seasoning = (i: Item, w: string) => new RegExp(`\\b(${w}(es|s)? (sauce|paste|stock|powder|oil|floss)|dried ${w}(es|s)?)\\b`).test(normalize(i.description ?? "")) && !new RegExp(`\\b${w}`).test(normalize(i.description ?? "").replace(new RegExp(`\\b(${w}(es|s)? (sauce|paste|stock|powder|oil|floss)|dried ${w}(es|s)?)\\b`, "g"), ""));
+  const score = (i: Item) => found.reduce((s, w) => s + (hasTerm({ ...i, description: "", category: "" }, w) ? 2 : hasTerm({ ...i, category: "" }, w) ? (seasoning(i, w) ? 0.25 : 1) : 0.5 * Number(hasTerm(i, w))), 0);
   const hits = found.length ? live.filter((i) => score(i) > 0).sort((a, b) => score(b) - score(a) || base(b) - base(a)) : [];
   if (!missing.length) return { hits, missing: null };
   // "coffee frappuccino with caramel drizzle": say what isn't on the menu, in their words
@@ -329,6 +334,43 @@ function search(question: string, live: Item[], knownWord: (w: string) => boolea
   const to = toks.lastIndexOf(content[content.length - 1]);
   return { hits: hits.filter((i) => score(i) === Math.max(...hits.map(score))), missing: toks.slice(from, to + 1).join(" ") };
 }
+
+// words that say how, who or why, not what: they never narrow the dishes to the ones using them
+const NOT_A_TERM = new Set(
+  "light heavy filling hungry starving hearty small big large huge little bit kick crazy hot mild spicy spice pedas tak not too medium extra less more sweet savoury savory salty sour cheap cheaper cheapest expensive pricey price prices cost rm budget much many share sharing people pax person persons friends friend family kids kid children child son daughter wife husband mum mom dad baby group table first time today tonight lunch dinner tomorrow allergy allergic alergi alah allergies intolerant safe free option options choice choices main mains course side sides plate plates bowl bowls portion set sets meal meals order ordering vegetarian vegan veggie halal muslim gluten dairy local here house speciality specialty signature signatures special specials famous popular best good nice something anything everything thing things stuff type kind kinds sort else other another different new dish dishes food foods drink drinks dessert desserts snack snacks starter starters under below above over within around about less than per each pls please".split(" "),
+);
+
+/**
+ * What a question asks for by a word of the menu's dishes ("milkshake", "lamb or mutton", "claypot",
+ * "something warm"), with the words other slots read left out; a word nearly every dish has
+ * ("rice" at a rice shop) narrows nothing. A food that is also an allergen ("what fish do you
+ * have?", "seafood?") is asked for by the allergen itself, when it isn't being avoided.
+ */
+function askedTerms(question: string, live: Item[], avoid: Allergen[], ruledOut: string[]): { words: string[]; allergens: Allergen[] } {
+  const all = normalize(question).split(" ").filter(Boolean);
+  // a word a cue negates is a constraint, not a request ("no pork", "tak makan babi", "can't take chilli")
+  const negated = (k: number) => all.slice(Math.max(0, k - 3), k).some((w) => TERM_NEG.test(w));
+  const toks = all.filter((w, k) => w.length > 2 && !NOT_SEARCH.has(w) && !NOT_A_TERM.has(w) && !/^\d/.test(w) && !ruledOut.includes(w) && !courseOfWord(w) && !negated(k));
+  // an allergen food is asked for only in a search's words ("what fish do you have?", "any seafood?",
+  // "seafood dishes"), not when said in passing ("I eat eggs and dairy")
+  const allergens = [...new Set(all.flatMap((w, k) => (mentionedAllergens(w).length && !negated(k) && (/^(what|which|any|got|ada|some|serve|have)$/.test(all[k - 1] ?? "") || /^(dishes|dish|options|items|do|you|got|ada)$/.test(all[k + 1] ?? "")) ? mentionedAllergens(w) : [])))].filter((a) => !avoid.includes(a));
+  // a word as the menu writes it, typos put right ("wrapp", "puding"): the nearest word of its dishes
+  const vocab = [...new Set(live.flatMap((i) => normalize(`${i.name} ${i.description ?? ""}`).split(" ")).filter((w) => w.length > 3))];
+  // (only a longer word the brain doesn't know: "cafe" isn't a misspelt "cake")
+  const spelled = (w: string) => (live.some((i) => hasTerm(i, w)) || w.length < 5 || intentModel().vocab?.has(w) ? w : vocab.find((v) => v[0] === w[0] && osaDistance(w, v, w.length >= 8 ? 2 : 1) <= (w.length >= 8 ? 2 : 1)) ?? w);
+  const inNames = (w: string) => live.filter((i) => hasTerm({ ...i, description: "", category: "" }, w)).length;
+  const words = toks
+    .map(spelled)
+    // "milkshake" asks for the milkshakes, though it has "milk" in it; "milk" alone is the allergen
+    .filter((w) => (!mentionedAllergens(w).length || (inNames(w) > 0 && !ALLERGEN_WORD.test(w))) && live.some((i) => hasTerm(i, w)))
+    // a word nearly every dish has narrows nothing, unless the dishes are named by it ("which claypot?")
+    .filter((w) => live.filter((i) => hasTerm(i, w)).length <= Math.max(2, live.length * (inNames(w) ? 0.6 : 0.4)));
+  // ("milkshake" asks for milkshakes, not everything with milk)
+  return { words: [...new Set(words)], allergens: allergens.filter((a) => !words.some((w) => mentionedAllergens(w).includes(a))) };
+}
+// the plain allergen words, as against the foods that have one in their name ("milkshake", "eggplant")
+const ALLERGEN_WORD = /^(milk|dairy|egg|eggs|nut|nuts|peanut|peanuts|gluten|wheat|soy|soya|sesame|fish|shellfish|seafood|prawn|prawns|shrimp|crab|mustard|celery|lupin|sulphites?|molluscs?|crustaceans?)$/;
+const TERM_NEG = /^(no|not|non|without|tanpa|tak|takde|tiada|x|tidak|bukan|jangan|dont|doesnt|cant|cannot|never|avoid|hate|except|minus|kecuali|less|free|t|mkn|makan)$/;
 
 // ---- answering ----
 
@@ -745,6 +787,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const kinds = new Set(state.shown.map(kind));
     let pool = live.filter((i) => i.price < cap && !state.shown.includes(i) && allowed(i, { ...c, budget: null }));
     pool = u.courses.length || u.categories.length ? byCourse(pool, u.courses) : pool.filter((i) => kinds.has(kind(i)));
+    // "cheaper but still beef", "something mango but cheaper": what they named stays
+    const still = askedTerms(u.text, live, c.avoid, u.noWords);
+    const withIt = pool.filter((i) => still.words.some((w) => hasTerm(i, w)) || still.allergens.some((a) => i.allergens.includes(a)));
+    if (withIt.length) pool = withIt;
     // the nearest below first: "anything cheaper?" wants something like it for a bit less, not the
     // cheapest thing of its kind
     const picks = [...pool].sort((a, b) => b.price - a.price || baseScore(b, ctx) - baseScore(a, ctx)).slice(0, 3);
@@ -961,6 +1007,26 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     default: {
       const spiced = bySpice(live);
       let pool = byCourse(spiced.pool, u.courses);
+      let termDrinks = false;
+      // "which milkshake?", "anything with lamb or mutton?", "what fish do you have?": the dishes with it
+      if (!mentioned.length && !nth && !u.signatures) {
+        const asked = askedTerms(u.text, live, c.avoid, u.noWords);
+        if (asked.words.length || asked.allergens.length) {
+          // the dish's own name says it best, then its description
+          // each thing asked for by the dishes named by it (or in a section named by it: the Pizza
+          // section's Margherita), else the ones whose description has it ("balls or seafood")
+          const named = (i: Item, w: string) => hasTerm({ ...i, description: "" }, w);
+          const byWord = (w: string) => {
+            const hits = pool.filter((i) => hasTerm(i, w));
+            return hits.some((i) => named(i, w)) ? hits.filter((i) => named(i, w)) : hits;
+          };
+          const byAllergen = (a: Allergen) => pool.filter((i) => i.allergens.includes(a));
+          // (when nothing they can have has it, the answer is as before: what they can have)
+          const narrowed = [...new Set([...asked.words.flatMap(byWord), ...asked.allergens.flatMap(byAllergen)])];
+          if (narrowed.length) pool = pool.filter((i) => narrowed.includes(i));
+          termDrinks = pool.length > 0 && narrowed.length > 0 && pool.every(isDrink);
+        }
+      }
       if (u.signatures && pool.some((i) => i.isSignature)) pool = pool.filter((i) => i.isSignature);
       if (u.appetite === "light" && !u.courses.length && !u.categories.length) {
         const food = pool.filter((i) => !isDrink(i));
@@ -987,7 +1053,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       }
       const order = u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : ranked(pool);
       // food first: drinks are ordered most, but "anything vegetarian?" means a dish (one drink at most)
-      const wantsDrinks = u.courses.includes("drinks") || (u.categories.length > 0 && pool.every(isDrink));
+      const wantsDrinks = u.courses.includes("drinks") || (u.categories.length > 0 && pool.every(isDrink)) || termDrinks;
       // "the cheapest thing", "the priciest": the whole menu, drinks too
       const literal = u.superlative === "cheapest" || u.superlative === "priciest";
       // "cheapest poke bowl?", "what's the priciest thing?": the one, not a list (with any at the same price)

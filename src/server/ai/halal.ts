@@ -3,6 +3,7 @@
 // dish itself says otherwise (a "beef bacon" is fine, a "pork belly" or "wine-braised" is not): a
 // dish that names pork, lard or alcohol is never claimed halal, whatever the branch says.
 import type { HalalInfo, HalalStatus, MenuItem } from "../../shared/types";
+import { unsaid } from "../../shared/brain/text";
 
 export type Halal = HalalInfo & { standing: HalalStatus | "expired" };
 
@@ -27,7 +28,8 @@ export function notHalalWord(
     translations?: MenuItem["translations"];
   },
 ): string | null {
-  const s = text(i).replace(BEEF_OR_CHICKEN_HAM, "");
+  // ("no pork, no alcohol" in a description says what it hasn't)
+  const s = unsaid(text(i)).replace(BEEF_OR_CHICKEN_HAM, "");
   return s.match(PORK)?.[0] ?? s.match(ALCOHOL)?.[0] ?? null;
 }
 

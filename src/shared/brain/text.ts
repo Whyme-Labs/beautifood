@@ -114,3 +114,10 @@ export function osaDistance(a: string, b: string, max = 2): number {
   }
   return d[a.length][b.length];
 }
+
+/**
+ * A menu's text without what it says a dish is without: "no pork, no alcohol", "without onion or
+ * garlic", "tanpa santan", "nut-free", "alcohol free". What's left is what the dish has.
+ */
+export const unsaid = (text: string) =>
+  text.replace(/\b(no|without|minus|sans|tanpa|tiada|free of|free from)\s+([\w-]+\s+(and|or|dan|atau|&)\s+)?[\w-]+|\b[\w]+[\s-]free\b/gi, " ");
