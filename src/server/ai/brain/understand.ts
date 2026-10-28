@@ -215,6 +215,8 @@ export function stripInjection(question: string): { text: string; injected: bool
  */
 const same = (a: string, b: string) =>
   a === b || a === `${b}s` || b === `${a}s` || MALAY_FOOD[a]?.includes(b) === true ||
+  // a romanisation's vowel ("siu yok" for Siu Yuk, "kau yok" for Kau Yuk)
+  (a.length === 3 && b.length === 3 && a[0] === b[0] && a[2] === b[2] && /^[ou]$/.test(a[1]) && /^[ou]$/.test(b[1])) ||
   // a typo: one letter off in a word of five or more, a letter left out of one ("perl" milk tea, not
   // "main" for Mein), two in a long word ("samgyupsal")
   (a[0] === b[0] && !intentModel().vocab?.has(a) && !REAL.has(a) &&
@@ -361,6 +363,20 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   }
   // 海南鸡饭 is the Hainanese Chicken Rice, not also the plain Chicken Rice (鸡饭) inside it
   for (let k = found.length - 1; k >= 0; k--) if (found[k].zh && found.some((b) => b.zh && b.zh !== found[k].zh && b.zh.includes(found[k].zh!))) found.splice(k, 1);
+  // two dishes claiming the same words ("pad thai"): the one whose description has the question's
+  // other words ("pad thai udang" is the one with prawns), and not a vegetarian version unasked for
+  const claimedBy = new Map<string, Mention[]>();
+  for (const m of found) if (m.covered.length) claimedBy.set([...m.covered].sort().join(","), [...(claimedBy.get([...m.covered].sort().join(",")) ?? []), m]);
+  for (const same_ of claimedBy.values()) {
+    if (same_.length < 2) continue;
+    const used = new Set(same_[0].covered);
+    const rest = toks.filter((t, i) => !used.has(i) && t.length > 2 && !GENERIC.has(t) && !/^(how|much|what|which|the|and|berapa|harga|price|got|ada|have|is|are|does|with)$/.test(t));
+    for (const m of same_) {
+      const desc = normalize(`${m.dish.name} ${m.dish.description ?? ""}`).split(" ");
+      if (rest.some((t) => desc.some((w) => same(t, w)))) m.score += 0.2;
+      if (/\b(vegetarian|vegan|veggie)\b/i.test(m.dish.name) && !toks.some((t) => /^(vegetarian|vegan|veggie|vege|veg)$/.test(t)) && !/素/.test(raw)) m.score -= 0.15;
+    }
+  }
   // two dishes claiming the same words: the better match keeps them
   found.sort((a, b) => b.score - a.score);
   if (process.env.DISH_DEBUG) console.log(found.map((m) => [m.dish.name, m.covered.map((i) => toks[i]).join("+"), m.score.toFixed(2)]));

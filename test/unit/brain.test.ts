@@ -973,6 +973,25 @@ describe("bills: what's left out, how many, each share, and the till's charges",
   });
 });
 
+describe("comparing prices, and the variant asked for", () => {
+  const ask = (q: string) => answerGuest(ctx, [{ role: "user", content: q }]).answer;
+  it("gives the difference, not a bill", () => {
+    expect(ask("laksa or curry mee, how much cheaper?")).toMatch(/^Curry Mee is the cheaper one, by RM0\.60/);
+    expect(ask("price difference between char kway teow and curry mee?")).toMatch(/by RM2\.00/);
+  });
+  it("says which of three is the cheapest", () => {
+    expect(ask("which is cheapest: satay, laksa or nasi lemak?")).toMatch(/^Of those, Satay \(6 sticks\) is the cheapest, at RM13\.00/);
+  });
+  it("picks the variant the guest's words describe, not a vegetarian one unasked for", () => {
+    const thai = { ...ctx, items: asItems([
+      { id: "a", name: "Pad Thai Goong", category: "Noodles", description: "rice noodles with prawns, egg, tofu", price: 2190, allergens: ["crustaceans", "egg"], dietary: [], spiceLevel: 1, isSignature: false },
+      { id: "b", name: "Vegetarian Pad Thai", category: "Noodles", description: "rice noodles with tofu, egg, chives", price: 1790, allergens: ["egg"], dietary: ["vegetarian"], spiceLevel: 1, isSignature: false },
+    ] as never) } as unknown as AssistantContext;
+    expect(read(thai.items as unknown as Dish[], "berapa harga pad thai udang?").dishes.map((d) => d.name)).toEqual(["Pad Thai Goong"]);
+    expect(read(thai.items as unknown as Dish[], "vegetarian pad thai got egg?").dishes.map((d) => d.name)).toEqual(["Vegetarian Pad Thai"]);
+  });
+});
+
 describe("the branch's halal standing", () => {
   const dishes = asItems([
     { id: "a", name: "Ayam Goreng", category: "Mains", description: "fried chicken", price: 1290, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },

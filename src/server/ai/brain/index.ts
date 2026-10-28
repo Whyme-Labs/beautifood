@@ -558,7 +558,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // (what these rules decide stands: the model's low confidence doesn't send it back to the menu)
   let settled = false;
   if (booking && !focus.length && (plainBooking || (!u.courses.length && !u.categories.length))) (intent = "order_help"), (settled = plainBooking);
-  else if (u.party && intent !== "dish_allergen") intent = "group";
+  // "Bulgogi or LA galbi, which is better for two people?": two dishes weighed, for the party
+  else if (u.party && intent !== "dish_allergen" && !(mentioned.length >= 2 && /\b(vs|versus|or|atau|which|mana|better)\b/.test(normalize(u.text)))) intent = "group";
   // "how does ordering work here?", "do you grill the meat for us or do we do it ourselves?": how the
   // restaurant works, for the staff
   const howItWorks = /\bhow (does|do|can) (the )?(ordering|order|it|this|paying|payment) work\b|\bhow (do|can) (i|we) (order|pay)\b|\b(cara|macam mana) (nak )?(order|pesan|bayar)\b|\b(for us|for me) or (do )?(we|i)\b|\bourselves\b/.test(normalize(u.text)) || /怎么点|怎么下单|怎么付/.test(u.text);
@@ -676,7 +677,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text);
   // ("how much for two nasi lemak?", "we're 3, one nasi lemak each": one dish, more than one of it)
   const several = mentioned.length === 1 && ([...countsOf(u.text, mentioned).values()][0] > 1 || (oneEach && !!party && party >= 2));
-  if (!u.budget && (totalWord || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
+  // "laksa or curry mee, how much cheaper?", "price difference between X and Y", "how much more is X
+  // than Y?": the dishes weighed, not a bill
+  const difference = mentioned.length >= 2 && !ordering && /\b(cheaper|pricier|more expensive|less expensive|difference|diff|how much more|how much less|beza|lebih mahal|lebih murah|than)\b/.test(nt1) && !/\b(total|altogether|together|sum|jumlah|semua)\b/.test(nt1);
+  if (difference) intent = "compare";
+  if (!difference && !u.budget && (totalWord || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
     const bill = state.order.map((o) => ({ ...o }));
     // "swap the kopi for a teh, total?", "cancel the satay": the order as changed
     const edited = editOrder(bill, u.text, mentioned);
@@ -1006,7 +1011,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       });
       const [a, b] = pair;
       const diff: string[] = [];
-      if (a.price !== b.price) diff.push(t("assistantReply.cheaper", { dish: name(a.price < b.price ? a : b), diff: money(Math.abs(a.price - b.price)) }));
+      // a price question puts the price first; of three, which is the cheapest (or priciest, mildest...)
+      const asksPrice = /\b(cheap\w*|pric\w*|expensive|cost|how much|murah|mahal|harga|beza)\b/.test(normalize(u.text)) || /便宜|贵|价钱|价格|多少钱/.test(u.text);
+      if (pair.length >= 3 && (u.superlative || asksPrice)) {
+        const s3 = u.superlative ?? "cheapest";
+        const top = s3 === "popular" ? pair[0] : sorted(pair, s3)[0];
+        diff.push(t(`assistantReply.${s3}Of` as MessageKey, { dish: name(top), price: money(top.price), level: top.spiceLevel }));
+      } else if (a.price !== b.price) diff.push(t("assistantReply.cheaper", { dish: name(a.price < b.price ? a : b), diff: money(Math.abs(a.price - b.price)) }));
       if (a.spiceLevel !== b.spiceLevel) diff.push(t("assistantReply.spicier", { dish: name(a.spiceLevel > b.spiceLevel ? a : b) }));
       const veg = (i: Item) => i.dietary.includes("vegetarian") || i.dietary.includes("vegan");
       if (veg(a) !== veg(b)) diff.push(t("assistantReply.onlyVegetarian", { dish: name(veg(a) ? a : b) }));
@@ -1014,7 +1025,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const onlyB = b.allergens.filter((x) => !a.allergens.includes(x));
       if (onlyA.length) diff.push(t("assistantReply.onlyContains", { dish: name(a), list: list(onlyA.map(allergen)), other: name(b) }));
       if (onlyB.length) diff.push(t("assistantReply.onlyContains", { dish: name(b), list: list(onlyB.map(allergen)), other: name(a) }));
-      return { ...reply(intent, [...parts, ...diff].join(sp), pair), safetyNote: onlyA.length || onlyB.length || safety ? allyNote(locale) : undefined };
+      // (the price answer first when that's what they asked)
+      const said = asksPrice && diff.length ? [diff[0], ...parts, ...diff.slice(1)] : [...parts, ...diff];
+      return { ...reply(intent, said.join(sp), pair), safetyNote: onlyA.length || onlyB.length || safety ? allyNote(locale) : undefined };
     }
 
     case "pairing": {
