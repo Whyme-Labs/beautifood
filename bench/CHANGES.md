@@ -744,3 +744,35 @@ second stays `test` (held out, scored at most twice a round, never read).
 Only the split fields changed. New fingerprint of the test split: `v8 499 64558e523138af43`
 (menus unchanged, `4564ce6d016ef859`). Starting points, from the runs above (not re-scored): dev
 62.9% → 63.3%, test 64.3% → 64.5%, 0 unsafe (deployed brain → this round's fixes).
+
+## Orders, add-ons, availability and deals, worked on v8 dev (2026-10-28)
+
+Fixed from v8 dev's failures, read case by case, each generally and checked against every dev
+set (none broken):
+
+- **Orders over several turns:** an order being placed or changed is answered with the order and
+  its total; a count is read where the dish's own words are; swaps, "make that 3", "remove one",
+  "change one of them", "cancel X, add Y" (by clause), "I'll take the second one", "I only had the
+  X" (that guest's part), splits by party and "between the 3 of us", "final amount", Malay
+  "tambah ... lagi", "servis dan cukai"; an answer listing the whole order is read as it.
+- **Add-ons and sizes:** read from each dish's options in the guest's words ("both iced", "with oat
+  milk", "no ice for the kopi", "large"), priced on the order and in single-dish answers.
+- **Sold out and not served now:** never on an order or a card, said first in any answer that
+  names one, with the closest that can be had; "anything sold out today?".
+- **Deals and timed menus by name:** days, hours, season, what's taken off, whether it's on now;
+  "do you charge service or SST?" from the branch's charges.
+- **Spice:** "milder"/"hotter" against what was just shown; a stated spice limit holds on cards.
+
+The claim checker now also accepts a price with one option from each of a dish's groups.
+
+| | Before | After |
+|---|---|---|
+| v8 dev (491) | 63.3% | **78.4%**, 0 unsafe |
+| v8 test (499, held out, scored once) | 64.5% | **73.7%** (69.7–77.4), 0 unsafe |
+| v8 test, bills (100) | 22.0% | 51.0% |
+| v8 test, add-ons (33) | 9.1% | 27.3% |
+| v8 test, availability (56) | 44.6% | 75.0% |
+| v8 test, deals (41) | 58.5% | 73.2% |
+| v8 test, follow-ups (144) | 54.9% | 70.1% |
+
+Older dev sets unchanged or better: v1 99.2, v2 97.8, v3 97.4, v4 98.2, v5 97.4, v6 96.7%.
