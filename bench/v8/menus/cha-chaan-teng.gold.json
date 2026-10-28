@@ -1,0 +1,370 @@
+{
+  "Ham Macaroni Breakfast Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Ham = pork, not halal; macaroni and toast = gluten; fried egg; butter and set drink is HK milk tea or coffee with evaporated milk = milk. Chicken broth."
+  },
+  "Satay Beef Noodle Breakfast Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "peanuts",
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Instant noodles and toast = gluten; satay sauce: peanuts, dried shrimp (crustaceans), soy sauce (soy + gluten); scrambled egg; butter and set drink is HK milk tea or coffee with evaporated milk = milk. Beef, no pork or alcohol: halal from ingredients (branch not certified). Mildly spicy = 1."
+  },
+  "Luncheon Meat Egg Noodle Breakfast Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork luncheon meat, not halal; instant noodles and toast = gluten; fried egg; butter and set drink is HK milk tea or coffee with evaporated milk = milk."
+  },
+  "Pineapple Bun Tea Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Bun crust made with lard: not vegetarian, not halal (hidden). Wheat bun; egg; butter; set drink is HK milk tea or coffee with evaporated milk = milk."
+  },
+  "French Toast Tea Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanut butter filling (hidden peanuts); white bread; egg; butter; set drink is HK milk tea or coffee with evaporated milk = milk. Golden syrup is plant-based."
+  },
+  "Egg Sandwich Tea Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "White bread; egg; butter; set drink is HK milk tea or coffee with evaporated milk = milk."
+  },
+  "Pineapple Bun with Butter": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Crunchy top made with lard: sounds vegetarian but is not, and not halal. Wheat bun; egg; butter. No pineapple."
+  },
+  "HK French Toast": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanut butter filling (hidden); white bread; egg; butter. Vegetarian (no meat or lard stated)."
+  },
+  "Scrambled Egg Sandwich": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg with milk and butter; white bread."
+  },
+  "Condensed Milk Butter Toast": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "White bread; butter; condensed milk."
+  },
+  "Baked Pork Chop Rice": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg",
+      "milk",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork, not halal; soy sauce = soy + gluten; egg fried rice; mozzarella = milk; Worcestershire = fish + gluten (rule i)."
+  },
+  "Baked Seafood Rice": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawns, squid, dory; white sauce with butter, wheat flour and milk; cheese. No pork or alcohol: halal from ingredients."
+  },
+  "Curry Chicken Rice": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Evaporated milk = milk; coconut milk is not. Chicken, no pork or alcohol. Mildly spicy = 1."
+  },
+  "Salted Fish Chicken Fried Rice": {
+    "allergens": [
+      "fish",
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salted fish; egg; light soy sauce = soy + gluten. No pork or alcohol."
+  },
+  "Wonton Noodles": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork and prawn wontons: not halal; egg noodles and wheat wrappers = gluten + egg; dried flounder = fish; dried shrimp and prawns = crustaceans."
+  },
+  "Beef Brisket Noodles": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame",
+      "sulphites",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Chu hou paste = soy + gluten + sesame (v5 ruling); Shaoxing wine = sulphites + gluten, not halal; thin egg noodles = gluten + egg."
+  },
+  "Macaroni Soup with Ham": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Ham = pork, not halal; macaroni = gluten; chicken broth. Sweet corn."
+  },
+  "Tomato Vegetable Macaroni": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but made with chicken broth. Macaroni = gluten. No pork."
+  },
+  "Satay Beef Instant Noodles": {
+    "allergens": [
+      "gluten",
+      "peanuts",
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Instant noodles = gluten; satay sauce: peanuts, dried shrimp, soy sauce. Beef, no pork or alcohol. Mildly spicy = 1."
+  },
+  "Curry Fish Balls": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "crustaceans",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Fish paste with wheat starch = fish + gluten; shrimp paste = crustaceans; evaporated milk. Spicy = 2."
+  },
+  "Choy Sum in Garlic Sauce": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but oyster sauce = molluscs + gluten (rule g); not vegetarian."
+  },
+  "Egg Tart": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter pastry (no lard stated); egg custard. Sold out in branch settings."
+  },
+  "Egg Waffle": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg, wheat flour, evaporated milk."
+  },
+  "Red Bean Ice": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk; red beans."
+  },
+  "HK Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk."
+  },
+  "Cha Jau": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Yuan Yang": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Coffee and milk tea with evaporated milk."
+  },
+  "Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea, lemon, sugar syrup."
+  },
+  "Horlicks": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley and wheat = gluten; milk."
+  },
+  "Lemon Coke": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Cola and lemon."
+  },
+  "Hong Kong Coffee": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk. No butter roast stated."
+  },
+  "Honey Lemon": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey rules out vegan."
+  }
+}

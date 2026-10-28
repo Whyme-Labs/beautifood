@@ -1,0 +1,695 @@
+{
+  "soldOut": [
+    "Egg Tart"
+  ],
+  "menus": [
+    {
+      "name": "Breakfast set",
+      "dishes": [
+        "Ham Macaroni Breakfast Set",
+        "Satay Beef Noodle Breakfast Set",
+        "Luncheon Meat Egg Noodle Breakfast Set"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "07:00",
+          "to": "11:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Tea time set",
+      "kind": "amount",
+      "value": 200,
+      "categories": [
+        "TEA SETS"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "14:00",
+          "to": "17:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "HK Milk Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Cha Jau": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Yuan Yang": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Lemon Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Horlicks": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Hong Kong Coffee": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Honey Lemon": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Lemon Coke": [
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Ham Macaroni Breakfast Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Satay Beef Noodle Breakfast Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Luncheon Meat Egg Noodle Breakfast Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Pineapple Bun Tea Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "French Toast Tea Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Egg Sandwich Tea Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced (凍)",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "走冰 No ice",
+            "price": 0
+          },
+          {
+            "name": "少冰 Less ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "少甜 Less sweet",
+            "price": 0
+          },
+          {
+            "name": "走甜 No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

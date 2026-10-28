@@ -1,0 +1,342 @@
+{
+  "Satay Ayam": {
+    "allergens": [
+      "peanuts",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken; kuah kacang = roasted peanuts + a little belacan (crustaceans). Marinade spices only. 'Mildly spicy' = 1. JAKIM-certified kitchen."
+  },
+  "Satay Daging": {
+    "allergens": [
+      "peanuts",
+      "crustaceans",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Beef; kicap manis marinade = soy + gluten; kuah kacang = roasted peanuts + a little belacan (crustaceans). Mildly spicy = 1."
+  },
+  "Satay Kambing": {
+    "allergens": [
+      "peanuts",
+      "crustaceans",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Lamb basted with ghee = milk (hidden); kuah kacang = roasted peanuts + a little belacan (crustaceans). Mildly spicy = 1."
+  },
+  "Satay Perut": {
+    "allergens": [
+      "peanuts",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Beef tripe; kuah kacang = roasted peanuts + a little belacan (crustaceans). Mildly spicy = 1."
+  },
+  "Satay Tempe": {
+    "allergens": [
+      "soy",
+      "peanuts",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Tempe = soy. Sounds vegetarian but the kuah kacang = roasted peanuts + a little belacan (crustaceans), so not vegetarian or vegan. Mildly spicy = 1."
+  },
+  "Satay Campur Set": {
+    "allergens": [
+      "peanuts",
+      "crustaceans",
+      "soy",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken, beef (kicap manis = soy + gluten) and lamb (ghee = milk); kuah kacang = roasted peanuts + a little belacan (crustaceans); nasi impit. Mildly spicy = 1."
+  },
+  "Nasi Impit": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain compressed rice. Extra kuah kacang is an add-on, not part of the dish."
+  },
+  "Ketupat": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice in a coconut-leaf pouch."
+  },
+  "Timun & Bawang": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Raw cucumber and red onion."
+  },
+  "Ayam Percik": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken; percik sauce with belacan = crustaceans; coconut milk is not milk. Mildly spicy = 1."
+  },
+  "Mee Rebus": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Yellow egg noodles = gluten + egg; beef stock; dried shrimp = crustaceans; taucu and fried tofu = soy; boiled egg. Green chilli garnish with no heat word = 1."
+  },
+  "Mee Sup Sayur": {
+    "allergens": [
+      "gluten",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sounds vegetarian but the broth is ikan bilis = fish. Wheat noodles stated egg-free = gluten; fried tofu = soy. Not spicy."
+  },
+  "Nasi Goreng Kampung": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Ikan bilis = fish; belacan = crustaceans; fried egg; soy sauce = soy + gluten. Spicy = 2."
+  },
+  "Sup Ekor": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oxtail; celery. Not spicy."
+  },
+  "Sambal Sotong": {
+    "allergens": [
+      "molluscs",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Squid = molluscs; belacan = crustaceans. Very spicy = 3."
+  },
+  "Tauhu Bakar": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Tofu = soy; kicap manis = soy + gluten; peanut sauce; stated no belacan, so vegan. Mildly spicy = 1."
+  },
+  "Cucur Udang": {
+    "allergens": [
+      "crustaceans",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Prawns; wheat-flour batter. Chilli sauce with no heat word = 1."
+  },
+  "Pisang Goreng": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour in the batter; stated no egg; vegan."
+  },
+  "Murtabak Daging": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat dough, minced beef, egg; dhal curry cooked in ghee = milk. Mildly spicy = 1. Ramadan bazaar only."
+  },
+  "Bubur Lambuk": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Minced beef; dried shrimp = crustaceans; coconut milk is not milk. Not spicy. Ramadan bazaar only."
+  },
+  "Air Katira": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk. Katira gum and basil seeds are plant-based. Ramadan bazaar only."
+  },
+  "Cendol": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice-flour jelly, red beans, coconut milk (not milk), gula Melaka."
+  },
+  "Cendol Pulut Durian": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Cendol plus glutinous rice (no gluten) and durian."
+  },
+  "Ais Kacang": {
+    "allergens": [
+      "peanuts",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Roasted peanuts; evaporated milk. Sold out in branch settings."
+  },
+  "Air Tebu": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sugarcane and lemon."
+  },
+  "Teh O Ais Limau": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black tea, calamansi, sugar."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed and evaporated milk."
+  },
+  "Sirap Ais": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rose syrup."
+  },
+  "Sirap Bandung": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated and condensed milk."
+  },
+  "Kopi O": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Beans roasted with butter = milk (rule o): vegetarian, not vegan."
+  },
+  "Air Kelapa": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut water and flesh; coconut is not a tree nut."
+  },
+  "Milo Ais": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley = gluten; condensed milk."
+  },
+  "Air Mata Kucing": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Longan, monk fruit, winter melon."
+  }
+}
