@@ -286,7 +286,7 @@ const SYNONYMS: Record<string, string[]> = {
 };
 // the kinds of dish a guest names in Chinese, as menus write them in English
 const ZH_TERMS: [RegExp, string[]][] = [
-  [/粥/, ["congee", "porridge"]], [/(?<![奶果擂骨凉])茶(?!饭|餐|点)/, ["tea"]], [/肠粉/, ["cheong fun"]], [/饭团/, ["onigiri"]], [/啤酒/, ["beer"]], [/披萨|比萨/, ["pizza"]],
+  [/热的|热乎|暖|温热/, ["warm", "hot"]], [/冰的|凉的|冷的/, ["cold", "iced"]], [/粥/, ["congee", "porridge"]], [/(?<![奶果擂骨凉])茶(?!饭|餐|点)/, ["tea"]], [/肠粉/, ["cheong fun"]], [/饭团/, ["onigiri"]], [/啤酒/, ["beer"]], [/披萨|比萨/, ["pizza"]],
   [/塔可/, ["taco"]], [/汉堡/, ["burger"]], [/沙拉/, ["salad"]], [/卷饼/, ["wrap", "burrito"]], [/寿司/, ["sushi"]], [/拉面/, ["ramen"]], [/咖喱/, ["curry"]], [/意面|意大利面/, ["pasta"]],
   [/蛋糕/, ["cake"]], [/布丁/, ["pudding"]], [/奶昔/, ["shake", "milkshake"]], [/冰沙/, ["smoothie"]], [/咖啡/, ["coffee", "kopi"]], [/果汁/, ["juice"]], [/锅底/, ["soup base", "broth"]], [/薄饼/, ["thosai", "dosa"]],
 ];
@@ -789,6 +789,14 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // "a main under RM25" when the Mains are all dearer: the tacos and burritos are mains too (and
     // the milk teas are drinks when the Special drinks are all dearer)
     const wider = inCategory.size > 0 && !joined && courses.some((k) => k === "mains" || k === "drinks") && !pool.some((i) => inCategory.has(i.id));
+    // "the cheapest vegan main": every main, not only a section with "mains" in its name ("Bowls &
+    // mains" beside "Local favourites")
+    // (and "the cheapest dessert" every dessert, not just the "Puddings & kuih" its synonym found)
+    const whole = (["mains", "desserts"] as Course[]).filter((k) => courses.includes(k));
+    if (inCategory.size && whole.length && (u.superlative === "cheapest" || u.superlative === "priciest") && ctx.items.some((i) => inCategory.has(i.id) && /&|\band\b|\/|,|\+/.test(i.category ?? ""))) {
+      const all = new Set(whole.flatMap((k) => courseDishes(ctx.items as Dish[], k).map((d) => d.id)));
+      return pool.filter((i) => inCategory.has(i.id) || all.has(i.id));
+    }
     if (inCategory.size && !joined && !wider) return pool.filter((i) => inCategory.has(i.id));
     const ids = new Set<string>();
     for (const k of courses) {
@@ -874,19 +882,26 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "anything cheaper than those?", "something cheaper but still noodles?", "有没有更便宜的？": below the
   // cheapest just shown, in the same course
   const nt = normalize(u.text);
-  if (state.shown.length && !mentioned.length && (/\b(cheaper|less expensive|lower price|lebih murah|murah sikit|murah sket)\b/.test(nt) || /更便宜|便宜一点|便宜点/.test(u.text)) && !/\b(which|mana)\b/.test(nt) && !/哪个|哪一/.test(u.text)) {
+  // ...or below the one dish they name ("Ayam percik is a bit pricey. Cheaper chicken option?",
+  // "something cheaper than the wagyu?"), not "which is cheaper, X or Y?"
+  const cheaperWord = /\b(cheaper|less expensive|lower price|lebih murah|murah sikit|murah sket)\b/.test(nt) || /更便宜|便宜一点|便宜点/.test(u.text);
+  const below = mentioned.length === 1 && !nth ? mentioned : !mentioned.length ? state.shown : [];
+  if (below.length && cheaperWord && !/\b(which|mana)\b/.test(nt) && !/哪个|哪一/.test(u.text) && !(mentioned.length === 1 && /\b(is|are) (the |it |that |this )?.*\bcheaper\b.*\?/.test(nt) && !/\b(option|options|one|something|anything|alternative|dish|ada|got)\b/.test(nt))) {
+    state = { ...state, shown: below };
     const cap = Math.min(...state.shown.map((i) => i.price));
     // the same kind of thing: a cheaper main for a main (from any of the menu's categories of them),
     // a cheaper side for a side, drink for a drink, sweet for a sweet
     const mains = new Set(courseDishes(ctx.items as Dish[], "mains").map((d) => d.id));
     const kind = (i: Item) => (isDrink(i) ? "drink" : isDessert(i) ? "dessert" : mains.has(i.id) ? "main" : "side");
     const kinds = new Set(state.shown.map(kind));
-    let pool = live.filter((i) => i.price < cap && !state.shown.includes(i) && allowed(i, { ...c, budget: null }));
-    pool = u.courses.length || u.categories.length ? byCourse(pool, u.courses) : pool.filter((i) => kinds.has(kind(i)));
-    // "cheaper but still beef", "something mango but cheaper": what they named stays
+    const cheaper = live.filter((i) => i.price < cap && !state.shown.includes(i) && allowed(i, { ...c, budget: null }));
+    let pool = u.courses.length || u.categories.length ? byCourse(cheaper, u.courses) : cheaper.filter((i) => kinds.has(kind(i)));
+    // "cheaper but still beef", "something mango but cheaper": what they named stays (and wins over
+    // the kind of the dish before: a beef main for a beef side)
     const still = askedTerms(u.text, live, c.avoid, u.noWords);
-    const withIt = pool.filter((i) => still.words.some((w) => hasTerm(i, w)) || still.allergens.some((a) => i.allergens.includes(a)));
-    if (withIt.length) pool = withIt;
+    const has = (i: Item) => still.words.some((w) => hasTerm(i, w)) || still.allergens.some((a) => i.allergens.includes(a));
+    if (pool.some(has)) pool = pool.filter(has);
+    else if (cheaper.some(has)) pool = cheaper.filter(has);
     // the nearest below first: "anything cheaper?" wants something like it for a bit less, not the
     // cheapest thing of its kind
     const picks = [...pool].sort((a, b) => b.price - a.price || baseScore(b, ctx) - baseScore(a, ctx)).slice(0, 3);
