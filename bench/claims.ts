@@ -96,9 +96,10 @@ export function claims(answer: string, items: Item[], labels: { id: string; labe
       // "2 × Teh Tarik (RM3.50)" gives the unit price; "Teh Tarik x2 RM7.00" the line's
       const said = Math.round(Number(m[1]) * 100);
       const prices = [s.i.price, s.i.listPrice].filter((p): p is number => p != null);
-      const options = (s.i.modifiers ?? []).flatMap((g) => g.options.map((o) => o.price)).filter((p) => p > 0);
+      // with add-ons: any one option of each group, or none ("large iced" is both)
+      const extras = (s.i.modifiers ?? []).reduce((sums, g) => [...new Set(sums.flatMap((x) => [x, ...g.options.map((o) => x + o.price)]))], [0]);
       readCount++;
-      if (!prices.some((p) => Array.from({ length: 20 }, (_, q) => (q + 1) * p).includes(said) || options.some((o) => p + o === said)))
+      if (!prices.some((p) => extras.some((e) => Array.from({ length: 20 }, (_, q) => (q + 1) * (p + e)).includes(said))))
         failed.push(`claims RM${(said / 100).toFixed(2)} for ${s.i.name} (menu: RM${(s.i.price / 100).toFixed(2)})`);
     }
 

@@ -68,7 +68,12 @@ const unitPrice = (o: OrderLine) => o.item.price + (o.options ?? []).reduce((s, 
  */
 export function applyOptions(order: OrderLine[], text: string, named: Item[]) {
   if (!order.some((o) => o.item.modifiers?.length)) return;
-  const nameWords = (i: Item) => normalize(i.name).split(" ").filter((w) => w.length > 2);
+  // (by the words only it has among the order: "matcha latte" isn't the Hojicha Latte)
+  const allWords = (i: Item) => normalize(i.name).split(" ").filter((w) => w.length > 2);
+  const nameWords = (i: Item) => {
+    const own = allWords(i).filter((w) => !order.some((o) => o.item.id !== i.id && allWords(o.item).includes(w)));
+    return own.length ? own : allWords(i);
+  };
   let before: OrderLine[] = [];
   for (const clause of text.split(/[,;，；]|\band\b|\bdan\b|\bthen\b/i)) {
     const c = normalize(clause);
@@ -141,11 +146,18 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
         }
         applyOptions(s.order, h.content, u.dishes as Item[]);
       } else if (s.order.length) applyOptions(s.order, h.content, u.dishes as Item[]);
+      // "4 stuffed tofu, 2 fried wantan, 1 rice": the menu's plain rice too
+      const rice = !asks || ORDERING.test(normalize(h.content)) ? plainRice(h.content, u.delexicalized.join(" "), ctx.items as Dish[]) : null;
+      if (rice && orderable(rice.dish as Item) && !s.order.some((o) => o.item.id === rice.dish.id)) s.order.push({ item: rice.dish as Item, count: rice.count });
     } else {
       const named = dishesIn(ctx, h.content);
       // "Added: Iced Lemon Tea (RM5.90)", "Noted, one Kopi O": what the answer confirmed is ordered
       if (named.length && /\b(added|adding|noted|got it|confirmed|on your order|in your order|ditambah)\b/i.test(h.content) || /已加|已为你加|已点|记下了/.test(h.content))
         for (const item of named) if (!s.order.some((o) => o.item.id === item.id)) s.order.push({ item, count: 1 });
+      // "So far: X (RM11.90), Stuffed Tofu x3 (RM1.80 each)… Total RM23.50": an answer that sums up the
+      // order, when the guest's own turns gave none
+      if (!s.order.length && named.length && /\b(so far|total|in all|altogether|that comes to|comes to|jumlah|semua)\b|合计|一共|总共/i.test(h.content) && !/\b(removed|cancelled|minus|without)\b/i.test(h.content))
+        for (const [item, count] of countsOf(h.content.replace(/\b(\w[\w-]*)\s*x\s*(\d)\b/gi, "$1 x$2"), named as Dish[])) if (orderable(item as Item)) s.order.push({ item: item as Item, count });
       if (named.length) {
         s.shown = named;
         if (named.length === 1) s.focus = named[0];
@@ -207,13 +219,22 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
   // "no more the kopi" drops it; "remove one teh tarik" of two takes one off; "no kopi, a teh
   // instead" names only the new one, so it's a swap
   if (removing && (!swap || named.some(ordered))) {
+    // only what the removing clause names ("cancel the egg tarts. and no ice for the lime juice");
+    // what's named with "add" beside it comes on ("cancel the salmon, add a croissant")
+    const clauses = text.split(/[.;,，。；]|\band\b|\bdan\b/i);
+    const cut = clauses.filter((c) => REMOVE.test(normalize(c)) || REMOVE.test(c));
+    const inCut = (i: Item) => cut.some((c) => normalize(i.name).split(" ").filter((w) => w.length > 2).some((w) => ` ${normalize(c)} `.includes(` ${w} `) || ` ${normalize(c)} `.includes(` ${w}s `)) || Object.values(i.translations ?? {}).some((x) => x?.name && c.includes(x.name)));
+    const outs = named.filter((i) => ordered(i) && (inCut(i) || named.filter(ordered).length === 1));
+    const ins = named.filter((i) => !ordered(i) && (ORDERING.test(t) || ORDERING_ZH.test(text)));
     const less = (i: Item) => {
       const o = order.find((x) => x.item.id === i.id);
       const n = COUNT_SAID.test(t) ? countsOf(text, [i as Dish]).get(i as Dish) : undefined;
       if (o && n !== undefined && n < o.count) return ((o.count -= n), true);
       return drop(i);
     };
-    return named.map(less).some(Boolean);
+    const done = (outs.length ? outs : named).map(less).some(Boolean);
+    for (const i of ins) add(i);
+    return done || ins.length > 0;
   }
   if (!swap) return false;
   const kind = (i: Item) => (isDrink(i) ? "drink" : isDessert(i) ? "dessert" : "food");
@@ -240,7 +261,9 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
   // one it replaces, the rest added
   const [next, ...more] = named;
   if (onOrder.length) return false;
-  drop(replaced(next).item);
+  const was = replaced(next);
+  if (was.count > 1 && /\b(one of (them|those|the)|one|satu)\b/.test(t)) was.count -= 1;
+  else drop(was.item);
   add(next);
   for (const i of more) add(i);
   return true;
@@ -805,7 +828,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // the bill so far: what they've ordered in this conversation, and what they name now ("and a Peroni
   // with it - what's the total?", "a Margherita, a Carbonara and two Cappuccinos, how much?", "一共多少？")
   // "split between 3", "bahagi 2", "三个人分": the bill, and each person's share
-  const split = normalize(u.text).match(/\b(?:split|splitting|share the bill|divide|dividing|bahagi|kongsi bil)\b(?:\s+(?:it|the bill|bill|between|among|amongst|by|for|into|in|antara|untuk|equally|evenly|sama rata|rata))*\s+(\d|two|three|four|five|six|dua|tiga|empat|lima)\b/) ?? normalize(u.text).match(/\b(\d|two|three|four|five|six)\s+ways\b/);
+  const split = normalize(u.text).match(/\b(?:split|splitting|share the bill|divide|dividing|bahagi|kongsi bil)\b(?:\s+(?:it|the bill|bill|between|among|amongst|by|for|into|in|antara|untuk|equally|evenly|sama rata|rata|the|us|all))*\s+(\d|two|three|four|five|six|dua|tiga|empat|lima)\b/) ?? normalize(u.text).match(/\b(\d|two|three|four|five|six)\s+ways\b/);
   const splitZh = u.text.match(/([两二三四五六\d])\s*个?人\s*(?:平)?分|分\s*成?\s*([两二三四五六\d])\s*份/);
   const ways = split ? (NUMBER_OF[split[1]] ?? Number(split[1])) : splitZh ? ("两二三四五六".indexOf(splitZh[1] ?? splitZh[2]) >= 0 ? [2, 2, 3, 4, 5, 6]["两二三四五六".indexOf(splitZh[1] ?? splitZh[2])] : Number(splitZh[1] ?? splitZh[2])) : null;
   // "how much each?", "per person?", "每人多少？" with the party said: the share each ("one nasi lemak
@@ -814,14 +837,16 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const oneEach = /\b(one|1|a|satu)\s+(\w+\s+){0,4}each\b|\beach (have|get|having|getting|take|one)\b|\bsatu (seorang|sorang)\b/.test(nt1) || /每人一|一人一/.test(u.text);
   const perPerson = !oneEach && (/\b(how much|berapa)\b.*\b(each|per person|per head|per pax|seorang|sorang)\b|\b(each|per person|per head|per pax) (pay|pays|paying)\b|\b(per person|per head|per pax|each of us)\b/.test(nt1) || /每人|每个人|一人多少/.test(u.text));
   const party = u.party ?? null;
-  const shares = ways ?? (perPerson && party && party >= 2 ? party : null);
+  // ("4 of us ... split equally": the party)
+  const evenly = /\b(split|splitting|share the bill|bahagi)\b/.test(nt1) || /平分|分摊/.test(u.text);
+  const shares = ways ?? ((perPerson || evenly) && party && party >= 2 ? party : null);
   // "including tax", "after service charge", "nett": the bill as the till will total it
   const withCharges = /\b(tax|taxes|sst|gst|service charge|service|nett|after tax|incl|including tax|including service|plus tax|with tax|all in|final (amount|bill|total|price)|pay at the (counter|cashier)|servis|cukai|caj perkhidmatan|semua sekali)\b/.test(nt1) || /税|服务费|最后要付|一共要付/.test(u.text);
   // ("what's the bill?" with an order open is its total; "bill please" asks the staff for it)
   const billSoFar = state.order.length > 0 && /\b(whats|what s|what is|how much is|hows|how s) (the|my|our) (bill|damage)\b|\bbill (so far|now|come to)\b/.test(nt1);
   const totalWord = !!shares || billSoFar || /\b(final (amount|bill|total)|how much (do|should|will) (i|we) pay|pay at the (counter|cashier))\b/.test(nt1) || /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(normalize(u.text)) || /一共|总共|加起来|合计/.test(u.text);
   const howMuch = /\b(how much|berapa|price)\b/.test(normalize(u.text)) || /多少钱|几钱|几多钱|多少/.test(u.text);
-  const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text);
+  const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text) || /\b(tambah|tambahkan|lagi satu|satu lagi)\b/.test(nt1);
   // ("how much for two nasi lemak?", "we're 3, one nasi lemak each": one dish, more than one of it)
   const several = mentioned.length === 1 && ([...countsOf(u.text, mentioned).values()][0] > 1 || (oneEach && !!party && party >= 2));
   // "laksa or curry mee, how much cheaper?", "price difference between X and Y", "how much more is X
@@ -852,7 +877,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     return reply("order_help", text, []);
   }
   // "large iced teh tarik, how much?", "latte with oat milk?": the dish's price with what they add
-  if (mentioned.length === 1 && (howMuch || /\b(price|harga|how much|berapa|cost)\b/.test(nt1) || /多少|几钱/.test(u.text)) && !state.order.length && !totalWord) {
+  if (mentioned.length === 1 && (howMuch || /\b(price|harga|how much|berapa|cost)\b/.test(nt1) || /多少|几钱/.test(u.text)) && !state.order.length && !totalWord && !withCharges && !several) {
     const d = mentioned[0];
     const with_ = optionsSaid(u.text, d).add;
     if (with_.length && orderable(d)) {
@@ -867,7 +892,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (asked.length === 1)
       return reply("dish_info", t("assistantReply.optionPrice", { option: optionLabel(asked[0].option), price: money(asked[0].option.price), list: list(asked[0].dishes.slice(0, 4).map(name)) }), []);
   }
-  if (!difference && !u.budget && (changing || totalWord || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
+  if (!difference && !u.budget && (changing || totalWord || (u.ordinal !== null && state.shown.length > 0 && (howMuch || ordering)) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
     const bill: OrderLine[] = state.order.map((o) => ({ ...o }));
     // what they ask for that can't be had now: said, and left off
     const gone = mentioned.filter((i) => !orderable(i) && !state.order.some((o) => o.item.id === i.id));
@@ -884,7 +909,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // "I'll take the second one": the dish of the last answer it points at
     // ("2 of the second one, how much?", "ok the first one then, and a latte")
     if (u.ordinal !== null && state.shown.length && (ordering || howMuch || totalWord || mentioned.length)) {
-      const picked = state.shown.at(u.ordinal);
+      const picked = state.shown.filter(orderable).at(u.ordinal);
       const n = nt1.match(/\b(\d|two|three|four|five|dua|tiga|empat)\s+(of )?(the|yang)\b/)?.[1];
       if (picked && orderable(picked) && !bill.some((o) => o.item.id === picked.id) && !mentioned.includes(picked)) bill.push({ item: picked, count: n ? (NUMBER_OF[n] ?? Number(n)) : 1 });
     }

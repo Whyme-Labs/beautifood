@@ -517,7 +517,7 @@ const zh = {
     servedLater: "{dish}属于{menu}，{when}供应。",
     withOptions: "{dish}（{options}）",
     noCharges: "这里不收服务费，也不另外加税：菜单上的价格就是你付的价格。",
-    chargesAdded: "账单会另加{service}服务费和{tax}税。",
+    chargesAdded: "菜单价格不包括服务费和税：账单会另加{service}服务费和{tax}税。",
     taxIncluded: "价格已含{tax}税{service}。",
     serviceToo: "，另加{service}服务费",
     yourPart: "你的部分：",

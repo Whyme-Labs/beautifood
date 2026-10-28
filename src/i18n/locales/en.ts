@@ -519,7 +519,7 @@ const en = {
     servedLater: "{dish} is on our {menu}, served {when}.",
     withOptions: "{dish} with {options}",
     noCharges: "No service charge or tax here: the menu price is what you pay.",
-    chargesAdded: "We add {service} service charge and {tax} tax to the bill.",
+    chargesAdded: "Menu prices are before charges: {service} service charge and {tax} tax are added to the bill.",
     taxIncluded: "Prices already include {tax} tax{service}.",
     serviceToo: ", and we add {service} service charge",
     yourPart: "Your part:",
