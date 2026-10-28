@@ -962,6 +962,13 @@ describe("bills: what's left out, how many, each share, and the till's charges",
     expect(ask("how much for two nasi lemak?", [])).toMatch(/2 × Nasi Lemak.*Total RM37\.80/);
     expect(ask("we are 3, one nasi lemak each, how much?", [])).toMatch(/3 × Nasi Lemak.*Total RM56\.70/);
   });
+  it("reads 'the food' as the food only, and a count after the name", () => {
+    expect(ask("how much is the food?")).toMatch(/Total RM31\.90/);
+    expect(ask("nasi lemak 2, teh tarik 3, total?", [])).toMatch(/2 × Nasi Lemak.*3 × Teh Tarik.*Total RM54\.30/);
+    expect(ask("2 nasi lemak, 1 laksa and 3 teh tarik. Total?", [])).toMatch(/Total RM69\.80/);
+    expect(ask("satay 6 sticks and a laksa, how much?", [])).toMatch(/Total RM28\.50/);
+    expect(ask("another teh tarik, total?")).toMatch(/2 × Teh Tarik.*Total RM42\.90/);
+  });
   it("gives each person's share when the party is said", () => {
     expect(ask("we're 3 people, how much per person?")).toMatch(/Split 3 ways, that's RM12\.47 each/);
   });

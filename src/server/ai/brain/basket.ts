@@ -162,12 +162,27 @@ export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
       let k = at - 1;
       while (k > 0 && /^(x|of|the|plates?|bowls?|cups?|glasses|glass|pieces?|pcs|orders?|servings?|portions?|sets?|pinggan|mangkuk|cawan|gelas|biji|ketul)$/.test(toks[k])) k--;
       n = NUMBER[toks[k]] ?? (/^\d$/.test(toks[k] ?? "") ? Number(toks[k]) : 1);
+      // ("nasi lemak 2, teh tarik 3": the "2," closes the nasi lemak, it isn't the teh tarik's count)
+      if (n > 1 && k > 0 && /^\d$/.test(toks[k]) && new RegExp(`[a-z)]\\s+${toks[k]}\\s*[,;]`, "i").test(text)) n = 1;
     }
     // "nasi lemak x2", "kopi ×3", "teh tarik times two"
     const end = at >= 0 ? at + words.length : -1;
     const after = end >= 0 ? normalize(text).split(" ").slice(end, end + 2).join(" ") : "";
     const times = after.match(/^(?:x|×|times)\s*(\d|two|three|four|five|dua|tiga)\b|^x(\d)\b/);
     if (times) n = NUMBER[times[1] ?? times[2]] ?? Number(times[1] ?? times[2]);
+    // "nasi lemak 2, teh tarik 3", "kopi two.": a count right after the name, then a comma, "and" or the
+    // end (not the next item's own count: "2 tofu poke, 1 tuna poke", "a carbonara and two cappuccinos")
+    else if (n === 1 && at >= 0) {
+      let j = at;
+      while (j < toks.length && words.some((w) => singular(toks[j]) === singular(w))) j++;
+      const next = toks[j] ?? "";
+      const count = NUMBER[next] ?? (/^\d$/.test(next) ? Number(next) : undefined);
+      const closes = j + 1 >= toks.length || /^(and|dan|n|plus|please|pls|total|how|berapa)$/.test(toks[j + 1]);
+      const commaAfter = new RegExp(`\\b${next}\\s*(,|;|\\.|\\?|$)`, "i").test(text);
+      if (count && count > 1 && !normalize(d.name).split(" ").includes(next) && (closes || commaAfter)) n = count;
+    }
+    // "another teh tarik", "satu lagi kopi": one more (added to what's on the order)
+    if (at > 0 && /^(another|lagi)$/.test(toks[at - 1])) n = 1;
     for (const zh of Object.values(d.translations ?? {}).map((x) => x?.name).filter(Boolean) as string[]) {
       const m = text.match(new RegExp(`([一两二三四五\\d])[个份杯碗碟盘]?${zh.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
       if (m) n = ZH_NUMBER[m[1]] ?? Number(m[1]);

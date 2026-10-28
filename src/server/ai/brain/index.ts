@@ -707,7 +707,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // "one nasi lemak each" for three: three of it
     if (oneEach && party && party >= 2) for (const o of bill) if (mentioned.includes(o.item) && o.count === 1) o.count = party;
     // "just the food", "without the drinks", "minus the satay", "not counting the kopi": what they leave out
-    const cut = /\b(just|only) (the )?(food|foods|makanan|mains?)\b|\bfood only\b|\b(without|minus|excluding|exclude|except|not counting|not including|tanpa|kecuali|tak kira)( the| all the)? (drinks?|beverages?|minuman|air)\b/.test(nt1) || /不算饮料|不含饮料|只算吃的|饮料不算/.test(u.text);
+    const cut = /\b(just|only) (the )?(food|foods|makanan|mains?)\b|\bfood only\b|\b(how much|berapa|total|price)\b.{0,20}\b(the|for the|for) food\b|\bfood total\b|\b(for|of) the food\b|\b(without|minus|excluding|exclude|except|not counting|not including|tanpa|kecuali|tak kira)( the| all the)? (drinks?|beverages?|minuman|air)\b/.test(nt1) || /不算饮料|不含饮料|只算吃的|饮料不算/.test(u.text);
     if (cut) for (let k = bill.length - 1; k >= 0; k--) if (isDrink(bill[k].item)) bill.splice(k, 1);
     // (an item on the bill by a word of its name after the cue: "minus the satay", "without the kopi")
     const after = [...nt1.matchAll(/\b(?:without|minus|excluding|exclude|except|not counting|not including|less|tanpa|kecuali|tak kira)(?: the| my| our)? (\w+)/g)].map((m) => m[1]);
