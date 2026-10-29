@@ -238,7 +238,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
   ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
   sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], susu: ["milk"],
-  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
+  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
 };
 
@@ -336,7 +336,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     if (!name.length) return;
     // two of its words typed as one ("kungpao" for Kung Pao): one word, as rare as the rarer
     const df = (w: string) => ix.df.get(w) ?? Math.min(...name.filter((x) => w.startsWith(x) || w.endsWith(x)).map((x) => ix.df.get(x) ?? 1), 1);
-    for (let k = 0; k + 1 < name.length; k++) if (toks.includes(name[k] + name[k + 1])) name = [...name.slice(0, k), name[k] + name[k + 1], ...name.slice(k + 2)];
+    for (let k = 0; k + 1 < name.length; k++) if (toks.some((t) => t === name[k] + name[k + 1] || (t.length >= 6 && same(t, name[k] + name[k + 1])))) name = [...name.slice(0, k), toks.find((t) => t === name[k] + name[k + 1] || (t.length >= 6 && same(t, name[k] + name[k + 1])))!, ...name.slice(k + 2)];
     const covered: number[] = [];
     let weight = 0;
     let total = 0;
@@ -937,7 +937,7 @@ export function read(items: Dish[], asked: string): Reading {
   const refersBack = /\b(those|these|them|that one|this one|the first|the second|the last one|it|yang tu|yang itu|yang ini|yang mana|out of)\b/.test(restText) || /那个|这个|那些|这些|它|哪个|哪一个/.test(restRaw);
 
   const ORD: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, fourth: 3, "4th": 3, last: -1, pertama: 0, kedua: 1, ketiga: 2, keempat: 3, terakhir: -1 };
-  const ordWord = restText.match(/\b(?:the|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|4th|last|pertama|kedua|ketiga|keempat|terakhir)\b/);
+  const ordWord = restText.match(/\b(?:the|that|this|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|4th|last|pertama|kedua|ketiga|keempat|terakhir)\b/);
   const ordZh = restRaw.match(/第([一二三四1-4])|最后一/);
   const ordinal = ordWord ? ORD[ordWord[1]] : ordZh ? (ordZh[1] ? "一二三四".indexOf(ordZh[1]) + 1 || Number(ordZh[1]) : 0) - 1 : null;
   const choosing = /\b(any \w+ ones?|which \w+ ones?|which one|which ones|which of (those|these|them)|any of (those|these|them)|out of (those|these)|yang mana|yg mana|mana satu|mana yang|mana yg)\b/.test(restText) || /哪个|哪一|哪些|其中/.test(restRaw);

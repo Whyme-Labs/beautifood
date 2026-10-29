@@ -7,7 +7,8 @@ import type { ModifierOption } from "../../../shared/types";
 import { optionsSaid, optionWords } from "./modifiers";
 import type { Dish, Spot } from "./understand";
 
-export type Line = { dish: Dish; count: number; options: ModifierOption[] };
+/** `ref`: named as one already there ("the lime juice", "my kopi"), with no count: not more of it. */
+export type Line = { dish: Dish; count: number; options: ModifierOption[]; ref?: boolean };
 
 const NUM: Record<string, number> = {
   a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, fifteen: 15, twenty: 20,
@@ -91,7 +92,10 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     const follows = !!host && whole && !counted && !cued && optionsSaid(text, host.dish, true).add.length > 0 && !/[\u3400-\u9fff]/.test(text);
     if (counted || (whole && !cued && !follows)) continue;
     const hosts = [...spots.filter((y) => y !== x && y.from >= 0 && y.from < x.from).map((y) => y.dish), ...(cued ? spots.filter((y) => y !== x && y.from > x.to).map((y) => y.dish) : []), ...others].filter((d) => d.id !== x.dish.id && d.modifiers?.length);
-    if (hosts.some((d) => optionsSaid(text, d, true).add.length)) out.add(x);
+    // (with the words just before it: "extra chili sauce" asks for the Extra chilli sauce)
+    const lead = [x.from - 2, x.from - 1].filter((i) => i >= 0 && !spots.some((y) => y !== x && y.covered.includes(i))).map((i) => toks[i]);
+    const said = phrase([...lead, ...words]);
+    if (hosts.some((d) => optionsSaid(said, d, true).add.length)) out.add(x);
   }
   return out;
 }
@@ -170,7 +174,8 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
         }
         // "another teh", "satu lagi": one more
         const options = optionsSaid(phrase([...toks.slice(from, s.from), ...toks.slice(s.to, to)]), s.dish).add;
-        const line = { dish: s.dish, count: count ?? 1, options, clause: c, counted: count !== null };
+        const ref = count === null && /^(the|my|our|that|this|tu|itu|ni)$/.test(toks[s.from - 1] ?? "") && !/^(add|another|more|plus|tambah|order|get|have)$/.test(toks[s.from - 2] ?? "");
+        const line = { dish: s.dish, count: count ?? 1, options, clause: c, counted: count !== null, ref };
         lines.push(line);
         made.push(line);
       });
@@ -208,7 +213,7 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
     const key = (x: Line) => `${x.dish.id}|${x.options.map((o) => o.name).sort().join(",")}`;
     const had = out.find((o) => key(o) === key(l));
     if (had) had.count += l.count;
-    else out.push({ dish: l.dish, count: l.count, options: l.options });
+    else out.push({ dish: l.dish, count: l.count, options: l.options, ref: l.ref });
   }
   return out;
 }

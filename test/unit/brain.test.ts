@@ -1033,7 +1033,7 @@ describe("the branch's halal standing", () => {
     expect(porkFree).toMatch(/pork- and lard-free, but it isn't halal-certified/);
     expect(porkFree).toMatch(/Drunken Chicken \(shaoxing\)/);
     expect(porkFree).not.toMatch(/Ayam Goreng \(/);
-    expect(ask(at("none"), "I'm Muslim, is this place halal?").answer).toMatch(/Our staff can tell you about the kitchen's halal certification/);
+    expect(ask(at("none"), "I'm Muslim, is this place halal?").answer).toMatch(/This branch isn't halal-certified, and some dishes have pork or alcohol/);
     expect(ask(at("certified", { standing: "expired" }), "I'm Muslim, is this place halal?").answer).toMatch(/certificate has expired/);
   });
   it("answers a dish's halal question from the branch's standing", () => {
@@ -1144,7 +1144,7 @@ describe("bills and add-ons in the guest's own words (v8 dev)", () => {
   it("reads the cheaper one, the party said earlier and who has what", () => {
     expect(ask("compare the 6 piece set and the 8 piece set", "ok 2 of the cheaper one, how much?")).toMatch(/2 × House 6-Piece Set.*Total RM24\.00/);
     expect(ask("we're 2. 10 satay ayam and 2 lime juice", "split equally?")).toMatch(/RM9\.50 each/);
-    expect(ask("me the 8 piece set, Ali the 6 piece set with lime juice", "how much does each person pay?")).toMatch(/You: House 8-Piece Set = RM16\.00.*Ali: House 6-Piece Set \+ Lime Juice = RM15\.00/);
+    expect(ask("me the 8 piece set, Ali the 6 piece set with lime juice", "how much does each person pay?")).toMatch(/You: House 8-Piece Set, total RM16\.00.*Ali: House 6-Piece Set \+ Lime Juice, total RM15\.00/);
     expect(ask("Got service charge ah?")).toMatch(/no service charge/);
   });
 });

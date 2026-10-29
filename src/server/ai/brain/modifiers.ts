@@ -26,7 +26,7 @@ const ALSO: Record<string, string[]> = {
   granola: ["granola"], flakes: ["flake"], honey: ["madu"], nuts: ["nut", "kacang"], cacao: ["cocoa", "cacao"],
   avocado: ["avo", "alpukat"], poached: ["poached"], salmon: ["salmon"], feta: ["feta"],
   kaya: ["kaya"], sambal: ["sambal"], rendang: ["rendang"], sotong: ["squid", "sotong"], udang: ["prawn", "prawns", "shrimp"],
-  ayam: ["chicken"], goreng: ["fried"], lime: ["limau", "lemon"], plum: ["asam boi", "assam boi", "sour plum", "plum"],
+  ayam: ["chicken"], goreng: ["fried"], lime: ["limau", "lemon"], plum: ["asam boi", "assam boi", "sour plum", "plum"], sour: ["asam", "assam", "masam"],
   peanut: ["pb", "kacang"], milo: ["milo"], noodles: ["noodle", "extra mee", "tambah mee", "more mee", "mee lagi"], peanuts: ["peanut", "kacang"], tofu: ["tauhu", "taufu"],
   strawberries: ["strawberry"], chocolate: ["choc", "coklat", "chocolate"], mayo: ["mayonnaise"],
   seaweed: ["nori"], spicy: ["spicy", "pedas", "hot"], yuja: ["yuzu", "citron"], cola: ["coke", "cola"], cider: ["cider", "chilsung"],
@@ -132,7 +132,7 @@ export function optionsSaid(text: string, dish: WithOptions, free = false): { ad
   const offWords = new Set([...t.matchAll(OFF)].map((m) => m[2]));
   const offZh = [...raw.matchAll(OFF_ZH)].map((m) => m[1]);
   const words = new Set(t.split(" ").filter((w) => !offWords.has(w)));
-  const joined = ` ${[...words].join(" ")} `;
+  let joined = ` ${[...words].join(" ")} `;
   const all = (dish.modifiers ?? []).flatMap((g) => g.options);
   // a word two options share ("telur" of Telur Mata and Telur Rebus) doesn't say which
   const count = new Map<string, number>();
@@ -140,14 +140,24 @@ export function optionsSaid(text: string, dish: WithOptions, free = false): { ad
   for (const o of all) if (!phraseOf(o)) for (const k of keyWords(o)) count.set(k, (count.get(k) ?? 0) + 1);
   const add: ModifierOption[] = [];
   const off: ModifierOption[] = [];
-  const zhLeft = raw.replace(OFF_ZH, "");
+  let zhLeft = raw.replace(OFF_ZH, "");
+  // an option said as its phrase ("less chilli", "kurang manis", "走冰") takes those words: "less
+  // chilli" isn't also the Chilli Flakes
+  let rest = ` ${t} `;
+  for (const o of all) {
+    const phrase = phraseOf(o);
+    if (!phrase) continue;
+    const g = new RegExp(phrase.source, "g");
+    if (!g.test(rest) && !new RegExp(phrase.source, "g").test(zhLeft)) continue;
+    if (free || o.price > 0) add.push(o);
+    rest = rest.replace(new RegExp(phrase.source, "g"), " ");
+    zhLeft = zhLeft.replace(new RegExp(phrase.source, "g"), " ");
+  }
+  for (const w of [...words]) if (!rest.includes(` ${w} `)) words.delete(w);
+  joined = ` ${[...words].join(" ")} `;
   for (const o of all) {
     if (!free && !(o.price > 0)) continue;
-    const phrase = phraseOf(o);
-    if (phrase) {
-      if (phrase.test(` ${t} `) || phrase.test(raw)) add.push(o);
-      continue;
-    }
+    if (phraseOf(o)) continue;
     const ks = keyWords(o);
     if (!ks.length) continue;
     // ("12 pcs", "12 inch": its number, said as a count of pieces or a size)
@@ -158,6 +168,13 @@ export function optionsSaid(text: string, dish: WithOptions, free = false): { ad
     }
     const own = ks.filter((k) => (count.get(k) ?? 0) < 2);
     const need = own.length ? own : ks;
+    // ("those two noodles" isn't Extra Noodles: more of something is asked for as more)
+    if (/^(extra|add|more|double|tambah|lebih)\b/i.test(o.name) && !/加|多/.test(raw)) {
+      const toks = t.split(" ");
+      const at = toks.findIndex((x) => need.some((k) => x === k || x === `${k}s` || x === k.replace(/(es|s)$/, "") || (ALSO[k] ?? []).includes(x)));
+      const near = at >= 0 ? toks.slice(Math.max(0, at - 3), at) : toks;
+      if (!near.some((x) => /^(extra|add|adding|added|more|double|tambah|lebih|another|plus|with|w|dinosaur|godzilla)$/.test(x)) && !/\b(dinosaur|godzilla)\b/.test(t)) continue;
+    }
     // ("almond butter" isn't the Almond Milk: its word said, then another food's)
     const named = normalize(o.name.replace(/[()]/g, " ")).split(" ");
     if (named.length > ks.length && need.length === 1 && !ALSO_ZH[need[0]]?.test(raw)) {
