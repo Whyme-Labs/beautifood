@@ -1,0 +1,889 @@
+{
+  "soldOut": [
+    "Paru Goreng",
+    "Sambal Kerang"
+  ],
+  "menus": [
+    {
+      "name": "Pagi",
+      "dishes": [
+        "Roti Bakar Kaya",
+        "Telur Separuh Masak",
+        "Bihun Goreng",
+        "Lontong"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "06:30",
+          "to": "11:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Nasi Lemak Biasa": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Tambah Lauk",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Ayam Goreng",
+            "price": 450
+          },
+          {
+            "name": "Rendang Daging",
+            "price": 550
+          },
+          {
+            "name": "Sambal Sotong",
+            "price": 500
+          },
+          {
+            "name": "Sambal Udang",
+            "price": 600
+          },
+          {
+            "name": "Paru Goreng",
+            "price": 400
+          },
+          {
+            "name": "Sambal Kerang",
+            "price": 450
+          },
+          {
+            "name": "Telur Mata",
+            "price": 150
+          },
+          {
+            "name": "Telur Rebus",
+            "price": 120
+          }
+        ]
+      },
+      {
+        "name": "Pilihan",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Sambal Lebih",
+            "price": 50
+          },
+          {
+            "name": "Sambal Asing",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Kacang",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Ikan Bilis",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Nasi Lemak Ayam Goreng": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Tambah Lauk",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Ayam Goreng",
+            "price": 450
+          },
+          {
+            "name": "Rendang Daging",
+            "price": 550
+          },
+          {
+            "name": "Sambal Sotong",
+            "price": 500
+          },
+          {
+            "name": "Sambal Udang",
+            "price": 600
+          },
+          {
+            "name": "Paru Goreng",
+            "price": 400
+          },
+          {
+            "name": "Sambal Kerang",
+            "price": 450
+          },
+          {
+            "name": "Telur Mata",
+            "price": 150
+          },
+          {
+            "name": "Telur Rebus",
+            "price": 120
+          }
+        ]
+      },
+      {
+        "name": "Pilihan",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Sambal Lebih",
+            "price": 50
+          },
+          {
+            "name": "Sambal Asing",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Kacang",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Ikan Bilis",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Nasi Lemak Rendang Daging": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Tambah Lauk",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Ayam Goreng",
+            "price": 450
+          },
+          {
+            "name": "Rendang Daging",
+            "price": 550
+          },
+          {
+            "name": "Sambal Sotong",
+            "price": 500
+          },
+          {
+            "name": "Sambal Udang",
+            "price": 600
+          },
+          {
+            "name": "Paru Goreng",
+            "price": 400
+          },
+          {
+            "name": "Sambal Kerang",
+            "price": 450
+          },
+          {
+            "name": "Telur Mata",
+            "price": 150
+          },
+          {
+            "name": "Telur Rebus",
+            "price": 120
+          }
+        ]
+      },
+      {
+        "name": "Pilihan",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Sambal Lebih",
+            "price": 50
+          },
+          {
+            "name": "Sambal Asing",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Kacang",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Ikan Bilis",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Nasi Lemak Sotong": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Tambah Lauk",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Ayam Goreng",
+            "price": 450
+          },
+          {
+            "name": "Rendang Daging",
+            "price": 550
+          },
+          {
+            "name": "Sambal Sotong",
+            "price": 500
+          },
+          {
+            "name": "Sambal Udang",
+            "price": 600
+          },
+          {
+            "name": "Paru Goreng",
+            "price": 400
+          },
+          {
+            "name": "Sambal Kerang",
+            "price": 450
+          },
+          {
+            "name": "Telur Mata",
+            "price": 150
+          },
+          {
+            "name": "Telur Rebus",
+            "price": 120
+          }
+        ]
+      },
+      {
+        "name": "Pilihan",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Sambal Lebih",
+            "price": 50
+          },
+          {
+            "name": "Sambal Asing",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Kacang",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Ikan Bilis",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Nasi Lemak Special": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Tambah Lauk",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Ayam Goreng",
+            "price": 450
+          },
+          {
+            "name": "Rendang Daging",
+            "price": 550
+          },
+          {
+            "name": "Sambal Sotong",
+            "price": 500
+          },
+          {
+            "name": "Sambal Udang",
+            "price": 600
+          },
+          {
+            "name": "Paru Goreng",
+            "price": 400
+          },
+          {
+            "name": "Sambal Kerang",
+            "price": 450
+          },
+          {
+            "name": "Telur Mata",
+            "price": 150
+          },
+          {
+            "name": "Telur Rebus",
+            "price": 120
+          }
+        ]
+      },
+      {
+        "name": "Pilihan",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Sambal Lebih",
+            "price": 50
+          },
+          {
+            "name": "Sambal Asing",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Kacang",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Ikan Bilis",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Nasi Lemak Vegetarian": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Tambah Lauk",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Telur Mata",
+            "price": 150
+          },
+          {
+            "name": "Telur Rebus",
+            "price": 120
+          }
+        ]
+      },
+      {
+        "name": "Pilihan",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Sambal Lebih",
+            "price": 50
+          },
+          {
+            "name": "Sambal Asing",
+            "price": 0
+          },
+          {
+            "name": "Tanpa Kacang",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Bihun Goreng": [
+      {
+        "name": "Tambah",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Telur Mata",
+            "price": 150
+          },
+          {
+            "name": "Ayam Goreng",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Lontong": [
+      {
+        "name": "Tambah",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Telur Rebus",
+            "price": 120
+          },
+          {
+            "name": "Rendang Daging",
+            "price": 550
+          }
+        ]
+      }
+    ],
+    "Roti Bakar Kaya": [
+      {
+        "name": "Pilihan",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Lebih Kaya",
+            "price": 50
+          },
+          {
+            "name": "Tanpa Mentega",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Kemanisan",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang Manis",
+            "price": 0
+          },
+          {
+            "name": "Lebih Manis",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Kemanisan",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang Manis",
+            "price": 0
+          },
+          {
+            "name": "Lebih Manis",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Milo": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Kemanisan",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang Manis",
+            "price": 0
+          },
+          {
+            "name": "Lebih Manis",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 120
+          }
+        ]
+      }
+    ],
+    "Sirap Bandung": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Kemanisan",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang Manis",
+            "price": 0
+          },
+          {
+            "name": "Lebih Manis",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Teh O": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Kemanisan",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang Manis",
+            "price": 0
+          },
+          {
+            "name": "Kosong",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Kemanisan",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang Manis",
+            "price": 0
+          },
+          {
+            "name": "Kosong",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Air Limau": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 30
+          }
+        ]
+      },
+      {
+        "name": "Kemanisan",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang Manis",
+            "price": 0
+          },
+          {
+            "name": "Kosong",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Air Kosong": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Suam",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 20
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 0,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "certified",
+    "certifier": "JAKIM",
+    "certNo": "JAKIM-1100-08/2025-0417",
+    "validUntil": "2027-12-31"
+  }
+}

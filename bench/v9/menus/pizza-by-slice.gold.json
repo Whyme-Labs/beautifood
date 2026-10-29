@@ -1,0 +1,343 @@
+{
+  "Margherita": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk. Crust and size are modifiers."
+  },
+  "Beef Pepperoni Pizza": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk. Beef pepperoni, no pork. Stated not spicy."
+  },
+  "BBQ Chicken Pizza": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk. BBQ sauce ingredients stated, no soy or Worcestershire."
+  },
+  "Hawaiian Chicken Pizza": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk. Chicken ham, no pork."
+  },
+  "Veggie Supreme": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk."
+  },
+  "Spicy Sambal Chicken Pizza": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Wheat dough; mozzarella = milk. Belacan in the sambal base = crustaceans. Very spicy = 3."
+  },
+  "Four Cheese Pizza": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk. Merchant's vegetarian tag kept (rennet not stated, v4 open question 2)."
+  },
+  "Seafood Pizza": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "crustaceans",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk. Prawns = crustaceans; squid = molluscs."
+  },
+  "Vegan Garden Pizza": {
+    "allergens": [
+      "gluten",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; cashew cheese = tree nuts; no dairy."
+  },
+  "Margherita Slice": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk. Slice deal RM1.00 off 15:00-18:00."
+  },
+  "Beef Pepperoni Slice": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk. Beef pepperoni. Slice deal RM1.00 off 15:00-18:00."
+  },
+  "BBQ Chicken Slice": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat dough; mozzarella = milk. Slice deal RM1.00 off 15:00-18:00."
+  },
+  "Extra Cheese": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Mozzarella = milk. Same price as the Extra Toppings add-on."
+  },
+  "Mushrooms": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Mushrooms only."
+  },
+  "Beef Pepperoni": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Beef pepperoni, no allergen stated."
+  },
+  "Chicken": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Roast chicken."
+  },
+  "Pineapple": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pineapple."
+  },
+  "Jalapeños": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Spicy = 2. Sold out in extra.json."
+  },
+  "Garlic Bread": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Baguette = gluten; butter = milk."
+  },
+  "Chicken Wings": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Glaze ingredients stated, no allergen. Default BBQ glaze is not spicy; the hot glaze is a free modifier."
+  },
+  "Potato Wedges": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sour cream = milk. No flour coating stated."
+  },
+  "Mushroom Soup": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Chicken stock, so not vegetarian. Butter and cream = milk; wheat flour and bread roll = gluten."
+  },
+  "Caesar Salad": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg",
+      "fish",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Croutons = gluten; parmesan = milk; egg yolk; anchovy = fish (not vegetarian); mustard."
+  },
+  "Spaghetti Bolognese": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat pasta; parmesan = milk; celery in the ragu. Dried spaghetti, no egg stated."
+  },
+  "Chicken Carbonara": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat pasta; egg yolk; cream and parmesan = milk. Smoked chicken, no pork."
+  },
+  "Aglio Olio Prawns": {
+    "allergens": [
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat pasta; prawns. Spicy = 2. No cheese stated."
+  },
+  "Vegan Arrabbiata": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat pasta, no egg, no cheese. Spicy = 2."
+  },
+  "Nutella Banana Pizza": {
+    "allergens": [
+      "gluten",
+      "tree_nuts",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat crust; hazelnuts = tree nuts; milk; soy lecithin."
+  },
+  "Chocolate Lava Cake": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour; eggs; butter = milk."
+  },
+  "Coca-Cola": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soft drink."
+  },
+  "Sprite": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soft drink."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea, lemon, sugar."
+  },
+  "Mineral Water": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Water."
+  }
+}

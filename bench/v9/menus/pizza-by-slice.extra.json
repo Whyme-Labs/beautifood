@@ -1,0 +1,1076 @@
+{
+  "soldOut": [
+    "Jalapeños"
+  ],
+  "rules": [
+    {
+      "name": "Slice deal",
+      "kind": "amount",
+      "value": 100,
+      "categories": [
+        "SLICES"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "15:00",
+          "to": "18:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Margherita": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "9 inch",
+            "price": 0
+          },
+          {
+            "name": "12 inch",
+            "price": 1000
+          }
+        ]
+      },
+      {
+        "name": "Crust",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Classic",
+            "price": 0
+          },
+          {
+            "name": "Thin Crust",
+            "price": 0
+          },
+          {
+            "name": "Cheese-Stuffed Crust",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra Cheese",
+            "price": 300
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Beef Pepperoni",
+            "price": 400
+          },
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Pineapple",
+            "price": 200
+          },
+          {
+            "name": "Jalapeños",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Beef Pepperoni Pizza": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "9 inch",
+            "price": 0
+          },
+          {
+            "name": "12 inch",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Crust",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Classic",
+            "price": 0
+          },
+          {
+            "name": "Thin Crust",
+            "price": 0
+          },
+          {
+            "name": "Cheese-Stuffed Crust",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra Cheese",
+            "price": 300
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Beef Pepperoni",
+            "price": 400
+          },
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Pineapple",
+            "price": 200
+          },
+          {
+            "name": "Jalapeños",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "BBQ Chicken Pizza": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "9 inch",
+            "price": 0
+          },
+          {
+            "name": "12 inch",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Crust",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Classic",
+            "price": 0
+          },
+          {
+            "name": "Thin Crust",
+            "price": 0
+          },
+          {
+            "name": "Cheese-Stuffed Crust",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra Cheese",
+            "price": 300
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Beef Pepperoni",
+            "price": 400
+          },
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Pineapple",
+            "price": 200
+          },
+          {
+            "name": "Jalapeños",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Hawaiian Chicken Pizza": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "9 inch",
+            "price": 0
+          },
+          {
+            "name": "12 inch",
+            "price": 1100
+          }
+        ]
+      },
+      {
+        "name": "Crust",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Classic",
+            "price": 0
+          },
+          {
+            "name": "Thin Crust",
+            "price": 0
+          },
+          {
+            "name": "Cheese-Stuffed Crust",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra Cheese",
+            "price": 300
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Beef Pepperoni",
+            "price": 400
+          },
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Pineapple",
+            "price": 200
+          },
+          {
+            "name": "Jalapeños",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Veggie Supreme": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "9 inch",
+            "price": 0
+          },
+          {
+            "name": "12 inch",
+            "price": 1100
+          }
+        ]
+      },
+      {
+        "name": "Crust",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Classic",
+            "price": 0
+          },
+          {
+            "name": "Thin Crust",
+            "price": 0
+          },
+          {
+            "name": "Cheese-Stuffed Crust",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra Cheese",
+            "price": 300
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Beef Pepperoni",
+            "price": 400
+          },
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Pineapple",
+            "price": 200
+          },
+          {
+            "name": "Jalapeños",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Spicy Sambal Chicken Pizza": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "9 inch",
+            "price": 0
+          },
+          {
+            "name": "12 inch",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Crust",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Classic",
+            "price": 0
+          },
+          {
+            "name": "Thin Crust",
+            "price": 0
+          },
+          {
+            "name": "Cheese-Stuffed Crust",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra Cheese",
+            "price": 300
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Beef Pepperoni",
+            "price": 400
+          },
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Pineapple",
+            "price": 200
+          },
+          {
+            "name": "Jalapeños",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Four Cheese Pizza": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "9 inch",
+            "price": 0
+          },
+          {
+            "name": "12 inch",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Crust",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Classic",
+            "price": 0
+          },
+          {
+            "name": "Thin Crust",
+            "price": 0
+          },
+          {
+            "name": "Cheese-Stuffed Crust",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra Cheese",
+            "price": 300
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Beef Pepperoni",
+            "price": 400
+          },
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Pineapple",
+            "price": 200
+          },
+          {
+            "name": "Jalapeños",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Seafood Pizza": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "9 inch",
+            "price": 0
+          },
+          {
+            "name": "12 inch",
+            "price": 1400
+          }
+        ]
+      },
+      {
+        "name": "Crust",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Classic",
+            "price": 0
+          },
+          {
+            "name": "Thin Crust",
+            "price": 0
+          },
+          {
+            "name": "Cheese-Stuffed Crust",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra Cheese",
+            "price": 300
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Beef Pepperoni",
+            "price": 400
+          },
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Pineapple",
+            "price": 200
+          },
+          {
+            "name": "Jalapeños",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Vegan Garden Pizza": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "9 inch",
+            "price": 0
+          },
+          {
+            "name": "12 inch",
+            "price": 1100
+          }
+        ]
+      },
+      {
+        "name": "Crust",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Classic",
+            "price": 0
+          },
+          {
+            "name": "Thin Crust",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extra Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra Vegan Cheese",
+            "price": 350
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Pineapple",
+            "price": 200
+          },
+          {
+            "name": "Jalapeños",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Margherita Slice": [
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Garlic Mayo Dip",
+            "price": 150
+          },
+          {
+            "name": "Ranch Dip",
+            "price": 150
+          },
+          {
+            "name": "Chilli Flakes",
+            "price": 0
+          },
+          {
+            "name": "Parmesan Sprinkle",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Beef Pepperoni Slice": [
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Garlic Mayo Dip",
+            "price": 150
+          },
+          {
+            "name": "Ranch Dip",
+            "price": 150
+          },
+          {
+            "name": "Chilli Flakes",
+            "price": 0
+          },
+          {
+            "name": "Parmesan Sprinkle",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "BBQ Chicken Slice": [
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Garlic Mayo Dip",
+            "price": 150
+          },
+          {
+            "name": "Ranch Dip",
+            "price": 150
+          },
+          {
+            "name": "Chilli Flakes",
+            "price": 0
+          },
+          {
+            "name": "Parmesan Sprinkle",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Garlic Bread": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Add Cheese",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Chicken Wings": [
+      {
+        "name": "Pieces",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pcs",
+            "price": 0
+          },
+          {
+            "name": "10 pcs",
+            "price": 900
+          }
+        ]
+      },
+      {
+        "name": "Glaze",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "BBQ",
+            "price": 0
+          },
+          {
+            "name": "Hot & Spicy",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Potato Wedges": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Cheese Sauce",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Caesar Salad": [
+      {
+        "name": "Add Protein",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Prawns",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Spaghetti Bolognese": [
+      {
+        "name": "Pasta",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Spaghetti",
+            "price": 0
+          },
+          {
+            "name": "Penne",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Prawns",
+            "price": 600
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Extra Parmesan",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Chicken Carbonara": [
+      {
+        "name": "Pasta",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Spaghetti",
+            "price": 0
+          },
+          {
+            "name": "Penne",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Prawns",
+            "price": 600
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Extra Parmesan",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Aglio Olio Prawns": [
+      {
+        "name": "Pasta",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Spaghetti",
+            "price": 0
+          },
+          {
+            "name": "Penne",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Chicken",
+            "price": 400
+          },
+          {
+            "name": "Prawns",
+            "price": 600
+          },
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Extra Parmesan",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Vegan Arrabbiata": [
+      {
+        "name": "Pasta",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Penne",
+            "price": 0
+          },
+          {
+            "name": "Spaghetti",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Mushrooms",
+            "price": 250
+          },
+          {
+            "name": "Chicken",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Nutella Banana Pizza": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Vanilla Ice Cream",
+            "price": 300
+          },
+          {
+            "name": "Extra Banana",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Chocolate Lava Cake": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Vanilla Ice Cream",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Coca-Cola": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sprite": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Iced Lemon Tea": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "muslim_friendly"
+  }
+}
