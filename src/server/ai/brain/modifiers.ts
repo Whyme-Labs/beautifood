@@ -1,7 +1,7 @@
 // The add-ons and sizes a guest asks for in their own words ("both iced", "with oat milk", "roti
 // canai tambah telur", "large", "走冰", "12 pcs"), read against each dish's own options. Only priced
 // options matter to a bill; a free one ("hot", "less sweet") changes nothing.
-import { normalize } from "../../../shared/brain/text";
+import { editDistance, normalize } from "../../../shared/brain/text";
 import type { ModifierOption } from "../../../shared/types";
 
 type WithOptions = { name: string; translations?: Record<string, { name?: string } | undefined>; modifiers?: { name: string; min?: number; max?: number; options: ModifierOption[] }[] };
@@ -22,12 +22,12 @@ const ALSO: Record<string, string[]> = {
   cheese: ["keju", "cheesy"], ramyeon: ["ramen", "ramyun", "ramyon", "noodle", "noodles", "maggi"], cake: ["cake"],
   fries: ["fry", "kentang", "kentang goreng", "chips"], soft: ["soda", "air", "minuman", "soft drink", "can drink"], drink: ["air", "minuman", "soda"], coleslaw: ["slaw"],
   mushrooms: ["mushroom", "cendawan"], pineapple: ["nanas"], pepperoni: ["pepperoni"], parmesan: ["parmesan"],
-  cream: ["ice cream", "aiskrim", "icecream"], whey: ["whey", "protein"], plant: ["vegan protein"], chia: ["chia"],
+  cream: ["ice cream", "aiskrim", "icecream"], whey: ["whey"], plant: ["vegan protein"], chia: ["chia"],
   granola: ["granola"], flakes: ["flake"], honey: ["madu"], nuts: ["nut", "kacang"], cacao: ["cocoa", "cacao"],
   avocado: ["avo", "alpukat"], poached: ["poached"], salmon: ["salmon"], feta: ["feta"],
   kaya: ["kaya"], sambal: ["sambal"], rendang: ["rendang"], sotong: ["squid", "sotong"], udang: ["prawn", "prawns", "shrimp"],
   ayam: ["chicken"], goreng: ["fried"], lime: ["limau", "lemon"], plum: ["asam boi", "assam boi", "sour plum", "plum"], sour: ["asam", "assam", "masam"],
-  peanut: ["pb", "kacang"], milo: ["milo"], noodles: ["noodle", "extra mee", "tambah mee", "more mee", "mee lagi"], peanuts: ["peanut", "kacang"], tofu: ["tauhu", "taufu"],
+  peanut: ["pb", "kacang", "nut"], milo: ["milo"], noodles: ["noodle", "extra mee", "tambah mee", "more mee", "mee lagi"], peanuts: ["peanut", "kacang"], tofu: ["tauhu", "taufu"],
   strawberries: ["strawberry"], chocolate: ["choc", "coklat", "chocolate"], mayo: ["mayonnaise"],
   seaweed: ["nori"], spicy: ["spicy", "pedas", "hot"], yuja: ["yuzu", "citron"], cola: ["coke", "cola"], cider: ["cider", "chilsung"],
   bucket: ["bucket", "baldi"], crust: ["crust"], thin: ["thin"], stuffed: ["stuffed", "cheese crust"],
@@ -38,7 +38,7 @@ const ALSO_ZH: Record<string, RegExp> = {
   ais: /冰|凍|冻/, iced: /冰|凍|冻/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)/, suam: /温/,
   besar: /大杯|大份|加大|大的|大碗|大包|大号/, large: /大杯|大份|加大|大的|大碗|大包|大号/,
   telur: /加蛋|蛋/, egg: /加蛋|鸡蛋|蛋/, mata: /荷包蛋|煎蛋|太阳蛋/, rebus: /水煮蛋|白煮蛋|煮蛋/, bawang: /洋葱/, onion: /洋葱/,
-  oat: /燕麦/, almond: /杏仁/, shot: /加浓|浓缩|多一份咖啡/, laksa: /叻沙|咖喱汤/, curry: /咖喱/, chilli: /辣椒酱|辣椒碎|辣椒干|辣椒/, kuah: /花生酱|沙爹酱|花生酱汁/,
+  oat: /燕麦/, almond: /杏仁(?!酱)/, shot: /加浓|浓缩|多一份咖啡/, laksa: /叻沙|咖喱汤/, curry: /咖喱/, chilli: /辣椒酱|辣椒碎|辣椒干|辣椒/, kuah: /花生酱|沙爹酱|花生酱汁/,
   salmon: /三文鱼|烟熏三文鱼/, bacon: /培根/, poached: /水波蛋/, dry: /干捞|干的/, soup: /汤的|汤底/,
   balls: /鱼丸/, minced: /肉碎|肉末|肉燥/, bilis: /江鱼仔|小鱼干/, hoon: /米粉/, prawns: /虾/, puffs: /豆卜|豆泡/,
   noodles: /加面|多面|面加倍/, mushrooms: /蘑菇|香菇/, skin: /腐竹|豆皮/, peanuts: /花生/, tofu: /豆腐/, milo: /美禄/,
@@ -46,7 +46,7 @@ const ALSO_ZH: Record<string, RegExp> = {
   cheese: /芝士|起司|奶酪/, ramyeon: /拉面|泡面|快熟面/, rice: /年糕/, cake: /年糕|鱼饼/, fries: /薯条/, coleslaw: /凉拌|卷心菜沙拉/, soft: /饮料|汽水|饮品/,
   kimchi: /泡菜/, yangnyeom: /甜辣/, garlic: /蒜/, butter: /黄油|牛油/, snow: /雪花/, honey: /蜂蜜/,
   pineapple: /菠萝|黄梨/, pepperoni: /意大利辣香肠|辣香肠/, parmesan: /帕玛森|帕马森/, cream: /冰淇淋|雪糕/, whey: /乳清/, plant: /植物蛋白/,
-  chia: /奇亚籽/, granola: /燕麦脆片|格兰诺拉|燕麦片/, flakes: /椰子片|椰丝/, nuts: /坚果/, cacao: /可可/, spirulina: /螺旋藻/,
+  chia: /奇亚籽/, peanut: /花生/, granola: /燕麦脆片|格兰诺拉|燕麦片/, flakes: /椰子片|椰丝/, nuts: /坚果/, cacao: /可可/, spirulina: /螺旋藻/,
   avocado: /牛油果|鳄梨/, feta: /菲达/, kaya: /咖椰|加椰/, sambal: /参巴|叁巴/, rendang: /仁当/, sotong: /苏东|鱿鱼/, udang: /虾/,
   ayam: /炸鸡|鸡肉|鸡(?!蛋)/, lime: /酸柑|桔子|桔仔|青柠/, plum: /酸梅/, strawberries: /草莓/, chocolate: /巧克力/, mayo: /美乃滋|蛋黄酱/,
   seaweed: /海苔/, matcha: /抹茶/, spicy: /加辣|特辣|很辣/, yuja: /柚子/, cola: /可乐/, cider: /七星|雪碧/, bucket: /一桶|桶/,
@@ -54,7 +54,7 @@ const ALSO_ZH: Record<string, RegExp> = {
 };
 // words that say nothing of which option ("milk" is every milk option, "extra" every add-on), and a
 // count's unit ("12 pcs", "12 inch": the number is what names it)
-const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "susu", "regular", "biasa", "fresh", "normal", "tambah", "lebih", "more", "pcs", "pc", "inch", "inches", "make", "it", "combo", "upgrade", "level", "style", "x"]);
+const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "susu", "fresh", "tambah", "lebih", "more", "pcs", "pc", "inch", "inches", "make", "it", "combo", "upgrade", "level", "style", "x"]);
 // "no ice", "without ice", "tak nak ais", "走冰": an option taken off ("less ice" is still ice)
 const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|change the|swap the|tukar)\s+(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
 const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰/g;
@@ -89,8 +89,9 @@ const keyWords = (o: ModifierOption) => {
 };
 const has = (w: string, words: Set<string>, joined: string) => (w.includes(" ") ? joined.includes(` ${w} `) : words.has(w));
 // said as itself (or in Chinese), or only in the guest's other words for it ("ikan" for fish)
+const typo = (w: string, words: Set<string>) => w.length >= 5 && !/\d/.test(w) && [...words].some((x) => x.length >= 4 && x[0] === w[0] && x !== w && (editDistance(x, w, 1) <= 1 || (w.startsWith(x) && w.length - x.length === 1)));
 const direct = (w: string, words: Set<string>, joined: string, raw: string) =>
-  has(w, words, joined) || (/^\d+$/.test(w) ? false : has(w.replace(/(es|s)$/, ""), words, joined) || has(`${w}s`, words, joined)) || !!ALSO_ZH[w]?.test(raw);
+  has(w, words, joined) || typo(w, words) || (/^\d+$/.test(w) ? false : has(w.replace(/(es|s)$/, ""), words, joined) || has(`${w}s`, words, joined)) || !!ALSO_ZH[w]?.test(raw);
 const alias = (w: string, words: Set<string>, joined: string) => (ALSO[w] ?? []).some((x) => has(x, words, joined));
 const said = (w: string, words: Set<string>, joined: string, raw: string) => direct(w, words, joined, raw) || alias(w, words, joined);
 // an option of two words or more needs one said as itself, or two in other words ("bebola ikan"): "ikan" alone isn't Fish Balls
@@ -127,9 +128,10 @@ const withoutName = (text: string, dish: WithOptions) => {
 };
 
 /** The options of `dish` that `text` asks for (priced only, unless `free`), and the ones it takes off ("no ice"). */
-export function optionsSaid(text: string, dish: WithOptions, free = false): { add: ModifierOption[]; off: ModifierOption[] } {
+export function optionsSaid(text: string, dish: WithOptions, free = false, loose = false): { add: ModifierOption[]; off: ModifierOption[] } {
   const { t, raw } = withoutName(text, dish);
-  const offWords = new Set([...t.matchAll(OFF)].map((m) => m[2]));
+  const asked = new Set([...t.matchAll(/\b(?:add|tambah|with|extra|put|plus)\s+(?:some |a |an |the )?(\w+)/g)].map((m) => m[1]));
+  const offWords = new Set([...t.matchAll(OFF)].map((m) => m[2]).filter((w) => !asked.has(w)));
   const offZh = [...raw.matchAll(OFF_ZH)].map((m) => m[1]);
   const words = new Set(t.split(" ").filter((w) => !offWords.has(w)));
   let joined = ` ${[...words].join(" ")} `;
@@ -169,7 +171,7 @@ export function optionsSaid(text: string, dish: WithOptions, free = false): { ad
     const own = ks.filter((k) => (count.get(k) ?? 0) < 2);
     const need = own.length ? own : ks;
     // ("those two noodles" isn't Extra Noodles: more of something is asked for as more)
-    if (/^(extra|add|more|double|tambah|lebih)\b/i.test(o.name) && !/加|多/.test(raw)) {
+    if (!loose && /^(extra|add|more|double|tambah|lebih)\b/i.test(o.name) && !/加|多/.test(raw)) {
       const toks = t.split(" ");
       const at = toks.findIndex((x) => need.some((k) => x === k || x === `${k}s` || x === k.replace(/(es|s)$/, "") || (ALSO[k] ?? []).includes(x)));
       const near = at >= 0 ? toks.slice(Math.max(0, at - 3), at) : toks;

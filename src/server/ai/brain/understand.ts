@@ -163,7 +163,7 @@ const KEYWORDS = (
 ).split(" ");
 
 /** Real words that are one letter off a keyword ("there" and "these", "daily" and "dairy"): never "corrected". */
-const REAL = new Set("batter batters there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story carb carbs keto protein calorie calories".split(" "));
+const REAL = new Set("bill bills batter batters there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story carb carbs keto protein calorie calories".split(" "));
 
 /**
  * Allergen words, which are worth correcting even when short ("egs", "nutz"): missing one is the
@@ -323,6 +323,22 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
         if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘两一二三四五六七八九十的要来加和与跟及还]/.test(raw[at - 1])) continue;
         if (items.filter((o) => Object.values(o.translations ?? {}).some((x) => x?.name?.endsWith(end))).length === 1) return void found.push({ dish, at: raw.indexOf(end) / 100, covered: [], score: 1.8, zh: end });
         break;
+      }
+    }
+    // a menu Chinese name said shortened, its first and last characters kept ("芒果冰沙" for 芒果百香果冰沙)
+    if (HAN_RE.test(raw)) {
+      for (const tr of Object.values(dish.translations ?? {})) {
+        const zh = tr?.name ?? "";
+        if (zh.length < 5) continue;
+        const runs = raw.match(/[\u4e00-\u9fff]{4,}/g) ?? [];
+        const sub_ = (s: string) => { let k = 0; for (const ch of zh) if (ch === s[k]) k++; return k === s.length; };
+        for (const r of runs)
+          for (let a = 0; a + 4 <= r.length; a++)
+            for (let b = r.length; b - a >= 4; b--) {
+              const s = r.slice(a, b);
+              if (s[0] === zh[0] && s[s.length - 1] === zh[zh.length - 1] && sub_(s) && items.filter((o) => Object.values(o.translations ?? {}).some((x) => { const z = x?.name ?? ""; let k = 0; for (const ch of z) if (ch === s[k]) k++; return k === s.length && z[0] === s[0]; })).length === 1)
+                return void found.push({ dish, at: raw.indexOf(s) / 100, covered: [], score: 1.7, zh: s });
+            }
       }
     }
     // what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice), also when the menu's own
@@ -494,7 +510,7 @@ const BER: Record<string, number> = { bertiga: 3, berempat: 4, berlima: 5, beren
 
 function partyOf(text: string, raw: string): number | null {
   const m =
-    text.match(new RegExp(`\\b(?:we are|we re|were|we r|party of|table for|table of|group of|family of|there are|there will be|kami|we have)\\s+(${NUMS})\\b(?!\\s*(?:rm|ringgit|dollars?|minutes?|mins?|sticks?|pieces?|pcs))`)) ??
+    text.match(new RegExp(`\\b(?:we are|we re|were|we r|party of|table for|table of|group of|family of|team of|office of|there are|there will be|kami|we have)\\s+(${NUMS})\\b(?!\\s*(?:rm|ringgit|dollars?|minutes?|mins?|sticks?|pieces?|pcs))`)) ??
     text.match(new RegExp(`\\b(${NUMS})\\s+(?:of us|people|persons?|adults|orang|heads|guests|diners|pax|kids and adults)\\b`)) ??
     text.match(new RegExp(`\\bfor\\s+(${NUMS})\\b(?!\\s*(?:rm|ringgit|dollars?|minutes?|mins?|sticks?|pieces?|pcs|\\.))`));
   const z = raw.match(/([\d一二两三四五六七八九十]+)\s*(?:个人|个|位|人)/);
@@ -718,6 +734,7 @@ const CATEGORY_ZH: [RegExp, string[]][] = [
   [/蔬菜|青菜|素菜/, ["vegetable"]], [/咖啡/, ["coffee"]], [/甜品|甜点|糖水/, ["dessert", "sweet"]], [/饮料|饮品|喝的/, ["drink", "beverage"]],
   [/串烧|烤串|串/, ["skewer", "yakitori"]], [/丼|盖饭/, ["donburi", "don"]], [/拉面|面/, ["noodle", "ramen"]], [/饭/, ["rice"]], [/咖喱/, ["curr"]],
   [/早餐|早午餐/, ["breakfast", "brunch"]], [/粥/, ["congee", "porridge", "bubur"]], [/锅底/, ["soup base", "broth", "soup"]], [/饭团/, ["onigiri", "rice ball"]], [/(?<![奶果擂骨凉])茶(?!饭|餐)/, ["tea"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]], [/炸/, ["fried"]], [/汉堡/, ["burger"]], [/披萨|比萨/, ["pizza"]], [/寿司/, ["sushi"]], [/塔可/, ["taco"]], [/卷饼/, ["wrap", "burrito"]], [/沙拉/, ["salad"]], [/意面|意大利面/, ["pasta"]], [/点心/, ["dim sum"]], [/蒸/, ["steamed"]], [/烧烤|烤肉/, ["grill", "bbq", "barbecue"]], [/酱|蘸料/, ["sauce", "dip"]],
+  [/巴西莓/, ["acai"]], [/奶昔|冰沙/, ["smoothie", "shake"]], [/碗/, ["bowl"]],
 ];
 // "sauces" → "sauce", "dishes" → "dish", "noodles" → "noodle", "curries" → "curry"
 const singular = (w: string) => (w.length <= 3 ? w : /ies$/.test(w) ? w.replace(/ies$/, "y") : /(s|x|z|ch|sh)es$/.test(w) ? w.slice(0, -2) : /[^s]s$/.test(w) ? w.slice(0, -1) : w);
@@ -752,7 +769,10 @@ export function askedCategories(items: Dish[], words: string[], raw: string): st
   const hits = cats.some((c) => direct(c)) ? direct : hitsOf(new Set([...own, ...wanted]));
   // the categories that match the most of their words ("fruit teas" is Fruit teas, not Milk teas)
   const best = Math.max(0, ...cats.map(hits));
-  const out = best ? cats.filter((c) => hits(c) === best) : [];
+  const tied = best ? cats.filter((c) => hits(c) === best) : [];
+  // ("which smoothie?" is the Smoothies, not also the Smoothie bowls: the one with no words besides)
+  const fewest = Math.min(...tied.map((c) => catWords(c).length));
+  const out = tied.length > 1 && fewest === best ? tied.filter((c) => catWords(c).length === fewest) : tied;
   // a word every category shares says nothing
   return out.length === cats.length ? [] : out;
 }

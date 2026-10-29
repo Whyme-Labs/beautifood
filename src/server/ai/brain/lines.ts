@@ -65,11 +65,14 @@ export const phrase = (toks: string[]) => toks.join(" ").replace(/(?<=[㐀-鿿])
 export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], breaks: number[] = []): Set<Spot> {
   const out = new Set<Spot>();
   const CUE = /^(with|w|add|added|adding|extra|plus|tambah|dengan|topping|toppings|on|put|in|upgrade|upgraded|upsize|drink|minuman|sauce|sos|加|换|换成|配|要|走|少|多)$/;
-  for (const x of spots) {
+  for (const spot of spots) {
+    let x = spot;
     if (x.from < 0) continue;
     // (its own words: not the "milk tea" another dish named takes)
     const mine = x.covered.filter((i) => !spots.some((y) => y !== x && y.covered.includes(i)));
     const words = (mine.length ? mine : x.covered).map((i) => toks[i]);
+    // (where its own words are: "berry blast with whey protein" names the Berry Protein Acai Bowl only by "protein")
+    if (mine.length && mine.length < x.covered.length) x = { ...x, from: Math.min(...mine), to: Math.max(...mine) + 1 };
     const text = phrase(words);
     // (its whole name said is the dish: "2 fish ball soup", "a lime juice")
     const name = normalize(x.dish.name).split(" ");
@@ -82,20 +85,22 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     while (k >= 0 && (COUNTER.test(toks[k]) || DESCRIBES.test(toks[k]))) k--;
     const counted = k >= 0 && !!numberBefore(toks, k) && (!cued || whole);
     // ("whole chicken half yangnyeom half original": "half" there is the sauce's half, not the Half Chicken)
-    if (words.length && words.every((w) => /^(half|separuh|setengah|一|半)$/.test(w)) && spots.some((y) => y !== x && y.from >= 0 && y.from < x.from)) {
-      out.add(x);
+    if (words.length && words.every((w) => /^(half|separuh|setengah|一|半)$/.test(w)) && spots.some((y) => y !== spot && y.from >= 0 && y.from < x.from)) {
+      out.add(spot);
       continue;
     }
     // ("boneless saiz besar sos honey butter": said right after another dish, with no count and nothing
     // joining them, it's that dish's choice)
-    const host = [...spots].filter((y) => y !== x && y.from >= 0 && y.to <= x.from && !breaks.some((b) => b > y.from && b <= x.from) && !toks.slice(y.to, x.from).some((t) => JOIN.test(t))).sort((a, b) => b.to - a.to)[0];
+    const host = [...spots].filter((y) => y !== spot && y.from >= 0 && y.to <= x.from && !breaks.some((b) => b > y.from && b <= x.from) && !toks.slice(y.to, x.from).some((t) => JOIN.test(t))).sort((a, b) => b.to - a.to)[0];
     const follows = !!host && whole && !counted && !cued && optionsSaid(text, host.dish, true).add.length > 0 && !/[\u3400-\u9fff]/.test(text);
     if (counted || (whole && !cued && !follows)) continue;
-    const hosts = [...spots.filter((y) => y !== x && y.from >= 0 && y.from < x.from).map((y) => y.dish), ...(cued ? spots.filter((y) => y !== x && y.from > x.to).map((y) => y.dish) : []), ...others].filter((d) => d.id !== x.dish.id && d.modifiers?.length);
+    const hosts = [...spots.filter((y) => y !== spot && y.from >= 0 && y.from < x.from).map((y) => y.dish), ...(cued ? spots.filter((y) => y !== spot && y.from > x.to).map((y) => y.dish) : []), ...others].filter((d) => d.id !== x.dish.id && d.modifiers?.length);
     // (with the words just before it: "extra chili sauce" asks for the Extra chilli sauce)
-    const lead = [x.from - 2, x.from - 1].filter((i) => i >= 0 && !spots.some((y) => y !== x && y.covered.includes(i))).map((i) => toks[i]);
+    const lead = [x.from - 2, x.from - 1].filter((i) => i >= 0 && !spots.some((y) => y !== spot && y.covered.includes(i))).map((i) => toks[i]);
     const said = phrase([...lead, ...words]);
-    if (hosts.some((d) => optionsSaid(said, d, true).add.length)) out.add(x);
+    // (its own words must be the option's: "large berry blast" isn't the bowl's Large; "the avocado one" is a dish)
+    if (/^(one|tu|itu|ni|ini)$/.test(toks[x.to] ?? "")) continue;
+    if (hosts.some((d) => optionsSaid(said, d, true).add.some((o) => optionsSaid(phrase(words), { ...d, modifiers: [{ name: "", options: [o] }] }, true, true).add.length))) out.add(spot);
   }
   return out;
 }
