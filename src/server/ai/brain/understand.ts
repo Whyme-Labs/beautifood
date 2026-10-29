@@ -336,7 +336,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
           for (let a = 0; a + 4 <= r.length; a++)
             for (let b = r.length; b - a >= 4; b--) {
               const s = r.slice(a, b);
-              if (s[0] === zh[0] && s[s.length - 1] === zh[zh.length - 1] && sub_(s) && items.filter((o) => Object.values(o.translations ?? {}).some((x) => { const z = x?.name ?? ""; let k = 0; for (const ch of z) if (ch === s[k]) k++; return k === s.length && z[0] === s[0]; })).length === 1)
+              if (s[0] === zh[0] && s[s.length - 1] === zh[zh.length - 1] && sub_(s) && items.filter((o) => Object.values(o.translations ?? {}).some((x) => { const z = x?.name ?? ""; let k = 0; for (const ch of z) if (ch === s[k]) k++; return k === s.length && z[0] === s[0] && z[z.length - 1] === s[s.length - 1]; })).length === 1)
                 return void found.push({ dish, at: raw.indexOf(s) / 100, covered: [], score: 1.7, zh: s });
             }
       }
@@ -733,8 +733,8 @@ const CATEGORY_ZH: [RegExp, string[]][] = [
   [/奶茶/, ["milk tea"]], [/果茶/, ["fruit tea"]], [/小吃|零食/, ["snack", "small plate", "side"]], [/海鲜/, ["seafood"]], [/肉类|肉菜/, ["meat"]],
   [/蔬菜|青菜|素菜/, ["vegetable"]], [/咖啡/, ["coffee"]], [/甜品|甜点|糖水/, ["dessert", "sweet"]], [/饮料|饮品|喝的/, ["drink", "beverage"]],
   [/串烧|烤串|串/, ["skewer", "yakitori"]], [/丼|盖饭/, ["donburi", "don"]], [/拉面|面/, ["noodle", "ramen"]], [/饭/, ["rice"]], [/咖喱/, ["curr"]],
-  [/早餐|早午餐/, ["breakfast", "brunch"]], [/粥/, ["congee", "porridge", "bubur"]], [/锅底/, ["soup base", "broth", "soup"]], [/饭团/, ["onigiri", "rice ball"]], [/(?<![奶果擂骨凉])茶(?!饭|餐)/, ["tea"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]], [/炸/, ["fried"]], [/汉堡/, ["burger"]], [/披萨|比萨/, ["pizza"]], [/寿司/, ["sushi"]], [/塔可/, ["taco"]], [/卷饼/, ["wrap", "burrito"]], [/沙拉/, ["salad"]], [/意面|意大利面/, ["pasta"]], [/点心/, ["dim sum"]], [/蒸/, ["steamed"]], [/烧烤|烤肉/, ["grill", "bbq", "barbecue"]], [/酱|蘸料/, ["sauce", "dip"]],
-  [/巴西莓/, ["acai"]], [/奶昔|冰沙/, ["smoothie", "shake"]], [/碗/, ["bowl"]],
+  [/早餐|早午餐/, ["breakfast", "brunch"]], [/粥/, ["congee", "porridge", "bubur"]], [/锅底/, ["soup base", "broth", "soup"]], [/饭团/, ["onigiri", "rice ball"]], [/(?<![奶果擂骨凉])茶(?!饭|餐)/, ["tea"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]], [/炸/, ["fried"]], [/汉堡/, ["burger"]], [/披萨(?!片)|比萨(?!片)/, ["pizza"]], [/寿司/, ["sushi"]], [/塔可/, ["taco"]], [/卷饼/, ["wrap", "burrito"]], [/沙拉/, ["salad"]], [/意面|意大利面/, ["pasta"]], [/点心/, ["dim sum"]], [/蒸/, ["steamed"]], [/烧烤|烤肉/, ["grill", "bbq", "barbecue"]], [/酱|蘸料/, ["sauce", "dip"]],
+  [/披萨片|片装/, ["slice"]], [/巴西莓/, ["acai"]], [/奶昔|冰沙/, ["smoothie", "shake"]], [/碗/, ["bowl"]],
 ];
 // "sauces" → "sauce", "dishes" → "dish", "noodles" → "noodle", "curries" → "curry"
 const singular = (w: string) => (w.length <= 3 ? w : /ies$/.test(w) ? w.replace(/ies$/, "y") : /(s|x|z|ch|sh)es$/.test(w) ? w.slice(0, -2) : /[^s]s$/.test(w) ? w.slice(0, -1) : w);

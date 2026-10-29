@@ -17,7 +17,7 @@ const NUM: Record<string, number> = {
 };
 const ZH_DIGIT = /^[一两二三四五六七八九十]$/;
 // a count's measure word, said between the count and the dish ("2 cups of", "两杯", "dua pinggan")
-const COUNTER = /^(个|份|杯|碗|碟|盘|包|块|粒|只|支|串|根|罐|瓶|件|条|片|盒|客|套|樽|x|×|of|the|cups?|glass|glasses|plates?|bowls?|pieces?|pcs|orders?|servings?|portions?|sets?|packets?|packs?|bungkus|pinggan|mangkuk|cawan|gelas|biji|ketul|cucuk|sticks?|cans?|bottles?|tin|botol|ekor|keping)$/;
+const COUNTER = /^(个|份|杯|碗|碟|盘|包|块|粒|只|支|串|根|罐|瓶|件|条|片|盒|客|套|樽|寸|吋|inch|inches|in|x|×|of|the|cups?|glass|glasses|plates?|bowls?|pieces?|pcs|orders?|servings?|portions?|sets?|packets?|packs?|bungkus|pinggan|mangkuk|cawan|gelas|biji|ketul|cucuk|sticks?|cans?|bottles?|tin|botol|ekor|keping)$/;
 // words that join two lines of an order
 const JOIN = /^(and|dan|n|plus|then|also|lepas|和|跟|还有|再|以及|另外|&)$/;
 // words that describe the dish, not count it ("2 large iced", "两杯大杯", "dua besar")
@@ -86,6 +86,12 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     let k = x.from - 1;
     while (k >= 0 && (COUNTER.test(toks[k]) || DESCRIBES.test(toks[k]))) k--;
     const counted = k >= 0 && !!numberBefore(toks, k) && (!cued || whole) && !onto;
+    // ("10 BBQ wings": an option said just before its dish)
+    const nextHost = spots.find((y) => y !== spot && y.from === x.to && y.dish.modifiers?.length);
+    if (nextHost && !whole && optionsSaid(phrase(words), nextHost.dish, true, true).add.length) {
+      out.add(spot);
+      continue;
+    }
     // ("whole chicken half yangnyeom half original": "half" there is the sauce's half, not the Half Chicken)
     if (words.length && words.every((w) => /^(half|separuh|setengah|一|半)$/.test(w)) && spots.some((y) => y !== spot && y.from >= 0 && y.from < x.from)) {
       out.add(spot);
@@ -95,6 +101,13 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     // joining them, it's that dish's choice)
     const host = [...spots].filter((y) => y !== spot && y.from >= 0 && y.to <= x.from && !breaks.some((b) => b > y.from && b <= x.from) && !toks.slice(y.to, x.from).some((t) => JOIN.test(t))).sort((a, b) => b.to - a.to)[0];
     const follows = !!host && whole && !counted && !cued && optionsSaid(text, host.dish, true).add.length > 0 && !/[\u3400-\u9fff]/.test(text);
+    // (a menu line that is exactly another dish's option, said after that dish: "margherita 9-inch, extra
+    // cheese and mushrooms", "两个烧烤鸡披萨，一个加菠萝")
+    const optionLine = whole && spots.some((y) => y !== spot && y.from >= 0 && y.to <= x.from && (y.dish.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name) === normalize(x.dish.name))));
+    if (optionLine) {
+      out.add(spot);
+      continue;
+    }
     if (counted || (whole && !cued && !follows)) continue;
     if (onto && whole) {
       // (said onto another dish it's that dish's add-on, the count its own: "a telur mata on the first one")
@@ -123,6 +136,11 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
     let { from, to } = s;
     while (to < toks.length && name.has(toks[to]) && !spots.some((o) => o !== s && o.from === to)) to++;
     while (from > 0 && name.has(toks[from - 1]) && !spots.some((o) => o !== s && o.to === from)) from--;
+    // (a Chinese name's characters around the part said: "鸡肉卡邦尼" of 鸡肉卡邦尼意面)
+    const zh = Object.values(s.dish.translations ?? {}).map((x) => x?.name ?? "").filter((x) => /[\u3400-\u9fff]/.test(x));
+    const span = () => toks.slice(from, to).join("");
+    while (from > 0 && /[\u3400-\u9fff]/.test(toks[from - 1]) && zh.some((z) => z.includes(toks[from - 1] + span())) && !spots.some((o) => o !== s && o.to === from)) from--;
+    while (to < toks.length && /[\u3400-\u9fff]/.test(toks[to]) && zh.some((z) => z.includes(span() + toks[to])) && !spots.some((o) => o !== s && o.from === to)) to++;
     return { ...s, from, to };
   }).sort((a, b) => a.from - b.from);
   // the same dish named again elsewhere ("2 kopi peng siew dai, 1 kopi peng kosong")

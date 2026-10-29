@@ -50,14 +50,14 @@ const ALSO_ZH: Record<string, RegExp> = {
   avocado: /牛油果|鳄梨/, feta: /菲达/, kaya: /咖椰|加椰/, sambal: /参巴|叁巴/, rendang: /仁当/, sotong: /苏东|鱿鱼/, udang: /虾/,
   ayam: /炸鸡|鸡肉|鸡(?!蛋)/, lime: /酸柑|桔子|桔仔|青柠/, plum: /酸梅/, strawberries: /草莓/, chocolate: /巧克力/, mayo: /美乃滋|蛋黄酱/,
   seaweed: /海苔/, matcha: /抹茶/, spicy: /加辣|特辣|很辣/, yuja: /柚子/, cola: /可乐/, cider: /七星|雪碧/, bucket: /一桶|桶/,
-  thin: /薄底|薄饼底|薄脆/, stuffed: /芝心/, teh: /奶茶|茶/, kopi: /咖啡/, chicken: /鸡肉|鸡(?!蛋|翅)/, beef: /牛肉/,
+  thin: /薄底|薄饼底|薄脆/, penne: /笔管面|通心粉|长通粉/, spaghetti: /意大利面|意面|细面/, stuffed: /芝心/, teh: /奶茶|茶/, kopi: /咖啡/, chicken: /鸡肉|鸡(?!蛋|翅)/, beef: /牛肉/,
 };
 // words that say nothing of which option ("milk" is every milk option, "extra" every add-on), and a
 // count's unit ("12 pcs", "12 inch": the number is what names it)
 const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "susu", "fresh", "tambah", "lebih", "more", "pcs", "pc", "inch", "inches", "make", "it", "combo", "upgrade", "level", "style", "x"]);
 // "no ice", "without ice", "tak nak ais", "走冰": an option taken off ("less ice" is still ice)
 const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|take out(?: the)?|keluarkan)\s+(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
-const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰/g;
+const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰|(?:去掉|拿掉|取消|不要)(?:加的|那个)?([\u4e00-\u9fff]{1,4})/g;
 // an option that is itself taken off or less of something ("Less ice", "No sugar", "Tanpa Kacang",
 // "Kurang Manis", "Kosong"): said as the guest says it, it's chosen (free), never "ice taken off"
 const PHRASES: [RegExp, RegExp][] = [
@@ -132,9 +132,11 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
   const { t, raw } = withoutName(text, dish);
   // ("change the telur mata to telur rebus": what's changed is taken off)
   const changed = t.match(/\b(?:change|swap|switch|tukar|ganti|replace)\s+(?:the |my |it |that )?((?:\w+ ){0,2}?\w+)\s+(?:to|for|with|kepada|jadi|dengan)\b/)?.[1]?.split(" ") ?? [];
-  const asked = new Set([...t.matchAll(/\b(?:add|tambah|with|extra|put|plus)\s+(?:some |a |an |the )?(\w+)/g)].map((m) => m[1]));
-  const offWords = new Set([...[...t.matchAll(OFF)].map((m) => m[2]), ...changed].filter((w) => !asked.has(w)));
-  const offZh = [...raw.matchAll(OFF_ZH)].map((m) => m[1]);
+  const changedZh = raw.match(/([\u4e00-\u9fff]{1,6}?)(?:可以|要)?(?:换成|改成|换做|改做)/)?.[1];
+  const asked = new Set([...t.matchAll(/\b(?:add|tambah|with|put|plus)\s+(?:some |a |an |the )?(\w+)/g)].map((m) => m[1]));
+  // ("remove the extra cheese": its next word too)
+  const offWords = new Set([...[...t.matchAll(OFF)].flatMap((m) => [m[2], ...(GENERIC.has(m[2]) ? [t.slice((m.index ?? 0) + m[0].length).trim().split(" ")[0]] : [])]), ...changed].filter((w) => w && !asked.has(w)));
+  const offZh = [...[...raw.matchAll(OFF_ZH)].map((m) => m[1] ?? m[2] ?? m[3]), changedZh].filter((x): x is string => !!x);
   const words = new Set(t.split(" ").filter((w) => !offWords.has(w)));
   let joined = ` ${[...words].join(" ")} `;
   const all = (dish.modifiers ?? []).flatMap((g) => g.options);
@@ -152,7 +154,7 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     const phrase = phraseOf(o);
     if (!phrase) continue;
     const g = new RegExp(phrase.source, "g");
-    if (!g.test(rest) && !new RegExp(phrase.source, "g").test(zhLeft)) continue;
+    if (!g.test(rest) && !new RegExp(phrase.source, "g").test(raw)) continue;
     if (free || o.price > 0) add.push(o);
     rest = rest.replace(new RegExp(phrase.source, "g"), " ");
     zhLeft = zhLeft.replace(new RegExp(phrase.source, "g"), " ");
