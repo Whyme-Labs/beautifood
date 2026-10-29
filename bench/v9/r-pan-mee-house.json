@@ -86,7 +86,7 @@
       "noDishes": true,
       "says": [
         "(?<!not )(?<!n't )(?<!not already )(inclusive|included|include)|termasuk|sudah (masuk|termasuk)|已含|含税|已包括|包含",
-        "no service|(?<![0-9])0 ?% service|without service|tiada caj perkhidmatan|tak ada caj perkhidmatan|tiada service|不收服务费|没有服务费|无服务费"
+        "no service|(?<![0-9])0 ?% service|without service|tiada caj perkhidmatan|tak ada caj perkhidmatan|tiada service|不收服务费|没有服务费|无服务费|(don't|do not|doesn't|does not|never) (charge|have|add|take|collect|impose)( a| any)? service|service charge (is |of )?(0|zero|none|nil|not charged)|zero service|tiada caj servis|tak (ada|kenakan) caj (perkhidmatan|servis)|tidak (dikenakan|ada) caj (perkhidmatan|servis)|不收服务费|不用服务费"
       ]
     },
     "note": "extra.json: 0% service, 6% tax inclusive."
@@ -458,7 +458,7 @@
         "Breakfast Set"
       ]
     },
-    "note": "Add-ons: Extra Egg 1.50, Fish Balls 2.50, Minced Pork 2.50, Ikan Bilis 1.50, Extra Noodles 2.00, Chilli Flakes 0.50 (Meatballs sold out)."
+    "note": "Add-ons: Extra Egg 1.50, Fish Balls 2.50, Minced Pork 2.50, Ikan Bilis 1.50, Extra Noodles 2.00, Chilli Flakes 0.50 (the Meatballs option is off the menu while it's out, ruling 4)."
   },
   {
     "id": "v9r-pan-mee-house-019",
@@ -510,7 +510,7 @@
     "question": "Can add an egg on top?",
     "expect": {
       "says": [
-        "extra (peanuts?|tofu)|more (peanuts?|tofu)|peanuts? or (extra )?tofu|tofu or (extra )?peanuts?|1\\.00|1\\.50|花生|豆腐|kacang|tauhu"
+        "extra (peanuts?|tofu)|more (peanuts?|tofu)|peanuts? or (extra )?tofu|tofu or (extra )?peanuts?|花生|豆腐|kacang|tauhu|braised egg|卤蛋|telur rebus"
       ],
       "excludes": [
         "Pork Meatball Soup",
@@ -519,7 +519,7 @@
         "Breakfast Set"
       ]
     },
-    "note": "Lui Cha's add-ons are only Extra Peanuts (1.00) and Extra Tofu (1.50); no egg add-on on that dish."
+    "note": "Lui Cha's add-ons are only Extra Peanuts (1.00) and Extra Tofu (1.50); no egg add-on on that dish. A Braised Egg side (RM2.00) is also an honest answer. The bare 1.50 was dropped: it is also the noodles' Extra Egg price, so a wrong 'yes, +RM1.50' passed."
   },
   {
     "id": "v9r-pan-mee-house-021",
@@ -651,7 +651,7 @@
         "Vegetarian Pan Mee"
       ],
       "says": [
-        "mushroom|tofu skin|beancurd skin|extra noodles?|香菇|腐竹|cendawan"
+        "mushroom|tofu skin|beancurd skin|extra noodles?|香菇|腐竹|cendawan|braised egg|卤蛋|telur rebus"
       ],
       "excludes": [
         "Kaya Butter Toast",
@@ -659,7 +659,7 @@
         "Breakfast Set"
       ]
     },
-    "note": "No egg add-on on that dish; its add-ons are noodles, mushrooms, tofu skin. Vegetarian guest, so only vegetarian dishes may be shown."
+    "note": "No egg add-on on that dish; its add-ons are noodles, mushrooms, tofu skin. Vegetarian guest, so only vegetarian dishes may be shown. The vegetarian Braised Egg side (RM2.00) is also an honest answer."
   },
   {
     "id": "v9r-pan-mee-house-026",
@@ -727,7 +727,7 @@
         "Tom Yam Pan Mee"
       ],
       "says": [
-        "less spicy|kurang pedas|少辣|free|no (extra|additional) (charge|cost)|no charge|at no (extra )?cost|same price|doesn't cost (any )?more|no extra|percuma|tiada caj|tak (perlu )?(bayar|caj) lebih|tak payah bayar|harga sama|免费|不用加钱|不另收费|不加钱|同价|一样价钱|同样价钱|不另外收费"
+        "\\byes\\b|(?<!tak )(?<!tidak )\\bboleh\\b|可以|(can|could) (make|do|ask for|get|have|order) (it )?less spicy|less spicy (option|is free|at no|for free|is available|level)|(choose|pick|ask for|request) (the )?less spicy|free|no (extra|additional) (charge|cost)|no charge|at no (extra )?cost|same price|doesn't cost (any )?more|no extra|percuma|tiada caj|tak (perlu )?(bayar|caj) lebih|tak payah bayar|harga sama|免费|不用加钱|不另收费|不加钱|同价|一样价钱|同样价钱|不另外收费"
       ],
       "excludes": [
         "Pork Meatball Soup",
@@ -736,7 +736,7 @@
         "Breakfast Set"
       ]
     },
-    "note": "Spice 2 (spicy); Spice Level: Normal / Less Spicy, free."
+    "note": "Spice 2 (spicy); Spice Level: Normal / Less Spicy, free. The bare 'less spicy|kurang pedas|少辣' echoed the question, so a wrong 'no, can't make it less spicy' passed (v8 rule 7)."
   },
   {
     "id": "v9r-pan-mee-house-029",
@@ -764,10 +764,10 @@
         "Breakfast Set"
       ],
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有|卖完|售罄|isn't available|aren't available|out of stock|(ran|run|running) out|tiada lagi|tak ada lagi|tidak ada lagi"
       ]
     },
-    "note": "Meatballs add-on is sold out (extra.json option soldOut), and so is the Pork Meatball Soup."
+    "note": "Ruling 4: the Meatballs add-on is out, so the merchant has taken it off the groups; the guest should hear it isn't available. The Pork Meatball Soup is sold out too."
   },
   {
     "id": "v9r-pan-mee-house-030",
@@ -788,7 +788,7 @@
     "question": "can add prawns?",
     "expect": {
       "says": [
-        "tofu puffs?|fish ?balls?|bebola ikan|tau ?pok|鱼丸|豆卜"
+        "tofu puffs?|fish ?balls?|bebola ikan|tau ?pok|鱼丸|豆卜|tom ?yam|冬炎|东炎"
       ],
       "excludes": [
         "Pork Meatball Soup",
@@ -797,7 +797,7 @@
         "Breakfast Set"
       ]
     },
-    "note": "Curry Pan Mee add-ons: Extra Egg, Fish Balls, Tofu Puffs, Extra Noodles. Prawns are only on the tom yam."
+    "note": "Curry Pan Mee add-ons: Extra Egg, Fish Balls, Tofu Puffs, Extra Noodles. Prawns are only on the tom yam. 'Prawns come only with the Tom Yam Pan Mee' is also honest."
   },
   {
     "id": "v9r-pan-mee-house-031",
@@ -1301,7 +1301,7 @@
         "Dry Chilli Pan Mee"
       ],
       "says": [
-        "poached egg|fried egg|has (an? )?egg|contains egg|with (an? )?(poached )?egg|egg noodles|egg and|wheat and egg|telur|有蛋|鸡蛋"
+        "poached egg|fried egg|(has|with|contains|comes with) (an? |a soft |a )?(poached |soft |fried )?egg|egg noodles|wheat and egg|(?<![a-z])(?<!tak )(?<!tidak )ada telur|dengan telur|mee telur|(?<![没不无])有(鸡)?蛋|含(鸡)?蛋|水波蛋|荷包蛋|蛋面"
       ],
       "excludes": [
         "Pork Meatball Soup",
@@ -1310,7 +1310,7 @@
         "Breakfast Set"
       ]
     },
-    "note": "Wheat and egg noodles plus a soft poached egg."
+    "note": "Wheat and egg noodles plus a soft poached egg. Bare 'telur', '鸡蛋' and 'egg and' removed: they matched a wrong 'no egg' (v8 rule 7)."
   },
   {
     "id": "v9r-pan-mee-house-047",
@@ -2024,7 +2024,7 @@
         "Breakfast Set"
       ],
       "says": [
-        "not halal|isn't halal|aren't halal|is not a halal|not a halal|non.?halal|not (halal.)?certified|isn't (halal.)?certified|no halal cert|(serve|serves|use|uses|cook with|contain|contains) pork|pork (is|are) (served|used)|bukan (kedai |restoran )?halal|tidak halal|tak halal|tiada sijil|tidak (di)?sijil|guna babi|ada babi|不是清真|非清真|不清真|没有清真|未.*认证|有猪肉|用猪肉|含猪肉"
+        "not halal|isn't halal|aren't halal|is not a halal|not a halal|non.?halal|not (halal.)?certified|isn't (halal.)?certified|no halal cert|(?<!n't )(?<!not )(?<!never )(?<!no )(serve|serves|use|uses|cook with|contain|contains) pork|pork (is|are) (served|used)|bukan (kedai |restoran )?halal|tidak halal|tak halal|tiada sijil|tidak (di)?sijil|(?<!tak )(?<!tidak )guna babi|(?<![a-z])(?<!tak )(?<!tidak )ada babi|不是清真|非清真|不清真|没有清真|未.*认证|(?<![没不无])有猪肉|(?<![没不无])用猪肉|(?<![没不无])含猪肉"
       ]
     },
     "note": "halal status none; pork in many dishes (rule w/j)."
@@ -2380,7 +2380,7 @@
         "Breakfast Set"
       ],
       "says": [
-        "not halal|isn't halal|aren't halal|is not a halal|not a halal|non.?halal|not (halal.)?certified|isn't (halal.)?certified|no halal cert|(serve|serves|use|uses|cook with|contain|contains) pork|pork (is|are) (served|used)|bukan (kedai |restoran )?halal|tidak halal|tak halal|tiada sijil|tidak (di)?sijil|guna babi|ada babi|不是清真|非清真|不清真|没有清真|未.*认证|有猪肉|用猪肉|含猪肉"
+        "not halal|isn't halal|aren't halal|is not a halal|not a halal|non.?halal|not (halal.)?certified|isn't (halal.)?certified|no halal cert|(?<!n't )(?<!not )(?<!never )(?<!no )(serve|serves|use|uses|cook with|contain|contains) pork|pork (is|are) (served|used)|bukan (kedai |restoran )?halal|tidak halal|tak halal|tiada sijil|tidak (di)?sijil|(?<!tak )(?<!tidak )guna babi|(?<![a-z])(?<!tak )(?<!tidak )ada babi|不是清真|非清真|不清真|没有清真|未.*认证|(?<![没不无])有猪肉|(?<![没不无])用猪肉|(?<![没不无])含猪肉"
       ]
     },
     "note": "Rule j; status none."
@@ -2412,7 +2412,7 @@
         "Breakfast Set"
       ],
       "says": [
-        "not halal|isn't halal|aren't halal|is not a halal|not a halal|non.?halal|not (halal.)?certified|isn't (halal.)?certified|no halal cert|(serve|serves|use|uses|cook with|contain|contains) pork|pork (is|are) (served|used)|bukan (kedai |restoran )?halal|tidak halal|tak halal|tiada sijil|tidak (di)?sijil|guna babi|ada babi|不是清真|非清真|不清真|没有清真|未.*认证|有猪肉|用猪肉|含猪肉"
+        "not halal|isn't halal|aren't halal|is not a halal|not a halal|non.?halal|not (halal.)?certified|isn't (halal.)?certified|no halal cert|(?<!n't )(?<!not )(?<!never )(?<!no )(serve|serves|use|uses|cook with|contain|contains) pork|pork (is|are) (served|used)|bukan (kedai |restoran )?halal|tidak halal|tak halal|tiada sijil|tidak (di)?sijil|(?<!tak )(?<!tidak )guna babi|(?<![a-z])(?<!tak )(?<!tidak )ada babi|不是清真|非清真|不清真|没有清真|未.*认证|(?<![没不无])有猪肉|(?<![没不无])用猪肉|(?<![没不无])含猪肉"
       ]
     }
   },
@@ -2800,7 +2800,7 @@
     "question": "板面可以加肉丸吗？",
     "expect": {
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有|卖完|售罄|isn't available|aren't available|out of stock|(ran|run|running) out|tiada lagi|tak ada lagi|tidak ada lagi"
       ],
       "excludes": [
         "Pork Meatball Soup",
@@ -2809,7 +2809,7 @@
         "Breakfast Set"
       ]
     },
-    "note": "Meatballs add-on sold out."
+    "note": "Ruling 4: the Meatballs add-on is out and off the groups; the guest should hear it isn't available."
   },
   {
     "id": "v9r-pan-mee-house-103",
@@ -3020,17 +3020,16 @@
     ],
     "question": "那三个哪个没有猪肉？",
     "expect": {
-      "onlyFrom": [
+      "says": [
+        "都有猪肉|全部都有|全都有|三个都|都含猪肉|都含有猪肉|都是猪肉|都有肉|没有一个|all (three )?(of them )?(have|contain|are made with|come with) pork|(each|every one) (has|contains) pork"
+      ],
+      "excludes": [
         "Fried Wantan",
         "Fu Chuk Rolls",
         "Sui Kow"
-      ],
-      "noDishes": true,
-      "says": [
-        "都有猪肉|全部都有|三个都|都含猪肉|都是猪肉|all (three )?(have|contain) pork"
       ]
     },
-    "note": "All three have pork, so an honest answer shows none (rule q)."
+    "note": "All three have pork (rule q). An honest 'none' passes; it may offer a pork-free side such as Fish Ball Soup, so noDishes/onlyFrom were replaced by excludes of the three pork dishes."
   },
   {
     "id": "v9r-pan-mee-house-111",
@@ -3189,7 +3188,7 @@
         "Breakfast Set"
       ],
       "says": [
-        "not halal|isn't halal|aren't halal|is not a halal|not a halal|non.?halal|not (halal.)?certified|isn't (halal.)?certified|no halal cert|(serve|serves|use|uses|cook with|contain|contains) pork|pork (is|are) (served|used)|bukan (kedai |restoran )?halal|tidak halal|tak halal|tiada sijil|tidak (di)?sijil|guna babi|ada babi|不是清真|非清真|不清真|没有清真|未.*认证|有猪肉|用猪肉|含猪肉"
+        "not halal|isn't halal|aren't halal|is not a halal|not a halal|non.?halal|not (halal.)?certified|isn't (halal.)?certified|no halal cert|(?<!n't )(?<!not )(?<!never )(?<!no )(serve|serves|use|uses|cook with|contain|contains) pork|pork (is|are) (served|used)|bukan (kedai |restoran )?halal|tidak halal|tak halal|tiada sijil|tidak (di)?sijil|(?<!tak )(?<!tidak )guna babi|(?<![a-z])(?<!tak )(?<!tidak )ada babi|不是清真|非清真|不清真|没有清真|未.*认证|(?<![没不无])有猪肉|(?<![没不无])用猪肉|(?<![没不无])含猪肉"
       ]
     },
     "note": "Muslim at a none kitchen; no dish required."
@@ -3232,7 +3231,7 @@
     "question": "龟苓膏是全素的吗？",
     "expect": {
       "says": [
-        "蜂蜜|honey|madu"
+        "不是全素|不算全素|并非全素|不是纯素|不是vegan|非全素|(?<![没不无])(有|配|附|附上|加|含|带)蜂蜜|蜂蜜(在旁|另|放)|旁边(的|有)?蜂蜜|not vegan|isn't vegan|(?<!no )honey|bukan vegan|ada madu"
       ],
       "excludes": [
         "Pork Meatball Soup",
@@ -3241,7 +3240,7 @@
         "Breakfast Set"
       ]
     },
-    "note": "Honey on the side: vegetarian, not vegan (rule l: not required)."
+    "note": "Honey on the side: vegetarian, not vegan (rule l: not required). Bare 蜂蜜 matched a wrong '是全素的，没有蜂蜜' (v8 rule 7)."
   },
   {
     "id": "v9r-pan-mee-house-119",
@@ -3283,10 +3282,11 @@
       "includesAny": [
         "Hakka Lui Cha",
         "Fish Ball Soup",
-        "Sweet Potato Leaves Belacan"
+        "Sweet Potato Leaves Belacan",
+        "Herbal Jelly"
       ]
     },
-    "note": "Gluten-free food: Hakka Lui Cha, Fish Ball Soup, Sweet Potato Leaves Belacan (plus drinks)."
+    "note": "Gluten-free food: Hakka Lui Cha, Fish Ball Soup, Sweet Potato Leaves Belacan and the Herbal Jelly dessert (plus drinks)."
   },
   {
     "id": "v9r-pan-mee-house-121",
@@ -3536,7 +3536,7 @@
       },
       {
         "user": "我对虾过敏，换一个不辣又没有虾的面吧。",
-        "assistant": "明白，冬炎板面有虾，不适合你。不辣也没有虾的面有：汤板面（RM10.90）、板面条（RM10.90）和面粉粿（RM10.90）。也请告诉店员你的过敏。"
+        "assistant": "明白，冬炎板面有虾，不适合你。不辣也没有虾的面有：汤板面（RM10.90）、板面条（RM10.90）、伊面（RM11.90）、面粉粿（RM10.90）和素板面（RM10.90）。也请告诉店员你的过敏。"
       }
     ],
     "question": "那就汤板面，再加一杯大杯冰薏米水，一共多少？",

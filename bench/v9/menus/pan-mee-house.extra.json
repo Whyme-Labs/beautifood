@@ -58,11 +58,6 @@
             "price": 150
           },
           {
-            "name": "Meatballs",
-            "price": 300,
-            "soldOut": true
-          },
-          {
             "name": "Fish Balls",
             "price": 250
           },
@@ -130,11 +125,6 @@
             "price": 150
           },
           {
-            "name": "Meatballs",
-            "price": 300,
-            "soldOut": true
-          },
-          {
             "name": "Fish Balls",
             "price": 250
           },
@@ -181,11 +171,6 @@
           {
             "name": "Extra Egg",
             "price": 150
-          },
-          {
-            "name": "Meatballs",
-            "price": 300,
-            "soldOut": true
           },
           {
             "name": "Fish Balls",
@@ -236,11 +221,6 @@
             "price": 150
           },
           {
-            "name": "Meatballs",
-            "price": 300,
-            "soldOut": true
-          },
-          {
             "name": "Fish Balls",
             "price": 250
           },
@@ -287,11 +267,6 @@
           {
             "name": "Extra Egg",
             "price": 150
-          },
-          {
-            "name": "Meatballs",
-            "price": 300,
-            "soldOut": true
           },
           {
             "name": "Fish Balls",

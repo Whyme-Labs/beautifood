@@ -111,7 +111,7 @@
     "question": "Is the Tuesday acai deal on today?",
     "expect": {
       "says": [
-        "only (on )?tuesdays?|every tuesday|on tuesdays|not (on )?today|isn't on today|is not on today|selasa sahaja|setiap selasa|只有星期二|只在星期二|每个星期二|每逢星期二|周二"
+        "only (on )?tuesdays?|every tuesday|on tuesdays|not (on )?today|isn't on today|is not on today|selasa sahaja|setiap selasa|只有星期二|只在星期二|每个星期二|每逢星期二|周二|(today is|it's|it is) (a )?wednesday|hari ini (hari )?rabu|今天是?(星期三|礼拜三|周三)|今天没有|今天不"
       ]
     },
     "note": "Default Wednesday 13:00: deal not on (rule t)."
@@ -342,7 +342,7 @@
         "chia"
       ]
     },
-    "note": "Granola 2.00, Mixed Nuts 3.00, Chia Seeds 1.50, Coconut Flakes 1.50, Honey 1.00, Peanut Butter 2.50, Cacao Nibs 2.00; Almond Butter sold out."
+    "note": "Granola 2.00, Mixed Nuts 3.00, Chia Seeds 1.50, Coconut Flakes 1.50, Honey 1.00, Peanut Butter 2.50, Cacao Nibs 2.00 (Almond Butter is off the groups while it's out, ruling 4)."
   },
   {
     "id": "v9r-smoothie-acai-bar-018",
@@ -364,10 +364,10 @@
     "question": "can add almond butter on top?",
     "expect": {
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有|卖完|售罄|isn't available|aren't available|out of stock|(ran|run|running) out|tiada lagi|tak ada lagi|tidak ada lagi"
       ]
     },
-    "note": "Almond Butter topping sold out (option soldOut)."
+    "note": "Ruling 4: Almond Butter is out and off the topping groups; the guest should hear it isn't available."
   },
   {
     "id": "v9r-smoothie-acai-bar-019",
@@ -394,7 +394,7 @@
         "(^|[^0-9])(2\\.50)"
       ]
     },
-    "note": "Peanut Butter +2.50 is available; Almond Butter is sold out."
+    "note": "Peanut Butter +2.50 is the nut butter on offer; Almond Butter is out (ruling 4)."
   },
   {
     "id": "v9r-smoothie-acai-bar-020",
@@ -650,10 +650,10 @@
         "PB Banana Power"
       ],
       "says": [
-        "less sweet|kurang manis|少甜|free|no (extra|additional) (charge|cost)|no charge|at no (extra )?cost|same price|doesn't cost (any )?more|no extra|percuma|tiada caj|tak (perlu )?(bayar|caj) lebih|tak payah bayar|harga sama|免费|不用加钱|不另收费|不加钱|同价|一样价钱|同样价钱|不另外收费"
+        "\\byes\\b|(?<!tak )(?<!tidak )\\bboleh\\b|可以|(can|could) (make|do|ask for|get|have|order) (it )?less sweet|less sweet (option|is free|at no|for free|is available)|(choose|pick|ask for|request) (the )?(less sweet|no added sugar)|no added sugar|free|no (extra|additional) (charge|cost)|no charge|at no (extra )?cost|same price|doesn't cost (any )?more|no extra|percuma|tiada caj|tak (perlu )?(bayar|caj) lebih|tak payah bayar|harga sama|免费|不用加钱|不另收费|不加钱|同价|一样价钱|同样价钱|不另外收费"
       ]
     },
-    "note": "Sweetness: Less Sweet / No Added Sugar, free."
+    "note": "Sweetness: Less Sweet / No Added Sugar, free. The bare 'less sweet|kurang manis|少甜' echoed the question, so a wrong 'no' passed (v8 rule 7)."
   },
   {
     "id": "v9r-smoothie-acai-bar-030",
@@ -667,10 +667,10 @@
     "question": "Can I add whey protein to the acai bowl?",
     "expect": {
       "says": [
-        "berry protein|smoothie|not (one of )?the toppings|isn't (one of )?the toppings|not a topping|isn't a topping|not available (as a topping|on (the )?bowls?)|bukan topping|不是配料|没有这个配料"
+        "berry protein|smoothie|not (one of )?the toppings|isn't (one of )?the toppings|not a topping|isn't a topping|not available (as a topping|on (the )?bowls?)|bukan topping|不是配料|没有这个配料|boosters?|(only|just) (for|in|on|with) (the )?smoothies|smoothies only|只限奶昔|只有奶昔|奶昔才"
       ]
     },
-    "note": "Bowls take toppings, not boosters; whey is only a smoothie booster (or in the Berry Protein Acai Bowl)."
+    "note": "Bowls take toppings, not boosters; whey is only a smoothie booster (or in the Berry Protein Acai Bowl). 'Whey is a smoothie booster' is also honest."
   },
   {
     "id": "v9r-smoothie-acai-bar-031",
@@ -859,10 +859,10 @@
         "Choc Almond Recovery"
       ],
       "says": [
-        "almonds|almond milk|tree.?nuts?|(has|contains|with) (whole )?almond|杏仁|badam"
+        "almonds|almond milk|(?<!no )(?<!free of )(?<!without )(?<!not )tree.?nuts?(?!.?free)|(has|contains|with) (whole )?almond|杏仁|badam"
       ]
     },
-    "note": "Almonds and almond milk = tree nuts."
+    "note": "Almonds and almond milk = tree nuts. 'tree nuts' now must not be 'no tree nuts' (v8 rule 7)."
   },
   {
     "id": "v9r-smoothie-acai-bar-038",
@@ -1373,10 +1373,10 @@
     "question": "Is the classic acai bowl vegan?",
     "expect": {
       "says": [
-        "honey|madu|蜂蜜"
+        "(?<!no )(?<!without )(?<!free of )honey|not vegan|isn't vegan|is not vegan|bukan vegan|tidak vegan|(?<!tak )(?<!tiada )(?<!tidak )ada madu|mengandungi madu|不是全素|不是纯素|(?<![没不无])(有|含)蜂蜜"
       ]
     },
-    "note": "Granola has honey. Rule l."
+    "note": "Granola has honey. Rule l. Bare honey/madu/蜂蜜 matched a wrong 'vegan, no honey' (v8 rule 7)."
   },
   {
     "id": "v9r-smoothie-acai-bar-059",
@@ -1523,7 +1523,7 @@
     "before": [
       {
         "user": "I'm allergic to tree nuts.",
-        "assistant": "Noted - I'll avoid tree nuts. On our menu they are in the Berry Protein Acai Bowl (almonds), Pitaya Bowl (almond milk), Choc Almond Recovery, Granola Yoghurt Cup (almonds) and Energy Balls (cashews). The Mixed Nuts and Almond Butter toppings and the Almond Milk option also have tree nuts. Please tell our staff as well."
+        "assistant": "Noted - I'll avoid tree nuts. On our menu they are in the Berry Protein Acai Bowl (almonds), Pitaya Bowl (almond milk), Choc Almond Recovery, Granola Yoghurt Cup (almonds) and Energy Balls (cashews). The Mixed Nuts topping and the Almond Milk option also have tree nuts. Please tell our staff as well."
       }
     ],
     "question": "ok which acai bowl can I have?",
@@ -1556,7 +1556,7 @@
     "before": [
       {
         "user": "I'm allergic to tree nuts.",
-        "assistant": "Noted - I'll avoid tree nuts. On our menu they are in the Berry Protein Acai Bowl (almonds), Pitaya Bowl (almond milk), Choc Almond Recovery, Granola Yoghurt Cup (almonds) and Energy Balls (cashews). The Mixed Nuts and Almond Butter toppings and the Almond Milk option also have tree nuts. Please tell our staff as well."
+        "assistant": "Noted - I'll avoid tree nuts. On our menu they are in the Berry Protein Acai Bowl (almonds), Pitaya Bowl (almond milk), Choc Almond Recovery, Granola Yoghurt Cup (almonds) and Energy Balls (cashews). The Mixed Nuts topping and the Almond Milk option also have tree nuts. Please tell our staff as well."
       }
     ],
     "question": "classic acai with chia and coconut flakes. total with service and tax?",
@@ -1585,7 +1585,7 @@
     "before": [
       {
         "user": "I'm allergic to tree nuts.",
-        "assistant": "Noted - I'll avoid tree nuts. On our menu they are in the Berry Protein Acai Bowl (almonds), Pitaya Bowl (almond milk), Choc Almond Recovery, Granola Yoghurt Cup (almonds) and Energy Balls (cashews). The Mixed Nuts and Almond Butter toppings and the Almond Milk option also have tree nuts. Please tell our staff as well."
+        "assistant": "Noted - I'll avoid tree nuts. On our menu they are in the Berry Protein Acai Bowl (almonds), Pitaya Bowl (almond milk), Choc Almond Recovery, Granola Yoghurt Cup (almonds) and Energy Balls (cashews). The Mixed Nuts topping and the Almond Milk option also have tree nuts. Please tell our staff as well."
       }
     ],
     "question": "what toppings can I add then?",
@@ -1598,7 +1598,7 @@
         "granola|chia|coconut|honey|peanut butter|cacao"
       ]
     },
-    "note": "Safe toppings: granola, chia, coconut flakes, honey, peanut butter, cacao nibs (not mixed nuts or almond butter)."
+    "note": "Safe toppings: granola, chia, coconut flakes, honey, peanut butter, cacao nibs (not mixed nuts; almond butter is off the menu while it's out)."
   },
   {
     "id": "v9r-smoothie-acai-bar-068",
@@ -2059,10 +2059,10 @@
     "question": "Boleh tambah mentega badam dalam bowl?",
     "expect": {
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有|卖完|售罄|isn't available|aren't available|out of stock|(ran|run|running) out|tiada lagi|tak ada lagi|tidak ada lagi"
       ]
     },
-    "note": "Almond Butter sold out."
+    "note": "Ruling 4: Almond Butter (mentega badam) is out and off the topping groups."
   },
   {
     "id": "v9r-smoothie-acai-bar-093",
@@ -2287,9 +2287,10 @@
     "question": "杏仁酱还有吗？",
     "expect": {
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有|卖完|售罄|isn't available|aren't available|out of stock|(ran|run|running) out|tiada lagi|tak ada lagi|tidak ada lagi"
       ]
-    }
+    },
+    "note": "Ruling 4: Almond Butter is out and off the topping groups."
   },
   {
     "id": "v9r-smoothie-acai-bar-103",
@@ -2499,7 +2500,7 @@
       "easy",
       "chinese"
     ],
-    "question": "烟熏三文鱼吐司可以加鳄梨吗？多少钱？",
+    "question": "烟熏三文鱼吐司可以加牛油果吗？多少钱？",
     "expect": {
       "excludes": [
         "Avocado Toast"
@@ -2508,7 +2509,7 @@
         "(^|[^0-9])(4\\.00|23\\.90|27\\.87|27\\.85)|RM ?4(?![.0-9])"
       ]
     },
-    "note": "+4.00 = 23.90."
+    "note": "+4.00 = 23.90. 鳄梨 (the mainland word) became 牛油果, as Malaysians say and as the menu writes it."
   },
   {
     "id": "v9r-smoothie-acai-bar-114",

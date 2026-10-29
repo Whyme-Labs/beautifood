@@ -66,11 +66,6 @@
             "price": 250
           },
           {
-            "name": "Almond Butter",
-            "price": 350,
-            "soldOut": true
-          },
-          {
             "name": "Cacao Nibs",
             "price": 200
           }
@@ -121,11 +116,6 @@
           {
             "name": "Peanut Butter",
             "price": 250
-          },
-          {
-            "name": "Almond Butter",
-            "price": 350,
-            "soldOut": true
           },
           {
             "name": "Cacao Nibs",
@@ -180,11 +170,6 @@
             "price": 250
           },
           {
-            "name": "Almond Butter",
-            "price": 350,
-            "soldOut": true
-          },
-          {
             "name": "Cacao Nibs",
             "price": 200
           }
@@ -235,11 +220,6 @@
           {
             "name": "Peanut Butter",
             "price": 250
-          },
-          {
-            "name": "Almond Butter",
-            "price": 350,
-            "soldOut": true
           },
           {
             "name": "Cacao Nibs",
@@ -294,11 +274,6 @@
             "price": 250
           },
           {
-            "name": "Almond Butter",
-            "price": 350,
-            "soldOut": true
-          },
-          {
             "name": "Cacao Nibs",
             "price": 200
           }
@@ -351,11 +326,6 @@
             "price": 250
           },
           {
-            "name": "Almond Butter",
-            "price": 350,
-            "soldOut": true
-          },
-          {
             "name": "Cacao Nibs",
             "price": 200
           }
@@ -387,11 +357,6 @@
           {
             "name": "Peanut Butter",
             "price": 250
-          },
-          {
-            "name": "Almond Butter",
-            "price": 350,
-            "soldOut": true
           }
         ]
       }
