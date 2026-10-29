@@ -828,3 +828,46 @@ sold-out); toppings are add-ons, not dishes.
 | modifier | 319 | 29.2% |
 | followup | 196 | 39.3% |
 | zh | 187 | 40.1% |
+
+## Bills, add-ons and Chinese, worked on v9 dev (2026-10-29)
+
+Fixed from v9 dev's failures, case by case, as general reading and answering rules (no case or
+label changed). The main ones:
+
+- **Order lines read as the guest says them.** Each mention of a dish is a line with its own count
+  and add-ons, before or after it ("2 large iced teh tarik, one of them less sweet", "两杯大杯椰果
+  柠檬多多"); a clause naming no dish changes the lines before it ("one of them with extra egg",
+  "both iced", "各来一杯冰的"); each pointer takes its own words ("2 of the first one, iced, and one
+  of the last one, hot").
+- **Add-ons in edits.** Taken off by name ("take out the sambal udang", "remove the egg", "actually
+  no ice cream", 去掉/拿掉), changed ("change the original to snow cheese", 换成), and found on the
+  right line by its own words ("the ayam one besar", "one of the nasi lemak large"). A dish name that
+  is another dish's add-on reads as the add-on ("a classic acai with peanut butter topping",
+  "半只炸鸡甜辣酱"). An add-on asked for that the menu doesn't have is said to be unavailable.
+- **Cheapest ways and either-or prices.** "What's the cheapest way to get half a chicken with fries,
+  coleslaw and a drink?" weighs sets, a dish with its combo add-ons and multi-unit options (Bucket of
+  4) against ordering one by one, from what's served now. "Is it cheaper to get 4 slices or a 9-inch
+  pizza?" prices each side with its counts and add-ons. Budget picks fit together ("I have RM30,
+  pick 3 drinks").
+- **Add-ons asked about on their own.** "Does the cheese foam have dairy?", "我吃全素，可以加奶盖吗？"
+  answer from what the menu's lines say the topping is made of; "can add protein?" lists each
+  choice the word names.
+- **Chinese.** Menu names said by their start (一片烧烤鸡, 雪花芝士) or shortened (芒果冰沙), 多多 for
+  养乐多, 奶茶/奶昔 as drinks rather than a milk allergy, 坚果 allergies covering peanuts, 华夫饼.
+- **Meat and other words.** "Is the beef pepperoni made of pork?" answers the meat first, and beef
+  pepperoni, chicken ham and turkey bacon aren't pork; "milk tea" asks for the drink; "with ice
+  cream" in an order wants it; typos with swapped or missing letters ("peral", "pudin").
+
+| Set | Before | After |
+|---|---|---|
+| v9 dev (746) | 50.4% | **96.5%**, 0 unsafe |
+| v9 dev, bill (366) | 29.8% | 97.8% |
+| v9 dev, modifier (319) | 29.2% | 96.9% |
+| v9 dev, followup (196) | 39.3% | 94.9% |
+| v9 dev, zh (187) | 40.1% | 95.7% |
+| v8 dev (491) | 83.9% | 87.2% |
+
+v9 dev was read case by case, so its score is an upper bound, not a measure: how much carries over
+needs a held-out set this work hasn't seen. v8 test isn't scored again this round (both of last
+round's scorings are used). Other dev sets unchanged or up (v1 99.2, v2 97.8, v3 97.6, v4 98.6, v5
+97.6, v6 96.9%), 0 unsafe everywhere.
