@@ -238,7 +238,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
   ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
   sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], susu: ["milk"],
-  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
+  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
 };
 
@@ -463,7 +463,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     if (same_.length < 2) continue;
     // (not the words another dish found claims: "a tau fu fah and soya bean milk" isn't asking for milk)
     const used = new Set([...same_[0].covered, ...found.filter((o) => !same_.includes(o)).flatMap((o) => o.covered)]);
-    const rest = toks.filter((t, i) => !used.has(i) && t.length > 2 && !GENERIC.has(t) && !/^(how|much|what|which|the|and|berapa|harga|price|got|ada|have|is|are|does|with)$/.test(t));
+    const rest = toks.filter((t, i) => !used.has(i) && t.length > 2 && !GENERIC.has(t) && !NUMBER_WORD[t] && !/^(how|much|what|which|the|and|berapa|harga|price|got|ada|have|is|are|does|with|one|then|also)$/.test(t));
     for (const m of same_) {
       const desc = normalize(`${m.dish.name} ${m.dish.description ?? ""}`).split(" ");
       // (only one of them keeps the words, so the guest's words decide it outright)
@@ -813,6 +813,8 @@ function requested(question: string, a: Allergen): boolean {
   // "egg dishes?", "seafood options", "any tofu stuff": the food asked for by its kind of dish
   const words = normalize(question).split(" ");
   if (words.some((w, i) => /^(dish|dishes|options?|food|foods|items?|stuff|menu|selection)$/.test(w) && i > 0 && mentionedAllergens(words[i - 1]).includes(a))) return true;
+  // ("with extra telur", "2 of the cheaper egg", "tambah telur"): more of it, or a count of it
+  if (question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && /\b(extra|add|tambah|plus|more|another|lebih)\b|\b(\d|two|three|dua|tiga)\s+(of the\s+)?(\w+\s+)?(eggs?|telur|cheese|keju)\b/i.test(clause))) return true;
   return question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && (REQUEST.test(clause) || REQUEST_ZH.test(clause)));
 }
 
@@ -954,7 +956,7 @@ export function read(items: Dish[], asked: string): Reading {
               : null;
   if (superlative === "spiciest" && spice.min === 2) spice.min = null;
 
-  const refersBack = /\b(those|these|them|that one|this one|the first|the second|the last one|it|yang tu|yang itu|yang ini|yang mana|out of)\b/.test(restText) || /那个|这个|那些|这些|它|哪个|哪一个/.test(restRaw);
+  const refersBack = /\b(those|these|them|that one|this one|the first|the second|the last one|it|yang tu|yang itu|yang ini|yang mana|out of)\b|^(does|is|has|did|can) (that|this)\b/.test(restText) || /那个|这个|那些|这些|它|哪个|哪一个/.test(restRaw);
 
   const ORD: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, fourth: 3, "4th": 3, last: -1, pertama: 0, kedua: 1, ketiga: 2, keempat: 3, terakhir: -1 };
   const ordWord = restText.match(/\b(?:the|that|this|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|4th|last|pertama|kedua|ketiga|keempat|terakhir)\b/);

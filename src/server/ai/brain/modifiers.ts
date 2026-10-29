@@ -56,7 +56,7 @@ const ALSO_ZH: Record<string, RegExp> = {
 // count's unit ("12 pcs", "12 inch": the number is what names it)
 const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "susu", "fresh", "tambah", "lebih", "more", "pcs", "pc", "inch", "inches", "make", "it", "combo", "upgrade", "level", "style", "x"]);
 // "no ice", "without ice", "tak nak ais", "走冰": an option taken off ("less ice" is still ice)
-const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|change the|swap the|tukar)\s+(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
+const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|take out(?: the)?|keluarkan)\s+(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
 const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰/g;
 // an option that is itself taken off or less of something ("Less ice", "No sugar", "Tanpa Kacang",
 // "Kurang Manis", "Kosong"): said as the guest says it, it's chosen (free), never "ice taken off"
@@ -130,8 +130,10 @@ const withoutName = (text: string, dish: WithOptions) => {
 /** The options of `dish` that `text` asks for (priced only, unless `free`), and the ones it takes off ("no ice"). */
 export function optionsSaid(text: string, dish: WithOptions, free = false, loose = false): { add: ModifierOption[]; off: ModifierOption[] } {
   const { t, raw } = withoutName(text, dish);
+  // ("change the telur mata to telur rebus": what's changed is taken off)
+  const changed = t.match(/\b(?:change|swap|switch|tukar|ganti|replace)\s+(?:the |my |it |that )?((?:\w+ ){0,2}?\w+)\s+(?:to|for|with|kepada|jadi|dengan)\b/)?.[1]?.split(" ") ?? [];
   const asked = new Set([...t.matchAll(/\b(?:add|tambah|with|extra|put|plus)\s+(?:some |a |an |the )?(\w+)/g)].map((m) => m[1]));
-  const offWords = new Set([...t.matchAll(OFF)].map((m) => m[2]).filter((w) => !asked.has(w)));
+  const offWords = new Set([...[...t.matchAll(OFF)].map((m) => m[2]), ...changed].filter((w) => !asked.has(w)));
   const offZh = [...raw.matchAll(OFF_ZH)].map((m) => m[1]);
   const words = new Set(t.split(" ").filter((w) => !offWords.has(w)));
   let joined = ` ${[...words].join(" ")} `;

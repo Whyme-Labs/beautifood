@@ -570,6 +570,7 @@ const en = {
     changeFrom: "The bill comes to {total} with any service and tax, so from {paid} your change is {change}.",
     dealNotOn: "The {deal} doesn't apply to {dish}: it's {value}, {window}.",
     freeOn: "{option} is free, no extra charge, on {list}.",
+    notSafeFor: "Note: {dish} isn't safe for you: it has {allergens}, which you said you avoid.",
     withCharges: "With {service} service charge and {tax} tax, {total}.",
     splitEach: "Split {count} ways, that's {each} each.",
     basketWithin: "Total {total}, within your {budget}.",

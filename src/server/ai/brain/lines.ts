@@ -79,11 +79,13 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     const zhName = Object.values(x.dish.translations ?? {}).map((t) => t?.name ?? "").find((z) => z.length > 1);
     const whole = /[㐀-鿿]/.test(text) ? !!zhName && text === zhName : words.length >= name.length;
     // ("upgrade to kimchi fries", "change it to the soy garlic")
-    const cued = toks.slice(Math.max(0, x.from - 2), x.from).some((t) => CUE.test(t)) || (toks[x.from - 1] === "to" && toks.slice(Math.max(0, x.from - 5), x.from - 1).some((t) => /^(upgrade|change|swap|switch|tukar|ganti|make)$/.test(t))) || (x.from > 0 && /^(and|dan|n|和)$/.test(toks[x.from - 1]) && toks.slice(Math.max(0, x.from - 6), x.from - 1).some((t) => CUE.test(t)));
+    // ("a telur mata on the first one", "add sambal sotong on it", "加在面里")
+    const onto = /^(on|onto|to|in|into|dalam|atas|untuk)$/.test(toks[x.to] ?? "") && /^(the|my|it|that|this|top|one|nasi|roti)$/.test(toks[x.to + 1] ?? "");
+    const cued = onto || toks.slice(Math.max(0, x.from - 2), x.from).some((t) => CUE.test(t)) || (toks[x.from - 1] === "to" && toks.slice(Math.max(0, x.from - 5), x.from - 1).some((t) => /^(upgrade|change|swap|switch|tukar|ganti|make)$/.test(t))) || (x.from > 0 && /^(and|dan|n|和)$/.test(toks[x.from - 1]) && toks.slice(Math.max(0, x.from - 6), x.from - 1).some((t) => CUE.test(t)));
     // (a count of its own before it makes it ordered: "two fish ball soup")
     let k = x.from - 1;
     while (k >= 0 && (COUNTER.test(toks[k]) || DESCRIBES.test(toks[k]))) k--;
-    const counted = k >= 0 && !!numberBefore(toks, k) && (!cued || whole);
+    const counted = k >= 0 && !!numberBefore(toks, k) && (!cued || whole) && !onto;
     // ("whole chicken half yangnyeom half original": "half" there is the sauce's half, not the Half Chicken)
     if (words.length && words.every((w) => /^(half|separuh|setengah|一|半)$/.test(w)) && spots.some((y) => y !== spot && y.from >= 0 && y.from < x.from)) {
       out.add(spot);
@@ -94,6 +96,11 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     const host = [...spots].filter((y) => y !== spot && y.from >= 0 && y.to <= x.from && !breaks.some((b) => b > y.from && b <= x.from) && !toks.slice(y.to, x.from).some((t) => JOIN.test(t))).sort((a, b) => b.to - a.to)[0];
     const follows = !!host && whole && !counted && !cued && optionsSaid(text, host.dish, true).add.length > 0 && !/[\u3400-\u9fff]/.test(text);
     if (counted || (whole && !cued && !follows)) continue;
+    if (onto && whole) {
+      // (said onto another dish it's that dish's add-on, the count its own: "a telur mata on the first one")
+      if ([...spots.filter((y) => y !== spot && y.from >= 0).map((y) => y.dish), ...others].some((d) => d.id !== x.dish.id && optionsSaid(phrase(words), d, true, true).add.length)) out.add(spot);
+      continue;
+    }
     const hosts = [...spots.filter((y) => y !== spot && y.from >= 0 && y.from < x.from).map((y) => y.dish), ...(cued ? spots.filter((y) => y !== spot && y.from > x.to).map((y) => y.dish) : []), ...others].filter((d) => d.id !== x.dish.id && d.modifiers?.length);
     // (with the words just before it: "extra chili sauce" asks for the Extra chilli sauce)
     const lead = [x.from - 2, x.from - 1].filter((i) => i >= 0 && !spots.some((y) => y !== spot && y.covered.includes(i))).map((i) => toks[i]);

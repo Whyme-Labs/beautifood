@@ -568,6 +568,7 @@ const zh = {
     changeFrom: "含服务费和税一共 {total}，付 {paid} 要找你 {change}。",
     dealNotOn: "{deal}不适用于{dish}：优惠是{value}，{window}。",
     freeOn: "{option}不用另外加钱，适用于{list}。",
+    notSafeFor: "注意：{dish}不适合你，它含有{allergens}，你说过要避开。",
     withCharges: "加{service}服务费和{tax}税，共 {total}。",
     splitEach: "{count}人平分，每人 {each}。",
     basketWithin: "合计 {total}，在你的预算 {budget} 之内。",
