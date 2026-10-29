@@ -247,7 +247,7 @@ test.describe("menu brain lab (browser)", () => {
     await expect(chat).toContainText("Kopi O Kosong (RM2.45, usually RM3.50)");
     await page.locator("#brain-question").fill("Can I still order breakfast?");
     await page.getByRole("button", { name: "Ask" }).click();
-    await expect(chat).toContainText("Breakfast is served from Thu");
+    await expect(chat).toContainText(/Breakfast is served daily 7:00\s?AM.*It starts from Thu/);
     // the catalog a model would get is the same at another hour; NOW is what changes
     const key = await page.getByTestId("brain-input").locator("code").textContent();
     await page.locator("#brain-time").fill("09:00");
