@@ -15,7 +15,8 @@ export interface Slot {
   fits: (d: Dish) => boolean;
 }
 
-const NUMBER: Record<string, number> = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5, sebiji: 1, secawan: 1 };
+const NUMBER: Record<string, number> = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, ten: 10, twelve: 12, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5, enam: 6, lapan: 8, sepuluh: 10, sebiji: 1, secawan: 1 };
+const NUMBER_WORD: Record<string, string> = { six: "6", eight: "8", ten: "10", twelve: "12", enam: "6", lapan: "8", sepuluh: "10" };
 const SEP = /^(and|dan|n|plus|with|also|then)$/;
 const STOP = /^(and|the|with|dan|for|from|our|house|style|set|special|vegetarian|vegan|veggie|halal|spicy|mild|classic|signature)$/;
 
@@ -147,11 +148,13 @@ export function compose<T extends Dish>(asked: Slot[], ranked: T[], budget: numb
 export const ORDERING = /\b(i ll|ill|i will|i want|i d like|id like|can i get|can i have|could i get|could i have|give me|add|i ll take|i ll have|i take|i have the|order|nak|saya nak|mau|plus|another)\b/;
 export const ORDERING_ZH = /我要|我想要|给我|来[一两二三四]?[个份杯碗碟盘]|加[一两二三四]?[个份杯碗碟盘]?|要[一两二三四][个份杯碗碟盘]|再来/;
 
-const ZH_NUMBER: Record<string, number> = { 一: 1, 两: 2, 二: 2, 三: 3, 四: 4, 五: 5 };
+const ZH_NUMBER: Record<string, number> = { 一: 1, 两: 2, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
 
 /** How many of each named dish ("two cappuccinos", "一杯奶茶", "2 x kopi"); one when no number is said. */
 export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
-  const toks = normalize(text).split(" ");
+  // ("2 six piece sets": the "six" is the 6-Piece Set's own, the 2 its count)
+  const digits = new Set(dishes.flatMap((d) => normalize(d.name).split(" ").filter((w) => /^\d+$/.test(w))));
+  const toks = normalize(text).split(" ").map((t) => (NUMBER_WORD[t] && digits.has(NUMBER_WORD[t]) ? NUMBER_WORD[t] : /^(ketul|pcs|pc|pieces)$/.test(t) ? "piece" : t));
   const out = new Map<Dish, number>();
   for (const d of dishes) {
     let n = 1;
@@ -176,18 +179,19 @@ export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
     if (at > 0) {
       // "two nasi lemak", "2 x kopi", "two plates of nasi lemak", "dua pinggan nasi"
       let k = at - 1;
-      while (k > 0 && /^(x|of|the|plates?|bowls?|cups?|glasses|glass|pieces?|pcs|orders?|servings?|portions?|sets?|pinggan|mangkuk|cawan|gelas|biji|ketul)$/.test(toks[k])) k--;
-      n = NUMBER[toks[k]] ?? (/^\d$/.test(toks[k] ?? "") ? Number(toks[k]) : 1);
+      while (k > 0 && /^(x|of|the|plates?|bowls?|cups?|glasses|glass|pieces?|pcs|orders?|servings?|portions?|sets?|pinggan|mangkuk|cawan|gelas|biji|ketul|cucuk|sticks?|batang|skewers?)$/.test(toks[k])) k--;
+      // (up to two digits: "20 satay ayam", "12 wings")
+      n = NUMBER[toks[k]] ?? (/^\d{1,2}$/.test(toks[k] ?? "") ? Number(toks[k]) : 1);
       // ("nasi lemak 2, teh tarik 3": the "2," closes the nasi lemak, it isn't the teh tarik's count)
       // (only when the comma sits between that number and this dish)
       const here = text.toLowerCase().search(new RegExp(`\\b${toks[at]}`));
-      const lead = here >= 0 ? text.slice(0, here).match(/(\d)\s*([,;]?)\s*(?:x\s*|of\s+|the\s+|plates?\s+of\s+)?$/i) : null;
+      const lead = here >= 0 ? text.slice(0, here).match(/(\d{1,2})\s*([,;]?)\s*(?:x\s*|of\s+|the\s+|plates?\s+of\s+|cucuk\s+|sticks?\s+(?:of\s+)?)?$/i) : null;
       if (n > 1 && lead && lead[2]) n = 1;
     }
     // "nasi lemak x2", "kopi ×3", "teh tarik times two"
     const end = at >= 0 ? at + words.length : -1;
     const after = end >= 0 ? normalize(text).split(" ").slice(end, end + 2).join(" ") : "";
-    const times = after.match(/^(?:x|×|times)\s*(\d|two|three|four|five|dua|tiga)\b|^x(\d)\b/);
+    const times = after.match(/^(?:x|×|times)\s*(\d{1,2}|two|three|four|five|dua|tiga)\b|^x(\d{1,2})\b/);
     if (times) n = NUMBER[times[1] ?? times[2]] ?? Number(times[1] ?? times[2]);
     // "nasi lemak 2, teh tarik 3", "kopi two.": a count right after the name, then a comma, "and" or the
     // end (not the next item's own count: "2 tofu poke, 1 tuna poke", "a carbonara and two cappuccinos")
@@ -195,7 +199,7 @@ export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
       let j = at;
       while (j < toks.length && words.some((w) => singular(toks[j]) === singular(w))) j++;
       const next = toks[j] ?? "";
-      const count = NUMBER[next] ?? (/^\d$/.test(next) ? Number(next) : undefined);
+      const count = NUMBER[next] ?? (/^\d{1,2}$/.test(next) ? Number(next) : undefined);
       const closes = j + 1 >= toks.length || /^(and|dan|n|plus|please|pls|total|how|berapa)$/.test(toks[j + 1]);
       const commaAfter = new RegExp(`\\b${next}\\s*(,|;|\\.|\\?|$)`, "i").test(text);
       // (a number of its own name, said as a digit, isn't a count: "mixed grill for 2" is the Mixed Grill for Two)
@@ -204,8 +208,9 @@ export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
     }
     // "another teh tarik", "satu lagi kopi": one more (added to what's on the order)
     if (at > 0 && /^(another|lagi)$/.test(toks[at - 1])) n = 1;
-    for (const zh of Object.values(d.translations ?? {}).map((x) => x?.name).filter(Boolean) as string[]) {
-      const m = text.match(new RegExp(`([一两二三四五\\d])[个份杯碗碟盘]?${zh.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
+    // (by its whole Chinese name or its distinctive end: "两个八件套" for 安邦八件套)
+    for (const zh of (Object.values(d.translations ?? {}).map((x) => x?.name).filter(Boolean) as string[]).flatMap((z) => Array.from({ length: Math.max(1, z.length - 2) }, (_, k) => z.slice(k)))) {
+      const m = text.match(new RegExp(`([一两二三四五六七八九十]|\\d{1,2})[个份杯碗碟盘支串根]?${zh.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
       if (m) n = ZH_NUMBER[m[1]] ?? Number(m[1]);
     }
     out.set(d, n);

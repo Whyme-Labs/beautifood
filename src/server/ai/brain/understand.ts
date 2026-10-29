@@ -214,7 +214,7 @@ export function stripInjection(question: string): { text: string; injected: bool
  * intent model already knows ("better") is never a typo of a dish word ("butter").
  */
 const same = (a: string, b: string) =>
-  a === b || a === `${b}s` || b === `${a}s` || MALAY_FOOD[a]?.includes(b) === true ||
+  a === b || a === `${b}s` || b === `${a}s` || MALAY_FOOD[a]?.includes(b) === true || (MALAY_FOOD[b]?.includes(a) === true && !mentionedAllergens(a).length) ||
   // a romanisation's vowel ("siu yok" for Siu Yuk, "kau yok" for Kau Yuk)
   (a.length === 3 && b.length === 3 && a[0] === b[0] && a[2] === b[2] && /^[ou]$/.test(a[1]) && /^[ou]$/.test(b[1])) ||
   // a typo: one letter off in a word of five or more, a letter left out of one ("perl" milk tea, not
@@ -230,6 +230,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
   ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
   sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], susu: ["milk"],
+  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
 };
 
@@ -247,15 +248,40 @@ interface Mention {
  * ("laksa", "cendol"), with one-letter typos forgiven. `skip` marks words that can't be dish
  * words (the allergen in "alergi kacang").
  */
+// a count's unit ("20 cucuk ayam", "30 sticks", "2 pcs") is never a dish word, typo or not
+const UNIT = new Set(["cucuk", "batang", "stick", "sticks", "pcs", "pc", "pieces", "biji", "ketul", "keping", "pinggan", "mangkuk", "cawan", "gelas"]);
+const NUMBER_WORD: Record<string, string> = { one: "1", two: "2", three: "3", four: "4", five: "5", six: "6", seven: "7", eight: "8", nine: "9", ten: "10", twelve: "12", satu: "1", dua: "2", tiga: "3", empat: "4", lima: "5", enam: "6", tujuh: "7", lapan: "8", sembilan: "9", sepuluh: "10" };
+const ZH_DIGIT: Record<string, string> = { 一: "1", 二: "2", 两: "2", 三: "3", 四: "4", 五: "5", 六: "6", 七: "7", 八: "8", 九: "9", 十: "10" };
+/** An allergen word on its own ("cheese", "kacang"), as against a dish's word that has one in it ("cheesecake"). */
+const allergenWord = (w: string) => mentionedAllergens(w).length > 0 && !(w.length >= 8 && /^(cheese|milk|cream|egg|peanut|butter|soy|fish|nut)/.test(w) && !/^(peanuts|cheeses|eggs)$/.test(w));
+
 export function findDishes(items: Dish[], raw: string, toks: string[], skip = new Set<number>()): Mention[] {
   const ix = dishIndex(items);
   const found: Mention[] = [];
+  // the guest's words as the menu's names write them: "six piece" for "6-Piece", "ketul" for piece
+  const nameWords = new Set(ix.names.flat());
+  // ("20 cucuk ayam", "30 sticks of chicken": skewers, on a menu of satay, are the satay)
+  const skewer = ["satay", "sate", "skewer", "skewers", "yakitori"].find((w) => nameWords.has(w));
+  toks = toks.map((t) => (NUMBER_WORD[t] && nameWords.has(NUMBER_WORD[t]) && !nameWords.has(t) ? NUMBER_WORD[t] : /^(ketul|pcs|pc|pieces|keping)$/.test(t) && nameWords.has("piece") ? "piece" : skewer && /^(cucuk|stick|sticks|batang)$/.test(t) ? skewer : t));
   // a word many dishes share ("mee", "ramen" on a ramen menu, "Sarawak"): it doesn't tell them apart
   const common = (i: number) => GENERIC.has(toks[i]) || ORIGIN.has(toks[i]) || (ix.df.get(toks[i]) ?? 0) >= 2;
   items.forEach((dish, n) => {
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
       if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2, zh: tr.name });
+    // a menu's Chinese name by its distinctive end ("八件套" for 安邦八件套, "六件套"), when only it ends so
+    for (const tr of Object.values(dish.translations ?? {})) {
+      const zh = tr?.name ?? "";
+      for (let cut = 1; zh.length - cut >= 3; cut++) {
+        const end = zh.slice(cut);
+        // (after a count, a counter or a joining word, not inside another dish's name: 鸡肉卷饼 isn't 牛肉卷饼)
+        const at = raw.indexOf(end);
+        if (at < 0) continue;
+        if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘两一二三四五六七八九十的要来加和与跟及还]/.test(raw[at - 1])) continue;
+        if (items.filter((o) => Object.values(o.translations ?? {}).some((x) => x?.name?.endsWith(end))).length === 1) return void found.push({ dish, at: raw.indexOf(end) / 100, covered: [], score: 1.8, zh: end });
+        break;
+      }
+    }
     // what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice), also when the menu's own
     // name is longer than what a guest says (三杯鸡 for its 三杯鸡饭, 千层面 for its 牛肉千层面)
     if (HAN_RE.test(raw)) {
@@ -288,7 +314,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       // leaves the beef noodle to the Taiwanese one; forward is fine, "steamed or roasted chicken
       // rice" shares its "chicken rice")
       const across = (a: number, b: number) => b < a && toks.slice(b + 1, a).some((x) => /^(vs|versus|or|atau|ke)$/.test(x));
-      const spots = toks.map((_, i) => i).filter((i) => !skip.has(i) && !covered.includes(i) && same(toks[i], w) && !(covered.length && across(covered[0], i)));
+      const spots = toks.map((_, i) => i).filter((i) => !skip.has(i) && !covered.includes(i) && same(toks[i], w) && (!UNIT.has(toks[i]) || toks[i] === w) && !(covered.length && across(covered[0], i)));
       if (!spots.length) continue;
       // the first word goes where the name's other words are ("pho" of "pho ga", not of the "pho bo
       // tai" before it; "japchae" of "vegetable japchae"), each later one next to those already placed
@@ -309,11 +335,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       // ...unless pointed at as a dish: "the mussels dish", "the kombucha", "berapa harga lala?"
       // (not "the double-boiled soups": a word followed by more of a section's name is the section)
       const pointed = df(w) === 1 && !COOKING_PLACE.test(w) && !/^(from|on|off|in|at|to|by)$/.test(toks[at - 2] ?? "") && !ix.courseWords.has(toks[at + 1] ?? "") && !ix.courseWords.has((toks[at + 1] ?? "").replace(/s$/, "")) && (/^(the|this|that|your|ur|harga|berapa)$/.test(toks[at - 1] ?? "") || /^(dish|one|tu|ni|itu|ini)$/.test(toks[at + 1] ?? ""));
-      if (!GENERIC.has(w) && !ORIGIN.has(w) && w !== "kacang" && (!mentionedAllergens(w).length || pointed)) strong = true;
+      if (!GENERIC.has(w) && !ORIGIN.has(w) && w !== "kacang" && (!allergenWord(w) || pointed)) strong = true;
       if (pointed) aimed = true;
       // an allergen word ("kacang" in Ais Kacang) alone names the allergen, not the dish
       // a word the menu's courses use ("skewers" in Yakitori & skewers) asks for the course, not one dish
-      if (df(w) === 1 && !GENERIC.has(w) && !ORIGIN.has(w) && ((!ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, ""))) || pointed) && w.length >= 4 && w !== "kacang" && (!mentionedAllergens(w).length || pointed)) unique = true;
+      if (df(w) === 1 && !GENERIC.has(w) && !ORIGIN.has(w) && ((!ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, ""))) || pointed) && w.length >= 4 && w !== "kacang" && (!allergenWord(w) || pointed)) unique = true;
     }
     if (!covered.length) return;
     // only the course's own words ("breakfast" of The Big Breakfast in "vegetarian breakfast?") don't name it
