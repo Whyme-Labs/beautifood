@@ -50,8 +50,41 @@ export interface DialogueState {
   shown: Item[];
   /** The dish being talked about. */
   focus: Item | null;
+  /** How many they are, said earlier ("we're 3", "我们四个人"). */
+  party: number | null;
+  /** Who each dish on the order is for, when they said ("me the 8 piece set, Ali the 6 piece"). */
+  owners: Record<string, string>;
   /** What the guest has ordered so far in this conversation ("I'll have the Diavola", "add an es teh"). */
   order: OrderLine[];
+}
+
+/**
+ * Who each dish is for, when a message says ("me the 8 piece set, Ali the 6 piece set with lime juice,
+ * Mei a tau fu fah"; "saya ambil set 6 ketul dengan teh tarik, kawan saya set 8 ketul"): "me" for the
+ * guest, else the name or who they are.
+ */
+export function ownersOf(text: string, named: Item[]): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (named.length < 2) return out;
+  const words = (i: Item) => normalize(i.name).split(" ").filter((w) => w.length > 2);
+  // a dish by the words only it has among those named ("6" and "8" for the two sets)
+  const all = (i: Item) => normalize(i.name).split(" ").filter((w) => w.length > 2 || /\d/.test(w));
+  const own = (i: Item) => {
+    const mine = all(i).filter((w) => !named.some((o) => o.id !== i.id && all(o).includes(w)));
+    return mine.length ? mine : all(i);
+  };
+  const SELF = /^(me|i|i ll|i will|i m|my|mine|for me|saya|aku|sy|me the|myself)$/i;
+  const OTHER = /^(my friend|my wife|my husband|my son|my daughter|my mum|my mom|my dad|kawan saya|kawan aku|isteri saya|suami saya|anak saya|dia|he|she|friend)$/i;
+  for (const seg of text.split(/[,;，；]|\.\s/)) {
+    const raw = seg.trim();
+    const two = raw.split(/\s+/).slice(0, 2).join(" ");
+    const one = raw.split(/\s+/)[0] ?? "";
+    const who = SELF.test(two) || SELF.test(one) ? "me" : OTHER.test(two) ? two.toLowerCase() : /^[A-Z][a-z]+$/.test(one) && !named.some((i) => words(i).includes(one.toLowerCase())) ? one : null;
+    if (!who) continue;
+    const n = ` ${normalize(raw).replace(/\b(ketul|pcs|pieces)\b/g, "piece").replace(/\b(six|enam)\b/g, "6").replace(/\b(eight|lapan)\b/g, "8")} `;
+    for (const i of named) if (own(i).some((w) => n.includes(` ${w} `) || n.includes(` ${w}s `))) out[i.id] ??= who;
+  }
+  return Object.keys(out).length >= 2 ? out : {};
 }
 
 /** A line of the order: the dish, how many, and the priced add-ons and sizes asked for with it. */
@@ -110,7 +143,7 @@ export function dishesIn(ctx: AssistantContext, text: string): Item[] {
 }
 
 export function dialogueState(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[]): DialogueState {
-  const s: DialogueState = { avoid: [], diet: [], maxSpice: null, noAlcohol: false, noCaffeine: false, noMeat: [], noWords: [], shown: [], focus: null, order: [] };
+  const s: DialogueState = { avoid: [], diet: [], maxSpice: null, noAlcohol: false, noCaffeine: false, noMeat: [], noWords: [], shown: [], focus: null, order: [], party: null, owners: {} };
   for (const h of history) {
     if (h.role === "user") {
       const u = read(ctx.items as Dish[], h.content);
@@ -123,6 +156,8 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
       s.noWords = [...new Set([...s.noWords, ...u.noWords])];
       if (u.minSpice !== null) s.maxSpice = null;
       if (u.dishes.length === 1) s.focus = u.dishes[0] as Item;
+      if (u.party) s.party = u.party;
+      Object.assign(s.owners, ownersOf(h.content, u.dishes as Item[]));
       // "I'll have the X", "add a Y", and a dish named without a question ("one nasi kerabu please",
       // "Teh tarik kurang manis") are on the order; "is the X spicy?" isn't
       const asks = /[?？]/.test(h.content) || QUESTION.test(normalize(h.content)) || QUESTION_ZH.test(h.content);
@@ -902,7 +937,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const nt1 = normalize(u.text);
   const oneEach = /\b(one|1|a|satu)\s+(\w+\s+){0,4}each\b|\beach (have|get|having|getting|take|one)\b|\bsatu (seorang|sorang)\b/.test(nt1) || /每人一|一人一/.test(u.text);
   const perPerson = !oneEach && (/\b(how much|berapa)\b.*\b(each|per person|per head|per pax|seorang|sorang)\b|\b(each|per person|per head|per pax) (pay|pays|paying)\b|\b(per person|per head|per pax|each of us)\b/.test(nt1) || /每人|每个人|一人多少/.test(u.text));
-  const party = u.party ?? null;
+  const party = u.party ?? state.party ?? null;
   // ("4 of us ... split equally": the party)
   const evenly = /\b(split|splitting|share the bill|bahagi)\b/.test(nt1) || /平分|分摊/.test(u.text);
   const shares = ways ?? ((perPerson || evenly) && party && party >= 2 ? party : null);
@@ -934,7 +969,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const chargesAskedZh = !!ctx.charges && !mentioned.length && !state.order.length && /服务费|税/.test(u.text) && /吗|有没有|收不收|含不含|加不加/.test(u.text);
   if (chargesAsked || chargesAskedZh) {
     const ch = ctx.charges!;
-    const service = ch.serviceChargePct ? t("assistantReply.serviceToo", { service: `${ch.serviceChargePct}%` }) : "";
+    const service = ch.serviceChargePct ? t("assistantReply.serviceToo", { service: `${ch.serviceChargePct}%` }) : t("assistantReply.noServiceToo");
     const text = !ch.serviceChargePct && (!ch.taxPct || ch.taxInclusive) && !ch.taxPct
       ? t("assistantReply.noCharges")
       : ch.taxInclusive
@@ -985,7 +1020,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return reply("dish_info", t("assistantReply.optionPrice", { option: optionLabel(asked[0].option), price: money(asked[0].option.price), list: list(asked[0].dishes.slice(0, 4).map(name)) }), []);
   }
   const pointed = pointedAt(u.text, state.shown);
-  if (!difference && !u.budget && (changing || totalWord || (pointed.length > 0 && (howMuch || ordering || mentioned.length > 0)) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
+  // "what's my share?", "how much does each person pay?", "saya kena bayar berapa?"
+  const mineAsked = /\b(my share|my part|my portion|mine|how much (do|should) i pay|what do i pay|saya kena bayar|saya bayar berapa|bahagian saya)\b/.test(nt1) || /我要付多少|我的部分|我付多少/.test(u.text);
+  const eachAsked = /\b(each (person|one of us) (pay|pays|owe)|how much (does|do) each|who pays what|everyone pays|masing masing|seorang berapa)\b/.test(nt1) || /各自|每个人付|每人付/.test(u.text);
+  const ownersNow = { ...state.owners, ...ownersOf(u.text, mentioned) };
+  if (!difference && !u.budget && (changing || totalWord || ((mineAsked || eachAsked) && (state.order.length > 0 || mentioned.length > 1)) || (pointed.length > 0 && (howMuch || ordering || mentioned.length > 0)) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
     const bill: OrderLine[] = state.order.map((o) => ({ ...o }));
     // what they ask for that can't be had now: said, and left off
     const gone = mentioned.filter((i) => !orderable(i) && !state.order.some((o) => o.item.id === i.id));
@@ -1025,12 +1064,24 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (after.length) for (let k = bill.length - 1; k >= 0; k--) if (normalize(bill[k].item.name).split(" ").some((w) => w.length > 2 && after.includes(w))) bill.splice(k, 1);
     // "I only had the briyani and one teh tarik, how much is mine?": their part of the bill
     const mineOnly = state.order.length > 0 && mentioned.length > 0 && /\b(i only had|i had|i just had|i ate|i got|mine|my share|my part|my portion|for me|saya (makan|ambil|order)|aku (makan|ambil))\b/.test(nt1) && mentioned.every((i) => bill.some((o) => o.item.id === i.id));
+    // ("saya ambil X, kawan saya Y. saya kena bayar berapa?": the guest's own, by who said they'd have what)
+    const mineByOwner = mineAsked && !mineOnly && Object.values(ownersNow).includes("me");
+    if (mineByOwner) bill.splice(0, bill.length, ...bill.filter((o) => ownersNow[o.item.id] === "me"));
+    if (eachAsked && Object.keys(ownersNow).length >= 2 && bill.every((o) => ownersNow[o.item.id])) {
+      const people = [...new Set(bill.map((o) => ownersNow[o.item.id]))];
+      const parts = people.map((p) => {
+        const mine = bill.filter((o) => ownersNow[o.item.id] === p);
+        const sum = mine.reduce((n, o) => n + unitPrice(o) * o.count, 0);
+        return `${p === "me" ? t("assistantReply.you") : p.charAt(0).toUpperCase() + p.slice(1)}: ${mine.map((o) => (o.count > 1 ? `${o.count} × ${name(o.item)}` : name(o.item))).join(" + ")} = ${money(sum)}`;
+      });
+      return reply("recommend", `${parts.join(t("assistantReply.itemSep"))}${stop}`, bill.map((o) => o.item));
+    }
     if (mineOnly) {
       const said = countsOf(u.text, mentioned);
       const part = bill.filter((o) => mentioned.some((i) => i.id === o.item.id)).map((o) => ({ ...o, count: Math.min(o.count, said.get(o.item as Dish) ?? 1) }));
       bill.splice(0, bill.length, ...part);
     }
-    if (bill.reduce((n, o) => n + o.count, 0) >= (edited || cut || after.length || several || changing || mineOnly ? 1 : 2)) {
+    if (bill.reduce((n, o) => n + o.count, 0) >= (edited || cut || after.length || several || changing || mineOnly || mineByOwner ? 1 : 2)) {
       const total = bill.reduce((sum, o) => sum + unitPrice(o) * o.count, 0);
       // "Teh Tarik with iced (RM3.10)": a line's add-ons and its price with them
       const lineOf = (o: OrderLine) => (o.options?.length ? `${t("assistantReply.withOptions", { dish: name(o.item), options: list(o.options.map(optionLabel)) })} (${money(unitPrice(o))})` : line(o.item));
@@ -1043,7 +1094,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const due = withCharges ? Math.round((total + service + tax) / Math.max(1, ch.cashRounding)) * Math.max(1, ch.cashRounding) : total;
       const charges = withCharges ? `${sp}${t("assistantReply.withCharges", { service: `${ch.serviceChargePct}%`, tax: `${ch.taxPct}%`, total: money(due) })}` : "";
       const each = shares && shares >= 2 ? `${sp}${t("assistantReply.splitEach", { count: shares, each: money(Math.ceil(due / shares)) })}` : "";
-      return reply("recommend", `${goneNote}${mineOnly ? `${t("assistantReply.yourPart")}${sp}` : ""}${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${charges}${each}`, bill.map((o) => o.item));
+      return reply("recommend", `${goneNote}${mineOnly || mineByOwner ? `${t("assistantReply.yourPart")}${sp}` : ""}${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${charges}${each}`, bill.map((o) => o.item));
     }
   }
 

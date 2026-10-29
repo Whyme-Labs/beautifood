@@ -396,7 +396,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   for (const m of found) if (m.covered.length) claimedBy.set([...m.covered].sort().join(","), [...(claimedBy.get([...m.covered].sort().join(",")) ?? []), m]);
   for (const same_ of claimedBy.values()) {
     if (same_.length < 2) continue;
-    const used = new Set(same_[0].covered);
+    // (not the words another dish found claims: "a tau fu fah and soya bean milk" isn't asking for milk)
+    const used = new Set([...same_[0].covered, ...found.filter((o) => !same_.includes(o)).flatMap((o) => o.covered)]);
     const rest = toks.filter((t, i) => !used.has(i) && t.length > 2 && !GENERIC.has(t) && !/^(how|much|what|which|the|and|berapa|harga|price|got|ada|have|is|are|does|with)$/.test(t));
     for (const m of same_) {
       const desc = normalize(`${m.dish.name} ${m.dish.description ?? ""}`).split(" ");

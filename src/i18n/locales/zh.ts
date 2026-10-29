@@ -540,6 +540,8 @@ const zh = {
     nothingSoldOut: "现在没有卖完的菜。",
     notOnNowList: "现在不供应：{list}。",
     freeChoice: "{dish}选{option}不用另外加钱：{price}。",
+    you: "你",
+    noServiceToo: "，不收服务费",
     basketIntro: "帮你配好了：",
     basketTotal: "合计 {total}。",
     withCharges: "加{service}服务费和{tax}税，共 {total}。",
