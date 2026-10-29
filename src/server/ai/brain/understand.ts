@@ -221,14 +221,20 @@ export function stripInjection(question: string): { text: string; injected: bool
  * A question word `a` naming dish word `b`: the same, a plural, or one letter off. A word the
  * intent model already knows ("better") is never a typo of a dish word ("butter").
  */
-const same = (a: string, b: string) =>
+export const same = (a: string, b: string) =>
   a === b || a === `${b}s` || b === `${a}s` || MALAY_FOOD[a]?.includes(b) === true || (MALAY_FOOD[b]?.includes(a) === true && !mentionedAllergens(a).length) ||
   // a romanisation's vowel ("siu yok" for Siu Yuk, "kau yok" for Kau Yuk)
   (a.length === 3 && b.length === 3 && a[0] === b[0] && a[2] === b[2] && /^[ou]$/.test(a[1]) && /^[ou]$/.test(b[1])) ||
   // a typo: one letter off in a word of five or more, a letter left out of one ("perl" milk tea, not
   // "main" for Mein), two in a long word ("samgyupsal")
   (a[0] === b[0] && !intentModel().vocab?.has(a) && !REAL.has(a) &&
-    ((a.length >= 8 && b.length >= 8 && editDistance(a, b, 2) <= 2) || (a.length >= 5 && b.length >= 5 && editDistance(a, b, 1) <= 1) || (a.length === 4 && b.length === 5 && editDistance(a, b, 1) <= 1)));
+    ((a.length >= 8 && b.length >= 8 && editDistance(a, b, 2) <= 2) || (a.length >= 5 && b.length >= 5 && editDistance(a, b, 1) <= 1) || (a.length === 4 && b.length === 5 && editDistance(a, b, 1) <= 1) || (a.length >= 5 && swapped(a, b))));
+/** "peral" for "pearl": two letters next to each other typed the wrong way round. */
+const swapped = (a: string, b: string) => {
+  if (a.length !== b.length) return false;
+  const k = [...a].findIndex((ch, i) => ch !== b[i]);
+  return k >= 0 && k < a.length - 1 && a[k] === b[k + 1] && a[k + 1] === b[k] && a.slice(k + 2) === b.slice(k + 2);
+};
 
 /** Words for how or where food is cooked: "the grill", "the wok" is that, not one dish named by it. */
 const COOKING_PLACE = /^(grill|grills|bbq|barbecue|wok|oven|tandoor|charcoal|kitchen|bar|counter|smoker|pit|fryer|steamer|hotplate|teppan|robata)$/;
@@ -237,7 +243,7 @@ const COOKING_PLACE = /^(grill|grills|bbq|barbecue|wok|oven|tandoor|charcoal|kit
 const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
   ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
-  sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], susu: ["milk"],
+  sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], tee: ["tea"], susu: ["milk"],
   limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
 };
@@ -469,6 +475,18 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       // (only one of them keeps the words, so the guest's words decide it outright)
       if (rest.some((t) => desc.some((w) => same(t, w)))) m.score += 1;
       if (/\b(vegetarian|vegan|veggie)\b/i.test(m.dish.name) && !toks.some((t) => /^(vegetarian|vegan|veggie|vege|veg)$/.test(t)) && !/素/.test(raw)) m.score -= 1;
+    }
+  }
+  // "a classic acai with peanut butter topping": the Classic Acai Bowl with its topping, not the Peanut
+  // Butter Acai Bowl made of words from both sides of the "with"
+  const withAt = toks.findIndex((t) => /^(with|dengan)$/.test(t));
+  if (withAt > 0) {
+    const spans = (m: Mention) => m.covered.some((i) => i < withAt) && m.covered.some((i) => i > withAt);
+    for (const m of found) {
+      if (!spans(m)) continue;
+      const after = m.covered.filter((i) => i > withAt).map((i) => toks[i]);
+      const host = found.find((o) => o !== m && !spans(o) && o.covered.some((i) => m.covered.includes(i)) && o.dish.modifiers?.some((g) => g.options.some((x) => { const ws = normalize(x.name).split(" "); return after.every((w) => ws.some((y) => same(w, y))); })));
+      if (host) m.score = Math.min(m.score, host.score - 0.01);
     }
   }
   // two dishes claiming the same words: the better match keeps them
@@ -763,7 +781,7 @@ export function askedCategories(items: Dish[], words: string[], raw: string): st
   for (const [re, stems] of CATEGORY_ZH) if (re.test(raw)) stems.forEach((x) => wanted.add(x));
   const hitsOf = (set: Set<string>) => (c: string) => {
     const n = normalize(c);
-    return [...set].filter((x) => (x.includes(" ") ? n.includes(x) : catWords(c).some((cw) => cw === x || cw.startsWith(x)))).length;
+    return [...set].filter((x) => (x.includes(" ") ? n.includes(x) : catWords(c).some((cw) => cw === x || cw.startsWith(x) || cw.replace(/y$/, "ie") === x))).length; // ("smoothies" made "smoothy")
   };
   const direct = hitsOf(own);
   const hits = cats.some((c) => direct(c)) ? direct : hitsOf(new Set([...own, ...wanted]));
@@ -810,11 +828,15 @@ function requested(question: string, a: Allergen): boolean {
   const bare = normalize(question).split(" ").filter((w) => w && !/^(got|ada|any|ah|lah|pls|please|the|some)$/.test(w));
   if (bare.length <= 2 && bare.some((w) => FOOD_NOUN.test(w)) && mentionedAllergens(question).includes(a)) return true;
   if (/^[\s?？!！]*(有没有)?\s*(豆腐|虾|蟹|鱼|芝士|鸡蛋)\s*(吗)?[\s?？!！]*$/.test(question)) return true;
+  // "milk tea", "奶茶", "奶昔" name a kind of drink: asking for one isn't avoiding milk
+  if (a === "milk" && (/\bmilk\s?(tea|tee|teas|shakes?)\b/i.test(question) || /奶茶|奶昔/.test(question))) return true;
   // "egg dishes?", "seafood options", "any tofu stuff": the food asked for by its kind of dish
   const words = normalize(question).split(" ");
   if (words.some((w, i) => /^(dish|dishes|options?|food|foods|items?|stuff|menu|selection)$/.test(w) && i > 0 && mentionedAllergens(words[i - 1]).includes(a))) return true;
-  // ("with extra telur", "2 of the cheaper egg", "tambah telur"): more of it, or a count of it
-  if (question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && /\b(extra|add|tambah|plus|more|another|lebih)\b|\b(\d|two|three|dua|tiga)\s+(of the\s+)?(\w+\s+)?(eggs?|telur|cheese|keju)\b/i.test(clause))) return true;
+  // ("with extra telur", "2 of the cheaper egg", "tambah telur", "a waffle with ice cream"): more of it, or a count of it
+  if (question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && /\b(extra|add|tambah|plus|more|another|lebih|with|dengan)\b|\b(\d|two|three|dua|tiga)\s+(of the\s+)?(\w+\s+)?(eggs?|telur|cheese|keju)\b/i.test(clause))) return true;
+  // ("I want nasi lemak with ayam goreng, sambal sotong and a fried egg": the whole order is wanted)
+  if (question.split(/[.!?。！？]+/).some((sentence) => mentionedAllergens(sentence).includes(a) && /^\s*(i want|i d like|i would like|i ll have|can i (get|have)|could i (get|have)|give me|we want|we ll have|saya nak|nak order)\b/i.test(normalize(sentence)))) return true;
   return question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && (REQUEST.test(clause) || REQUEST_ZH.test(clause)));
 }
 
@@ -894,6 +916,8 @@ export function read(items: Dish[], asked: string): Reading {
   // English is read from the tokens left after the dish names ("Hokkaido Milk Tea" asks nothing
   // about milk); only the CJK text, with translated names taken out, is read from the raw string
   const allergens = mentionedAllergens(`${restText} ${restRaw.replace(/[a-z][a-z'-]*/g, " ")}`);
+  // "我对坚果过敏": allergic to nuts, so peanuts too, as "nuts" is in English
+  if (/坚果/.test(restRaw) && /过敏|不能吃|不吃/.test(restRaw) && allergens.includes("tree_nuts") && !allergens.includes("peanuts")) allergens.push("peanuts");
   const hasDish = mentions.length > 0;
   // "kacang" is nuts when they're avoiding it or asking about a dish ("satay ada kacang tak?")
   if (/\bkacang\b/.test(restText) && !allergens.includes("peanuts") && (AVOID_CUE.test(restText) || hasDish)) allergens.push("peanuts", "tree_nuts");
@@ -998,7 +1022,7 @@ export function read(items: Dish[], asked: string): Reading {
     party,
     courses,
     // a word naming what they avoid ("no milk") doesn't ask for its category ("Milk teas")
-    categories: askedCategories(items, rest.filter((t, k) => !mentionedAllergens(t).some((a) => avoid.includes(a)) && !negatedAt(rest, k) && !negatedNear(rest, k) && !(courses.some((c) => c !== "drinks") && goesWith(rest, k)) && !ruledOut(t)), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? restRaw.replace(/[^，,。？?！!]*(不要|不能|不吃|不含|没有|无|过敏|别|忌|走)[^，,。？?！!]*/g, " ") : restRaw),
+    categories: askedCategories(items, rest.filter((t, k) => !mentionedAllergens(t).some((a) => avoid.includes(a)) && !negatedAt(rest, k) && !negatedNear(rest, k) && !(courses.some((c) => c !== "drinks") && goesWith(rest, k)) && !ruledOut(t)), avoid.length && /[\u4e00-\u9fff]/.test(restRaw) ? restRaw.replace(/对[^，,。？?！!]*过敏|[^，,。？?！!]*过敏/g, " ").replace(/(不要|不能|不吃|不含|没有|无|别|忌|走)[^，,。？?！!]*/g, " ") : restRaw),
     appetite: light ? "light" : hearty ? "hearty" : null,
     superlative,
     refersBack: refersBack || ordinal !== null || choosing,

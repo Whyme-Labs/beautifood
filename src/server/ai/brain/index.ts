@@ -12,6 +12,7 @@ import { normalize, osaDistance, unsaid } from "../../../shared/brain/text";
 import { basketOf, compose, countsOf, ORDERING, ORDERING_ZH, plainRice } from "./basket";
 import { choicesText, optionLabel, optionsAsked, optionsSaid } from "./modifiers";
 import { linesOf, optionSpots } from "./lines";
+import { CHEAPEST_WAY, CHEAPEST_WAY_ZH, cheapestWay, needsOf } from "./cheapest";
 import { mentionedAllergens } from "../local";
 import type { Intent } from "../../../shared/brain/intentModel";
 import { allergyNote, type AssistantContext, type AssistantReply } from "../local";
@@ -962,6 +963,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (intent === "compare" && focus.length + (mentioned.length ? 0 : state.shown.length) < 2) intent = focus.length ? "dish_info" : "recommend";
   // "那面呢？", "what about desserts?": a new course asked for, not the last dishes weighed
   if (intent === "compare" && !mentioned.length && (u.courses.length || u.categories.length)) intent = "recommend";
+  // "the cheapest drink that comes with pearls": what's in it, not what goes with it
+  // ("the cheapest drink with grass jelly": the drinks that have it)
+  const withIn = intent === "pairing" && !pairs && (/\b(comes?|came|served|made|topped|filled) with\b/.test(normalize(u.text)) || (!!u.superlative && /\bwith\b/.test(normalize(u.text))));
+  if (withIn) intent = "recommend";
   if (intent === "pairing" && !focus.length && !(state.focus && !mentioned.length)) {
     // "mkn ramen, minum apa sesuai?": no one dish to pair with, so what goes with it is the ask
     intent = "recommend";
@@ -1166,7 +1171,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // those ask for a suggestion)
   const asksWhat = /\b(what|wat|which|apa|mana|any|anything|something|recommend|suggest|cadang)\b/.test(nt1) || /什么|哪|推荐/.test(u.text);
   const optionsNow = state.order.some((o) => optionsSaid(u.text, o.item).add.length || optionsSaid(u.text, o.item).off.length);
-  const changing = (!asksOfDish || (editing && mentioned.length > 0)) && !difference && !asksWhat && ((state.order.length > 0 && ((ordering && mentioned.length > 0) || (editing && (mentioned.length > 0 || COUNT_SAID.test(nt1) || optionsNow)) || optionsNow)) || placed);
+  // ("actually no ice cream": an add-on on a line taken off, not a question of what has milk)
+  const takenOff = !/[?？]/.test(u.text) && !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac|vegan|vegetarian)\b/.test(nt1) && !/过敏|素/.test(u.text) && state.order.some((o) => optionsSaid(u.text, o.item).off.some((x) => o.options?.some((y) => y.name === x.name)));
+  const changing = (!asksOfDish || takenOff || (editing && mentioned.length > 0)) && !difference && !asksWhat && ((state.order.length > 0 && ((ordering && mentioned.length > 0) || (editing && (mentioned.length > 0 || COUNT_SAID.test(nt1) || optionsNow)) || optionsNow)) || placed);
   // "do you charge service or SST?": what the till adds here, from the branch's settings
   const chargesAsked = !!ctx.charges && !mentioned.length && !state.order.length && /\b(service charge|service tax|sst|gst|tax|taxes|cukai|servis|caj)\b/.test(nt1) && /\b(do you|is there|are there|any|got|ada|charge|charged|include|included|includes|add|berapa|kena)\b/.test(nt1);
   const chargesAskedZh = !!ctx.charges && !mentioned.length && !state.order.length && /服务费|税/.test(u.text) && /吗|有没有|收不收|含不含|加不加/.test(u.text);
@@ -1216,7 +1223,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const own = (optHost.modifiers ?? []).flatMap((g) => g.options.filter((o) => o.price > 0));
     const ownText = own.length ? `${sp}${t("assistantReply.itsAddOns", { dish: name(optHost), list: list(own.map((o) => `${optionLabel(o)} (+${money(o.price)})`)) })}` : "";
     // "can add milk or not?", "what size?": the choices of that kind it has
-    const GROUP_ZH: [RegExp, RegExp][] = [[/booster/i, /营养粉|蛋白粉|补充/], [/sauce/i, /酱/], [/size/i, /大小|尺寸|大杯|大份/], [/topping|add-on/i, /配料|加料/], [/milk/i, /奶/], [/flavou?r/i, /口味|味道/], [/sugar|sweet/i, /甜度|糖度/], [/spice|chilli/i, /辣度/]];
+    const GROUP_ZH: [RegExp, RegExp][] = [[/booster/i, /营养粉|蛋白粉|补充/], [/sauce/i, /酱/], [/size/i, /大小|尺寸|大杯|大份/], [/topping|add-on/i, /配料|加料/], [/milk/i, /奶(?!昔|茶|盖)/], [/flavou?r/i, /口味|味道/], [/sugar|sweet/i, /甜度|糖度/], [/spice|chilli/i, /辣度/]];
     const groups = (optHost.modifiers ?? []).filter((g) => normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(add|ons|extra|extras|pilihan|tambah|make|your|pick|choose|choice|upgrade)$/.test(w) && ` ${nt1} `.includes(` ${w.replace(/s$/, "")}`)) || GROUP_ZH.some(([en_, zh_]) => en_.test(g.name) && zh_.test(u.text)) || g.options.some((o) => normalize(o.name).split(" ").some((w) => w.length > 2 && /^(milk|size|sauce|topping|toppings)$/.test(w) && ` ${nt1} `.includes(` ${w} `))));
     // "can I have two sauces?", "可以要两种酱吗？": as many as it takes
     const twoAsked = /\b(two|2|both|half half|half and half)\b/.test(nt1) || /两种|两样|两个酱|一半.{1,8}一半/.test(u.text);
@@ -1327,6 +1334,42 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   };
   // "Teh Tarik with iced": a line's add-ons
   const lineName = (o: OrderLine) => (o.options?.length ? t("assistantReply.withOptions", { dish: name(o.item), options: list(o.options.map(optionLabel)) }) : name(o.item));
+  // "what's the cheapest way to get half a chicken with fries, coleslaw and a drink?": a set, a dish with
+  // its combo add-ons or the things one by one, whichever costs least of what's served now
+  const wanted = (CHEAPEST_WAY.test(nt1) || CHEAPEST_WAY_ZH.test(u.text)) && !u.budget ? needsOf(u.text) : null;
+  const way = wanted && cheapestWay(live.filter((i) => allowed(i, c)) as Dish[], wanted);
+  if (way) {
+    const lines: OrderLine[] = [];
+    for (const b of way.buys) {
+      const options = b.options.filter((o) => o.price > 0);
+      const same_ = lines.find((o) => o.item.id === b.dish.id && sameOptions(o.options ?? [], options));
+      if (same_) same_.count += 1;
+      else lines.push({ item: b.dish as Item, count: 1, options: options.length ? options : undefined });
+    }
+    const apart = cheapestWay(live.filter((i) => allowed(i, c)) as Dish[], wanted, true);
+    const shown = lines.map((o) => `${o.count > 1 ? `${o.count} × ` : ""}${lineName(o)} (${money(unitPrice(o))})`);
+    const text = [t("assistantReply.cheapestWay", { lines: list(shown), total: money(way.total) })];
+    if (apart && apart.total > way.total) text.push(t("assistantReply.cheaperThanApart", { apart: money(apart.total), saved: money(apart.total - way.total) }));
+    return reply("order_help", text.join(sp), [...new Set(lines.map((o) => o.item))]);
+  }
+  // "is it cheaper to get 4 pepperoni slices or a 9-inch pepperoni pizza?", "the peanut butter bowl, or
+  // a classic with peanut butter topping?": each way as ordered, counts and add-ons too
+  const alts = /\b(cheaper|cheapest|more expensive|pricier|less)\b/.test(nt1) || /便宜|划算|贵/.test(u.text) ? u.text.split(/\s+or\s+|还是|\s+atau\s+/i) : [];
+  if (alts.length === 2) {
+    const priced = alts.map((w) => {
+      const r = reanchor(read(live as Dish[], w), live);
+      return orderedLines(r, ownDishes(r, live));
+    });
+    if (priced.every((ls) => ls.length) && priced.some((ls) => ls.some((o) => o.count > 1 || o.options?.length))) {
+      const cost = priced.map((ls) => ls.reduce((n, o) => n + unitPrice(o) * o.count, 0));
+      const said = priced.map((ls) => list(ls.map((o) => `${o.count > 1 ? `${o.count} × ` : ""}${lineName(o)}`)));
+      const k = cost[0] <= cost[1] ? 0 : 1;
+      const text = cost[0] === cost[1]
+        ? t("assistantReply.waysSame", { a: said[0], b: said[1], price: money(cost[0]) })
+        : t("assistantReply.waysCheaper", { a: said[k], aPrice: money(cost[k]), b: said[1 - k], bPrice: money(cost[1 - k]), diff: money(Math.abs(cost[0] - cost[1])) });
+      return reply("compare", text, [...new Set(priced.flat().map((o) => o.item))]);
+    }
+  }
   // "what's my share?", "how much does each person pay?", "saya kena bayar berapa?"
   const mineAsked = /\b(my share|my part|my portion|mine|how much (do|should) i pay|what do i pay|saya kena bayar|saya bayar berapa|bahagian saya)\b/.test(nt1) || /我要付多少|我的部分|我付多少/.test(u.text);
   const eachAsked = /\b(each (person|one of us) (pay|pays|owe)|how much (does|do) each|how much each|each of us|who pays what|everyone pays|separate bills?|separately|pay separately|masing masing|seorang berapa|berapa seorang|bayar asing|asing asing|berasingan|kira asing)\b/.test(nt1) || /各自|每个人付|每人付|分开算|分开付|各付/.test(u.text);
@@ -1457,7 +1500,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const charges = withCharges ? `${sp}${t(`assistantReply.${chargesKey}` as MessageKey, { service: `${ch.serviceChargePct}%`, tax: `${ch.taxPct}%`, total: money(due) })}` : "";
       const each = shares && shares >= 2 ? `${sp}${t("assistantReply.splitEach", { count: shares, each: money(Math.ceil(due / shares)) })}` : "";
       // (something on it that breaks what they said they avoid: said first)
-      const avoidNow = [...new Set([...state.avoid, ...u.stated])];
+      // ("no ice cream" takes an add-on off: it says nothing of what they can eat)
+      const avoidNow = [...new Set([...state.avoid, ...(takenOff ? [] : u.stated)])];
       const breaks = bill.filter((o) => o.item.allergens.some((a) => avoidNow.includes(a as Allergen)) || (o.options ?? []).some((x) => live.some((i) => normalize(i.name) === normalize(x.name) && i.allergens.some((a) => avoidNow.includes(a as Allergen)))));
       const warn = breaks.map((o) => `${t("assistantReply.notSafeFor", { dish: lineName(o), allergens: list([...new Set([...o.item.allergens, ...(o.options ?? []).flatMap((x) => live.find((i) => normalize(i.name) === normalize(x.name))?.allergens ?? [])])].filter((a) => avoidNow.includes(a as Allergen)).map(allergen)) })}${sp}`).join("");
       return reply("recommend", `${warn}${goneNote}${mineOnly || mineByOwner ? `${t("assistantReply.yourPart")}${sp}` : ""}${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${charges}${each}`, bill.map((o) => o.item));
@@ -1876,7 +1920,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // (the guest's words order what fits, even when one also names a dish: "which tauhu dish?")
       const typed = askedTerms(u.text, live, c.avoid, u.noWords).words;
       // "which milkshake?", "anything with lamb or mutton?", "what fish do you have?": the dishes with it
-      if (!mentioned.length && !nth && !u.signatures) {
+      if ((!mentioned.length || withIn) && !nth && !u.signatures) {
         const asked = askedTerms(u.text, live, c.avoid, u.noWords);
         if (asked.words.length || asked.allergens.length) {
           // the dish's own name says it best, then its description

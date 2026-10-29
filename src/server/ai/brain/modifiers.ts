@@ -89,7 +89,13 @@ const keyWords = (o: ModifierOption) => {
 };
 const has = (w: string, words: Set<string>, joined: string) => (w.includes(" ") ? joined.includes(` ${w} `) : words.has(w));
 // said as itself (or in Chinese), or only in the guest's other words for it ("ikan" for fish)
-const typo = (w: string, words: Set<string>) => w.length >= 5 && !/\d/.test(w) && [...words].some((x) => x.length >= 4 && x[0] === w[0] && x !== w && (editDistance(x, w, 1) <= 1 || (w.startsWith(x) && w.length - x.length === 1)));
+const typo = (w: string, words: Set<string>) => w.length >= 5 && !/\d/.test(w) && [...words].some((x) => x.length >= 4 && x[0] === w[0] && x !== w && (editDistance(x, w, 1) <= 1 || (w.startsWith(x) && w.length - x.length === 1) || (x.length >= 5 && w.length - x.length === 2 && w.startsWith(x.slice(0, 3)) && subseq(x, w))));
+// "pudin" for "pudding": the letters typed are all in it, in order, with two left out
+const subseq = (typed: string, w: string) => {
+  let k = 0;
+  for (const ch of w) if (ch === typed[k]) k++;
+  return k === typed.length;
+};
 const direct = (w: string, words: Set<string>, joined: string, raw: string) =>
   has(w, words, joined) || typo(w, words) || (/^\d+$/.test(w) ? false : has(w.replace(/(es|s)$/, ""), words, joined) || has(`${w}s`, words, joined)) || !!ALSO_ZH[w]?.test(raw);
 const alias = (w: string, words: Set<string>, joined: string) => (ALSO[w] ?? []).some((x) => has(x, words, joined));
