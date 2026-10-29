@@ -131,9 +131,10 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
         continue;
       }
       // "I'll take the first one", "the second one please": the dish of the last answer it points at
-      const picked = !u.dishes.length && u.ordinal !== null && s.shown.length ? s.shown.at(u.ordinal) : undefined;
-      if (picked && (ORDERING.test(normalize(h.content)) || !asks)) {
-        if (!s.order.some((o) => o.item.id === picked.id)) s.order.push({ item: picked, count: 1 });
+      const picked = !u.dishes.length ? pointedAt(h.content, s.shown) : [];
+      if (picked.length && (ORDERING.test(normalize(h.content)) || !asks)) {
+        for (const p of picked) if (!s.order.some((o) => o.item.id === p.item.id)) s.order.push({ item: p.item, count: p.count });
+        applyOptions(s.order, h.content, picked.map((p) => p.item));
         continue;
       }
       if (u.dishes.length && (ORDERING.test(normalize(h.content)) || ORDERING_ZH.test(h.content) || !asks)) {
@@ -179,7 +180,7 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
 
 const NUMBER_OF: Record<string, number> = { two: 2, three: 3, four: 4, five: 5, six: 6, dua: 2, tiga: 3, empat: 4, lima: 5 };
 const REMOVE = /\b(cancel|remove|drop|scratch|delete|don ?t want|no more|skip the|batal|buang|tak nak|tak jadi)\b|取消|不要了|不要那|删掉/;
-const SWAP = /\b(instead|change|swap|replace|switch|make it|make that|rather have|tukar|ganti|jadikan)\b|换成|换|改成|改/;
+const SWAP = /\b(instead|change|swap|replace|switch|make it|make that|make the|rather have|tukar|ganti|jadikan)\b|换成|换|改成|改/;
 const COUNT_SAID = /\b(\d+|one|two|three|four|five|six|satu|dua|tiga|empat|lima)\b/;
 
 /**
@@ -215,7 +216,9 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
   if (!named.length) return false;
   // "make that 3 roti telur", "jadikan dua": the count it is now, not more of it
   if (swap && named.length === 1 && ordered(named[0]) && COUNT_SAID.test(t)) {
-    const n = countsOf(text, named as Dish[]).get(named[0] as Dish) ?? 1;
+    // (the number after the cue: "teh tarik pun jadikan dua", "make the kopi two")
+    const after = t.match(/\b(?:make (?:it|that|them|the \w+)|jadikan|jadi|change (?:it )?to|tukar jadi)\s+(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\b/)?.[1];
+    const n = after ? ({ one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5 } as Record<string, number>)[after] ?? Number(after) : countsOf(text, named as Dish[]).get(named[0] as Dish) ?? 1;
     order.find((o) => o.item.id === named[0].id)!.count = n;
     return true;
   }
@@ -280,8 +283,33 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
 }
 
 /** A question, not an order: "is it spicy", "what's in the X", "ada kacang tak", "辣吗". */
-const QUESTION = /^(what|whats|which|how|is|are|does|do|did|can|could|would|will|should|got|any|tell|describe|why|where|when|who)\b|\b(berapa|apa|mana|ke|kah|tak|or not|how much|what about)\b/;
-const QUESTION_ZH = /吗|呢|什么|哪|多少|有没有|怎么|是不是|能不能|可不可以|几/;
+const QUESTION = /^(what|whats|which|how|is|are|does|do|did|can|could|would|will|should|got|any|tell|describe|why|where|when|who|compare)\b|\b(berapa|apa|mana|ke|kah|tak|or not|how much|what about|compare|vs|versus|difference|beza|bandingkan)\b/;
+const QUESTION_ZH = /吗|呢|什么|哪|多少|有没有|怎么|是不是|能不能|可不可以|几|比较|区别/;
+
+/**
+ * The dishes the last answer showed that a message points at, and how many of each: "the second
+ * one", "2 of the first one and 3 of the last one", "the cheaper one", "yang murah", "便宜的那个".
+ */
+export function pointedAt(text: string, shown: Item[]): { item: Item; count: number }[] {
+  const t = normalize(text);
+  const can = shown.filter(orderable);
+  if (can.length < 1) return [];
+  const ORD: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, fourth: 3, last: -1, pertama: 0, kedua: 1, ketiga: 2, terakhir: -1 };
+  const N: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5 };
+  const out: { item: Item; count: number }[] = [];
+  for (const m of t.matchAll(/\b(?:(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s+(?:of\s+)?)?(?:the|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|last|pertama|kedua|ketiga|terakhir)\b/g)) {
+    const item = can.at(ORD[m[2]]);
+    if (item && !out.some((o) => o.item.id === item.id)) out.push({ item, count: m[1] ? (N[m[1]] ?? Number(m[1])) : 1 });
+  }
+  if (!out.length && can.length >= 2) {
+    const n = t.match(/\b(\d{1,2}|two|three|four|five|dua|tiga|empat)\s+(?:of\s+)?(?:the|those|that|yang|yg)\b/)?.[1];
+    const count = n ? (N[n] ?? Number(n)) : 1;
+    const byPrice = [...can].sort((a, b) => a.price - b.price);
+    if (/\b(the )?(cheaper|cheapest|lower priced|less expensive|yang murah|lebih murah|paling murah)( one)?\b/.test(t) || /便宜的|便宜那/.test(text)) out.push({ item: byPrice[0], count });
+    else if (/\b(the )?(pricier|priciest|more expensive|dearer|yang mahal|lebih mahal)( one)?\b/.test(t) || /贵的|贵那/.test(text)) out.push({ item: byPrice[byPrice.length - 1], count });
+  }
+  return out;
+}
 
 // ---- picking dishes ----
 
@@ -956,7 +984,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (asked.length === 1)
       return reply("dish_info", t("assistantReply.optionPrice", { option: optionLabel(asked[0].option), price: money(asked[0].option.price), list: list(asked[0].dishes.slice(0, 4).map(name)) }), []);
   }
-  if (!difference && !u.budget && (changing || totalWord || (u.ordinal !== null && state.shown.length > 0 && (howMuch || ordering)) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
+  const pointed = pointedAt(u.text, state.shown);
+  if (!difference && !u.budget && (changing || totalWord || (pointed.length > 0 && (howMuch || ordering || mentioned.length > 0)) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
     const bill: OrderLine[] = state.order.map((o) => ({ ...o }));
     // what they ask for that can't be had now: said, and left off
     const gone = mentioned.filter((i) => !orderable(i) && !state.order.some((o) => o.item.id === i.id));
@@ -972,12 +1001,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       }
     // "I'll take the second one": the dish of the last answer it points at
     // ("2 of the second one, how much?", "ok the first one then, and a latte")
-    if (u.ordinal !== null && state.shown.length && (ordering || howMuch || totalWord || mentioned.length)) {
-      const picked = state.shown.filter(orderable).at(u.ordinal);
-      const n = nt1.match(/\b(\d|two|three|four|five|dua|tiga|empat)\s+(of )?(the|yang)\b/)?.[1];
-      if (picked && orderable(picked) && !bill.some((o) => o.item.id === picked.id) && !mentioned.includes(picked)) bill.push({ item: picked, count: n ? (NUMBER_OF[n] ?? Number(n)) : 1 });
-    }
-    applyOptions(bill, u.text, mentioned);
+    for (const p of pointed) if (!bill.some((o) => o.item.id === p.item.id) && !mentioned.includes(p.item)) bill.push({ item: p.item, count: p.count });
+    applyOptions(bill, u.text, [...mentioned, ...pointed.map((p) => p.item)]);
     // "I'll take that, and a teh", "ok add it": the one dish the last answer suggested
     const accepts = (ordering || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)));
     if (accepts && !edited && state.shown.length === 1 && !bill.some((o) => o.item.id === state.shown[0].id) && !mentioned.includes(state.shown[0])) bill.push({ item: state.shown[0], count: 1 });
