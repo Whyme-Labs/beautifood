@@ -808,3 +808,23 @@ in code but many of the phrasings they cover are rare on the held-out menus (sat
 number in words, named shares). By word type, the held-out bill and add-on failures still carry
 add-on words (30 of 60), Chinese (12) and references (8), and 25 give no total at all. Other dev
 sets unchanged (v1 99.2, v2 97.8, v3 97.4, v4 98.2, v5 97.4, v6 96.7%).
+
+## v9 dev: bills and add-ons, Chinese, references back
+
+A new development set, written because v8 dev's gains on bills and add-ons mostly didn't carry to
+v8 test: more of the guest words the held-out failures carry. Three new authors (q, r, s), two new
+menus each (boba-tea-bar, korean-fried-chicken, pan-mee-house, smoothie-acai-bar, nasi-lemak-stall,
+pizza-by-slice), every dish with branch settings and most with add-ons or sizes, 746 cases, all
+`dev`: read case by case and fixed from, never reported. Each author was reviewed by their own
+reviewer (`REVIEW-q.md`, `REVIEW-r.md`, `REVIEW-s.md`) who recomputed every amount, under shared
+rulings: add-on allergens aren't the dish's; a plain total accepts the food or the till figure, "all
+in" the till figure only; a sold-out add-on is out of its groups (the product has no per-option
+sold-out); toppings are add-ons, not dishes.
+
+| v9 dev (746) | Cases | Brain |
+|---|---|---|
+| All | 746 | 50.4%, 0 unsafe |
+| bill | 366 | 29.8% |
+| modifier | 319 | 29.2% |
+| followup | 196 | 39.3% |
+| zh | 187 | 40.1% |
