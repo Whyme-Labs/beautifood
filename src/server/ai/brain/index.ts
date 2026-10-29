@@ -668,7 +668,7 @@ const SYNONYMS: Record<string, string[]> = {
 const ZH_TERMS: [RegExp, string[]][] = [
   [/热的|热乎|暖|温热/, ["warm", "hot"]], [/冰的|凉的|冷的/, ["cold", "iced"]], [/粥/, ["congee", "porridge"]], [/(?<![奶果擂骨凉])茶(?!饭|餐|点)/, ["tea"]], [/肠粉/, ["cheong fun"]], [/饭团/, ["onigiri"]], [/啤酒/, ["beer"]], [/披萨|比萨/, ["pizza"]],
   [/塔可/, ["taco"]], [/汉堡/, ["burger"]], [/沙拉/, ["salad"]], [/卷饼/, ["wrap", "burrito"]], [/寿司/, ["sushi"]], [/拉面/, ["ramen"]], [/咖喱/, ["curry"]], [/意面|意大利面/, ["pasta"]],
-  [/蛋糕/, ["cake"]], [/布丁/, ["pudding"]], [/奶昔/, ["shake", "milkshake"]], [/冰沙/, ["smoothie"]], [/咖啡/, ["coffee", "kopi"]], [/果汁/, ["juice"]], [/锅底/, ["soup base", "broth"]], [/薄饼/, ["thosai", "dosa"]],
+  [/蛋糕/, ["cake"]], [/布丁/, ["pudding"]], [/华夫饼|窝夫|鸡蛋仔/, ["waffle"]], [/奶昔/, ["shake", "milkshake"]], [/冰沙/, ["smoothie"]], [/咖啡/, ["coffee", "kopi"]], [/果汁/, ["juice"]], [/锅底/, ["soup base", "broth"]], [/薄饼/, ["thosai", "dosa"]],
 ];
 const ZH_WORDS: [RegExp, string[]][] = [[/鸡/, ["chicken", "ayam"]], [/鱼/, ["fish", "ikan"]], [/虾/, ["prawn", "shrimp", "udang"]], [/豆腐/, ["tofu", "tauhu"]], [/牛/, ["beef"]], [/猪/, ["pork"]], [/羊/, ["mutton", "lamb"]], [/蛋/, ["egg"]], [/芒果/, ["mango"]], [/咖啡/, ["coffee", "kopi"]], [/椰/, ["coconut"]]];
 
@@ -931,6 +931,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     else if (c.maxSpice === 1) w.push(t("assistantReply.mild"));
     else if (c.minSpice) w.push(t("assistantReply.spicy"));
     if (c.budget !== null) w.push(t("assistantReply.under", { price: money(c.budget) }));
+    if (c.noCaffeine) w.push(t("assistantReply.caffeineFree"));
     return w.join(t("assistantReply.filterSep"));
   };
 
@@ -1269,7 +1270,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (thing && !live.some((i) => normalize(i.name).includes(normalize(thing))) && !mentioned.some((i) => i.id !== optHost.id && orderable(i))) return reply("dish_info", `${t("assistantReply.optionNotOnNone", { option: en ? thing.trim().charAt(0).toUpperCase() + thing.trim().slice(1) : thing.trim(), dish: name(optHost) })}${ownText}`, [optHost]);
   }
   // "what bases can I choose for the set?", "what milk do you have for the latte?", "可以加什么？": a dish's choices
-  const asksChoices = (/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (\w+ )?(can|could) (i|we) (add|put|get|have) (on|to|with|in|onto)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && !/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text);
+  // (not "so many choice, which one confirm sedap?": that's asking for the best)
+  const asksChoices = !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (\w+ )?(can|could) (i|we) (add|put|get|have) (on|to|with|in|onto)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && !/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text));
   if (asksChoices) {
     const groupWord = (g: { name: string }) => normalize(g.name).split(" ").some((w) => w.length > 2 && ` ${nt0} `.includes(` ${w.replace(/s$/, "")}`));
     const of = mentioned.filter((i) => i.modifiers?.length).length ? mentioned.filter((i) => i.modifiers?.length) : [...(state.order.length ? [state.order[state.order.length - 1].item] : []), ...(state.focus ? [state.focus] : [])].filter((i) => i.modifiers?.some(groupWord)).slice(0, 1);
@@ -1796,7 +1798,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const meatOf = (item: Item) => (Object.keys(MEAT_WORDS) as Meat[]).filter((m) => MEAT_WORDS[m].test(unsaid(`${item.name} ${item.description ?? ""}`)));
       const parts = focus.map((item) => {
         const m = meatAsked(item);
-        const meatLine = m ? (meatOf(item).includes(m) ? t("assistantReply.meatYes", { dish: name(item), meat: t(`assistantReply.meat_${m}` as MessageKey) }) : t("assistantReply.meatNo", { dish: name(item), meat: t(`assistantReply.meat_${m}` as MessageKey), made: meatOf(item).length ? t("assistantReply.meatMadeWith", { meat: list(meatOf(item).map((x) => t(`assistantReply.meat_${x}` as MessageKey))) }) : "" })) : "";
+        const meatLine = m ? (meatOf(item).includes(m) ? t("assistantReply.meatYes", { dish: name(item), meat: t(`assistantReply.meat.${m}` as MessageKey) }) : t("assistantReply.meatNo", { dish: name(item), meat: t(`assistantReply.meat.${m}` as MessageKey), made: meatOf(item).length ? t("assistantReply.meatMadeWith", { meat: list(meatOf(item).map((x) => t(`assistantReply.meat.${x}` as MessageKey))) }) : "" })) : "";
         const asked = u.allergens;
         const conflict = asked.filter((a) => item.allergens.includes(a));
         let s = item.allergens.length ? t("assistantReply.contains", { dish: name(item), list: list(item.allergens.map(allergen)) }) : t("assistantReply.noAllergens", { dish: name(item) });
@@ -2063,7 +2065,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // (halal asked where the branch isn't certified: what it declares first)
       const standing = c.diet.includes("halal") && halalAt !== "certified" && ctx.halal ? `${halalAt === "expired" ? t("assistantReply.halalExpired") : halalAt === "muslim_friendly" ? t("assistantReply.halalMuslimFriendly") : halalAt === "pork_free" ? t("assistantReply.halalPorkFree") : t("assistantReply.halalNone")}${sp}` : "";
       const together = within ? `${sp}${t("assistantReply.basketWithin", { total: money(within.reduce((n, i) => n + i.price, 0)), budget: money(u.budget!) })}` : "";
-      return reply("recommend", `${standing}${intro}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}${together}`, picks, { confident: !unsure || hasFilters });
+      // ("最便宜的奶茶是哪一杯？大杯多少？": and its price with the size asked)
+      const sized = (one || (literal && u.howMany === 1)) && picks.length === 1 && orderable(picks[0]) ? optionsSaid(u.text, picks[0]).add : [];
+      const sizedLine = sized.length ? `${sp}${t("assistantReply.pricedWith", { dish: t("assistantReply.withOptions", { dish: name(picks[0]), options: list(sized.map(optionLabel)) }), price: money(picks[0].price + sized.reduce((n, o) => n + o.price, 0)) })}` : "";
+      return reply("recommend", `${standing}${intro}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}${together}${sizedLine}`, picks, { confident: !unsure || hasFilters });
     }
   }
 }
