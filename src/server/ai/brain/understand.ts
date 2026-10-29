@@ -253,7 +253,8 @@ const UNIT = new Set(["cucuk", "batang", "stick", "sticks", "pcs", "pc", "pieces
 const NUMBER_WORD: Record<string, string> = { one: "1", two: "2", three: "3", four: "4", five: "5", six: "6", seven: "7", eight: "8", nine: "9", ten: "10", twelve: "12", satu: "1", dua: "2", tiga: "3", empat: "4", lima: "5", enam: "6", tujuh: "7", lapan: "8", sembilan: "9", sepuluh: "10" };
 const ZH_DIGIT: Record<string, string> = { 一: "1", 二: "2", 两: "2", 三: "3", 四: "4", 五: "5", 六: "6", 七: "7", 八: "8", 九: "9", 十: "10" };
 /** An allergen word on its own ("cheese", "kacang"), as against a dish's word that has one in it ("cheesecake"). */
-const allergenWord = (w: string) => mentionedAllergens(w).length > 0 && !(w.length >= 8 && /^(cheese|milk|cream|egg|peanut|butter|soy|fish|nut)/.test(w) && !/^(peanuts|cheeses|eggs)$/.test(w));
+// ("cheesecake", "creampuff", "eggtart": a baked or sweet thing named for it; not "milkshake", a kind of drink)
+const allergenWord = (w: string) => mentionedAllergens(w).length > 0 && !/^(cheese|cream|butter|egg|peanut|nut)(cakes?|tarts?|pies?|buns?|rolls?|toasts?|breads?|cookies?|puffs?|puddings?)$/.test(w);
 
 export function findDishes(items: Dish[], raw: string, toks: string[], skip = new Set<number>()): Mention[] {
   const ix = dishIndex(items);
