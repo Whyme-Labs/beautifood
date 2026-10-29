@@ -238,7 +238,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
   ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
   sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], susu: ["milk"],
-  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"],
+  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
 };
 

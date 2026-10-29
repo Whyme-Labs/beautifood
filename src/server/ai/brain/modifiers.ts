@@ -27,7 +27,7 @@ const ALSO: Record<string, string[]> = {
   avocado: ["avo", "alpukat"], poached: ["poached"], salmon: ["salmon"], feta: ["feta"],
   kaya: ["kaya"], sambal: ["sambal"], rendang: ["rendang"], sotong: ["squid", "sotong"], udang: ["prawn", "prawns", "shrimp"],
   ayam: ["chicken"], goreng: ["fried"], lime: ["limau", "lemon"], plum: ["asam boi", "assam boi", "sour plum", "plum"],
-  milo: ["milo"], noodles: ["noodle", "extra mee", "tambah mee", "more mee", "mee lagi"], peanuts: ["peanut", "kacang"], tofu: ["tauhu", "taufu"],
+  peanut: ["pb", "kacang"], milo: ["milo"], noodles: ["noodle", "extra mee", "tambah mee", "more mee", "mee lagi"], peanuts: ["peanut", "kacang"], tofu: ["tauhu", "taufu"],
   strawberries: ["strawberry"], chocolate: ["choc", "coklat", "chocolate"], mayo: ["mayonnaise"],
   seaweed: ["nori"], spicy: ["spicy", "pedas", "hot"], yuja: ["yuzu", "citron"], cola: ["coke", "cola"], cider: ["cider", "chilsung"],
   bucket: ["bucket", "baldi"], crust: ["crust"], thin: ["thin"], stuffed: ["stuffed", "cheese crust"],
@@ -94,8 +94,21 @@ const direct = (w: string, words: Set<string>, joined: string, raw: string) =>
 const alias = (w: string, words: Set<string>, joined: string) => (ALSO[w] ?? []).some((x) => has(x, words, joined));
 const said = (w: string, words: Set<string>, joined: string, raw: string) => direct(w, words, joined, raw) || alias(w, words, joined);
 // an option of two words or more needs one said as itself, or two in other words ("bebola ikan"): "ikan" alone isn't Fish Balls
-const saysOption = (ks: string[], words: Set<string>, joined: string, raw: string) =>
-  ks.length === 1 ? said(ks[0], words, joined, raw) : ks.some((k) => direct(k, words, joined, raw)) || ks.filter((k) => alias(k, words, joined)).length >= 2;
+// ("almond butter" isn't the Peanut Butter: one of its words said, after another food's)
+// words of size, temperature and sweetness, said beside an option's word ("large iced", "kurang manis")
+const SIZE_TEMP = /^(large|small|medium|regular|big|besar|kecil|hot|iced|ice|cold|warm|panas|ais|peng|sejuk|less|kurang|sweet|manis|sugar|gula|upsize|double|single|kosong)$/;
+const LEAD = /^(extra|add|more|some|a|an|the|with|and|no|less|tambah|lebih|dengan|dan|plus|on|of|any|got|ada|nak|want|two|one|three|2|1|3|both|all|semua|kedua|please|pls|also|too|then|but|just|only|make|it|them|get|have|can|could|i|we|me|my|for|to|in|or|is|are|be|bagi|mau|dua|satu|tiga|sekali|juga|pun|yes|ok|okay|sure|that|this|those|these|one|each|lagi|jadi|and|or|ya|tu|ni|kasi|letak|put|request|order|cup|glass|bowl|plate|piece|pieces|pcs|x|times)$/;
+const saysOption = (ks: string[], words: Set<string>, joined: string, raw: string) => {
+  if (ks.length === 1) return said(ks[0], words, joined, raw);
+  const hit = ks.filter((k) => direct(k, words, joined, raw));
+  if (hit.length === 1 && !ALSO_ZH[hit[0]]?.test(raw)) {
+    const toks = joined.trim().split(" ");
+    const at = toks.findIndex((t) => t === hit[0] || t === `${hit[0]}s` || t === hit[0].replace(/(es|s)$/, ""));
+    const before = toks[at - 1];
+    if (at > 0 && before && before.length > 2 && !LEAD.test(before) && !GENERIC.has(before) && !SIZE_TEMP.test(before) && !ks.includes(before) && !ks.some((k) => (ALSO[k] ?? []).includes(before))) return false;
+  }
+  return hit.length > 0 || ks.filter((k) => alias(k, words, joined)).length >= 2;
+};
 // a number names an option only as its count's unit says ("12 pcs", "12 wings", "十个", "12寸")
 const numberSaid = (n: string, t: string, raw: string) => new RegExp(`(^| )${n} ?(pcs|pc|pieces?|ketul|inch|inches|in|wings?|keping|biji)?( |$)`).test(t) || new RegExp(`(^|[^0-9])${n}\\s*(个|件|只|粒|寸|块|片|pcs)`).test(raw) || (ZH_NUM[n] ? new RegExp(`${ZH_NUM[n]}(个|件|只|粒|寸|块|片)`).test(raw) : false);
 const ZH_NUM: Record<string, string> = { "6": "六", "8": "八", "9": "九", "10": "十", "12": "十二", "16": "十六", "20": "二十" };
@@ -143,12 +156,28 @@ export function optionsSaid(text: string, dish: WithOptions, free = false): { ad
     }
     const own = ks.filter((k) => (count.get(k) ?? 0) < 2);
     const need = own.length ? own : ks;
+    // ("almond butter" isn't the Almond Milk: its word said, then another food's)
+    const named = normalize(o.name.replace(/[()]/g, " ")).split(" ");
+    if (named.length > ks.length && need.length === 1 && !ALSO_ZH[need[0]]?.test(raw)) {
+      const toks = t.split(" ");
+      const forms = [need[0], `${need[0]}s`, ...(ALSO[need[0]] ?? []).filter((x) => !x.includes(" "))];
+      const at = toks.findIndex((x) => forms.includes(x));
+      const near = [toks[at + 1], toks[at - 1]];
+      const food = (x: string | undefined) => !!x && x.length > 2 && !named.includes(x) && !LEAD.test(x) && !GENERIC.has(x) && !SIZE_TEMP.test(x) && !/^(on|top|please|pls|and|or|to|in|for|with|inside|dalam|lah|la|ah|ok|boleh|too|also|one|the|how|berapa|not|tak|can|plus|then|extra|more|instead|nak|mau|want|add|put|letak|tambah|large|besar|cup|hot|iced|ais|panas)$/.test(x);
+      if (at >= 0 && near.some(food)) continue;
+    }
     const isOff = need.some((k) => offWords.has(k) || (ALSO[k] ?? []).some((x) => offWords.has(x)) || offZh.some((z) => ALSO_ZH[k]?.test(z)));
     if (isOff) off.push(o);
     else if (own.length ? saysOption(own, words, joined, zhLeft) : ks.every((k) => said(k, words, joined, zhLeft))) add.push(o);
   }
+  // an option said by its whole name wins over one whose words it has ("chocolate sauce" isn't also
+  // the Chocolate flavour; "巧克力酱" neither)
+  const whole = (o: ModifierOption) => normalize(o.name.replace(/\([^)]*\)/g, " ")).trim();
+  const fullySaid = add.filter((o) => whole(o).includes(" ") && ` ${t} `.includes(` ${whole(o)} `));
+  const sauceZh = /酱/.test(raw);
+  const kept = add.filter((o) => !fullySaid.some((x) => x !== o && keyWords(o).every((k) => whole(x).split(" ").includes(k))) && !(sauceZh && !/sauce|酱/i.test(o.name) && add.some((x) => x !== o && /sauce/i.test(x.name) && keyWords(o).every((k) => keyWords(x).includes(k)))));
   // one option of a group that takes one: the one whose words were said most fully
-  const out = add.filter((o) => {
+  const out = kept.filter((o) => {
     const g = (dish.modifiers ?? []).find((x) => x.options.includes(o));
     if (!g || (g.max ?? 1) > 1) return true;
     const rivals = add.filter((x) => x !== o && g.options.includes(x));
