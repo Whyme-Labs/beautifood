@@ -503,8 +503,9 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       if (!spans(m)) continue;
       const after = m.covered.filter((i) => i > withAt).map((i) => toks[i]);
       const host = found.find((o) => o !== m && !spans(o) && o.covered.some((i) => m.covered.includes(i)) && o.dish.modifiers?.some((g) => g.options.some((x) => { const ws = normalize(x.name).split(" "); return after.every((w) => ws.some((y) => same(w, y))); })));
-      if (host) m.score = Math.min(m.score, host.score - 0.01, 0.99);
+      if (host) m.score = -1;
     }
+    for (let k = found.length - 1; k >= 0; k--) if (found[k].score < 0) found.splice(k, 1);
   }
   // two dishes claiming the same words: the better match keeps them
   found.sort((a, b) => b.score - a.score);

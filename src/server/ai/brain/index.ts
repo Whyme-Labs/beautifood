@@ -1236,6 +1236,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.freeOn", { option: list(free.map(optionLabel)), list: list(kin.slice(0, 4).map(name)) })}`, kin.slice(0, 4));
     }
     if (free.length) return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.freeChoice", { dish: name(optHost), option: list(free.map(optionLabel)), price: money(optHost.price) })}`, [optHost]);
+    // ("can add protein or not?" with whey and plant protein): each of its choices that word names
+    const alike = (optHost.modifiers ?? []).flatMap((g) => g.options).filter((o) => normalize(o.name).split(" ").some((w) => w.length > 3 && ` ${nt1} `.includes(` ${w} `)));
+    if (alike.length >= 2) return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.itsAddOns", { dish: name(optHost), list: list(alike.map((o) => (o.price ? `${optionLabel(o)} (+${money(o.price)})` : optionLabel(o)))) })}`, [optHost]);
     // what it was asked for: an option of other dishes ("pudding", "prawns"), or a kind of choice it hasn't (hot, less sweet, another milk or sauce)
     let rest = u.text.replace(new RegExp(normalize(optHost.name).split(" ").join("\\s+"), "i"), " ");
     for (const z of Object.values(optHost.translations ?? {}).map((x) => x?.name).filter((x): x is string => !!x && x.length > 1)) rest = rest.split(z).join(" ");
@@ -1271,7 +1274,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "what bases can I choose for the set?", "what milk do you have for the latte?", "可以加什么？": a dish's choices
   // (not "so many choice, which one confirm sedap?": that's asking for the best)
-  const asksChoices = !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (\w+ )?(can|could) (i|we) (add|put|get|have) (on|to|with|in|onto)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && !/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text));
+  const asksChoices = !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (\w+ )?(can|could) (i|we) (add|put|get|have) (on|to|with|in|onto)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && (!/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) || /\b(and how much|how much each|each how much|berapa satu|berapa setiap)\b/.test(nt0)) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text));
   if (asksChoices) {
     const groupWord = (g: { name: string }) => normalize(g.name).split(" ").some((w) => w.length > 2 && ` ${nt0} `.includes(` ${w.replace(/s$/, "")}`));
     const of = mentioned.filter((i) => i.modifiers?.length).length ? mentioned.filter((i) => i.modifiers?.length) : [...(state.order.length ? [state.order[state.order.length - 1].item] : []), ...(state.focus ? [state.focus] : [])].filter((i) => i.modifiers?.some(groupWord)).slice(0, 1);
