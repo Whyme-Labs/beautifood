@@ -776,3 +776,35 @@ The claim checker now also accepts a price with one option from each of a dish's
 | v8 test, follow-ups (144) | 54.9% | 70.1% |
 
 Older dev sets unchanged or better: v1 99.2, v2 97.8, v3 97.4, v4 98.2, v5 97.4, v6 96.7%.
+
+## Bills and add-ons in the guest's own words (2026-10-29)
+
+From v8 dev's remaining bill and add-on failures, read case by case, fixed generally:
+
+- **Finding the dish:** number words for a name's digits ("2 six piece sets"), "ketul"/"pcs" for
+  piece, a Chinese name by its distinctive end ("两个八件套", not inside another name), Malay and
+  English name words either way ("air limau", "chicken satay"; never through an allergen word),
+  "cheesecake" (a baked thing named for an allergen), satay by the stick ("20 cucuk ayam", "20支"),
+  counts past nine, and a unit never a typo for a dish.
+- **Add-ons:** an add-on's words don't name another dish ("extra chili sauce"); "what bases can I
+  choose?" lists a dish's choices; "how much extra?" gives the add-on's own price; a free choice is
+  said to be free; more Chinese add-on words.
+- **References:** a comparison is a question, never an order; "the cheaper one", "2 of the first
+  and 3 of the last", "jadikan dua"; an answer's dishes are read without the descriptions it quotes.
+- **Who pays:** the party said earlier holds; who has what ("me the X, Ali the Y") gives each
+  person's total, and "saya ambil X... saya kena bayar berapa?" the guest's own.
+- The claim checker allows several options from a group that takes several, and doesn't read an
+  add-on's "+RM" as the dish's price.
+
+| | Before | After |
+|---|---|---|
+| v8 dev (491) | 78.4% | **83.9%**, 0 unsafe |
+| v8 test (499, held out, second and last scoring this round) | 73.7% | **74.1%** (70.1–77.8), 0 unsafe |
+| v8 test, bills (100) | 51.0% | 53.0% |
+| v8 test, add-ons (33) | 27.3% | 30.3% |
+
+Most of the dev gain did not carry over: 3 held-out cases fixed, 1 broken. The fixes were general
+in code but many of the phrasings they cover are rare on the held-out menus (satay sticks, a set's
+number in words, named shares). By word type, the held-out bill and add-on failures still carry
+add-on words (30 of 60), Chinese (12) and references (8), and 25 give no total at all. Other dev
+sets unchanged (v1 99.2, v2 97.8, v3 97.4, v4 98.2, v5 97.4, v6 96.7%).
