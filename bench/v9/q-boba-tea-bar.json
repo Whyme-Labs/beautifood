@@ -31,7 +31,7 @@
     "before": [
       {
         "user": "I'm allergic to peanuts. Do the toppings have any?",
-        "assistant": "None of the seven toppings lists peanuts. The only dish with peanuts is the Peanut Butter Waffle."
+        "assistant": "Our toppings are pearls, pudding, grass jelly, red bean, cheese foam and coconut jelly, and none of them is a peanut topping. The only item on the menu with peanuts is the Peanut Butter Waffle."
       }
     ],
     "question": "Then one large Hokkaido milk tea with pudding and pearls. What's the total including tax?",
@@ -47,7 +47,7 @@
         "Egg Pudding"
       ]
     },
-    "note": "10.90 + 2.00 + 2.00 + 1.50 = 16.40, +6% = 17.38, till 17.40. Pudding here is the topping, not the Egg Pudding snack."
+    "note": "10.90 + 2.00 + 2.00 + 1.50 = 16.40, +6% = 17.38, till 17.40. Pudding here is the topping option, not the Egg Pudding snack. Earlier turn: toppings are options only (no TOPPINGS dishes); aloe vera is out and not offered."
   },
   {
     "id": "v9q-boba-tea-bar-003",
@@ -672,7 +672,7 @@
     "before": [
       {
         "user": "我对鸡蛋过敏，奶盖有蛋吗？",
-        "assistant": "奶盖 Cheese Foam 是奶油奶酪、淡奶油、牛奶和海盐，没有列出鸡蛋。布丁 Pudding 有鸡蛋，请避开。"
+        "assistant": "奶盖 Cheese Foam 是奶油奶酪、淡奶油、牛奶和海盐，没有列出鸡蛋。布丁 Pudding 配料菜单上没有写成分，布丁一般是鸡蛋做的（我们的鸡蛋布丁 Egg Pudding 就是用鸡蛋做的），所以请避开布丁。"
       }
     ],
     "question": "那一杯大杯黑糖珍珠鲜奶加奶盖，含税多少？",
@@ -804,14 +804,11 @@
     "question": "Satu passion fruit green tea besar, tambah aloe vera dan coconut jelly. Berapa?",
     "expect": {
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了",
+        "not available|unavailable|sold out|habis|finished|don'?t have|do not have|no longer|没有|卖完|售罄|isn'?t available|out of stock|ran out|run out",
         "(^|[^0-9])(12\\.90|13\\.67|13\\.65)"
-      ],
-      "excludes": [
-        "Aloe Vera"
       ]
     },
-    "note": "Aloe Vera is sold out (rule r). Without it: 9.90 + 1.50 + 1.50 = 12.90."
+    "note": "Aloe vera is out: the option is removed from the toppings while it's out (ruling 4), so the guest hears it isn't available and no bill includes its RM1.50. Without it: 9.90 + 1.50 + 1.50 = 12.90, +6% = 13.67, till 13.65."
   },
   {
     "id": "v9q-boba-tea-bar-036",
@@ -856,7 +853,7 @@
     "before": [
       {
         "user": "I'm allergic to milk. Which drinks are safe?",
-        "assistant": "These list no milk: Mango Green Tea (RM10.90), Lychee Oolong Tea (RM10.90), Grapefruit Jasmine Tea (RM11.90), Winter Melon Lemon (RM8.90), Passion Fruit Green Tea (RM9.90) and Oat Milk Jasmine Tea (RM11.90). Avoid the cheese foam and pudding toppings, which contain milk."
+        "assistant": "These list no milk: Mango Green Tea (RM10.90), Lychee Oolong Tea (RM10.90), Grapefruit Jasmine Tea (RM11.90), Winter Melon Lemon (RM8.90), Passion Fruit Green Tea (RM9.90) and Oat Milk Jasmine Tea (RM11.90). Skip the cheese foam topping (cream cheese, cream and milk), and the pudding topping too: pudding is normally an egg-and-milk custard."
       }
     ],
     "question": "Ok one large lychee oolong with coconut jelly, and a large grapefruit jasmine tea. Total?",
@@ -964,10 +961,10 @@
         "Cheese Foam Green Tea"
       ],
       "says": [
-        "(^|[^0-9])(10\\.90|21\\.80|23\\.10)"
+        "(^|[^0-9])(10\\.90|21\\.80|23\\.11|23\\.10)"
       ]
     },
-    "note": "Cheese Foam Green Tea 10.90 each (21.80); Winter Melon Lemon + cheese foam is 11.40."
+    "note": "Cheese Foam Green Tea 10.90 each (21.80; till 23.11 / 23.10); Winter Melon Lemon + cheese foam topping is 11.40."
   },
   {
     "id": "v9q-boba-tea-bar-042",
@@ -1139,12 +1136,9 @@
       "says": [
         "pudding|布丁",
         "(^|[^0-9])1\\.50"
-      ],
-      "excludes": [
-        "Aloe Vera"
       ]
     },
-    "note": "Seven toppings, most RM1.50, pudding 2.00, cheese foam 2.50. Aloe Vera is sold out."
+    "note": "Six toppings now offered, most RM1.50, pudding 2.00, cheese foam 2.50. Aloe vera is out, so it is no longer an option (ruling 4)."
   },
   {
     "id": "v9q-boba-tea-bar-050",
@@ -1204,12 +1198,9 @@
       ],
       "says": [
         "not (available|offered|an option|possible)|isn'?t (available|offered|an option|possible)|aren'?t (available|offered)|can'?t|cannot|can not|don'?t (have|offer)|doesn'?t (come|have|offer|take)|no such|not on (the|this)|only (comes?|available|offers?|takes?|has|have|with|in|for)|tak (boleh|ada|dapat)|tidak (boleh|ada|dapat)|tiada|不能|不可以|不提供|没有这个|没得|只有|只能|只可以"
-      ],
-      "excludes": [
-        "Aloe Vera"
       ]
     },
-    "note": "Yakult drinks take pearls, aloe vera (sold out) or coconut jelly only."
+    "note": "Yakult drinks take pearls or coconut jelly only (aloe vera is out and removed as an option). No pudding."
   },
   {
     "id": "v9q-boba-tea-bar-053",
@@ -1232,10 +1223,10 @@
         "Egg Pudding"
       ],
       "says": [
-        "(^|[^0-9])(2\\.00|13\\.90)"
+        "(^|[^0-9])(2\\.00|13\\.90|14\\.73|14\\.75)"
       ]
     },
-    "note": "Pudding topping +2.00 = 13.90. Egg Pudding (the snack) is not what is asked."
+    "note": "Pudding topping +2.00 = 13.90. Egg Pudding (the snack) is not what is asked; the till figure (6% tax, 5-sen rounding) is accepted too (ruling 3)."
   },
   {
     "id": "v9q-boba-tea-bar-054",
@@ -1258,10 +1249,10 @@
         "Grass Jelly Milk Tea"
       ],
       "says": [
-        "(^|[^0-9])(1\\.50|12\\.40)"
+        "(^|[^0-9])(1\\.50|12\\.40|13\\.14|13\\.15)"
       ]
     },
-    "note": "Grass jelly topping +1.50 = 12.40; the Grass Jelly Milk Tea is a different drink."
+    "note": "Grass jelly topping +1.50 = 12.40; the Grass Jelly Milk Tea is a different drink; the till figure (6% tax, 5-sen rounding) is accepted too (ruling 3)."
   },
   {
     "id": "v9q-boba-tea-bar-055",
@@ -1361,10 +1352,10 @@
     "question": "upsize the mango yakult how much ah",
     "expect": {
       "says": [
-        "(^|[^0-9])(1\\.50|12\\.40)"
+        "(^|[^0-9])(1\\.50|12\\.40|13\\.14|13\\.15)"
       ]
     },
-    "note": "+1.50 = 12.40."
+    "note": "+1.50 = 12.40; the till figure (6% tax, 5-sen rounding) is accepted too (ruling 3)."
   },
   {
     "id": "v9q-boba-tea-bar-060",
@@ -1381,10 +1372,10 @@
         "Mango Green Tea"
       ],
       "says": [
-        "(^|[^0-9])(1\\.50|12\\.40)"
+        "(^|[^0-9])(1\\.50|12\\.40|13\\.14|13\\.15)"
       ]
     },
-    "note": "Mango Green Tea: medium 10.90, large +1.50 = 12.40."
+    "note": "Mango Green Tea: medium 10.90, large +1.50 = 12.40; the till figure (6% tax, 5-sen rounding) is accepted too (ruling 3)."
   },
   {
     "id": "v9q-boba-tea-bar-061",
@@ -1398,18 +1389,11 @@
     "question": "Which toppings are vegan?",
     "expect": {
       "vegan": true,
-      "category": "topping",
-      "includesAny": [
-        "Pearls",
-        "Grass Jelly",
-        "Red Bean",
-        "Coconut Jelly"
-      ],
-      "excludes": [
-        "Aloe Vera"
+      "says": [
+        "pearls?|boba|tapioca|珍珠|mutiara"
       ]
     },
-    "note": "Pudding (egg, milk) and cheese foam (milk) are not vegan; aloe vera sold out."
+    "note": "Toppings are options, not dishes. The pearls are tapioca cooked in brown sugar (menu lines of the pearl drinks; the vegan Brown Sugar Boba Oat Milk has them). Pudding is egg-and-milk custard and cheese foam has cream cheese and milk. Any card shown must be vegan."
   },
   {
     "id": "v9q-boba-tea-bar-062",
@@ -1445,13 +1429,10 @@
     "question": "Is aloe vera available today?",
     "expect": {
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
-      ],
-      "excludes": [
-        "Aloe Vera"
+        "not available|unavailable|sold out|habis|finished|don'?t have|do not have|no longer|没有|卖完|售罄|isn'?t available|out of stock|ran out|run out"
       ]
     },
-    "note": "Sold out (rule r)."
+    "note": "Aloe vera is out: the option is removed from every drink while it's out (ruling 4). The guest hears it isn't available."
   },
   {
     "id": "v9q-boba-tea-bar-064",
@@ -1466,13 +1447,10 @@
     "question": "芦荟还有吗？",
     "expect": {
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
-      ],
-      "excludes": [
-        "Aloe Vera"
+        "not available|unavailable|sold out|habis|finished|don'?t have|do not have|no longer|没有|卖完|售罄|isn'?t available|out of stock|ran out|run out"
       ]
     },
-    "note": "Sold out."
+    "note": "Aloe vera is out: the option is removed from every drink while it's out (ruling 4). The guest hears it isn't available."
   },
   {
     "id": "v9q-boba-tea-bar-065",
@@ -1615,14 +1593,11 @@
         "milk"
       ],
       "safetyNote": true,
-      "excludes": [
-        "Cheese Foam"
-      ],
       "says": [
         "cream cheese|whipping cream|(has|contains|made with|made from)[^.]{0,25}(milk|dairy)|dairy|susu|奶"
       ]
     },
-    "note": "The base tea is milk-free (honey only) and may be shown; the cheese foam topping has cream cheese and milk."
+    "note": "The base tea is milk-free (honey only) and may be shown; the cheese foam topping (an option) has cream cheese and milk. avoid + safetyNote + says (ruling 2)."
   },
   {
     "id": "v9q-boba-tea-bar-072",
@@ -1640,9 +1615,6 @@
       "includesAny": [
         "Oat Milk Jasmine Tea",
         "Brown Sugar Boba Oat Milk"
-      ],
-      "excludes": [
-        "Aloe Vera"
       ]
     },
     "note": "Intolerance: avoid without safetyNote (e). Oat milk drinks."
@@ -1729,19 +1701,11 @@
         "egg"
       ],
       "safetyNote": true,
-      "category": "topping",
-      "includesAny": [
-        "Pearls",
-        "Grass Jelly",
-        "Red Bean",
-        "Coconut Jelly",
-        "Cheese Foam"
-      ],
-      "excludes": [
-        "Aloe Vera"
+      "says": [
+        "pearls?|boba|tapioca|珍珠|mutiara|grass jelly|仙草|cincau|red bean|红豆|kacang merah|coconut jelly|nata de coco|椰果|cheese foam|奶盖"
       ]
     },
-    "note": "Pudding has egg; aloe vera sold out."
+    "note": "Toppings are options, not dishes: the answer names at least one egg-free topping (pearls, grass jelly, red bean, coconut jelly, cheese foam). Pudding is an egg custard. avoid + safetyNote are the safety checks."
   },
   {
     "id": "v9q-boba-tea-bar-077",
@@ -1906,14 +1870,14 @@
       "chinese",
       "modifier"
     ],
-    "question": "我吃全素，可以加布丁吗？",
+    "question": "我吃全素，可以加奶盖吗？",
     "expect": {
       "vegan": true,
       "says": [
-        "(?<![没不无])(有|含)(鸡)?蛋|(?<![没不无])(有|含)(牛)?奶|鸡蛋和牛奶|蛋奶|不是(全|纯)素|不可以|不能|不适合|contains egg|has egg"
+        "(?<![没不无])(有|含)(牛)?奶|奶油奶酪|淡奶油|乳制品|不是(全|纯)素|不可以|不能|不适合|contains milk|has milk|cream cheese"
       ]
     },
-    "note": "Pudding topping has egg and milk (rule l)."
+    "note": "Cheese foam topping = cream cheese, whipping cream and milk (cheese foam drink lines), so not vegan (rule l)."
   },
   {
     "id": "v9q-boba-tea-bar-085",
@@ -1933,9 +1897,6 @@
       "includesAny": [
         "Egg Waffle",
         "Honey Butter Waffle"
-      ],
-      "excludes": [
-        "Aloe Vera"
       ]
     },
     "note": "kacang tanah = peanuts."
@@ -1998,20 +1959,11 @@
     ],
     "question": "Does the cheese foam have dairy in it?",
     "expect": {
-      "includesAny": [
-        "Cheese Foam",
-        "Cheese Foam Oolong",
-        "Cheese Foam Green Tea",
-        "Strawberry Cheese Foam"
-      ],
       "says": [
-        "cream cheese|whipping cream|(?<!n't )(has|contains|made with|made from) (?!no )[^.]{0,25}(milk|dairy)|susu|奶油|奶酪"
-      ],
-      "excludes": [
-        "Aloe Vera"
+        "cream cheese|whipping cream|(?<!n't )(has|contains|made with|made from) (?!no )[^.]{0,25}(milk|dairy)|krim keju|(ada|mengandungi) susu|奶油奶酪|淡奶油|(?<![没不无])(有|含)(牛)?奶"
       ]
     },
-    "note": "Convention c with rule 7: needs the fact."
+    "note": "Convention c with v8 rule 7: needs the fact (cream cheese, whipping cream, milk, from the cheese foam drink lines). The topping is an option, not a dish, so no card is required."
   },
   {
     "id": "v9q-boba-tea-bar-089",
@@ -2074,14 +2026,11 @@
         "milk"
       ],
       "safetyNote": true,
-      "excludes": [
-        "Cheese Foam"
-      ],
       "says": [
         "cream cheese|whipping cream|(has|contains|made with)[^.]{0,25}(milk|dairy)|dairy|susu|奶"
       ]
     },
-    "note": "Allergy from an earlier turn applies to the add-on."
+    "note": "Allergy from an earlier turn applies to the add-on: cheese foam (an option) has cream cheese and milk. avoid + safetyNote + says (ruling 2)."
   },
   {
     "id": "v9q-boba-tea-bar-091",
@@ -2190,10 +2139,10 @@
     "question": "Does the first one come in large? How much?",
     "expect": {
       "says": [
-        "(^|[^0-9])(1\\.50|12\\.40)"
+        "(^|[^0-9])(1\\.50|12\\.40|13\\.14|13\\.15)"
       ]
     },
-    "note": "Mango Green Tea large +1.50 = 12.40."
+    "note": "Mango Green Tea large +1.50 = 12.40; the till figure (6% tax, 5-sen rounding) is accepted too (ruling 3)."
   },
   {
     "id": "v9q-boba-tea-bar-095",
@@ -2335,10 +2284,10 @@
     "question": "the last one can upsize? how much",
     "expect": {
       "says": [
-        "(^|[^0-9])(2\\.00|12\\.90)"
+        "(^|[^0-9])(2\\.00|12\\.90|13\\.67|13\\.65)"
       ]
     },
-    "note": "Roasted Oolong large +2.00 = 12.90."
+    "note": "Roasted Oolong large +2.00 = 12.90; the till figure (6% tax, 5-sen rounding) is accepted too (ruling 3)."
   },
   {
     "id": "v9q-boba-tea-bar-101",
@@ -2430,9 +2379,6 @@
         "Brown Sugar Boba Milk",
         "Cheese Foam Oolong",
         "Popcorn Chicken"
-      ],
-      "excludes": [
-        "Aloe Vera"
       ]
     },
     "note": "Signatures."
@@ -2482,10 +2428,7 @@
     ],
     "question": "Do you have coffee?",
     "expect": {
-      "maxDishes": 3,
-      "excludes": [
-        "Aloe Vera"
-      ]
+      "maxDishes": 3
     },
     "note": "No coffee on the menu."
   },
@@ -2500,10 +2443,7 @@
     ],
     "question": "有没有鸡蛋糕？",
     "expect": {
-      "maxDishes": 3,
-      "excludes": [
-        "Aloe Vera"
-      ]
+      "maxDishes": 3
     },
     "note": "No 鸡蛋糕; egg waffle (鸡蛋仔) is the nearest."
   },
@@ -2718,8 +2658,7 @@
         "Mango Green Tea",
         "Lychee Oolong Tea",
         "Grapefruit Jasmine Tea",
-        "Yakult Green Tea",
-        "Aloe Vera"
+        "Yakult Green Tea"
       ]
     },
     "note": "Caffeine-free."
@@ -2742,9 +2681,6 @@
       "includesAny": [
         "Egg Waffle",
         "Honey Butter Waffle"
-      ],
-      "excludes": [
-        "Aloe Vera"
       ]
     },
     "note": "Peanut allergy."
@@ -2779,10 +2715,7 @@
     "question": "Saya vegetarian. Popcorn chicken ada versi sayur?",
     "expect": {
       "vegetarian": true,
-      "maxDishes": 3,
-      "excludes": [
-        "Aloe Vera"
-      ]
+      "maxDishes": 3
     },
     "note": "No vegetarian popcorn chicken (not on menu); vegetarian snacks may be offered."
   },
@@ -2802,9 +2735,6 @@
         "Brown Sugar Boba Milk",
         "Cheese Foam Oolong",
         "Popcorn Chicken"
-      ],
-      "excludes": [
-        "Aloe Vera"
       ]
     },
     "note": "Signatures."
