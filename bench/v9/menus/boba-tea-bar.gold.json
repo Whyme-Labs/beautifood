@@ -1,0 +1,344 @@
+{
+  "Classic Pearl Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk. Tapioca pearls and brown sugar have no allergen."
+  },
+  "Hokkaido Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk and cream; caramel adds nothing new."
+  },
+  "Taro Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk. Taro is a root, no allergen."
+  },
+  "Thai Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed and evaporated milk = milk."
+  },
+  "Roasted Oolong Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk."
+  },
+  "Grass Jelly Milk Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk. Grass jelly (mesona) has no allergen."
+  },
+  "Matcha Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk. Matcha has caffeine but no allergen."
+  },
+  "Oat Milk Jasmine Tea": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oat milk = gluten (oats, EU cereal rule). No dairy."
+  },
+  "Brown Sugar Boba Milk": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk. No tea. Sweetness is fixed (no sugar-level modifier)."
+  },
+  "Brown Sugar Boba Oat Milk": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oat milk = gluten. Vegan."
+  },
+  "Cheese Foam Oolong": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream cheese, whipping cream and milk = milk."
+  },
+  "Cheese Foam Green Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cheese foam = milk."
+  },
+  "Strawberry Cheese Foam": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cheese foam = milk. No tea."
+  },
+  "Passion Fruit Green Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey rules out vegan. No allergen."
+  },
+  "Mango Green Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Lychee Oolong Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Konjac jelly, no gelatine. No allergen."
+  },
+  "Grapefruit Jasmine Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Winter Melon Lemon": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen, no caffeine."
+  },
+  "Yakult Green Tea": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yakult is a cultured milk drink (skimmed milk) = milk."
+  },
+  "Mango Yakult": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yakult = milk."
+  },
+  "Lemon Yakult": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yakult = milk."
+  },
+  "Popcorn Chicken": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Soy sauce = soy + gluten. Sweet potato flour has no gluten. Mildly spicy = 1. No alcohol (Muslim-friendly kitchen)."
+  },
+  "Sweet Potato Fries": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Takoyaki": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "molluscs",
+      "soy",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat batter; egg and mayo = egg; octopus = molluscs; soy sauce = soy + gluten; bonito = fish."
+  },
+  "Egg Waffle": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, egg, evaporated milk and butter."
+  },
+  "Honey Butter Waffle": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, egg, milk, butter; honey rules out vegan."
+  },
+  "Peanut Butter Waffle": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat, egg, milk; peanut butter and peanuts."
+  },
+  "Egg Pudding": {
+    "allergens": [
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg and milk; stated no gelatine, so vegetarian and halal."
+  },
+  "Pearls": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tapioca, brown sugar."
+  },
+  "Pudding": {
+    "allergens": [
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg and milk custard, no gelatine."
+  },
+  "Grass Jelly": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Mesona jelly, starch-set."
+  },
+  "Aloe Vera": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen. Sold out in extra.json."
+  },
+  "Red Bean": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Adzuki beans are not soy."
+  },
+  "Cheese Foam": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream cheese, cream, milk = milk."
+  },
+  "Coconut Jelly": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Nata de coco; coconut is not a tree nut."
+  }
+}

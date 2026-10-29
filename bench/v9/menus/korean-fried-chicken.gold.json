@@ -1,0 +1,328 @@
+{
+  "Whole Fried Chicken": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat-flour batter = gluten. No egg in the batter. Base is original (no sauce); sauces are modifiers (v8 ruling 2). Halal from ingredients at a 'none' branch (v8 ruling 1)."
+  },
+  "Half Fried Chicken": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat-flour batter. Original by default."
+  },
+  "Chicken Wings": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat-flour batter. 12 pieces is a modifier."
+  },
+  "Boneless Chicken": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat-flour batter."
+  },
+  "Fire Chicken Wings": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Gochujang = soy + gluten; sesame seeds. Very spicy = 3."
+  },
+  "Soy Garlic Drumsticks": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Soy sauce = soy + gluten; mirin = not halal, no allergen (rule h)."
+  },
+  "Yangnyeom Sauce": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "peanuts",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Gochujang = soy + gluten; crushed peanuts; sesame. Spicy = 2."
+  },
+  "Soy Garlic Sauce": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Soy sauce; honey rules out vegan; mirin = not halal."
+  },
+  "Honey Butter Sauce": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter = milk; honey."
+  },
+  "Snow Cheese Powder": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cheese and milk powder = milk. Rennet not stated; merchant tag followed (v4 open question 2)."
+  },
+  "Tteokbokki": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Fish cake = fish + gluten (wheat); gochujang = soy + gluten; boiled egg. Rice cakes have no gluten."
+  },
+  "Rose Tteokbokki": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "soy",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish cake; gochujang; cream, milk, mozzarella. No egg listed. Mildly spicy = 1."
+  },
+  "Kimchi Fries": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Kimchi with fish sauce and salted shrimp; mozzarella; mayo = egg."
+  },
+  "Corn Cheese": {
+    "allergens": [
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Mayo = egg; butter and mozzarella = milk."
+  },
+  "French Fries": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Coleslaw": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Mayonnaise = egg."
+  },
+  "Seafood Pajeon": {
+    "allergens": [
+      "molluscs",
+      "crustaceans",
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Squid, prawns, wheat, egg, soy sauce. Sold out in extra.json."
+  },
+  "Kimchi": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Fish sauce = fish; salted shrimp = crustaceans. Gochugaru is chilli flakes (no soy/gluten)."
+  },
+  "Steamed Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Cheese Ramyeon": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat noodles; soy sauce soup; egg; cheese slice. Beef flavour = not vegetarian; no pork or alcohol."
+  },
+  "Lunch Wing Combo": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Default: original wings + fries + Coca-Cola. Sauce and drink choices are modifiers."
+  },
+  "Lunch Half Chicken Set": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Batter = gluten; coleslaw mayo = egg."
+  },
+  "Yangnyeom Chicken Rice Bowl": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "peanuts",
+      "sesame",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Batter; gochujang; peanuts; sesame; fried egg and mayo = egg."
+  },
+  "Milkis": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk and yoghurt = milk."
+  },
+  "Chilsung Cider": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Bong Bong Grape": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Coca-Cola": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Iced Yuja Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey rules out vegan."
+  },
+  "Iced Barley Tea": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Barley = gluten (EU cereal rule). Caffeine-free."
+  },
+  "Cass Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer = gluten, not halal; vegan like v7 Asahi / v8 Tsingtao."
+  },
+  "Chamisul Soju": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Distilled rice/tapioca spirit: no allergen, not halal."
+  }
+}

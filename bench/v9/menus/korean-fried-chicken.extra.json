@@ -1,0 +1,684 @@
+{
+  "soldOut": [
+    "Seafood Pajeon"
+  ],
+  "menus": [
+    {
+      "name": "Lunch combo",
+      "dishes": [
+        "Lunch Wing Combo",
+        "Lunch Half Chicken Set",
+        "Yangnyeom Chicken Rice Bowl"
+      ],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "11:00",
+          "to": "15:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Whole Fried Chicken": [
+      {
+        "name": "Sauce (half-half)",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Original",
+            "price": 0
+          },
+          {
+            "name": "Yangnyeom",
+            "price": 0
+          },
+          {
+            "name": "Soy Garlic",
+            "price": 0
+          },
+          {
+            "name": "Honey Butter",
+            "price": 300
+          },
+          {
+            "name": "Snow Cheese",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Make it a combo",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 600
+          },
+          {
+            "name": "Coleslaw",
+            "price": 400
+          },
+          {
+            "name": "Soft drink",
+            "price": 350
+          }
+        ]
+      }
+    ],
+    "Half Fried Chicken": [
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Original",
+            "price": 0
+          },
+          {
+            "name": "Yangnyeom",
+            "price": 0
+          },
+          {
+            "name": "Soy Garlic",
+            "price": 0
+          },
+          {
+            "name": "Honey Butter",
+            "price": 300
+          },
+          {
+            "name": "Snow Cheese",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Make it a combo",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 600
+          },
+          {
+            "name": "Coleslaw",
+            "price": 400
+          },
+          {
+            "name": "Soft drink",
+            "price": 350
+          }
+        ]
+      }
+    ],
+    "Chicken Wings": [
+      {
+        "name": "Pieces",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pcs",
+            "price": 0
+          },
+          {
+            "name": "12 pcs",
+            "price": 1600
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Original",
+            "price": 0
+          },
+          {
+            "name": "Yangnyeom",
+            "price": 0
+          },
+          {
+            "name": "Soy Garlic",
+            "price": 0
+          },
+          {
+            "name": "Honey Butter",
+            "price": 300
+          },
+          {
+            "name": "Snow Cheese",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Make it a combo",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 600
+          },
+          {
+            "name": "Coleslaw",
+            "price": 400
+          },
+          {
+            "name": "Soft drink",
+            "price": 350
+          }
+        ]
+      }
+    ],
+    "Boneless Chicken": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 900
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Original",
+            "price": 0
+          },
+          {
+            "name": "Yangnyeom",
+            "price": 0
+          },
+          {
+            "name": "Soy Garlic",
+            "price": 0
+          },
+          {
+            "name": "Honey Butter",
+            "price": 300
+          },
+          {
+            "name": "Snow Cheese",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Make it a combo",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 600
+          },
+          {
+            "name": "Coleslaw",
+            "price": 400
+          },
+          {
+            "name": "Soft drink",
+            "price": 350
+          }
+        ]
+      }
+    ],
+    "Fire Chicken Wings": [
+      {
+        "name": "Pieces",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pcs",
+            "price": 0
+          },
+          {
+            "name": "12 pcs",
+            "price": 1800
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Make it a combo",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 600
+          },
+          {
+            "name": "Coleslaw",
+            "price": 400
+          },
+          {
+            "name": "Soft drink",
+            "price": 350
+          }
+        ]
+      }
+    ],
+    "Soy Garlic Drumsticks": [
+      {
+        "name": "Make it a combo",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 600
+          },
+          {
+            "name": "Coleslaw",
+            "price": 400
+          },
+          {
+            "name": "Soft drink",
+            "price": 350
+          }
+        ]
+      }
+    ],
+    "Tteokbokki": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Ramyeon",
+            "price": 300
+          },
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Fish cake",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Rose Tteokbokki": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Ramyeon",
+            "price": 300
+          },
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Fish cake",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Kimchi Fries": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 300
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Corn Cheese": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "French Fries": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Seasoning",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Honey butter",
+            "price": 200
+          },
+          {
+            "name": "Snow cheese",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Cheese Ramyeon": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Rice cake",
+            "price": 200
+          },
+          {
+            "name": "Extra cheese",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Lunch Wing Combo": [
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Original",
+            "price": 0
+          },
+          {
+            "name": "Yangnyeom",
+            "price": 0
+          },
+          {
+            "name": "Soy Garlic",
+            "price": 0
+          },
+          {
+            "name": "Honey Butter",
+            "price": 300
+          },
+          {
+            "name": "Snow Cheese",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Coca-Cola",
+            "price": 0
+          },
+          {
+            "name": "Chilsung Cider",
+            "price": 0
+          },
+          {
+            "name": "Iced Barley Tea",
+            "price": 0
+          },
+          {
+            "name": "Milkis",
+            "price": 100
+          },
+          {
+            "name": "Iced Yuja Tea",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Side upgrade",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kimchi fries",
+            "price": 500
+          }
+        ]
+      }
+    ],
+    "Lunch Half Chicken Set": [
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Original",
+            "price": 0
+          },
+          {
+            "name": "Yangnyeom",
+            "price": 0
+          },
+          {
+            "name": "Soy Garlic",
+            "price": 0
+          },
+          {
+            "name": "Honey Butter",
+            "price": 300
+          },
+          {
+            "name": "Snow Cheese",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Coca-Cola",
+            "price": 0
+          },
+          {
+            "name": "Chilsung Cider",
+            "price": 0
+          },
+          {
+            "name": "Iced Barley Tea",
+            "price": 0
+          },
+          {
+            "name": "Milkis",
+            "price": 100
+          },
+          {
+            "name": "Iced Yuja Tea",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Yangnyeom Chicken Rice Bowl": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Cheese",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Milkis": [
+      {
+        "name": "Flavour",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Original",
+            "price": 0
+          },
+          {
+            "name": "Strawberry",
+            "price": 0
+          },
+          {
+            "name": "Melon",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Cass Beer": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Bottle",
+            "price": 0
+          },
+          {
+            "name": "Bucket of 4",
+            "price": 4190
+          }
+        ]
+      }
+    ],
+    "Chamisul Soju": [
+      {
+        "name": "Flavour",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Original",
+            "price": 0
+          },
+          {
+            "name": "Grapefruit",
+            "price": 0
+          },
+          {
+            "name": "Peach",
+            "price": 0
+          },
+          {
+            "name": "Green grape",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}
