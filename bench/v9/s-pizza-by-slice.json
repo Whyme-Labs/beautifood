@@ -311,7 +311,7 @@
         "Jalapeños"
       ]
     },
-    "note": "Extra Toppings: Extra Cheese 3.00, Mushrooms 2.50, Beef Pepperoni 4.00, Chicken 4.00, Pineapple 2.00; Jalapeños sold out."
+    "note": "Extra Toppings: Extra Cheese 3.00, Mushrooms 2.50, Beef Pepperoni 4.00, Chicken 4.00, Pineapple 2.00. Jalapeños (sold out) is no longer in the group (ruling 4)."
   },
   {
     "id": "v9s-pizza-by-slice-015",
@@ -418,13 +418,13 @@
         "Margherita Slice"
       ],
       "says": [
-        "(^|[^0-9])(5\\.90|6\\.88|6\\.90)"
+        "(^|[^0-9])(5\\.90|6\\.88)"
       ],
       "excludes": [
         "Jalapeños"
       ]
     },
-    "note": "Wed 15:00, deal starts: 6.90 - 1.00 = 5.90 (till 6.90 also accepted, ruling 8)."
+    "note": "Wed 15:00, deal starts: 6.90 - 1.00 = 5.90; with charges 6.88. Review: the till-rounded 6.90 equals the list price without the deal, so it is dropped (a wrong 'no deal, RM6.90' passed)."
   },
   {
     "id": "v9s-pizza-by-slice-019",
@@ -530,7 +530,7 @@
     },
     "expect": {
       "says": [
-        "6 ?(pm|p\\.m)|18[:.]00|6[:.]00|(^|[^0-9])(5\\.90|6\\.90|6\\.50)|1(\\.00)? off"
+        "6 ?(pm|p\\.m)|18[:.]00|(^|[^0-9])6[:.]00|(^|[^0-9])(5\\.90|6\\.90|6\\.50)|(^|[^0-9])1(\\.00)? off"
       ],
       "excludes": [
         "Jalapeños"
@@ -560,13 +560,13 @@
         "Margherita Slice"
       ],
       "says": [
-        "(^|[^0-9])(5\\.90|6\\.88|6\\.90)"
+        "(^|[^0-9])(5\\.90|6\\.88)"
       ],
       "excludes": [
         "Jalapeños"
       ]
     },
-    "note": "Mon 16:20 deal: 5.90."
+    "note": "Mon 16:20 deal: 5.90. Review: the till-rounded 6.90 equals the list price without the deal, so it is dropped (a wrong 'no deal, RM6.90' passed)."
   },
   {
     "id": "v9s-pizza-by-slice-024",
@@ -796,8 +796,10 @@
     ],
     "question": "牛肉香肠是猪肉做的吗？",
     "expect": {
-      "includes": [
-        "Beef Pepperoni Pizza"
+      "includesAny": [
+        "Beef Pepperoni Pizza",
+        "Beef Pepperoni Slice",
+        "Beef Pepperoni"
       ],
       "says": [
         "是牛肉|用牛肉|牛肉做|牛肉制|不是猪|没有猪|不含猪|无猪"
@@ -806,7 +808,7 @@
         "Jalapeños"
       ]
     },
-    "note": "Halal beef pepperoni."
+    "note": "Halal beef pepperoni. Review: 牛肉香肠 names the pepperoni, so the pizza, the slice or the topping line is an honest card."
   },
   {
     "id": "v9s-pizza-by-slice-034",
@@ -843,13 +845,13 @@
     "question": "可以加墨西哥辣椒吗？",
     "expect": {
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有|卖完|售罄|n't available|out of"
       ],
       "excludes": [
         "Jalapeños"
       ]
     },
-    "note": "Jalapeños sold out."
+    "note": "Jalapeños is sold out; under ruling 4 it is also out of every Extra Toppings group, so the guest hears it isn't available and no total includes its RM2.00."
   },
   {
     "id": "v9s-pizza-by-slice-036",
@@ -983,13 +985,13 @@
     "question": "蘑菇汤是素的吗？",
     "expect": {
       "says": [
-        "鸡|chicken|不是素|不算素|非素"
+        "鸡汤|鸡高汤|鸡上汤|鸡肉汤|chicken (stock|broth)|(?<![没不])含鸡|(?<![没不])用(了)?鸡|不是素|不算素|非素|not vegetarian|isn't vegetarian|bukan vegetarian|stok ayam"
       ],
       "excludes": [
         "Jalapeños"
       ]
     },
-    "note": "Chicken stock: not vegetarian (rule l)."
+    "note": "Chicken stock: not vegetarian (rule l). Review: bare 鸡/chicken matched a wrong '是素的，没有鸡' answer (v8 rule 7)."
   },
   {
     "id": "v9s-pizza-by-slice-041",
@@ -1452,13 +1454,13 @@
         "Chicken Wings"
       ],
       "says": [
-        "BBQ|not spicy|tak pedas|tidak pedas"
+        "not spicy|isn't spicy|aren't spicy|not hot|no heat|(?<![a-z])tak pedas|tidak pedas|tak berapa pedas|takde pedas|不辣"
       ],
       "excludes": [
         "Jalapeños"
       ]
     },
-    "note": "Default BBQ glaze is not spicy; hot glaze on request."
+    "note": "Default BBQ glaze is not spicy; hot glaze on request. Review: bare 'BBQ' matched every answer; the check now needs the not-spicy fact."
   },
   {
     "id": "v9s-pizza-by-slice-061",
@@ -2108,9 +2110,12 @@
       "safetyNote": true,
       "excludes": [
         "Jalapeños"
+      ],
+      "says": [
+        "not (safe|suitable|recommended|a good idea|advisable)|isn't (safe|suitable)|wouldn't (be )?(safe|recommend)|(don't|do not|can't|cannot|shouldn't|should not|wouldn't|would not) (recommend|suggest|add|have|eat|take|do)|avoid|skip|leave (it |them )?(out|off)|tak (selamat|sesuai|boleh)|jangan|elak|不建议|不能|避免|不要|without (the )?prawns|(prawns?|udang) (is|are) (a )?(crustacean|shellfish)|instead"
       ]
     },
-    "note": "The Prawns add-on is the allergen; the salad itself has no crustaceans, so showing the plain salad is allowed."
+    "note": "The Prawns add-on is the allergen; the salad itself has no crustaceans, so showing the plain salad is allowed. Review (ruling 2): the allergen is in the add-on, which avoid cannot see, so says checks the not-safe verdict."
   },
   {
     "id": "v9s-pizza-by-slice-087",
@@ -2680,13 +2685,13 @@
         "Spicy Sambal Chicken Pizza"
       ],
       "says": [
-        "spicy|pedas|(?<![不没无])辣(?![吗么])"
+        "\\byes\\b|(?<!not )(?<!n't )very (spicy|hot)|(really|super|extremely) (spicy|hot)|spiciest|hottest|(?<!tak )(?<!tidak )sangat pedas|pedas gila|(很|非常|最|超)辣"
       ],
       "excludes": [
         "Jalapeños"
       ]
     },
-    "note": "Very spicy (3)."
+    "note": "Very spicy (3). Review: bare 'spicy' (the question's own word) now needs the very-spicy verdict."
   },
   {
     "id": "v9s-pizza-by-slice-104",
@@ -3064,13 +3069,13 @@
     "question": "Add jalapeños to that.",
     "expect": {
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有|卖完|售罄|n't available|out of"
       ],
       "excludes": [
         "Jalapeños"
       ]
     },
-    "note": "Jalapeños sold out."
+    "note": "Jalapeños is sold out; under ruling 4 it is also out of every Extra Toppings group, so the guest hears it isn't available and no total includes its RM2.00."
   },
   {
     "id": "v9s-pizza-by-slice-117",

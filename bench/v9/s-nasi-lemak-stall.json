@@ -489,10 +489,10 @@
         "Lontong"
       ],
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有|卖完|售罄|n't available|out of"
       ]
     },
-    "note": "Paru Goreng is sold out (rule r), as a lauk and as an add-on."
+    "note": "Paru Goreng is sold out (rule r). Under ruling 4 it is also out of the Tambah Lauk group, so the guest hears it isn't available; no total may include its RM4.00."
   },
   {
     "id": "v9s-nasi-lemak-stall-019",
@@ -518,7 +518,7 @@
         "(^|[^0-9])5\\.50"
       ]
     },
-    "note": "Tambah Lauk options include Rendang Daging +5.50; sold-out lauk must not be offered as cards."
+    "note": "Tambah Lauk options include Rendang Daging +5.50. The sold-out Paru Goreng and Sambal Kerang are no longer in the group (ruling 4) and stay excluded as dishes."
   },
   {
     "id": "v9s-nasi-lemak-stall-020",
@@ -1361,7 +1361,7 @@
         "Sambal Sotong"
       ],
       "says": [
-        "JAKIM|Jabatan Kemajuan Islam|伊斯兰发展局|认证|(?<![不没])是清真|可以吃|halal"
+        "JAKIM|Jabatan Kemajuan Islam|伊斯兰发展局|(?<![没未无不])(?<!没有)认证|(?<![不没])是清真|(?<![不])可以吃|(?<!not )(?<!bukan )(?<!tidak )(?<!tak )(?<!non-)halal"
       ],
       "excludes": [
         "Paru Goreng",
@@ -1372,7 +1372,7 @@
         "Lontong"
       ]
     },
-    "note": "Certified kitchen; every dish halal."
+    "note": "Certified kitchen; every dish halal. Review: the bare 可以吃 and halal alternatives now exclude 不可以吃 / not halal (v8 rule 7)."
   },
   {
     "id": "v9s-nasi-lemak-stall-050",
@@ -2020,7 +2020,7 @@
         "Rendang Daging"
       ],
       "says": [
-        "no nut|nut.?free|without nuts|tiada kacang|tak ada kacang|coconut|kerisik|没有坚果|不含坚果"
+        "no nuts?\\b|nut.?free|without (any )?nuts|not (a )?(tree )?nuts?\\b|isn't a (tree )?nut|(doesn't|does not|don't|do not) (have|contain|use) (any )?nuts|tiada kacang|tak ada kacang|takde kacang|bukan kacang|tidak (ada|mengandungi) kacang|没有坚果|不含坚果|没有花生|不含花生"
       ],
       "excludes": [
         "Paru Goreng",
@@ -2031,7 +2031,7 @@
         "Lontong"
       ]
     },
-    "note": "Kerisik is toasted coconut, not a tree nut (convention c)."
+    "note": "Kerisik is toasted coconut, not a tree nut (convention c). Review: the bare coconut|kerisik alternatives matched a wrong 'yes, kerisik nuts' answer; the check now needs the no-nuts fact."
   },
   {
     "id": "v9s-nasi-lemak-stall-072",
@@ -2501,9 +2501,12 @@
         "Telur Separuh Masak",
         "Bihun Goreng",
         "Lontong"
+      ],
+      "says": [
+        "not (safe|suitable|recommended|a good idea|advisable)|isn't (safe|suitable)|wouldn't (be )?(safe|recommend)|(don't|do not|can't|cannot|shouldn't|should not|wouldn't|would not) (recommend|suggest|add|have|eat|take|do)|avoid|skip|leave (it |them )?(out|off)|tak (selamat|sesuai|boleh)|jangan|elak|不建议|不能|避免|不要|(squid|sotong) (is|are) (a )?(mollusc|shellfish)|(contains?|has|with) (belacan|shrimp paste)"
       ]
     },
-    "note": "Sambal Sotong is squid in belacan sambal, and it isn't an add-on on the vegetarian set anyway; the shellfish allergy carries over."
+    "note": "Sambal Sotong is squid in belacan sambal, and it isn't an add-on on the vegetarian set anyway; the shellfish allergy carries over. Review (ruling 2): says checks the not-safe verdict, since a text-only 'added' passes avoid."
   },
   {
     "id": "v9s-nasi-lemak-stall-086",
@@ -3150,7 +3153,7 @@
         "Nasi Lemak Rendang Daging"
       ],
       "says": [
-        "spicy|pedas|(?<![不没无])辣(?![吗么])"
+        "\\byes\\b|(?<!not )(?<!n't )(is|it's|quite|very|fairly|rather|a bit|bit|moderately) spicy|(?<!tak )(?<!tidak )(?<!kurang )pedas|(?<![不没无])辣(?![吗么])"
       ],
       "excludes": [
         "Paru Goreng",
@@ -3161,7 +3164,7 @@
         "Lontong"
       ]
     },
-    "note": "Third = Nasi Lemak Rendang Daging, spicy sambal (2)."
+    "note": "Third = Nasi Lemak Rendang Daging, spicy sambal (2). Review: bare 'spicy' (the question's own word) now needs a verdict form; 'bill' tag removed."
   },
   {
     "id": "v9s-nasi-lemak-stall-104",

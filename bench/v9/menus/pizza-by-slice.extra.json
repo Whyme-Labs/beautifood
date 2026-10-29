@@ -88,10 +88,6 @@
           {
             "name": "Pineapple",
             "price": 200
-          },
-          {
-            "name": "Jalapeños",
-            "price": 200
           }
         ]
       }
@@ -154,10 +150,6 @@
           },
           {
             "name": "Pineapple",
-            "price": 200
-          },
-          {
-            "name": "Jalapeños",
             "price": 200
           }
         ]
@@ -222,10 +214,6 @@
           {
             "name": "Pineapple",
             "price": 200
-          },
-          {
-            "name": "Jalapeños",
-            "price": 200
           }
         ]
       }
@@ -288,10 +276,6 @@
           },
           {
             "name": "Pineapple",
-            "price": 200
-          },
-          {
-            "name": "Jalapeños",
             "price": 200
           }
         ]
@@ -356,10 +340,6 @@
           {
             "name": "Pineapple",
             "price": 200
-          },
-          {
-            "name": "Jalapeños",
-            "price": 200
           }
         ]
       }
@@ -422,10 +402,6 @@
           },
           {
             "name": "Pineapple",
-            "price": 200
-          },
-          {
-            "name": "Jalapeños",
             "price": 200
           }
         ]
@@ -490,10 +466,6 @@
           {
             "name": "Pineapple",
             "price": 200
-          },
-          {
-            "name": "Jalapeños",
-            "price": 200
           }
         ]
       }
@@ -557,10 +529,6 @@
           {
             "name": "Pineapple",
             "price": 200
-          },
-          {
-            "name": "Jalapeños",
-            "price": 200
           }
         ]
       }
@@ -599,7 +567,7 @@
       {
         "name": "Extra Toppings",
         "min": 0,
-        "max": 4,
+        "max": 3,
         "options": [
           {
             "name": "Extra Vegan Cheese",
@@ -611,10 +579,6 @@
           },
           {
             "name": "Pineapple",
-            "price": 200
-          },
-          {
-            "name": "Jalapeños",
             "price": 200
           }
         ]
