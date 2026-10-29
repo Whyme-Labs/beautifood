@@ -23,6 +23,8 @@ export interface Dish {
   spiceLevel: number;
   isSignature: boolean;
   translations?: Record<string, { name?: string; description?: string } | undefined>;
+  /** Its add-ons and sizes, as the branch set them. */
+  modifiers?: { name: string; min?: number; max?: number; options: { name: string; price: number }[] }[];
 }
 
 export type Diet = "vegetarian" | "vegan" | "halal";
@@ -47,6 +49,12 @@ export interface Understanding {
   delexicalized: string[];
   /** Dishes named, in the order named. */
   dishes: Dish[];
+  /** The question's words, as read (typos put right, Chinese a character each). */
+  toks: string[];
+  /** Where each dish is named among `toks`: words `from` up to `to`. */
+  spots: Spot[];
+  /** Where each clause of the question starts among `toks` (at its commas, full stops, brackets). */
+  breaks: number[];
   /** Allergens the guest is avoiding. */
   avoid: Allergen[];
   /** Of `avoid`, the ones the guest stated ("allergic to", "no prawns", "过敏"), not just asked about. */
@@ -230,9 +238,43 @@ const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
   ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
   sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], susu: ["milk"],
-  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"],
+  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
 };
+
+/** Where a dish is named among the question's words (`from` up to, not including, `to`). */
+export interface Spot {
+  dish: Dish;
+  from: number;
+  to: number;
+  /** The words that name it (a name's words can be apart: "pearl … milk tea"). */
+  covered: number[];
+}
+const spotOf = (m: Mention, toks: string[]): Spot => {
+  if (m.covered.length) {
+    // where most of its words are, side by side
+    const sorted = [...m.covered].sort((a, b) => a - b);
+    const runs = sorted.reduce<number[][]>((rs, i) => (rs.length && i === rs[rs.length - 1].at(-1)! + 1 ? (rs[rs.length - 1].push(i), rs) : [...rs, [i]]), []);
+    const run = runs.sort((a, b) => b.length - a.length)[0];
+    return { dish: m.dish, from: run[0], to: run[run.length - 1] + 1, covered: sorted };
+  }
+  // a Chinese name: its characters, one word each
+  const zh = [...normalize(m.zh ?? "").replace(/ /g, "")];
+  for (let i = 0; zh.length && i + zh.length <= toks.length; i++) if (zh.every((c, k) => toks[i + k] === c)) return { dish: m.dish, from: i, to: i + zh.length, covered: zh.map((_, k) => i + k) };
+  return { dish: m.dish, from: -1, to: -1, covered: [] };
+};
+
+/** Where each clause starts among the question's words: at a comma, a full stop or a bracket. */
+function clauseBreaks(question: string, n: number): number[] {
+  const out: number[] = [];
+  let k = 0;
+  for (const chunk of question.split(/[,;，；。、!?！？()（）\n]+|\.(?!\d)|\s[-–]\s/)) {
+    out.push(k);
+    k += normalize(chunk).split(" ").filter(Boolean).length;
+  }
+  // (only when the clauses add up to the whole: else one clause)
+  return k === n ? [...new Set(out)] : [0];
+}
 
 interface Mention {
   dish: Dish;
@@ -904,6 +946,9 @@ export function read(items: Dish[], asked: string): Reading {
     statedDiet: saysDiet ? diet : [],
     delexicalized,
     dishes: mentions.map((m) => m.dish),
+    toks,
+    spots: mentions.map((m) => spotOf(m, toks)),
+    breaks: clauseBreaks(question, toks.length),
     avoid: [...new Set(avoid)],
     allergens: [...new Set(allergens)],
     asksContents,

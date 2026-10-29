@@ -149,7 +149,8 @@ export function compose<T extends Dish>(asked: Slot[], ranked: T[], budget: numb
 
 /** "I'll have", "add", "can I get", "nak", "我要", "来一个", "加一杯": the guest ordering what they name. */
 export const ORDERING = /\b(i ll|ill|i will|i want|i d like|id like|can i get|can i have|could i get|could i have|give me|add|i ll take|i ll have|i take|i have the|order|nak|saya nak|mau|plus|another)\b/;
-export const ORDERING_ZH = /我要|我想要|给我|来[一两二三四]?[个份杯碗碟盘]|加[一两二三四]?[个份杯碗碟盘]?|要[一两二三四][个份杯碗碟盘]|再来/;
+// ("加一份薯条", "加多一杯" orders more; "加芝士" asks for an add-on)
+export const ORDERING_ZH = /我要|我想要|给我|来[一两二三四五六七八九十]?[个份杯碗碟盘包块粒只罐瓶]|加[一两二三四五六七八九十多][个份杯碗碟盘包块粒只罐瓶]?|加[个份杯碗碟盘包罐瓶]|要[一两二三四五六七八九十][个份杯碗碟盘包块粒只罐瓶]|再来|再加/;
 
 const ZH_NUMBER: Record<string, number> = { 一: 1, 两: 2, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
 

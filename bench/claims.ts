@@ -96,14 +96,20 @@ export function claims(answer: string, items: Item[], labels: { id: string; labe
       if (!m || m.index > 60 || NOT_A_PRICE.test(sentence.slice(0, s.to + m.index))) continue;
       // "2 × Teh Tarik (RM3.50)" gives the unit price; "Teh Tarik x2 RM7.00" the line's
       const said = Math.round(Number(m[1]) * 100);
-      const prices = [s.i.price, s.i.listPrice].filter((p): p is number => p != null);
       // with add-ons: any one option of each group, or none ("large iced" is both)
       // (a group that takes several, "Add-on: egg, onion", any of its options together)
       const picks = (g: { max: number; options: { price: number }[] }) => (g.max > 1 ? g.options.reduce((sums, o) => [...sums, ...sums.map((x) => x + o.price)], [0]) : [0, ...g.options.map((o) => o.price)]);
-      const extras = (s.i.modifiers ?? []).reduce((sums, g) => [...new Set(sums.flatMap((x) => picks(g).map((p) => x + p)))], [0]);
+      const fits = (i: Item) => {
+        const prices = [i.price, i.listPrice].filter((p): p is number => p != null);
+        const extras = (i.modifiers ?? []).reduce((sums, g) => [...new Set(sums.flatMap((x) => picks(g).map((p) => x + p)))], [0]);
+        return prices.some((p) => extras.some((e) => Array.from({ length: 20 }, (_, q) => (q + 1) * (p + e)).includes(said)));
+      };
+      // ("Nasi Lemak Biasa with Ayam Goreng (RM8.00)": an add-on that is also a dish names the line's
+      // dish's add-on, so the price is the dish's before it, with nothing summed between)
+      const line = [s.i];
+      for (let j = k - 1; j >= 0 && !/[+=;]|RM/i.test(sentence.slice(here[j].to, here[j + 1].from)); j--) line.push(here[j].i);
       readCount++;
-      if (!prices.some((p) => extras.some((e) => Array.from({ length: 20 }, (_, q) => (q + 1) * (p + e)).includes(said))))
-        failed.push(`claims RM${(said / 100).toFixed(2)} for ${s.i.name} (menu: RM${(s.i.price / 100).toFixed(2)})`);
+      if (!line.some(fits)) failed.push(`claims RM${(said / 100).toFixed(2)} for ${s.i.name} (menu: RM${(s.i.price / 100).toFixed(2)})`);
     }
 
     // whom a claim word is about: a list after it ("free of soy: A; B"), else the dish named just before it
