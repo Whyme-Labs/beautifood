@@ -655,7 +655,9 @@ export const DISH_NAMES_ZH: Record<string, string[]> = {
   "dolsot bibimbap": ["石锅拌饭"],
   bulgogi: ["韩式烤牛肉"],
   "korean fried chicken": ["韩式炸鸡"],
-  tteokbokki: ["炒年糕", "辣炒年糕"],
+  tteokbokki: ["炒年糕", "辣炒年糕", "年糕"],
+  "whole fried chicken": ["整只炸鸡", "整只鸡", "整鸡", "全鸡"],
+  "half fried chicken": ["半只炸鸡", "半只鸡", "半鸡"],
   japchae: ["杂菜粉丝", "韩式炒粉丝"],
   kimchi: ["泡菜"],
   "kimchi jjigae": ["泡菜汤", "泡菜锅"],
@@ -1038,7 +1040,8 @@ const norm = (s: string) => s.toLowerCase().replace(/\(.*?\)/g, " ").replace(/[^
  * 槟城亚参叻沙), then the shorter ones (亚参叻沙, 叻沙), which guests say too.
  */
 export function zhNamesOf(name: string): { key: string; names: string[] } | null {
-  const n = ` ${norm(name)} `;
+  // ("Coca-Cola" is the coca cola)
+  const n = ` ${norm(name)} ${norm(name).replace(/-/g, " ")} `;
   const hit = keys.filter((k) => n.includes(` ${k} `));
   return hit.length ? { key: hit[0], names: [...new Set(hit.flatMap((k) => DISH_NAMES_ZH[k]))] } : null;
 }

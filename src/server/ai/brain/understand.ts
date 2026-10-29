@@ -163,7 +163,7 @@ const KEYWORDS = (
 ).split(" ");
 
 /** Real words that are one letter off a keyword ("there" and "these", "daily" and "dairy"): never "corrected". */
-const REAL = new Set("there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story carb carbs keto protein calorie calories".split(" "));
+const REAL = new Set("batter batters there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story carb carbs keto protein calorie calories".split(" "));
 
 /**
  * Allergen words, which are worth correcting even when short ("egs", "nutz"): missing one is the
@@ -238,7 +238,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
   ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
   sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], susu: ["milk"],
-  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"],
+  limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
 };
 
@@ -430,6 +430,13 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const variant = /\b(vegetarian|vegan|veggie)\b/i.test(m.dish.name) && /素/.test(raw);
     if (usual.filter((x) => x.zh === m.zh).length >= 3 || (!variant && own.some((x) => x.dish !== m.dish && x.zh!.includes(m.zh!)))) found.splice(k, 1);
   }
+  // a Chinese name two dishes share (鸡翅 of the Chicken Wings and the Fire Chicken Wings, 年糕): the plain one
+  for (let k = found.length - 1; k >= 0; k--) {
+    const m = found[k];
+    if (!m.zh) continue;
+    const words = (d: Dish) => normalize(d.name).split(" ").length;
+    if (found.some((b) => b !== m && b.zh === m.zh && words(b.dish) < words(m.dish))) found.splice(k, 1);
+  }
   // 海南鸡饭 is the Hainanese Chicken Rice, not also the plain Chicken Rice (鸡饭) inside it
   for (let k = found.length - 1; k >= 0; k--) if (found[k].zh && found.some((b) => b.zh && b.zh !== found[k].zh && b.zh.includes(found[k].zh!))) found.splice(k, 1);
   // two dishes claiming the same words ("pad thai"): the one whose description has the question's
@@ -460,6 +467,15 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     if (shared.length && m.score < 1 && !(shared.every(common) && m.covered.some((i) => !claimed.has(i) && !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))) return false;
     m.covered.forEach((i) => claimed.add(i));
     return true;
+  });
+  // "large fries", "a rice": a word several dishes end in names the plain one ("French Fries",
+  // "Steamed Rice"), when nothing else took it
+  const PLAIN_WORD = /^(french|plain|original|classic|regular|steamed|white|fresh|house|normal|biasa|kosong)$/;
+  toks.forEach((t, i) => {
+    if (t.length < 3 || GENERIC.has(t) || kept.some((m) => m.covered.includes(i)) || skip.has(i)) return;
+    const ends = items.filter((d) => { const w = normalize(d.name).split(" "); return w.length === 2 && same(t, w[1]) && PLAIN_WORD.test(w[0]); });
+    const any = items.filter((d) => normalize(d.name).split(" ").some((w) => same(t, w)));
+    if (ends.length === 1 && any.length >= 2 && !kept.some((m) => m.dish === ends[0])) kept.push({ dish: ends[0], at: i, covered: [i], score: 0.5 });
   });
   return kept.sort((a, b) => a.at - b.at);
 }

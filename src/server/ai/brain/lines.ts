@@ -61,9 +61,9 @@ export const phrase = (toks: string[]) => toks.join(" ").replace(/(?<=[㐀-鿿])
  * Pudding or the Pearl Milk Tea), "ban mian with fish balls", "加鱼丸", "kopi o kosong", "barley add
  * lime". `others` are dishes on the order or just talked about, whose options count too.
  */
-export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = []): Set<Spot> {
+export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], breaks: number[] = []): Set<Spot> {
   const out = new Set<Spot>();
-  const CUE = /^(with|w|add|added|adding|extra|plus|tambah|dengan|topping|toppings|on|put|in|加|换|换成|配|要|走|少|多)$/;
+  const CUE = /^(with|w|add|added|adding|extra|plus|tambah|dengan|topping|toppings|on|put|in|upgrade|upgraded|upsize|drink|minuman|sauce|sos|加|换|换成|配|要|走|少|多)$/;
   for (const x of spots) {
     if (x.from < 0) continue;
     // (its own words: not the "milk tea" another dish named takes)
@@ -74,12 +74,22 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = []):
     const name = normalize(x.dish.name).split(" ");
     const zhName = Object.values(x.dish.translations ?? {}).map((t) => t?.name ?? "").find((z) => z.length > 1);
     const whole = /[㐀-鿿]/.test(text) ? !!zhName && text === zhName : words.length >= name.length;
-    const cued = toks.slice(Math.max(0, x.from - 2), x.from).some((t) => CUE.test(t)) || (x.from > 0 && /^(and|dan|n|和)$/.test(toks[x.from - 1]) && toks.slice(Math.max(0, x.from - 6), x.from - 1).some((t) => CUE.test(t)));
+    // ("upgrade to kimchi fries", "change it to the soy garlic")
+    const cued = toks.slice(Math.max(0, x.from - 2), x.from).some((t) => CUE.test(t)) || (toks[x.from - 1] === "to" && toks.slice(Math.max(0, x.from - 5), x.from - 1).some((t) => /^(upgrade|change|swap|switch|tukar|ganti|make)$/.test(t))) || (x.from > 0 && /^(and|dan|n|和)$/.test(toks[x.from - 1]) && toks.slice(Math.max(0, x.from - 6), x.from - 1).some((t) => CUE.test(t)));
     // (a count of its own before it makes it ordered: "two fish ball soup")
     let k = x.from - 1;
-    while (k >= 0 && COUNTER.test(toks[k])) k--;
-    const counted = k >= 0 && !!numberBefore(toks, k) && !cued;
-    if (counted || (whole && !cued)) continue;
+    while (k >= 0 && (COUNTER.test(toks[k]) || DESCRIBES.test(toks[k]))) k--;
+    const counted = k >= 0 && !!numberBefore(toks, k) && (!cued || whole);
+    // ("whole chicken half yangnyeom half original": "half" there is the sauce's half, not the Half Chicken)
+    if (words.length && words.every((w) => /^(half|separuh|setengah|一|半)$/.test(w)) && spots.some((y) => y !== x && y.from >= 0 && y.from < x.from)) {
+      out.add(x);
+      continue;
+    }
+    // ("boneless saiz besar sos honey butter": said right after another dish, with no count and nothing
+    // joining them, it's that dish's choice)
+    const host = [...spots].filter((y) => y !== x && y.from >= 0 && y.to <= x.from && !breaks.some((b) => b > y.from && b <= x.from) && !toks.slice(y.to, x.from).some((t) => JOIN.test(t))).sort((a, b) => b.to - a.to)[0];
+    const follows = !!host && whole && !counted && !cued && optionsSaid(text, host.dish, true).add.length > 0 && !/[\u3400-\u9fff]/.test(text);
+    if (counted || (whole && !cued && !follows)) continue;
     const hosts = [...spots.filter((y) => y !== x && y.from >= 0 && y.from < x.from).map((y) => y.dish), ...(cued ? spots.filter((y) => y !== x && y.from > x.to).map((y) => y.dish) : []), ...others].filter((d) => d.id !== x.dish.id && d.modifiers?.length);
     if (hosts.some((d) => optionsSaid(text, d, true).add.length)) out.add(x);
   }
@@ -127,7 +137,12 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
         // what goes with it: from the last dish (or the clause's start) to the next dish's words
         let from = k ? here[k - 1].to : c;
         let to = k + 1 < here.length ? here[k + 1].from : end;
-        if (k + 1 < here.length) while (to > s.to && (DESCRIBES.test(toks[to - 1]) || COUNTER.test(toks[to - 1]) || numberBefore(toks, to - 1))) to--;
+        // (the next dish's own count and what describes it: "…, 2 large iced latte"; not "saiz besar" said of this one)
+        if (k + 1 < here.length) {
+          let j = to;
+          while (j > s.to && (DESCRIBES.test(toks[j - 1]) || COUNTER.test(toks[j - 1])) && !numberBefore(toks, j - 1)) j--;
+          if (j > s.to && numberBefore(toks, j - 1)) to = numberBefore(toks, j - 1)!.at;
+        }
         if (k) while (from < s.from && from < here[k - 1].to) from++;
         let count: number | null = null;
         // before it: "2 large iced", "两杯大杯", skipping what describes it (and a number of its own option, "12 wings")
@@ -188,6 +203,8 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
   const out: Line[] = [];
   for (const l of lines) {
     if (!l.counted && counted.has(l.dish.id) && lines.filter((x) => x.dish.id === l.dish.id).length > 1 && !l.options.length) continue;
+    // ("soju is free with any whole chicken. So whole chicken plus soju": named twice, counted never, one)
+    if (!l.counted && !counted.has(l.dish.id) && !l.options.length && out.some((o) => o.dish.id === l.dish.id)) continue;
     const key = (x: Line) => `${x.dish.id}|${x.options.map((o) => o.name).sort().join(",")}`;
     const had = out.find((o) => key(o) === key(l));
     if (had) had.count += l.count;

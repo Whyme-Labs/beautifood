@@ -20,7 +20,7 @@ const ALSO: Record<string, string[]> = {
   puffs: ["taupok", "tau pok", "tofu puff"], pearls: ["pearl", "boba", "tapioca"], pudding: ["puding"],
   grass: ["cincau"], coconut: ["kelapa", "nata"], bean: ["kacang merah"], foam: ["foam"],
   cheese: ["keju", "cheesy"], ramyeon: ["ramen", "ramyun", "ramyon", "noodle", "noodles", "maggi"], cake: ["cake"],
-  fries: ["fry", "kentang", "kentang goreng", "chips"], soft: ["drink", "soda", "air", "minuman"], coleslaw: ["slaw"],
+  fries: ["fry", "kentang", "kentang goreng", "chips"], soft: ["soda", "air", "minuman", "soft drink", "can drink"], drink: ["air", "minuman", "soda"], coleslaw: ["slaw"],
   mushrooms: ["mushroom", "cendawan"], pineapple: ["nanas"], pepperoni: ["pepperoni"], parmesan: ["parmesan"],
   cream: ["ice cream", "aiskrim", "icecream"], whey: ["whey", "protein"], plant: ["vegan protein"], chia: ["chia"],
   granola: ["granola"], flakes: ["flake"], honey: ["madu"], nuts: ["nut", "kacang"], cacao: ["cocoa", "cacao"],
@@ -56,7 +56,7 @@ const ALSO_ZH: Record<string, RegExp> = {
 // count's unit ("12 pcs", "12 inch": the number is what names it)
 const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "susu", "regular", "biasa", "fresh", "normal", "tambah", "lebih", "more", "pcs", "pc", "inch", "inches", "make", "it", "combo", "upgrade", "level", "style", "x"]);
 // "no ice", "without ice", "tak nak ais", "走冰": an option taken off ("less ice" is still ice)
-const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan)\s+(\w+)/g;
+const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|change the|swap the|tukar)\s+(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
 const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰/g;
 // an option that is itself taken off or less of something ("Less ice", "No sugar", "Tanpa Kacang",
 // "Kurang Manis", "Kosong"): said as the guest says it, it's chosen (free), never "ice taken off"
@@ -101,6 +101,8 @@ const LEAD = /^(extra|add|more|some|a|an|the|with|and|no|less|tambah|lebih|denga
 const saysOption = (ks: string[], words: Set<string>, joined: string, raw: string) => {
   if (ks.length === 1) return said(ks[0], words, joined, raw);
   const hit = ks.filter((k) => direct(k, words, joined, raw));
+  // ("a drink for her" isn't the combo's Soft drink: a course's word alone)
+  if (hit.length === 1 && /^(drink|drinks|dessert|desserts|side|sides|sauce|dip|meal)$/.test(hit[0]) && !ks.filter((k) => alias(k, words, joined)).some((k) => k !== hit[0])) return false;
   if (hit.length === 1 && !ALSO_ZH[hit[0]]?.test(raw)) {
     const toks = joined.trim().split(" ");
     const at = toks.findIndex((t) => t === hit[0] || t === `${hit[0]}s` || t === hit[0].replace(/(es|s)$/, ""));

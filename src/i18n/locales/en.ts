@@ -487,7 +487,7 @@ const en = {
     thanks: "You're welcome! Enjoy your meal.",
     madeWith: "It's {description}.",
     insteadTry: "Instead, you could try {list}.",
-    spiceLevel: "Spice level {level} of 3.",
+    spiceLevel: "It's spicy: level {level} of 3.",
     notSpicySentence: "It's not spicy.",
     cheaper: "{dish} is the cheaper one, by {diff}.",
     spicier: "{dish} is spicier.",

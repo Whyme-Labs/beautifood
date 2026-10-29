@@ -485,7 +485,7 @@ const zh = {
     thanks: "不客气！祝你用餐愉快。",
     madeWith: "材料：{description}。",
     insteadTry: "你可以改试试{list}。",
-    spiceLevel: "辣度 {level}/3。",
+    spiceLevel: "是辣的，辣度 {level}/3。",
     notSpicySentence: "不辣。",
     cheaper: "{dish}比较便宜，便宜{diff}。",
     spicier: "{dish}比较辣。",
