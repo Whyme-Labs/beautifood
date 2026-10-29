@@ -71,7 +71,10 @@ export function basketOf(question: string, items: Dish[], spend = false, party: 
     // "some", "a few", "beberapa": a couple of different ones for a party, one for one
     if (toks[j] === "a" && /^(few|couple)$/.test(toks[j + 1] ?? "")) j++;
     const some = /^(some|few|couple|several|beberapa)$/.test(toks[j] ?? "");
-    const n = some ? (party ? 2 : 1) : NUMBER[toks[j]] ?? (/^\d$/.test(toks[j]) ? Number(toks[j]) : undefined);
+    let n: number | undefined = some ? (party ? 2 : 1) : NUMBER[toks[j]] ?? (/^\d{1,2}$/.test(toks[j]) ? Number(toks[j]) : undefined);
+    // (a number of a dish's own name isn't its count: "the 6 piece and 8 piece sets")
+    const digit = NUMBER_WORD[toks[j]] ?? toks[j];
+    if (n !== undefined && !some && items.some((d) => ` ${normalize(d.name)} `.includes(` ${digit} ${toks[j + 1] ?? "@"}`))) n = undefined;
     if (n !== undefined) (count = n), j++;
     if (some && toks[j] === "of") j++;
     const w = toks[j];

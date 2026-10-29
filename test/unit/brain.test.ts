@@ -1105,3 +1105,46 @@ describe("the kind of dish asked for, and a running order (v7, from counts)", ()
     expect(ask("beef rendang and vegetable curry", "we're splitting between 2").answer).toMatch(/RM8\.00 each/);
   });
 });
+
+describe("bills and add-ons in the guest's own words (v8 dev)", () => {
+  const shop = {
+    ...ctx,
+    charges: { serviceChargePct: 0, taxPct: 6, taxInclusive: true, cashRounding: 5 },
+    items: asItems([
+      { id: "s6", name: "House 6-Piece Set", category: "Sets", description: "six pieces in soup", price: 1200, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: true },
+      { id: "s8", name: "House 8-Piece Set", category: "Sets", description: "eight pieces in soup", price: 1600, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+      { id: "sa", name: "Satay Ayam", category: "Satay", description: "chicken skewer, per stick", price: 130, allergens: ["peanuts"], dietary: [], spiceLevel: 0, isSignature: true },
+      { id: "sd", name: "Satay Daging", category: "Satay", description: "beef skewer, per stick", price: 140, allergens: ["peanuts"], dietary: [], spiceLevel: 0, isSignature: false },
+      { id: "cu", name: "Cucur Udang", category: "Sides", description: "prawn fritters", price: 600, allergens: ["crustaceans", "gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+      { id: "rc", name: "Stuffed Red Chilli", category: "Pieces", description: "chilli stuffed with fish paste", price: 200, allergens: ["fish"], dietary: [], spiceLevel: 1, isSignature: false },
+      { id: "lj", name: "Lime Juice", category: "Drinks", description: "fresh lime", price: 300, allergens: [], dietary: ["vegan", "vegetarian"], spiceLevel: 0, isSignature: false },
+      { id: "bc", name: "Burnt Cheesecake", category: "Cakes", description: "basque cheesecake", price: 1600, allergens: ["milk", "egg", "gluten"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: false },
+    ] as never).map((i: { id: string }) =>
+      i.id === "s6" || i.id === "s8" ? { ...i, modifiers: [{ name: "Base", min: 1, max: 1, options: [{ name: "Soup", price: 0 }, { name: "Dry", price: 0 }, { name: "Curry Laksa", price: 200 }] }, { name: "Extra chilli sauce", min: 0, max: 1, options: [{ name: "Extra chilli sauce", price: 50 }] }] } : i,
+    ),
+  } as unknown as AssistantContext;
+  const ask = (...qs: string[]) => {
+    const h: { role: "user" | "assistant"; content: string }[] = [];
+    let r = answerGuest(shop, [{ role: "user", content: qs[0] }]);
+    for (const q of qs) (h.push({ role: "user", content: q }), (r = answerGuest(shop, h)), h.push({ role: "assistant", content: r.answer }));
+    return r.answer;
+  };
+  it("finds dishes by number words, units and the other language, and counts past nine", () => {
+    expect(ask("2 six piece sets and 2 lime juice, how much?")).toMatch(/Total RM30\.00/);
+    expect(ask("20 cucuk ayam, 10 cucuk daging, berapa?")).toMatch(/20 × Satay Ayam.*10 × Satay Daging.*Total RM40\.00/);
+    expect(ask("one cheesecake please, how much?")).toMatch(/Burnt Cheesecake/);
+  });
+  it("keeps an add-on apart from a dish, lists the choices and prices the add-on", () => {
+    expect(ask("1 six piece set, extra chili sauce, how much")).toMatch(/House 6-Piece Set with Extra chilli sauce: RM12\.50/);
+    expect(ask("1 six piece set, extra chili sauce, how much")).not.toMatch(/Stuffed Red Chilli/);
+    expect(ask("what bases can I choose for the set?")).toMatch(/Base: Soup, Dry, Curry Laksa \(\+RM2\.00\)/);
+    expect(ask("6 piece set with curry laksa, how much extra?")).toMatch(/RM14\.00 \(Curry Laksa \+RM2\.00\)/);
+    expect(ask("can I get the 6 piece set dry? extra charge?")).toMatch(/no extra charge/);
+  });
+  it("reads the cheaper one, the party said earlier and who has what", () => {
+    expect(ask("compare the 6 piece set and the 8 piece set", "ok 2 of the cheaper one, how much?")).toMatch(/2 × House 6-Piece Set.*Total RM24\.00/);
+    expect(ask("we're 2. 10 satay ayam and 2 lime juice", "split equally?")).toMatch(/RM9\.50 each/);
+    expect(ask("me the 8 piece set, Ali the 6 piece set with lime juice", "how much does each person pay?")).toMatch(/You: House 8-Piece Set = RM16\.00.*Ali: House 6-Piece Set \+ Lime Juice = RM15\.00/);
+    expect(ask("Got service charge ah?")).toMatch(/no service charge/);
+  });
+});

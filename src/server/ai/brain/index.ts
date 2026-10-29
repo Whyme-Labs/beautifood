@@ -126,6 +126,11 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[]) {
 
 /** Dishes an answer names, in the order it names them (by name or by the guest's-language label). */
 export function dishesIn(ctx: AssistantContext, text: string): Item[] {
+  // (not a dish named inside another's description, quoted back: the "stuffed tofu" of a set's pieces)
+  for (const i of ctx.items) {
+    const d = (i.description ?? "").replace(/\s*\([^)]*\)\s*$/, "").trim();
+    if (d.length > 12) text = text.split(d).join(" ");
+  }
   const t = text.toLowerCase();
   const n = ` ${normalize(text)} `;
   return ctx.items
@@ -590,6 +595,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // a certified or Muslim-friendly branch makes its dishes halal (or halal-friendly) unless they say otherwise
   if (ctx.halal) ctx = { ...ctx, items: withBranchHalal(ctx.items, ctx.halal) };
   const halalAt = ctx.halal?.standing ?? "none";
+  // "the cheaper one", "yang mahal": one of the dishes just shown, not the cheapest on the menu
+  if (u.superlative && state.shown.length >= 2 && /\b(the|yang|yg) (cheaper|pricier|lebih murah|lebih mahal)( one)?\b/.test(normalize(u.text))) u = { ...u, superlative: null };
   // "too hot for me lah, something milder?", "not spicy enough, got hotter?": spice against what was just shown
   // (the mildest of the spicy ones shown: "too hot" is all of them)
   const hot = state.shown.filter((i) => i.spiceLevel > 0);
@@ -775,6 +782,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "is the second one spicy?": a question about that dish
   if (nth && !["dish_allergen", "compare", "pairing"].includes(intent)) intent = "dish_info";
+  // "compare the X and Y", "X vs Y", "比较一下X和Y": a comparison, whatever the model guessed
+  if (mentioned.length >= 2 && (/\b(compare|comparing|vs|versus|difference between|bandingkan|beza)\b/.test(normalize(u.text)) || /比较|区别/.test(u.text))) intent = "compare";
   if (intent === "compare" && focus.length + (mentioned.length ? 0 : state.shown.length) < 2) intent = focus.length ? "dish_info" : "recommend";
   // "那面呢？", "what about desserts?": a new course asked for, not the last dishes weighed
   if (intent === "compare" && !mentioned.length && (u.courses.length || u.categories.length)) intent = "recommend";
@@ -958,7 +967,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // being placed or changed, answered with the order as it stands and its total
   const editing = REMOVE.test(nt1) || REMOVE.test(u.text) || SWAP.test(nt1) || SWAP.test(u.text);
   const asksOfDish = u.asksContents || u.allergens.length > 0 || u.diet.length > 0;
-  const placed = mentioned.length > 0 && (ordering || !/[?？]/.test(u.text)) && [...countsOf(u.text, mentioned).values()].reduce((a, b) => a + b, 0) >= 2;
+  const placed = mentioned.length > 0 && (ordering || (!/[?？]/.test(u.text) && !QUESTION.test(nt1))) && [...countsOf(u.text, mentioned).values()].reduce((a, b) => a + b, 0) >= 2;
   // (not "what rice bowl can I get?", "add a drink and a dessert", "20 ayam then. what drink goes with it?":
   // those ask for a suggestion)
   const asksWhat = /\b(what|wat|which|apa|mana|any|anything|something|recommend|suggest|cadang)\b/.test(nt1) || /什么|哪|推荐/.test(u.text);
@@ -1242,7 +1251,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // an order spelled out item by item ("one ramen and one drink for RM35", "one meat two veg"): a
   // dish for each, within what they have to spend, and the total
   // ("RM20 for a laksa and a drink" is an order with the money said, not a pairing)
-  if (basket && !(intent === "dish_allergen" && focus.length && u.asksContents) && !["compare", "order_help", "out_of_scope"].includes(intent) && (intent !== "pairing" || (u.amount ?? u.budget) !== null)) {
+  if (basket && !(intent === "dish_allergen" && focus.length && u.asksContents) && !["compare", "order_help", "out_of_scope"].includes(intent) && !/\b(compare|vs|versus|difference|beza|bandingkan)\b/.test(normalize(u.text)) && (intent !== "pairing" || (u.amount ?? u.budget) !== null)) {
     const spend = u.amount ?? u.budget;
     // "toast, eggs and two kopi": an allergen named as an item is asked for, unless they said they avoid it
     const items = new Set(basket.flatMap((b) => mentionedAllergens(b.term)));
@@ -1263,7 +1272,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "something cheaper than the wagyu?"), not "which is cheaper, X or Y?"
   const cheaperWord = /\b(cheaper|less expensive|lower price|lebih murah|murah sikit|murah sket)\b/.test(nt) || /更便宜|便宜一点|便宜点/.test(u.text);
   const below = mentioned.length === 1 && !nth ? mentioned : !mentioned.length ? state.shown : [];
-  if (below.length && cheaperWord && !/\b(which|mana)\b/.test(nt) && !/哪个|哪一/.test(u.text) && !(mentioned.length === 1 && /\b(is|are) (the |it |that |this )?.*\bcheaper\b.*\?/.test(nt) && !/\b(option|options|one|something|anything|alternative|dish|ada|got)\b/.test(nt))) {
+  // (not "the cheaper one": that points at one of those just shown)
+  if (below.length && cheaperWord && !/\b(the|yang|yg) (cheaper|lebih murah)( one)?\b/.test(nt) && !/便宜的那|便宜那/.test(u.text) && !/\b(which|mana)\b/.test(nt) && !/哪个|哪一/.test(u.text) && !(mentioned.length === 1 && /\b(is|are) (the |it |that |this )?.*\bcheaper\b.*\?/.test(nt) && !/\b(option|options|one|something|anything|alternative|dish|ada|got)\b/.test(nt))) {
     state = { ...state, shown: below };
     const cap = Math.min(...state.shown.map((i) => i.price));
     // the same kind of thing: a cheaper main for a main (from any of the menu's categories of them),
