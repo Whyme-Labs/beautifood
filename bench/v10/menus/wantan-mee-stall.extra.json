@@ -1,0 +1,1162 @@
+{
+  "soldOut": [
+    "Curry Chicken Noodles"
+  ],
+  "menus": [
+    {
+      "name": "Weekend special",
+      "dishes": [
+        "Herbal Duck Drumstick Noodles",
+        "Big Prawn Noodles"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            6
+          ],
+          "from": "08:00",
+          "to": "14:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Early bird noodles",
+      "kind": "percent",
+      "value": 10,
+      "categories": [
+        "NOODLES"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "06:00",
+          "to": "10:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Wantan Mee Dry": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thin egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Thick egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Hor fun",
+            "price": 50
+          },
+          {
+            "name": "Bee hoon",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Wantan",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Boiled",
+            "price": 0
+          },
+          {
+            "name": "Fried",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra wantan (3 pcs)",
+            "price": 250
+          },
+          {
+            "name": "Extra char siu",
+            "price": 300
+          },
+          {
+            "name": "Sui kow (2 pcs)",
+            "price": 300
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra vegetables",
+            "price": 150
+          },
+          {
+            "name": "Extra noodles",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Chilli",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pickled green chilli",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Wantan Mee Soup": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thin egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Thick egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Hor fun",
+            "price": 50
+          },
+          {
+            "name": "Bee hoon",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Wantan",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Boiled",
+            "price": 0
+          },
+          {
+            "name": "Fried",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra wantan (3 pcs)",
+            "price": 250
+          },
+          {
+            "name": "Extra char siu",
+            "price": 300
+          },
+          {
+            "name": "Sui kow (2 pcs)",
+            "price": 300
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra vegetables",
+            "price": 150
+          },
+          {
+            "name": "Extra noodles",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Chilli",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pickled green chilli",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Char Siu Noodles": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thin egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Thick egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Hor fun",
+            "price": 50
+          },
+          {
+            "name": "Bee hoon",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra wantan (3 pcs)",
+            "price": 250
+          },
+          {
+            "name": "Extra char siu",
+            "price": 300
+          },
+          {
+            "name": "Sui kow (2 pcs)",
+            "price": 300
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra vegetables",
+            "price": 150
+          },
+          {
+            "name": "Extra noodles",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Chilli",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pickled green chilli",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Roast Pork Noodles": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thin egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Thick egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Hor fun",
+            "price": 50
+          },
+          {
+            "name": "Bee hoon",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra wantan (3 pcs)",
+            "price": 250
+          },
+          {
+            "name": "Extra char siu",
+            "price": 300
+          },
+          {
+            "name": "Sui kow (2 pcs)",
+            "price": 300
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra vegetables",
+            "price": 150
+          },
+          {
+            "name": "Extra noodles",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Chilli",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pickled green chilli",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Chicken Feet Noodles": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thin egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Thick egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Hor fun",
+            "price": 50
+          },
+          {
+            "name": "Bee hoon",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra wantan (3 pcs)",
+            "price": 250
+          },
+          {
+            "name": "Extra char siu",
+            "price": 300
+          },
+          {
+            "name": "Sui kow (2 pcs)",
+            "price": 300
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra vegetables",
+            "price": 150
+          },
+          {
+            "name": "Extra noodles",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Chilli",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pickled green chilli",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sui Kow Noodle Soup": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thin egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Thick egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Hor fun",
+            "price": 50
+          },
+          {
+            "name": "Bee hoon",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra wantan (3 pcs)",
+            "price": 250
+          },
+          {
+            "name": "Extra char siu",
+            "price": 300
+          },
+          {
+            "name": "Sui kow (2 pcs)",
+            "price": 300
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra vegetables",
+            "price": 150
+          },
+          {
+            "name": "Extra noodles",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Chilli",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pickled green chilli",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Mushroom Noodles": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thin egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Thick egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Hor fun",
+            "price": 50
+          },
+          {
+            "name": "Bee hoon",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra vegetables",
+            "price": 150
+          },
+          {
+            "name": "Extra noodles",
+            "price": 150
+          },
+          {
+            "name": "Extra mushrooms",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Chilli",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pickled green chilli",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Herbal Duck Drumstick Noodles": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thin egg noodles",
+            "price": 0
+          },
+          {
+            "name": "Mee sua",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Big Prawn Noodles": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra prawns (2 pcs)",
+            "price": 600
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Char Siu Rice": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra char siu",
+            "price": 300
+          },
+          {
+            "name": "Extra roast pork",
+            "price": 350
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra rice",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Roast Pork Rice": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra char siu",
+            "price": 300
+          },
+          {
+            "name": "Extra roast pork",
+            "price": 350
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra rice",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Two-Meat Rice": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra char siu",
+            "price": 300
+          },
+          {
+            "name": "Extra roast pork",
+            "price": 350
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          },
+          {
+            "name": "Extra rice",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Char Siu": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 600
+          },
+          {
+            "name": "Large",
+            "price": 1200
+          }
+        ]
+      }
+    ],
+    "Roast Pork": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 650
+          },
+          {
+            "name": "Large",
+            "price": 1300
+          }
+        ]
+      }
+    ],
+    "Wantan Mee Set": [
+      {
+        "name": "Noodle style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Dry",
+            "price": 0
+          },
+          {
+            "name": "Soup",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kopi",
+            "price": 0
+          },
+          {
+            "name": "Teh",
+            "price": 0
+          },
+          {
+            "name": "Kopi O",
+            "price": 0
+          },
+          {
+            "name": "Teh O",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Char Siu Rice Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kopi",
+            "price": 0
+          },
+          {
+            "name": "Teh",
+            "price": 0
+          },
+          {
+            "name": "Kopi O",
+            "price": 0
+          },
+          {
+            "name": "Teh O",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Lemon Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Soy Bean Milk": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Warm",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Barley Water": [
+      {
+        "name": "Ice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

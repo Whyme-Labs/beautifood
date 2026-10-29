@@ -1,0 +1,1533 @@
+{
+  "soldOut": [
+    "Sirloin Steak"
+  ],
+  "menus": [
+    {
+      "name": "Lunch set",
+      "dishes": [
+        "Lunch Chicken Chop Set",
+        "Lunch Fish and Chips Set",
+        "Lunch Spaghetti Set"
+      ],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "11:30",
+          "to": "14:30"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Tea-time drinks",
+      "kind": "percent",
+      "value": 15,
+      "categories": [
+        "DRINKS"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "15:00",
+          "to": "18:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Chicken Chop": [
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Cheese",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extra sauce",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Black Pepper Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Mushroom Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Cheese Sauce",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sides",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Mashed Potato",
+            "price": 0
+          },
+          {
+            "name": "Salad",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Cheese Slice",
+            "price": 150
+          },
+          {
+            "name": "Extra Chicken Chop",
+            "price": 700
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Grilled Chicken Chop": [
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Cheese",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extra sauce",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Black Pepper Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Mushroom Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Cheese Sauce",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sides",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Mashed Potato",
+            "price": 0
+          },
+          {
+            "name": "Salad",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Cheese Slice",
+            "price": 150
+          },
+          {
+            "name": "Extra Chicken Chop",
+            "price": 700
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Chicken Cordon Bleu": [
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Cheese",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extra sauce",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Black Pepper Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Mushroom Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Cheese Sauce",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sides",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Mashed Potato",
+            "price": 0
+          },
+          {
+            "name": "Salad",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Cheese Slice",
+            "price": 150
+          },
+          {
+            "name": "Extra Chicken Chop",
+            "price": 700
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Lamb Chop": [
+      {
+        "name": "Doneness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Medium Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Medium Well",
+            "price": 0
+          },
+          {
+            "name": "Well Done",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Cheese",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extra sauce",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Black Pepper Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Mushroom Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Cheese Sauce",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sides",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Mashed Potato",
+            "price": 0
+          },
+          {
+            "name": "Salad",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Beef Sausage",
+            "price": 350
+          },
+          {
+            "name": "Extra Lamb Chop",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Mixed Grill": [
+      {
+        "name": "Doneness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Medium Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Medium Well",
+            "price": 0
+          },
+          {
+            "name": "Well Done",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Cheese",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extra sauce",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Black Pepper Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Mushroom Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Cheese Sauce",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sides",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Mashed Potato",
+            "price": 0
+          },
+          {
+            "name": "Salad",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Beef Sausage",
+            "price": 350
+          },
+          {
+            "name": "Extra Lamb Chop",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Sirloin Steak": [
+      {
+        "name": "Doneness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Medium Rare",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Medium Well",
+            "price": 0
+          },
+          {
+            "name": "Well Done",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Cheese",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extra sauce",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Black Pepper Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Mushroom Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Cheese Sauce",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sides",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Mashed Potato",
+            "price": 0
+          },
+          {
+            "name": "Salad",
+            "price": 0
+          },
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Fish and Chips": [
+      {
+        "name": "Sides",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Mashed Potato",
+            "price": 0
+          },
+          {
+            "name": "Salad",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extra sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra Tartar Sauce",
+            "price": 100
+          },
+          {
+            "name": "Extra Cheese Sauce",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra Fish Fillet",
+            "price": 700
+          },
+          {
+            "name": "Fried Egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Grilled Dory Fish": [
+      {
+        "name": "Sides",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Mashed Potato",
+            "price": 0
+          },
+          {
+            "name": "Salad",
+            "price": 0
+          },
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extra sauce",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Black Pepper Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Mushroom Sauce",
+            "price": 150
+          },
+          {
+            "name": "Extra Cheese Sauce",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra Fish Fillet",
+            "price": 700
+          },
+          {
+            "name": "Fried Egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Classic Beef Burger": [
+      {
+        "name": "Side",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Cheesy Fries",
+            "price": 350
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Cheese Slice",
+            "price": 150
+          },
+          {
+            "name": "Beef Bacon",
+            "price": 300
+          },
+          {
+            "name": "Extra Beef Patty",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Chicken Burger": [
+      {
+        "name": "Side",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Cheesy Fries",
+            "price": 350
+          }
+        ]
+      },
+      {
+        "name": "Spice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Cheese Slice",
+            "price": 150
+          },
+          {
+            "name": "Beef Bacon",
+            "price": 300
+          },
+          {
+            "name": "Extra Chicken",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Double Cheese Beef Burger": [
+      {
+        "name": "Side",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Cheesy Fries",
+            "price": 350
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Cheese Slice",
+            "price": 150
+          },
+          {
+            "name": "Beef Bacon",
+            "price": 300
+          },
+          {
+            "name": "Extra Beef Patty",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Fish Burger": [
+      {
+        "name": "Side",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Cheesy Fries",
+            "price": 350
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Beef Bacon",
+            "price": 300
+          },
+          {
+            "name": "Extra Fish Fillet",
+            "price": 700
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Mushroom Burger": [
+      {
+        "name": "Side",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fries",
+            "price": 0
+          },
+          {
+            "name": "Coleslaw",
+            "price": 0
+          },
+          {
+            "name": "Cheesy Fries",
+            "price": 350
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Cheese Slice",
+            "price": 150
+          },
+          {
+            "name": "Extra Mushroom",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Spaghetti Bolognese": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Grilled Chicken",
+            "price": 500
+          },
+          {
+            "name": "Prawns",
+            "price": 600
+          },
+          {
+            "name": "Beef Bacon",
+            "price": 300
+          },
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Parmesan",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Spaghetti Carbonara": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Grilled Chicken",
+            "price": 500
+          },
+          {
+            "name": "Prawns",
+            "price": 600
+          },
+          {
+            "name": "Beef Bacon",
+            "price": 300
+          },
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Parmesan",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Spaghetti Aglio Olio": [
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Grilled Chicken",
+            "price": 500
+          },
+          {
+            "name": "Prawns",
+            "price": 600
+          },
+          {
+            "name": "Beef Bacon",
+            "price": 300
+          },
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Parmesan",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Seafood Tomyam Spaghetti": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra Prawns",
+            "price": 600
+          },
+          {
+            "name": "Fried Egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Make it a set",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Set: mushroom soup + iced lemon tea",
+            "price": 650
+          }
+        ]
+      }
+    ],
+    "Lunch Chicken Chop Set": [
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Black Pepper",
+            "price": 0
+          },
+          {
+            "name": "Mushroom",
+            "price": 0
+          },
+          {
+            "name": "Cheese",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Iced Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot Teh Tarik",
+            "price": 0
+          },
+          {
+            "name": "Hot Kopi",
+            "price": 0
+          },
+          {
+            "name": "Iced Milo",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Lunch Fish and Chips Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Iced Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot Teh Tarik",
+            "price": 0
+          },
+          {
+            "name": "Hot Kopi",
+            "price": 0
+          },
+          {
+            "name": "Iced Milo",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Lunch Spaghetti Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Iced Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot Teh Tarik",
+            "price": 0
+          },
+          {
+            "name": "Hot Kopi",
+            "price": 0
+          },
+          {
+            "name": "Iced Milo",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Fries": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Garlic Bread": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Brownie with Ice Cream": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra Scoop Ice Cream",
+            "price": 300
+          },
+          {
+            "name": "Chocolate Sauce",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Hot or iced",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Hot or iced",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Iced Lemon Tea": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Canned Soft Drink": [
+      {
+        "name": "Flavour",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Coke",
+            "price": 0
+          },
+          {
+            "name": "Sprite",
+            "price": 0
+          },
+          {
+            "name": "100Plus",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fresh Orange Juice": [
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 6,
+    "taxInclusive": true,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "certified",
+    "certifier": "JAKIM",
+    "certNo": "JAKIM/(S)/22/00-04/1/0721",
+    "validUntil": "2027-06-30"
+  }
+}

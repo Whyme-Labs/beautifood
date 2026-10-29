@@ -1,0 +1,399 @@
+{
+  "Chicken Chop": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Default components only: wheat flour, egg, breadcrumbs; black pepper sauce: butter = milk, dark soy = soy + gluten; coleslaw mayo = egg. Mildly peppery = 1. Other sauces are modifiers. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Grilled Chicken Chop": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy marinade = soy + gluten; mushroom sauce: cream, butter = milk, wheat flour = gluten; coleslaw mayo = egg. Not spicy. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Chicken Cordon Bleu": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Crumb = wheat + egg; cheddar and mushroom sauce = milk; coleslaw mayo = egg. Smoked beef ham, not pork. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Lamb Chop": {
+    "allergens": [
+      "milk",
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Black pepper sauce: butter = milk, dark soy = soy + gluten; coleslaw mayo = egg. Mildly peppery = 1. Doneness is a free modifier. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Mixed Grill": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Beef sausage with wheat; fried egg and coleslaw mayo = egg; light/dark soy = soy + gluten; butter = milk. Mildly peppery = 1. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Sirloin Steak": {
+    "allergens": [
+      "milk",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Black pepper sauce (butter, dark soy); mashed potato (butter, milk); garden salad, no dressing stated. Mildly peppery = 1. Sold out on this branch. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Fish and Chips": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dory = fish; wheat and egg batter; coleslaw and tartar mayo = egg. No milk stated; gherkin carries no stated sulphites (v3 judgement). JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Grilled Dory Fish": {
+    "allergens": [
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dory; lemon butter and mashed potato = milk; vinaigrette and salad, no gluten. The only gluten-free main. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Classic Beef Burger": {
+    "allergens": [
+      "gluten",
+      "sesame",
+      "egg",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Sesame bun = wheat + sesame; burger sauce: mayo = egg, mustard = mustard (condiment, rule m). Pickles, no sulphites stated. No cheese. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Chicken Burger": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat and egg batter; mayo = egg; sesame bun. Spicy option is a modifier. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Double Cheese Beef Burger": {
+    "allergens": [
+      "gluten",
+      "sesame",
+      "egg",
+      "mustard",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "As Classic Beef Burger plus cheddar = milk. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Fish Burger": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dory = fish; wheat and egg batter; tartar mayo = egg; cheddar = milk; bun stated without sesame (soft bun assumed wheat). JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Mushroom Burger": {
+    "allergens": [
+      "gluten",
+      "sesame",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Portobello; cheddar = milk (merchant's vegetarian tag kept, rennet not stated); garlic mayo = egg; sesame bun. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Spaghetti Bolognese": {
+    "allergens": [
+      "gluten",
+      "celery",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Spaghetti = wheat; celery in the ragu; parmesan = milk. Dried pasta, no egg stated. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Spaghetti Carbonara": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg yolk; cream and parmesan = milk; spaghetti = wheat. Beef bacon, not pork. Black pepper is not spicy. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Spaghetti Aglio Olio": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Spaghetti = wheat; garlic, olive oil, chilli flakes; mildly spicy = 1; merchant tags vegan. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Seafood Tomyam Spaghetti": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Shrimp paste and prawns = crustaceans; squid and mussels = molluscs; fish sauce = fish; evaporated milk = milk; spaghetti = wheat. Spicy. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Lunch Chicken Chop Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken chop components plus mushroom soup (cream, wheat flour) and iced lemon tea (default drink). Other set drinks are modifiers. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Lunch Fish and Chips Set": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish and chips (fish, wheat, egg) plus mushroom soup (cream = milk, wheat flour). JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Lunch Spaghetti Set": {
+    "allergens": [
+      "gluten",
+      "celery",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Bolognese (wheat, celery, parmesan) plus mushroom soup (cream, wheat flour). JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Mushroom Soup": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cream and butter = milk; wheat flour and garlic bread = gluten; chicken stock, so not vegetarian. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Fries": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Potato and ketchup; no shared-fryer note on the menu. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Cheesy Fries": {
+    "allergens": [
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cheese sauce: cheddar, milk, wheat flour; beef bacon bits, not vegetarian. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Mashed Potato": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter and milk. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Coleslaw": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Mayonnaise = egg. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Garlic Bread": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Baguette = wheat; garlic butter = milk. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Brownie with Ice Cream": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour, egg, butter; walnuts = tree nuts; vanilla ice cream = milk. No gelatine stated. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea, lemon, sugar. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk; no butter roast stated. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Milo Dinosaur": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley = gluten; condensed milk. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Fresh Orange Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Oranges only. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Canned Soft Drink": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Cola, Sprite or 100Plus. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Root Beer Float": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated non-alcoholic root beer; vanilla ice cream = milk. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  },
+  "Mineral Water": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Water. JAKIM certified branch: no pork, lard or alcohol; every dish halal."
+  }
+}

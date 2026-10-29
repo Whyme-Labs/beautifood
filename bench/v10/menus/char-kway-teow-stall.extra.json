@@ -1,0 +1,893 @@
+{
+  "menus": [
+    {
+      "name": "Supper",
+      "dishes": [
+        "Oyster Omelette",
+        "Lor Bak"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "21:00",
+          "to": "02:00"
+        }
+      ]
+    }
+  ],
+  "soldOut": [
+    "Fried Carrot Cake (White)"
+  ],
+  "rules": [
+    {
+      "name": "Sugarcane Monday",
+      "kind": "amount",
+      "value": 50,
+      "categories": [],
+      "dishes": [
+        "Sugarcane Juice"
+      ],
+      "windows": [
+        {
+          "days": [
+            1
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Char Kway Teow": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Egg",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Chicken egg",
+            "price": 0
+          },
+          {
+            "name": "Duck egg",
+            "price": 100
+          },
+          {
+            "name": "No egg",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra prawns",
+            "price": 400
+          },
+          {
+            "name": "Cockles",
+            "price": 300
+          },
+          {
+            "name": "Lap cheong",
+            "price": 200
+          },
+          {
+            "name": "Extra egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "No taugeh",
+            "price": 0
+          },
+          {
+            "name": "More chilli",
+            "price": 0
+          },
+          {
+            "name": "No chilli",
+            "price": 0
+          },
+          {
+            "name": "Less oil",
+            "price": 0
+          },
+          {
+            "name": "No cockles",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Char Kway Teow Special": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "No taugeh",
+            "price": 0
+          },
+          {
+            "name": "More chilli",
+            "price": 0
+          },
+          {
+            "name": "No chilli",
+            "price": 0
+          },
+          {
+            "name": "Less oil",
+            "price": 0
+          },
+          {
+            "name": "No cockles",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Vegetarian Char Kway Teow": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Egg",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Chicken egg",
+            "price": 0
+          },
+          {
+            "name": "Duck egg",
+            "price": 100
+          },
+          {
+            "name": "No egg",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "No taugeh",
+            "price": 0
+          },
+          {
+            "name": "More chilli",
+            "price": 0
+          },
+          {
+            "name": "No chilli",
+            "price": 0
+          },
+          {
+            "name": "Less oil",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fried Mee": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Egg",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Chicken egg",
+            "price": 0
+          },
+          {
+            "name": "Duck egg",
+            "price": 100
+          },
+          {
+            "name": "No egg",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra prawns",
+            "price": 400
+          },
+          {
+            "name": "Cockles",
+            "price": 300
+          },
+          {
+            "name": "Lap cheong",
+            "price": 200
+          },
+          {
+            "name": "Extra egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "No taugeh",
+            "price": 0
+          },
+          {
+            "name": "More chilli",
+            "price": 0
+          },
+          {
+            "name": "No chilli",
+            "price": 0
+          },
+          {
+            "name": "Less oil",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fried Bihun": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Extra prawns",
+            "price": 400
+          },
+          {
+            "name": "Cockles",
+            "price": 300
+          },
+          {
+            "name": "Lap cheong",
+            "price": 200
+          },
+          {
+            "name": "Extra egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Chilli",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sambal on the side",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "No taugeh",
+            "price": 0
+          },
+          {
+            "name": "Less oil",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Wat Tan Hor": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra prawns",
+            "price": 400
+          },
+          {
+            "name": "Extra egg",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Penang Hokkien Mee": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mixed mee and bihun",
+            "price": 0
+          },
+          {
+            "name": "Yellow mee only",
+            "price": 0
+          },
+          {
+            "name": "Bihun only",
+            "price": 0
+          },
+          {
+            "name": "Kway teow",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Pork ribs",
+            "price": 300
+          },
+          {
+            "name": "Extra prawns",
+            "price": 400
+          },
+          {
+            "name": "Extra egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No kangkung",
+            "price": 0
+          },
+          {
+            "name": "More sambal",
+            "price": 0
+          },
+          {
+            "name": "No sambal",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Oyster Omelette": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 600
+          },
+          {
+            "name": "Large",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Egg",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Chicken egg",
+            "price": 0
+          },
+          {
+            "name": "Duck egg",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra oysters",
+            "price": 500
+          },
+          {
+            "name": "Extra crispy",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fried Carrot Cake (Black)": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra egg",
+            "price": 150
+          },
+          {
+            "name": "Lap cheong",
+            "price": 200
+          },
+          {
+            "name": "Extra prawns",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "No taugeh",
+            "price": 0
+          },
+          {
+            "name": "More chilli",
+            "price": 0
+          },
+          {
+            "name": "No chilli",
+            "price": 0
+          },
+          {
+            "name": "Less oil",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sugarcane Juice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Add",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Lime",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Lime Juice": [
+      {
+        "name": "Add",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sour plum",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Barley": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Soy Bean Milk": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 6,
+    "taxInclusive": true,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

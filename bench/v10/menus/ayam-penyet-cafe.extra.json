@@ -1,0 +1,1176 @@
+{
+  "soldOut": [
+    "Bebek Penyet"
+  ],
+  "menus": [
+    {
+      "name": "Lunch combo",
+      "dishes": [
+        "Combo Ayam Penyet",
+        "Combo Ayam Bakar",
+        "Combo Tempe Tahu"
+      ],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "11:00",
+          "to": "15:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Es Teh Friday",
+      "kind": "amount",
+      "value": 100,
+      "categories": [],
+      "dishes": [
+        "Es Teh Manis"
+      ],
+      "windows": [
+        {
+          "days": [
+            5
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Ayam Penyet": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Lalapan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Ayam Bakar": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Lalapan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Ikan Penyet": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Lalapan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Tempe Tahu Penyet": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Lalapan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Bebek Penyet": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Lalapan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Empal Penyet": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Lalapan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Combo Ayam Penyet": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Es Teh Manis",
+            "price": 0
+          },
+          {
+            "name": "Es Jeruk",
+            "price": 100
+          },
+          {
+            "name": "Jus Alpukat",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Lalapan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Combo Ayam Bakar": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Es Teh Manis",
+            "price": 0
+          },
+          {
+            "name": "Es Jeruk",
+            "price": 100
+          },
+          {
+            "name": "Jus Alpukat",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Lalapan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Combo Tempe Tahu": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Es Teh Manis",
+            "price": 0
+          },
+          {
+            "name": "Es Jeruk",
+            "price": 100
+          },
+          {
+            "name": "Jus Alpukat",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Lalapan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Nasi Uduk Komplit": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra sambal",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Nasi Goreng Jawa": [
+      {
+        "name": "Spice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Extra ayam",
+            "price": 400
+          },
+          {
+            "name": "Perkedel",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Soto Ayam": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Lontong",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Telur rebus",
+            "price": 150
+          },
+          {
+            "name": "Perkedel",
+            "price": 250
+          },
+          {
+            "name": "Extra ayam",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Mie Ayam Jamur": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Jumbo",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Bakso (3 pcs)",
+            "price": 350
+          },
+          {
+            "name": "Pangsit goreng (3 pcs)",
+            "price": 300
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Gado-Gado": [
+      {
+        "name": "Peanut sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Telur rebus",
+            "price": 150
+          },
+          {
+            "name": "Tempe",
+            "price": 300
+          },
+          {
+            "name": "Tahu",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Sop Buntut": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Nasi putih",
+            "price": 0
+          },
+          {
+            "name": "Nasi uduk",
+            "price": 100
+          },
+          {
+            "name": "No rice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Es Teh Manis": [
+      {
+        "name": "Sweetness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Tawar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Jumbo",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Es Jeruk": [
+      {
+        "name": "Sweetness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Tawar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Kurang manis",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Jus Alpukat": [
+      {
+        "name": "Chocolate",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "With chocolate",
+            "price": 0
+          },
+          {
+            "name": "No chocolate",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Jumbo",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Kopi Tubruk": [
+      {
+        "name": "Sweetness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Tawar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 5,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "certified",
+    "certifier": "JAKIM",
+    "certNo": "JAKIM/(S)/(22.00)/492/2/1 1127-04/2025",
+    "validUntil": "2027-04-30"
+  }
+}

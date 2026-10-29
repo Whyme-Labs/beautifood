@@ -1,0 +1,1359 @@
+{
+  "menus": [
+    {
+      "name": "Dinner only",
+      "dishes": [
+        "Gyusuji Curry",
+        "Ebi Fry Curry",
+        "Chicken Nanban"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "17:00",
+          "to": "22:00"
+        }
+      ]
+    }
+  ],
+  "soldOut": [
+    "Menchi Katsu Curry"
+  ],
+  "rules": [
+    {
+      "name": "Happy hour",
+      "kind": "percent",
+      "value": 20,
+      "categories": [
+        "JAPANESE BEER"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "17:00",
+          "to": "19:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Pork Katsu Curry": [
+      {
+        "name": "Curry base",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "House curry sauce",
+            "price": 0
+          },
+          {
+            "name": "Beef curry sauce",
+            "price": 150
+          },
+          {
+            "name": "Vegetable curry sauce",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Natto",
+            "price": 300
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Extra Chicken Katsu",
+            "price": 700
+          },
+          {
+            "name": "Extra Pork Katsu",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Chicken Katsu Curry": [
+      {
+        "name": "Curry base",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "House curry sauce",
+            "price": 0
+          },
+          {
+            "name": "Beef curry sauce",
+            "price": 150
+          },
+          {
+            "name": "Vegetable curry sauce",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Natto",
+            "price": 300
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Extra Chicken Katsu",
+            "price": 700
+          },
+          {
+            "name": "Extra Pork Katsu",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Beef Curry": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Natto",
+            "price": 300
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Extra Chicken Katsu",
+            "price": 700
+          },
+          {
+            "name": "Extra Pork Katsu",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Hamburg Curry": [
+      {
+        "name": "Curry base",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "House curry sauce",
+            "price": 0
+          },
+          {
+            "name": "Beef curry sauce",
+            "price": 150
+          },
+          {
+            "name": "Vegetable curry sauce",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Natto",
+            "price": 300
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Extra Chicken Katsu",
+            "price": 700
+          },
+          {
+            "name": "Extra Pork Katsu",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Menchi Katsu Curry": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Seafood Curry": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Natto",
+            "price": 300
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Extra Chicken Katsu",
+            "price": 700
+          },
+          {
+            "name": "Extra Pork Katsu",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Vegetable Curry": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Natto",
+            "price": 300
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Extra Chicken Katsu",
+            "price": 700
+          },
+          {
+            "name": "Extra Pork Katsu",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Kids Curry Plate": [
+      {
+        "name": "Kids topping",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Gyusuji Curry": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Natto",
+            "price": 300
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Extra Chicken Katsu",
+            "price": 700
+          },
+          {
+            "name": "Extra Pork Katsu",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Ebi Fry Curry": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Cheese",
+            "price": 300
+          },
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Natto",
+            "price": 300
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Extra Chicken Katsu",
+            "price": 700
+          },
+          {
+            "name": "Extra Pork Katsu",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Curry Udon": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Udon size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Udon toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Cheese",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Vegetable Curry Udon": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Level 1",
+            "price": 0
+          },
+          {
+            "name": "Level 2",
+            "price": 0
+          },
+          {
+            "name": "Level 3",
+            "price": 0
+          },
+          {
+            "name": "Level 4",
+            "price": 0
+          },
+          {
+            "name": "Level 5",
+            "price": 0
+          },
+          {
+            "name": "Level 6",
+            "price": 100
+          },
+          {
+            "name": "Level 7",
+            "price": 100
+          },
+          {
+            "name": "Level 8",
+            "price": 150
+          },
+          {
+            "name": "Level 9",
+            "price": 150
+          },
+          {
+            "name": "Level 10",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Udon size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Udon toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Onsen Egg",
+            "price": 250
+          },
+          {
+            "name": "Spinach",
+            "price": 200
+          },
+          {
+            "name": "Corn",
+            "price": 200
+          },
+          {
+            "name": "Cheese",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Chicken Karaage": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "5 pieces",
+            "price": 0
+          },
+          {
+            "name": "8 pieces",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Dip",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Japanese mayo",
+            "price": 0
+          },
+          {
+            "name": "Spicy mayo",
+            "price": 100
+          },
+          {
+            "name": "Tartar sauce",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Gyoza": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Pan-fried",
+            "price": 0
+          },
+          {
+            "name": "Deep-fried",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Green Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Ramune": [
+      {
+        "name": "Flavour",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Original",
+            "price": 0
+          },
+          {
+            "name": "Melon",
+            "price": 0
+          },
+          {
+            "name": "Strawberry",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Calpis Soda": [
+      {
+        "name": "Ice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Iced Matcha Latte": [
+      {
+        "name": "Milk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh milk",
+            "price": 0
+          },
+          {
+            "name": "Oat milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

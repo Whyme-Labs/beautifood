@@ -1,0 +1,1050 @@
+{
+  "soldOut": [
+    "Keropok Lekor"
+  ],
+  "menus": [
+    {
+      "name": "Durian season",
+      "dishes": [
+        "Durian Cendol",
+        "Durian Pengat"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "11:00",
+          "to": "23:00",
+          "start": "2026-11-01",
+          "end": "2026-11-30"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Tea time",
+      "kind": "percent",
+      "value": 20,
+      "categories": [
+        "CENDOL"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "15:00",
+          "to": "17:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Cendol Original": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Red Bean",
+            "price": 100
+          },
+          {
+            "name": "Sweet Corn",
+            "price": 100
+          },
+          {
+            "name": "Glutinous Rice",
+            "price": 150
+          },
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          },
+          {
+            "name": "Peanuts",
+            "price": 50
+          },
+          {
+            "name": "Evaporated Milk",
+            "price": 50
+          },
+          {
+            "name": "Ice Cream",
+            "price": 250
+          },
+          {
+            "name": "Durian",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Cendol Pulut": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Red Bean",
+            "price": 100
+          },
+          {
+            "name": "Sweet Corn",
+            "price": 100
+          },
+          {
+            "name": "Glutinous Rice",
+            "price": 150
+          },
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          },
+          {
+            "name": "Peanuts",
+            "price": 50
+          },
+          {
+            "name": "Evaporated Milk",
+            "price": 50
+          },
+          {
+            "name": "Ice Cream",
+            "price": 250
+          },
+          {
+            "name": "Durian",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Cendol Kacang Merah": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Red Bean",
+            "price": 100
+          },
+          {
+            "name": "Sweet Corn",
+            "price": 100
+          },
+          {
+            "name": "Glutinous Rice",
+            "price": 150
+          },
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          },
+          {
+            "name": "Peanuts",
+            "price": 50
+          },
+          {
+            "name": "Evaporated Milk",
+            "price": 50
+          },
+          {
+            "name": "Ice Cream",
+            "price": 250
+          },
+          {
+            "name": "Durian",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Cendol Special": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Red Bean",
+            "price": 100
+          },
+          {
+            "name": "Sweet Corn",
+            "price": 100
+          },
+          {
+            "name": "Glutinous Rice",
+            "price": 150
+          },
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          },
+          {
+            "name": "Peanuts",
+            "price": 50
+          },
+          {
+            "name": "Evaporated Milk",
+            "price": 50
+          },
+          {
+            "name": "Ice Cream",
+            "price": 250
+          },
+          {
+            "name": "Durian",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Durian Cendol": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Red Bean",
+            "price": 100
+          },
+          {
+            "name": "Sweet Corn",
+            "price": 100
+          },
+          {
+            "name": "Glutinous Rice",
+            "price": 150
+          },
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          },
+          {
+            "name": "Peanuts",
+            "price": 50
+          },
+          {
+            "name": "Evaporated Milk",
+            "price": 50
+          },
+          {
+            "name": "Ice Cream",
+            "price": 250
+          },
+          {
+            "name": "Durian",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Ais Kacang": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Red Bean",
+            "price": 100
+          },
+          {
+            "name": "Sweet Corn",
+            "price": 100
+          },
+          {
+            "name": "Glutinous Rice",
+            "price": 150
+          },
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          },
+          {
+            "name": "Peanuts",
+            "price": 50
+          },
+          {
+            "name": "Evaporated Milk",
+            "price": 50
+          },
+          {
+            "name": "Ice Cream",
+            "price": 250
+          },
+          {
+            "name": "Durian",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Peanuts",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Ais Kacang Special": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Red Bean",
+            "price": 100
+          },
+          {
+            "name": "Sweet Corn",
+            "price": 100
+          },
+          {
+            "name": "Glutinous Rice",
+            "price": 150
+          },
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          },
+          {
+            "name": "Peanuts",
+            "price": 50
+          },
+          {
+            "name": "Evaporated Milk",
+            "price": 50
+          },
+          {
+            "name": "Ice Cream",
+            "price": 250
+          },
+          {
+            "name": "Durian",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Peanuts",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Laici Kang": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          },
+          {
+            "name": "Ice Cream",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Bubur Cha Cha": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Sago Gula Melaka": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Tau Fu Fah": [
+      {
+        "name": "Syrup",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Ginger Brown Sugar",
+            "price": 0
+          },
+          {
+            "name": "Gula Melaka",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Red Bean",
+            "price": 100
+          },
+          {
+            "name": "Peanuts",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Bubur Kacang Hijau": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Pulut Hitam": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Bubur Gandum": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Ice Cream Potong": [
+      {
+        "name": "Flavour",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Red Bean",
+            "price": 0
+          },
+          {
+            "name": "Sweet Corn",
+            "price": 0
+          },
+          {
+            "name": "Yam",
+            "price": 0
+          },
+          {
+            "name": "Coconut",
+            "price": 0
+          },
+          {
+            "name": "Chocolate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Rojak Buah": [
+      {
+        "name": "Spiciness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less Spicy",
+            "price": 0
+          },
+          {
+            "name": "Extra Spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra You Char Kway",
+            "price": 100
+          },
+          {
+            "name": "Extra Tofu Puff",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "No Peanuts",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Pisang Goreng": [
+      {
+        "name": "Dip",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Cheese Sauce",
+            "price": 150
+          },
+          {
+            "name": "Chocolate Sauce",
+            "price": 100
+          },
+          {
+            "name": "Gula Melaka Dip",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi Ais": [
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sirap Bandung": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Soya Cincau": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kelapa Muda": [
+      {
+        "name": "Serve",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "In the Shell",
+            "price": 0
+          },
+          {
+            "name": "Cup with Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Coconut Shake": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra Ice Cream",
+            "price": 250
+          },
+          {
+            "name": "Gula Melaka Drizzle",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Limau Ais": [
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          },
+          {
+            "name": "Less Ice",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 0,
+    "taxInclusive": false,
+    "cashRounding": 0
+  },
+  "halal": {
+    "status": "muslim_friendly"
+  }
+}

@@ -1,0 +1,1471 @@
+{
+  "soldOut": [
+    "Fish Maw Soup"
+  ],
+  "menus": [
+    {
+      "name": "Dinner",
+      "dishes": [
+        "Fish Head Steamboat",
+        "Steamed Garoupa Fillet"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "17:00",
+          "to": "21:30"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Bitter gourd Tuesday",
+      "kind": "amount",
+      "value": 100,
+      "categories": [],
+      "dishes": [
+        "Bitter Gourd Fish Soup"
+      ],
+      "windows": [
+        {
+          "days": [
+            2
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Sliced Fish Bee Hoon Soup": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thick Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Thin Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Kway Teow",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mee Sua",
+            "price": 100
+          },
+          {
+            "name": "No Noodles",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Broth",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Clear",
+            "price": 0
+          },
+          {
+            "name": "Milky",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra Fish Slices",
+            "price": 400
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Prawns",
+            "price": 500
+          },
+          {
+            "name": "Tofu",
+            "price": 150
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          },
+          {
+            "name": "Bitter Gourd",
+            "price": 200
+          },
+          {
+            "name": "Tomato",
+            "price": 100
+          },
+          {
+            "name": "Fried Fish Skin",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Wine",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Shaoxing Wine",
+            "price": 100
+          },
+          {
+            "name": "XO Wine",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fried Fish Bee Hoon Soup": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thick Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Thin Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Kway Teow",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mee Sua",
+            "price": 100
+          },
+          {
+            "name": "No Noodles",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Broth",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Clear",
+            "price": 0
+          },
+          {
+            "name": "Milky",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra Fish Slices",
+            "price": 400
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Prawns",
+            "price": 500
+          },
+          {
+            "name": "Tofu",
+            "price": 150
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          },
+          {
+            "name": "Bitter Gourd",
+            "price": 200
+          },
+          {
+            "name": "Tomato",
+            "price": 100
+          },
+          {
+            "name": "Fried Fish Skin",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Wine",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Shaoxing Wine",
+            "price": 100
+          },
+          {
+            "name": "XO Wine",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fish Head Soup": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thick Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Thin Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Kway Teow",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mee Sua",
+            "price": 100
+          },
+          {
+            "name": "No Noodles",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra Fish Slices",
+            "price": 400
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Prawns",
+            "price": 500
+          },
+          {
+            "name": "Tofu",
+            "price": 150
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          },
+          {
+            "name": "Bitter Gourd",
+            "price": 200
+          },
+          {
+            "name": "Tomato",
+            "price": 100
+          },
+          {
+            "name": "Fried Fish Skin",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Bitter Gourd Fish Soup": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thick Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Thin Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Kway Teow",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mee Sua",
+            "price": 100
+          },
+          {
+            "name": "No Noodles",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Broth",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Clear",
+            "price": 0
+          },
+          {
+            "name": "Milky",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra Fish Slices",
+            "price": 400
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Prawns",
+            "price": 500
+          },
+          {
+            "name": "Tofu",
+            "price": 150
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          },
+          {
+            "name": "Bitter Gourd",
+            "price": 200
+          },
+          {
+            "name": "Tomato",
+            "price": 100
+          },
+          {
+            "name": "Fried Fish Skin",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Wine",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Shaoxing Wine",
+            "price": 100
+          },
+          {
+            "name": "XO Wine",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Seafood Soup": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thick Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Thin Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Kway Teow",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mee Sua",
+            "price": 100
+          },
+          {
+            "name": "No Noodles",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Broth",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Clear",
+            "price": 0
+          },
+          {
+            "name": "Milky",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra Fish Slices",
+            "price": 400
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Prawns",
+            "price": 500
+          },
+          {
+            "name": "Tofu",
+            "price": 150
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          },
+          {
+            "name": "Bitter Gourd",
+            "price": 200
+          },
+          {
+            "name": "Tomato",
+            "price": 100
+          },
+          {
+            "name": "Fried Fish Skin",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Wine",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Shaoxing Wine",
+            "price": 100
+          },
+          {
+            "name": "XO Wine",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Tom Yam Seafood Soup": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thick Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Thin Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Kway Teow",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mee Sua",
+            "price": 100
+          },
+          {
+            "name": "No Noodles",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less Spicy",
+            "price": 0
+          },
+          {
+            "name": "Extra Spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra Fish Slices",
+            "price": 400
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Prawns",
+            "price": 500
+          },
+          {
+            "name": "Tofu",
+            "price": 150
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          },
+          {
+            "name": "Bitter Gourd",
+            "price": 200
+          },
+          {
+            "name": "Tomato",
+            "price": 100
+          },
+          {
+            "name": "Fried Fish Skin",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Vegetarian Tomato Tofu Soup": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thick Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Thin Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Kway Teow",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mee Sua",
+            "price": 100
+          },
+          {
+            "name": "No Noodles",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Tofu",
+            "price": 150
+          },
+          {
+            "name": "Tomato",
+            "price": 100
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fish Ball Noodles": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kway Teow",
+            "price": 0
+          },
+          {
+            "name": "Thin Bee Hoon",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mee Pok",
+            "price": 0
+          },
+          {
+            "name": "No Noodles",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Soup",
+            "price": 0
+          },
+          {
+            "name": "Dry",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Fish Balls",
+            "price": 250
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Tofu",
+            "price": 150
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Dry Fish Ball Mee Pok": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mee Pok",
+            "price": 0
+          },
+          {
+            "name": "Mee Kia",
+            "price": 0
+          },
+          {
+            "name": "Kway Teow",
+            "price": 0
+          },
+          {
+            "name": "Thin Bee Hoon",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less Spicy",
+            "price": 0
+          },
+          {
+            "name": "Extra Spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Fish Balls",
+            "price": 250
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Mee Hoon Kueh Fish Soup": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Fish Slices",
+            "price": 400
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fish Head Steamboat": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "For 2-3",
+            "price": 0
+          },
+          {
+            "name": "For 4-5",
+            "price": 2000
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Extra Fish Slices",
+            "price": 400
+          },
+          {
+            "name": "Prawns",
+            "price": 500
+          },
+          {
+            "name": "Tofu",
+            "price": 150
+          },
+          {
+            "name": "Fish Paste",
+            "price": 300
+          },
+          {
+            "name": "Yam",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Wine",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Shaoxing Wine",
+            "price": 100
+          },
+          {
+            "name": "XO Wine",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          },
+          {
+            "name": "Soup Separate",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fish Slice Porridge": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Century Egg",
+            "price": 200
+          },
+          {
+            "name": "Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Fish Slices",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "No MSG",
+            "price": 0
+          },
+          {
+            "name": "No Spring Onion",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Salted Egg Fish Skin": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 500
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Barley Water": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Soy Bean Milk": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Chrysanthemum Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Luo Han Guo": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Iced Lemon Tea": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sugar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "pork_free"
+  }
+}

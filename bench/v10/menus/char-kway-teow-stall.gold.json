@@ -1,0 +1,318 @@
+{
+  "Char Kway Teow": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Prawns = crustaceans; cockles = molluscs; egg; light and dark soy sauce = soy + gluten (rice noodles themselves have none); lap cheong = pork; fried in pork lard = not vegetarian, not halal. Spicy = 2."
+  },
+  "Char Kway Teow Special": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "As Char Kway Teow with duck egg = egg; prawns, cockles; soy sauce; lap cheong and lard = not halal. Spicy = 2."
+  },
+  "Vegetarian Char Kway Teow": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Chicken egg; soy sauce = soy + gluten; vegetable oil; chilli paste stated without shrimp. Vegetarian, not vegan (egg). Halal by ingredients at a 'none' branch. Spicy = 2."
+  },
+  "Fried Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Wheat egg noodles = gluten, egg; prawns; soy sauce; fried in pork lard = not vegetarian, not halal. A little chilli = 1."
+  },
+  "Fried Bihun": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "soy",
+      "gluten",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Prawns; egg; light soy = soy + gluten; oyster sauce = molluscs + gluten (rule g); fried in pork lard = not vegetarian, not halal. Not spicy = 0."
+  },
+  "Wat Tan Hor": {
+    "allergens": [
+      "egg",
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Egg gravy; prawns; squid = molluscs; fish cake = fish; oyster sauce = molluscs + gluten (rule g). Vegetable oil, no pork: halal by ingredients. Not spicy itself, but pickled green chilli on the side = 1 (condiment rule)."
+  },
+  "Penang Hokkien Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Yellow noodles = gluten; boiled egg; prawns and prawn-head broth = crustaceans; pork ribs, sliced pork and lard = not halal. Spicy = 2."
+  },
+  "Kway Teow Th'ng": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Fish balls and fish cake = fish (assumed wheat-free, v3); pork bone broth = not halal. Not spicy."
+  },
+  "Fish Ball Soup": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish balls = fish; clear chicken broth. Halal by ingredients. Not spicy."
+  },
+  "Oyster Omelette": {
+    "allergens": [
+      "molluscs",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Oysters = molluscs; eggs; sweet potato starch has no gluten; pork lard = not halal. Chilli sauce on the side = 1. Supper only."
+  },
+  "Fried Carrot Cake (Black)": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Radish and rice flour cake (no wheat); sweet dark soy sauce = soy + gluten; egg; fried in pork lard = not vegetarian, not halal. A little chilli = 1."
+  },
+  "Fried Carrot Cake (White)": {
+    "allergens": [
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg; fish sauce = fish; no soy sauce; fried in pork lard = not vegetarian, not halal. Not spicy. Sold out."
+  },
+  "Chai Poh Omelette": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg; preserved radish; fried in pork lard = not vegetarian, not halal. Not spicy."
+  },
+  "Lor Bak": {
+    "allergens": [
+      "soy",
+      "crustaceans",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Beancurd skin and fried tofu = soy; prawn fritter = crustaceans + wheat flour = gluten; egg in the gravy; pork = not halal. Chilli sauce = 1. Supper only."
+  },
+  "Fresh Popiah": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat skin = gluten; jicama braised with dried shrimp = crustaceans; egg; sweet sauce with soy sauce = soy + gluten. No pork or lard stated: halal by ingredients. Chilli paste with no heat word = 1."
+  },
+  "Otak-Otak": {
+    "allergens": [
+      "fish",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Mackerel = fish; egg; belacan = crustaceans; coconut milk is not milk. Spicy = 2."
+  },
+  "Fried Wonton": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Wheat and egg wrappers; prawn = crustaceans; pork = not halal. Sweet chilli sauce = 1."
+  },
+  "Fried Tau Kwa": {
+    "allergens": [
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Tofu = soy; crushed peanuts. Sweet chilli sauce = 1. Vegan as tagged."
+  },
+  "Sugarcane Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pressed sugarcane."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk = milk."
+  },
+  "Kopi O": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "No milk added, but beans roasted with butter = milk (rule o): vegetarian, not vegan."
+  },
+  "Teh": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk = milk."
+  },
+  "Teh O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black tea and sugar."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black tea, lemon, sugar."
+  },
+  "Barley": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten (EU cereal rule)."
+  },
+  "Lime Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Calamansi and sugar."
+  },
+  "Nutmeg Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Nutmeg fruit is a spice, not a regulated tree nut. No allergen."
+  },
+  "Soy Bean Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy milk = soy."
+  },
+  "Chinese Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain tea."
+  }
+}

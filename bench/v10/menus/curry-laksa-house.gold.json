@@ -1,0 +1,325 @@
+{
+  "Curry Laksa": {
+    "allergens": [
+      "crustaceans",
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Dried shrimp, belacan and sambal belacan = crustaceans; tau pok = soy; default mixed noodles: yellow mee = wheat + egg, bihun = rice. Coconut milk is not milk. Chicken, no pork or alcohol, pork-free branch = halal by ingredients. Described as spicy."
+  },
+  "Seafood Curry Laksa": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns, dried shrimp, belacan = crustaceans; squid = molluscs; fish balls = fish; tau pok = soy; yellow mee = gluten + egg. Spicy."
+  },
+  "Penang Asam Laksa": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Mackerel broth and flakes = fish; hae ko (prawn paste) = crustaceans. Thick rice laksa noodles, no wheat. Spicy."
+  },
+  "Vegetarian Curry Laksa": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Stated without shrimp, belacan or fish; tau pok and beancurd skin = soy; default bihun (rice), so no gluten or egg; coconut milk is not milk. Merchant tags vegan. Spicy."
+  },
+  "Penang White Curry Mee": {
+    "allergens": [
+      "molluscs",
+      "crustaceans",
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Cuttlefish = molluscs; prawns and dried-shrimp chilli paste = crustaceans; tau pok = soy; yellow mee = gluten + egg. Chilli paste served on the side with no heat word = 1."
+  },
+  "Penang Prawn Mee": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawn-head broth and prawns = crustaceans; hard-boiled egg and yellow mee = egg; yellow mee = gluten. Stated no pork. Spicy."
+  },
+  "Lor Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "fish",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Yellow noodles = wheat + egg; dark soy sauce = soy + gluten; beaten egg; fish cake = fish; Shaoxing wine = sulphites + gluten, not halal (rule h); black vinegar with wheat = gluten. Stated not spicy."
+  },
+  "Fish Ball Kuey Teow Soup": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish sauce, fish balls, fish cake = fish (fish balls assumed wheat-free, as v3). Flat rice noodles, no gluten. Chicken broth, not vegetarian. Not spicy."
+  },
+  "Nasi Lemak Bungkus": {
+    "allergens": [
+      "crustaceans",
+      "fish",
+      "peanuts",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan sambal = crustaceans; ikan bilis = fish; roasted peanuts; egg. Coconut milk is not milk. Spicy."
+  },
+  "Kaya Toast": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "White bread = wheat; butter = milk; kaya = egg + coconut milk."
+  },
+  "Half-boiled Eggs": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Eggs; light soy sauce = soy + gluten. White pepper is not spicy."
+  },
+  "Kaya Toast Set": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Default components: kaya toast (wheat, butter, egg), half-boiled eggs with light soy (soy + gluten), hot kopi with condensed milk (milk). Other set drinks are modifiers."
+  },
+  "Otak-Otak": {
+    "allergens": [
+      "fish",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish paste; egg; belacan = crustaceans; coconut milk is not milk. Mildly spicy = 1. Sold out on this branch."
+  },
+  "Fried Wantan": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat and egg wrappers; prawn filling = crustaceans; light soy = soy + gluten; sesame oil = sesame. Sweet chilli dip with no heat word = 1."
+  },
+  "Popiah": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "peanuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat skin; egg strips; tofu and sweet bean sauce = soy (+ gluten); crushed peanuts. Stated no dried shrimp. Chilli sauce on the side = 1."
+  },
+  "Cucur Udang": {
+    "allergens": [
+      "crustaceans",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Prawns = crustaceans; wheat flour batter. Chilli sauce on the side = 1."
+  },
+  "Chee Cheong Fun with Curry": {
+    "allergens": [
+      "crustaceans",
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Rice flour rolls (no wheat); curry with dried shrimp = crustaceans; sweet soy sauce = soy + gluten; sesame seeds. Stated no pork despite the Chinese name 猪肠粉. Mild curry = 1."
+  },
+  "Cendol": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut milk, gula melaka, rice-flour jelly, red beans: no regulated allergen. Merchant tags vegan."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk. No butter roast stated."
+  },
+  "Kopi O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black coffee with sugar; no butter roast stated, so no milk (rule o applies only where stated)."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Cham": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Coffee and tea with condensed milk."
+  },
+  "Teh O Ais Limau": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea, lime, sugar."
+  },
+  "Milo Ais": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley = gluten; condensed milk."
+  },
+  "Barley Lime": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten (v7 Barley Water; the English line governs over 薏米)."
+  },
+  "Sirap Bandung": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk."
+  },
+  "Limau Asam Boi": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Lime juice and salted sour plum; no sulphites stated."
+  },
+  "Fresh Coconut": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut is not a tree nut."
+  },
+  "Tiger Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt lager = gluten; alcohol = not halal. Vegan as v7 Asahi / v8 Tsingtao."
+  }
+}

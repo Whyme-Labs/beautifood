@@ -1,0 +1,335 @@
+{
+  "Pork Katsu Curry": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork cutlet in flour, egg and panko = gluten, egg; house curry roux: wheat flour = gluten, butter = milk; chicken stock = not vegetarian. Pork = not halal. Mild = 1."
+  },
+  "Chicken Katsu Curry": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken cutlet in flour, egg and panko; house curry roux: wheat flour = gluten, butter = milk; chicken stock = not vegetarian. No pork or alcohol: halal by ingredients at a 'none' branch (rule w). Mild = 1."
+  },
+  "Beef Curry": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "house curry roux: wheat flour = gluten, butter = milk; chicken stock = not vegetarian. Red wine = sulphites, not halal (rule h). Mild = 1."
+  },
+  "Hamburg Curry": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Breadcrumbs = gluten, egg, milk in the patty; soy sauce = soy + gluten; mirin = not halal, no allergen (rule h); house curry roux: wheat flour = gluten, butter = milk; chicken stock = not vegetarian. Mild = 1."
+  },
+  "Menchi Katsu Curry": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork and beef cutlet in flour, egg, panko; house curry roux: wheat flour = gluten, butter = milk; chicken stock = not vegetarian. Pork = not halal. Sold out."
+  },
+  "Seafood Curry": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Prawns = crustaceans; squid and clams = molluscs; house curry roux: wheat flour = gluten, butter = milk; chicken stock = not vegetarian. Halal by ingredients. Mild = 1."
+  },
+  "Vegetable Curry": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Vegetable roux: wheat flour = gluten, vegetable oil, kombu and vegetable stock, stated no meat and no dairy. Kombu is seaweed, not fish. Vegan as tagged. Mild = 1."
+  },
+  "Kids Curry Plate": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "House roux (wheat flour, butter, chicken stock); karaage marinated in soy sauce = soy + gluten, and sake = not halal (rule h). No chilli, not spicy = 0."
+  },
+  "Gyusuji Curry": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Soy sauce = soy + gluten; sake and mirin = not halal, no allergen (rule h); house curry roux: wheat flour = gluten, butter = milk; chicken stock = not vegetarian. Dinner only."
+  },
+  "Ebi Fry Curry": {
+    "allergens": [
+      "crustaceans",
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Tiger prawns = crustaceans; flour, egg, panko; tartar (mayonnaise, egg) = egg; house curry roux: wheat flour = gluten, butter = milk; chicken stock = not vegetarian. Halal by ingredients. Dinner only."
+  },
+  "Chicken Nanban": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour and egg batter; soy sauce = soy + gluten; tartar = egg. No mirin or sake stated: halal by ingredients. Not spicy. Dinner only."
+  },
+  "Curry Udon": {
+    "allergens": [
+      "gluten",
+      "fish",
+      "soy",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Wheat udon and roux = gluten; bonito dashi = fish; soy sauce = soy + gluten; butter = milk; fried tofu = soy; mirin = not halal (rule h). Mild = 1."
+  },
+  "Vegetable Curry Udon": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat udon = gluten; soy sauce and fried tofu = soy; kombu and shiitake stock, stated no bonito and no dairy. Vegan as tagged. Mild = 1."
+  },
+  "Chicken Karaage": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Soy sauce = soy + gluten (potato starch itself has no gluten); Japanese mayonnaise = egg; sake = not halal (rule h). Not spicy."
+  },
+  "Gyoza": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat wrappers = gluten; soy sauce dip = soy + gluten; sesame oil = sesame. Pork = not halal. No chilli stated = 0."
+  },
+  "Potato Croquette": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk in the mash; flour, egg, panko coating; tonkatsu sauce Worcestershire-style with anchovy = fish (rule i), so not vegetarian. Halal by ingredients."
+  },
+  "Edamame": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soybeans = soy. Vegan."
+  },
+  "Onsen Egg": {
+    "allergens": [
+      "egg",
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg; dashi with bonito = fish, so not vegetarian; soy sauce = soy + gluten. The same item is the Onsen Egg topping at the same price."
+  },
+  "Miso Soup": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Miso = soy + gluten (shared rule); tofu = soy; bonito dashi = fish, so not vegetarian."
+  },
+  "Wafu Salad": {
+    "allergens": [
+      "sesame",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Roasted sesame = sesame; soy sauce dressing = soy + gluten. Vegan as tagged."
+  },
+  "Japanese Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain steamed rice."
+  },
+  "Matcha Ice Cream": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk and cream; stated no egg. Vegetarian, not vegan."
+  },
+  "Green Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sencha. Vegan."
+  },
+  "Ramune": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Marble soda. Vegan as tagged."
+  },
+  "Calpis Soda": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cultured milk drink = milk (as v7 Calpis). Vegetarian."
+  },
+  "Iced Matcha Latte": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk. The oat milk option is an add-on (not counted)."
+  },
+  "Yuzu Soda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Honey rules out vegan; vegetarian."
+  },
+  "Asahi Super Dry": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol = not halal. Vegan as v7 Asahi."
+  },
+  "Kirin Ichiban": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol = not halal."
+  },
+  "Sapporo Premium Draft": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol = not halal."
+  }
+}

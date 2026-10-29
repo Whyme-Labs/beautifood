@@ -871,3 +871,25 @@ v9 dev was read case by case, so its score is an upper bound, not a measure: how
 needs a held-out set this work hasn't seen. v8 test isn't scored again this round (both of last
 round's scorings are used). Other dev sets unchanged or up (v1 99.2, v2 97.8, v3 97.6, v4 98.6, v5
 97.6, v6 96.9%), 0 unsafe everywhere.
+
+## v10 held-out set, frozen (2026-10-29)
+
+Written to measure how much of the v9 dev work carries over to restaurants and guests the engine
+has never seen. 956 cases on 8 new menus (curry-laksa-house, western-food-hawker,
+japanese-curry-house, char-kway-teow-stall, wantan-mee-stall, ayam-penyet-cafe, cendol-abc-stall,
+fish-soup-noodle) by four blind authors (t, u, v, w) who read only the README, the schema, the
+earlier reviews' conventions and one example menu: not the engine, not v9 or any earlier case.
+Each pair was checked by a blind reviewer (`v10/REVIEW-tu.md`, `v10/REVIEW-vw.md`): 0 gold
+changes, one add-on renamed to say what it is, 91 cases fixed (every amount recomputed by the
+reviewers' own scripts; patterns a wrong answer could pass tightened, ones an honest answer would
+fail widened), none deleted.
+
+Every menu has branch settings: all four halal standings (two certified by JAKIM, one
+Muslim-friendly, two pork-free, three none), service and tax inclusive or not, cash rounding (one
+without), timed menus (breakfast, lunch, dinner, supper, a weekend menu, a dated durian season),
+deals, sold-out dishes and add-ons that are out. Weighted like v9 dev to bills, add-ons, Chinese
+and references back, with everything else alongside: 341 bill, 290 add-on, 205 follow-up, 112
+availability, 71 deal cases, 336 multi-turn, 200 in Chinese, 318 safety-relevant, 684 with a time
+of day. All `test`: never read case by case, scored at most twice a round.
+
+Fingerprints: `v10 956 e5a168d7337dc7c6`, `v10 menus 24 409423f6c5c20496`.

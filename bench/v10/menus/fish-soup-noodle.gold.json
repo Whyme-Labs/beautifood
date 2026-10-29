@@ -1,0 +1,321 @@
+{
+  "Sliced Fish Bee Hoon Soup": {
+    "allergens": [
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish; silken tofu = soy. Bee hoon is rice. Salted vegetable (kiam chye) is not mustard (rule m). Clear broth is the default; milky broth, wine and noodles are modifiers."
+  },
+  "Fried Fish Bee Hoon Soup": {
+    "allergens": [
+      "fish",
+      "egg",
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg and wheat flour batter; tofu = soy."
+  },
+  "Fish Head Soup": {
+    "allergens": [
+      "fish",
+      "egg",
+      "gluten",
+      "milk",
+      "soy",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Batter egg + wheat; evaporated milk; tofu; Shaoxing = sulphites + gluten, not halal (rule h)."
+  },
+  "Bitter Gourd Fish Soup": {
+    "allergens": [
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish; tofu = soy. Tuesday deal RM1.00 off."
+  },
+  "Seafood Soup": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawns; squid; fish and fish balls; tofu."
+  },
+  "Tom Yam Seafood Soup": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns and shrimp paste; squid; fish and fish sauce; evaporated milk. Stated spicy. No tofu."
+  },
+  "Fish Maw Soup": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish maw = fish; crab meat; egg. Corn starch has no gluten. Sold out."
+  },
+  "Vegetarian Tomato Tofu Soup": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu and soybean broth; kombu is seaweed, not fish."
+  },
+  "Fish Ball Noodles": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish balls of fish and tapioca starch; kway teow is rice. Dry style and noodle swaps are modifiers."
+  },
+  "Dry Fish Ball Mee Pok": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Egg noodles (wheat, egg); light soy = soy + gluten; rice vinegar adds nothing; stated spicy."
+  },
+  "Mee Hoon Kueh Fish Soup": {
+    "allergens": [
+      "gluten",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour dough (no egg stated); fish and ikan bilis."
+  },
+  "Fish Head Steamboat": {
+    "allergens": [
+      "fish",
+      "soy",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish; tofu; evaporated milk. No wine by default (Shaoxing is an add-on). Dinner menu."
+  },
+  "Steamed Garoupa Fillet": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy = soy + gluten; tofu. Dinner menu."
+  },
+  "Fried Fish Skin": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish skin, salt and pepper."
+  },
+  "Salted Egg Fish Skin": {
+    "allergens": [
+      "fish",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Salted egg yolk; butter; a little chilli = 1."
+  },
+  "Fried Egg Tofu": {
+    "allergens": [
+      "egg",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Japanese egg tofu = egg + soy; sweet chilli sauce on the side = 1."
+  },
+  "Fried Fish Cake": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish paste and tapioca starch; chilli sauce = 1."
+  },
+  "Blanched Choy Sum": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten (rule g); not vegetarian."
+  },
+  "Steamed Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Fish Slice Porridge": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy = soy + gluten; sesame oil."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea, lemon, sugar."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk. No butter roast stated."
+  },
+  "Kopi O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black coffee and sugar; no butter roast stated (rule o not applied)."
+  },
+  "Barley Water": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten."
+  },
+  "Soy Bean Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy milk."
+  },
+  "Chrysanthemum Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Flowers and rock sugar."
+  },
+  "Calamansi Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Calamansi and sour plum; no sulphites stated."
+  },
+  "Luo Han Guo": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Monk fruit and longan."
+  },
+  "Ice Water": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Water."
+  },
+  "Tiger Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol, not halal. Vegan as v7 Asahi."
+  }
+}

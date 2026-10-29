@@ -1,0 +1,309 @@
+{
+  "Ayam Penyet": {
+    "allergens": [
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Sambal terasi = shrimp paste = crustaceans; fried tempe and tahu = soy. No batter stated. Described spicy = 2. Certified branch: halal."
+  },
+  "Ayam Bakar": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Kecap manis = soy + gluten; sambal terasi (shrimp paste) on the side; tempe/tahu. Chilli condiment on the side with no heat word = 1."
+  },
+  "Ikan Penyet": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tilapia = fish; sambal terasi; tempe/tahu. Spicy."
+  },
+  "Tempe Tahu Penyet": {
+    "allergens": [
+      "soy",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tempe and tahu = soy; sambal terasi (shrimp paste) = crustaceans, so NOT vegetarian. Spicy."
+  },
+  "Bebek Penyet": {
+    "allergens": [
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Duck; sambal terasi; tempe/tahu. Spicy. Sold out."
+  },
+  "Empal Penyet": {
+    "allergens": [
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Beef with coriander, galangal, palm sugar (no soy sauce stated); sambal terasi; tempe/tahu. Spicy."
+  },
+  "Nasi Uduk Komplit": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Telur balado = egg; kecap manis in the bihun and sweet-soy tempe orek = soy + gluten; sambal terasi = crustaceans. Coconut milk not milk. Emping (melinjo, Gnetum gnemon) is not a regulated tree nut. Spicy."
+  },
+  "Nasi Goreng Jawa": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Kecap manis = soy + gluten; fried egg. No shrimp paste stated. Mildly spicy = 1."
+  },
+  "Soto Ayam": {
+    "allergens": [
+      "egg",
+      "celery",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Boiled egg; celery leaves = celery; koya made of prawn crackers = crustaceans. Rice vermicelli, no gluten. Chilli sambal on the side = 1."
+  },
+  "Mie Ayam Jamur": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat and egg noodles; kecap manis and soy sauce. Pickled chilli on the side = 1."
+  },
+  "Sop Buntut": {
+    "allergens": [
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Celery; nutmeg and clove are spices, not tree nuts; emping not a tree nut. Stated not spicy."
+  },
+  "Gado-Gado": {
+    "allergens": [
+      "peanuts",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Peanut sauce (stated no shrimp paste); tofu and tempe = soy; boiled egg, so vegetarian not vegan. Lontong is rice. Mildly spicy = 1."
+  },
+  "Tempe Goreng": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tempe = soy."
+  },
+  "Tahu Goreng": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu = soy."
+  },
+  "Perkedel": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Potato, egg."
+  },
+  "Kangkung Terasi": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Terasi = shrimp paste. Spicy."
+  },
+  "Nasi Putih": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Steamed rice."
+  },
+  "Nasi Uduk": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut rice; coconut is not milk or a tree nut."
+  },
+  "Combo Ayam Penyet": {
+    "allergens": [
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Ayam Penyet + default Es Teh Manis (vegan). Lunch combo only."
+  },
+  "Combo Ayam Bakar": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ayam Bakar + default Es Teh Manis. Lunch combo only."
+  },
+  "Combo Tempe Tahu": {
+    "allergens": [
+      "soy",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Tempe Tahu Penyet (sambal terasi, not vegetarian) + Es Teh Manis. Lunch combo only."
+  },
+  "Es Teh Manis": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea and sugar."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Es Jeruk": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Orange juice."
+  },
+  "Jus Alpukat": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk. Avocado is not a tree nut. Chocolate syrup: no allergen stated."
+  },
+  "Es Teler": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk; coconut milk is not milk; grass jelly no allergen."
+  },
+  "Es Cendol": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice flour jelly (no gluten), coconut milk, palm sugar."
+  },
+  "Kopi Tubruk": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black coffee and sugar."
+  },
+  "Es Kelapa Muda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Young coconut."
+  },
+  "Air Mineral": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Water."
+  }
+}

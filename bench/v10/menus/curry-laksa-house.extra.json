@@ -1,0 +1,1204 @@
+{
+  "soldOut": [
+    "Otak-Otak"
+  ],
+  "menus": [
+    {
+      "name": "Breakfast",
+      "dishes": [
+        "Nasi Lemak Bungkus",
+        "Kaya Toast",
+        "Half-boiled Eggs",
+        "Kaya Toast Set"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "07:00",
+          "to": "11:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Laksa Wednesday",
+      "kind": "amount",
+      "value": 200,
+      "categories": [
+        "LAKSA"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            3
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Curry Laksa": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mixed (Yellow Mee + Bihun)",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Bihun",
+            "price": 0
+          },
+          {
+            "name": "Kuey Teow",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 200
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tau Pok",
+            "price": 150
+          },
+          {
+            "name": "Prawns",
+            "price": 400
+          },
+          {
+            "name": "Fish Balls",
+            "price": 200
+          },
+          {
+            "name": "Chicken",
+            "price": 300
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Hard-boiled Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Sambal",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Seafood Curry Laksa": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mixed (Yellow Mee + Bihun)",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Bihun",
+            "price": 0
+          },
+          {
+            "name": "Kuey Teow",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 200
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tau Pok",
+            "price": 150
+          },
+          {
+            "name": "Prawns",
+            "price": 400
+          },
+          {
+            "name": "Fish Balls",
+            "price": 200
+          },
+          {
+            "name": "Chicken",
+            "price": 300
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Hard-boiled Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Sambal",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Penang Asam Laksa": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 150
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Prawn paste",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal hae ko",
+            "price": 0
+          },
+          {
+            "name": "Less hae ko",
+            "price": 0
+          },
+          {
+            "name": "No hae ko",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Mackerel",
+            "price": 300
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Extra Hae Ko",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Vegetarian Curry Laksa": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Bihun",
+            "price": 0
+          },
+          {
+            "name": "Kuey Teow",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mixed (Yellow Mee + Bihun)",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 200
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Tau Pok",
+            "price": 150
+          },
+          {
+            "name": "Extra Vegetables",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Hard-boiled Egg",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Penang White Curry Mee": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mixed (Yellow Mee + Bihun)",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Bihun",
+            "price": 0
+          },
+          {
+            "name": "Kuey Teow",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 200
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Tau Pok",
+            "price": 150
+          },
+          {
+            "name": "Prawns",
+            "price": 400
+          },
+          {
+            "name": "Fish Balls",
+            "price": 200
+          },
+          {
+            "name": "Chicken",
+            "price": 300
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Hard-boiled Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Sambal",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Penang Prawn Mee": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mixed (Yellow Mee + Bihun)",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Bihun",
+            "price": 0
+          },
+          {
+            "name": "Kuey Teow",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 200
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Prawns",
+            "price": 400
+          },
+          {
+            "name": "Chicken",
+            "price": 300
+          },
+          {
+            "name": "Hard-boiled Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Extra Sambal",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Lor Mee": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Bihun",
+            "price": 0
+          },
+          {
+            "name": "Mixed (Yellow Mee + Bihun)",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 150
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Chicken",
+            "price": 300
+          },
+          {
+            "name": "Hard-boiled Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Fish Ball Kuey Teow Soup": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kuey Teow",
+            "price": 0
+          },
+          {
+            "name": "Bihun",
+            "price": 0
+          },
+          {
+            "name": "Yellow Mee",
+            "price": 0
+          },
+          {
+            "name": "Mixed (Yellow Mee + Bihun)",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 150
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Fish Balls",
+            "price": 200
+          },
+          {
+            "name": "Fish Cake",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Hard-boiled Egg",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Nasi Lemak Bungkus": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried Chicken",
+            "price": 450
+          },
+          {
+            "name": "Sambal Sotong",
+            "price": 400
+          },
+          {
+            "name": "Fried Egg",
+            "price": 150
+          },
+          {
+            "name": "Extra Sambal",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Kaya Toast": [
+      {
+        "name": "Bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White bread",
+            "price": 0
+          },
+          {
+            "name": "Wholemeal bread",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Kaya Toast Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kopi",
+            "price": 0
+          },
+          {
+            "name": "Teh",
+            "price": 0
+          },
+          {
+            "name": "Kopi O",
+            "price": 0
+          },
+          {
+            "name": "Teh O",
+            "price": 0
+          },
+          {
+            "name": "Milo",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Hot or iced",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 40
+          }
+        ]
+      }
+    ],
+    "Fried Wantan": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pieces",
+            "price": 0
+          },
+          {
+            "name": "10 pieces",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Cendol": [
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Durian",
+            "price": 400
+          },
+          {
+            "name": "Sweet Corn",
+            "price": 100
+          },
+          {
+            "name": "Extra Gula Melaka",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Hot or iced",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 40
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Hot or iced",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 40
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Hot or iced",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 40
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Cham": [
+      {
+        "name": "Hot or iced",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 40
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh O Ais Limau": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Milo Ais": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Barley Lime": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sirap Bandung": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Limau Asam Boi": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "pork_free"
+  }
+}

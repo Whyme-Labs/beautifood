@@ -1,0 +1,381 @@
+{
+  "Wantan Mee Dry": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "sesame",
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Egg noodles = gluten + egg; light/dark soy = soy + gluten; sesame oil; pork lard and char siu = not halal; wantan with prawn = crustaceans, wheat/egg wrapper; side soup with dried sole = fish. Pickled green chilli on the side = 1."
+  },
+  "Wantan Mee Soup": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Egg noodles; pork and prawn wantan; pork bone and dried sole broth = fish; honey-soy char siu = soy + gluten. No sesame stated. Pickled green chilli on the side = 1."
+  },
+  "Char Siu Noodles": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Egg noodles; soy sauce; sesame oil; lard and char siu. Plain pork bone soup (no dried sole stated). Green chilli on the side = 1."
+  },
+  "Roast Pork Noodles": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "sesame",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Egg noodles; soy sauce; sesame oil; lard and roast pork; yellow mustard condiment = mustard (rule m). Green chilli on the side = 1."
+  },
+  "Chicken Feet Noodles": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "sesame",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Egg noodles; soy sauce; sesame oil; oyster sauce = molluscs + gluten (g); tossed in pork lard, so not halal. Green chilli on the side = 1."
+  },
+  "Sui Kow Noodle Soup": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg noodles; sui kow with prawn and minced pork in a wheat wrapper; dried sole soup = fish. No chilli stated, so 0."
+  },
+  "Curry Chicken Noodles": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Egg noodles + bee hoon; tau pok = soy; dried shrimp sambal = crustaceans; coconut milk is not milk. No pork, lard or alcohol stated: halal from ingredients (branch status none, rule w). Spicy = 2. Sold out."
+  },
+  "Mushroom Noodles": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg noodles = egg, so vegetarian not vegan; soy sauce based mushroom sauce = soy + gluten; sesame oil. Stated no lard, no meat: halal from ingredients."
+  },
+  "Herbal Duck Drumstick Noodles": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Soy sauce; egg noodles; rice wine = not halal, no allergen (rule h); dang gui and wolfberry are not allergens. Weekend special."
+  },
+  "Big Prawn Noodles": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Egg noodles + boiled egg; prawns and prawn-head broth = crustaceans; pork rib broth = not halal. Sambal on the side with no heat word = 1. Weekend special."
+  },
+  "Char Siu Rice": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Honey-soy char siu (soy sauce = soy + gluten); pork bone soup. Honey."
+  },
+  "Roast Pork Rice": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Roast pork with five spice and salt (no soy stated); yellow mustard condiment = mustard. Yellow mustard is not chilli heat, so 0."
+  },
+  "Two-Meat Rice": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Char siu (soy + gluten) and roast pork with yellow mustard."
+  },
+  "Plain Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Steamed rice."
+  },
+  "Fried Wantan": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat and egg wrappers; prawn; mayonnaise = egg; pork."
+  },
+  "Wantan Soup": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat and egg wrappers; prawn; dried sole soup = fish; pork."
+  },
+  "Sui Kow Soup": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat wrapper (no egg stated); prawn; dried sole soup = fish; minced pork."
+  },
+  "Char Siu": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Honey, maltose, soy sauce; pork."
+  },
+  "Roast Pork": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Five spice and salt; yellow mustard condiment = mustard; pork."
+  },
+  "Braised Chicken Feet": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten; soy sauce. No pork or alcohol stated: halal from ingredients (rule w, branch none)."
+  },
+  "Choy Sum Oyster Sauce": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten, so not vegetarian. Shallot oil."
+  },
+  "Kai Lan Garlic Oil": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy sauce = soy + gluten. Vegan as tagged."
+  },
+  "Wantan Mee Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "sesame",
+      "crustaceans",
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Default components: Wantan Mee Dry + hot Kopi (condensed milk = milk). Drink and noodle style choices are modifiers."
+  },
+  "Char Siu Rice Set": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg",
+      "crustaceans",
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Char Siu Rice + small Wantan Soup (wheat/egg wrapper, prawn, dried sole soup) + default hot Kopi (milk)."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk. No butter roast stated."
+  },
+  "Kopi O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black coffee with sugar; no butter roast stated (rule o applies only where stated)."
+  },
+  "Teh": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed and evaporated milk."
+  },
+  "Teh O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea and sugar."
+  },
+  "Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea, lemon, sugar."
+  },
+  "Barley Water": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten."
+  },
+  "Soy Bean Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy bean."
+  },
+  "Chinese Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pu-erh tea."
+  },
+  "Tiger Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol = not halal; vegan as v7 Asahi."
+  }
+}
