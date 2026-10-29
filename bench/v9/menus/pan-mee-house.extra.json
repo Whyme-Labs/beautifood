@@ -1,0 +1,997 @@
+{
+  "soldOut": [
+    "Pork Meatball Soup"
+  ],
+  "menus": [
+    {
+      "name": "Breakfast",
+      "dishes": [
+        "Kaya Butter Toast",
+        "Half-boiled Eggs",
+        "Breakfast Set"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "07:00",
+          "to": "11:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Soup Pan Mee": [
+      {
+        "name": "Noodle",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hand-torn",
+            "price": 0
+          },
+          {
+            "name": "Thin Cut",
+            "price": 0
+          },
+          {
+            "name": "Mee Hoon",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 6,
+        "options": [
+          {
+            "name": "Extra Egg",
+            "price": 150
+          },
+          {
+            "name": "Meatballs",
+            "price": 300,
+            "soldOut": true
+          },
+          {
+            "name": "Fish Balls",
+            "price": 250
+          },
+          {
+            "name": "Minced Pork",
+            "price": 250
+          },
+          {
+            "name": "Ikan Bilis",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Chilli Flakes",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Dry Chilli Pan Mee": [
+      {
+        "name": "Chilli Level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less Chilli",
+            "price": 0
+          },
+          {
+            "name": "No Chilli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Egg",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Poached",
+            "price": 0
+          },
+          {
+            "name": "Fried",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 6,
+        "options": [
+          {
+            "name": "Extra Egg",
+            "price": 150
+          },
+          {
+            "name": "Meatballs",
+            "price": 300,
+            "soldOut": true
+          },
+          {
+            "name": "Fish Balls",
+            "price": 250
+          },
+          {
+            "name": "Minced Pork",
+            "price": 250
+          },
+          {
+            "name": "Ikan Bilis",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Chilli Flakes",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Ban Mian": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Soup",
+            "price": 0
+          },
+          {
+            "name": "Dry",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 6,
+        "options": [
+          {
+            "name": "Extra Egg",
+            "price": 150
+          },
+          {
+            "name": "Meatballs",
+            "price": 300,
+            "soldOut": true
+          },
+          {
+            "name": "Fish Balls",
+            "price": 250
+          },
+          {
+            "name": "Minced Pork",
+            "price": 250
+          },
+          {
+            "name": "Ikan Bilis",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Chilli Flakes",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Yee Mee": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Soup",
+            "price": 0
+          },
+          {
+            "name": "Dry",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 6,
+        "options": [
+          {
+            "name": "Extra Egg",
+            "price": 150
+          },
+          {
+            "name": "Meatballs",
+            "price": 300,
+            "soldOut": true
+          },
+          {
+            "name": "Fish Balls",
+            "price": 250
+          },
+          {
+            "name": "Minced Pork",
+            "price": 250
+          },
+          {
+            "name": "Ikan Bilis",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Chilli Flakes",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Mee Hoon Kueh": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Soup",
+            "price": 0
+          },
+          {
+            "name": "Dry",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 6,
+        "options": [
+          {
+            "name": "Extra Egg",
+            "price": 150
+          },
+          {
+            "name": "Meatballs",
+            "price": 300,
+            "soldOut": true
+          },
+          {
+            "name": "Fish Balls",
+            "price": 250
+          },
+          {
+            "name": "Minced Pork",
+            "price": 250
+          },
+          {
+            "name": "Ikan Bilis",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Chilli Flakes",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Tom Yam Pan Mee": [
+      {
+        "name": "Spice Level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less Spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Egg",
+            "price": 150
+          },
+          {
+            "name": "Fish Balls",
+            "price": 250
+          },
+          {
+            "name": "Prawns",
+            "price": 400
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Curry Pan Mee": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Egg",
+            "price": 150
+          },
+          {
+            "name": "Fish Balls",
+            "price": 250
+          },
+          {
+            "name": "Tofu Puffs",
+            "price": 150
+          },
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Vegetarian Pan Mee": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Soup",
+            "price": 0
+          },
+          {
+            "name": "Dry",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra Noodles",
+            "price": 200
+          },
+          {
+            "name": "Extra Mushrooms",
+            "price": 200
+          },
+          {
+            "name": "Extra Tofu Skin",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Hakka Lui Cha": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Brown Rice",
+            "price": 0
+          },
+          {
+            "name": "White Rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra Peanuts",
+            "price": 100
+          },
+          {
+            "name": "Extra Tofu",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Fried Wantan": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pcs",
+            "price": 0
+          },
+          {
+            "name": "10 pcs",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Sui Kow": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Soup",
+            "price": 0
+          },
+          {
+            "name": "Fried",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fish Ball Soup": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Add Mee Hoon",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Breakfast Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kopi",
+            "price": 0
+          },
+          {
+            "name": "Teh",
+            "price": 0
+          },
+          {
+            "name": "Kopi O",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Chinese Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Milo": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra Milo Powder",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Lime Juice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sour Plum",
+            "price": 80
+          }
+        ]
+      }
+    ],
+    "Barley": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Lime",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Soya Bean Milk": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Grass Jelly",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Luo Han Guo": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 6,
+    "taxInclusive": true,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

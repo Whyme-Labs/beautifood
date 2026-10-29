@@ -1,0 +1,1561 @@
+{
+  "rules": [
+    {
+      "name": "Tuesday deal",
+      "kind": "amount",
+      "value": 300,
+      "categories": [
+        "ACAI BOWLS"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            2
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Classic Acai Bowl": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Granola",
+            "price": 200
+          },
+          {
+            "name": "Mixed Nuts",
+            "price": 300
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Coconut Flakes",
+            "price": 150
+          },
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Almond Butter",
+            "price": 350,
+            "soldOut": true
+          },
+          {
+            "name": "Cacao Nibs",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Peanut Butter Acai Bowl": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Granola",
+            "price": 200
+          },
+          {
+            "name": "Mixed Nuts",
+            "price": 300
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Coconut Flakes",
+            "price": 150
+          },
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Almond Butter",
+            "price": 350,
+            "soldOut": true
+          },
+          {
+            "name": "Cacao Nibs",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Tropical Acai Bowl": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Granola",
+            "price": 200
+          },
+          {
+            "name": "Mixed Nuts",
+            "price": 300
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Coconut Flakes",
+            "price": 150
+          },
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Almond Butter",
+            "price": 350,
+            "soldOut": true
+          },
+          {
+            "name": "Cacao Nibs",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Berry Protein Acai Bowl": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Granola",
+            "price": 200
+          },
+          {
+            "name": "Mixed Nuts",
+            "price": 300
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Coconut Flakes",
+            "price": 150
+          },
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Almond Butter",
+            "price": 350,
+            "soldOut": true
+          },
+          {
+            "name": "Cacao Nibs",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Pitaya Bowl": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Granola",
+            "price": 200
+          },
+          {
+            "name": "Mixed Nuts",
+            "price": 300
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Coconut Flakes",
+            "price": 150
+          },
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Almond Butter",
+            "price": 350,
+            "soldOut": true
+          },
+          {
+            "name": "Cacao Nibs",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Green Goddess Bowl": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 5,
+        "options": [
+          {
+            "name": "Granola",
+            "price": 200
+          },
+          {
+            "name": "Mixed Nuts",
+            "price": 300
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Coconut Flakes",
+            "price": 150
+          },
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Almond Butter",
+            "price": 350,
+            "soldOut": true
+          },
+          {
+            "name": "Cacao Nibs",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Mini Acai Bowl": [
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Granola",
+            "price": 200
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Coconut Flakes",
+            "price": 150
+          },
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Almond Butter",
+            "price": 350,
+            "soldOut": true
+          }
+        ]
+      }
+    ],
+    "Berry Blast": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Boosters",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Whey Protein",
+            "price": 400
+          },
+          {
+            "name": "Plant Protein",
+            "price": 400
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Spirulina",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Mango Tango": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Boosters",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Whey Protein",
+            "price": 400
+          },
+          {
+            "name": "Plant Protein",
+            "price": 400
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Spirulina",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Green Detox": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Boosters",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Whey Protein",
+            "price": 400
+          },
+          {
+            "name": "Plant Protein",
+            "price": 400
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Spirulina",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "PB Banana Power": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Boosters",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Whey Protein",
+            "price": 400
+          },
+          {
+            "name": "Plant Protein",
+            "price": 400
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Spirulina",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Choc Almond Recovery": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Boosters",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Whey Protein",
+            "price": 400
+          },
+          {
+            "name": "Plant Protein",
+            "price": 400
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Spirulina",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Avocado Gula Melaka": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Boosters",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Whey Protein",
+            "price": 400
+          },
+          {
+            "name": "Plant Protein",
+            "price": 400
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Spirulina",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Dragon Fruit Lychee": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Boosters",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Whey Protein",
+            "price": 400
+          },
+          {
+            "name": "Plant Protein",
+            "price": 400
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          },
+          {
+            "name": "Spirulina",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Avocado Toast": [
+      {
+        "name": "Bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sourdough",
+            "price": 0
+          },
+          {
+            "name": "Multigrain",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Poached Egg",
+            "price": 300
+          },
+          {
+            "name": "Smoked Salmon",
+            "price": 700
+          },
+          {
+            "name": "Extra Avocado",
+            "price": 400
+          },
+          {
+            "name": "Extra Feta",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Peanut Butter Banana Toast": [
+      {
+        "name": "Bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sourdough",
+            "price": 0
+          },
+          {
+            "name": "Multigrain",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra Banana",
+            "price": 200
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Smoked Salmon Toast": [
+      {
+        "name": "Bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sourdough",
+            "price": 0
+          },
+          {
+            "name": "Multigrain",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Poached Egg",
+            "price": 300
+          },
+          {
+            "name": "Avocado",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Chicken Caesar Wrap": [
+      {
+        "name": "Wrap",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Wholemeal",
+            "price": 0
+          },
+          {
+            "name": "Spinach",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Avocado",
+            "price": 400
+          },
+          {
+            "name": "Extra Cheese",
+            "price": 200
+          },
+          {
+            "name": "Egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Falafel Hummus Wrap": [
+      {
+        "name": "Wrap",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Wholemeal",
+            "price": 0
+          },
+          {
+            "name": "Spinach",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Avocado",
+            "price": 400
+          },
+          {
+            "name": "Extra Cheese",
+            "price": 200
+          },
+          {
+            "name": "Egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Spicy Tuna Wrap": [
+      {
+        "name": "Wrap",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Wholemeal",
+            "price": 0
+          },
+          {
+            "name": "Spinach",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Avocado",
+            "price": 400
+          },
+          {
+            "name": "Extra Cheese",
+            "price": 200
+          },
+          {
+            "name": "Egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Breakfast Wrap": [
+      {
+        "name": "Wrap",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Wholemeal",
+            "price": 0
+          },
+          {
+            "name": "Spinach",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Avocado",
+            "price": 400
+          },
+          {
+            "name": "Extra Cheese",
+            "price": 200
+          },
+          {
+            "name": "Egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Cold Brew Coffee": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fresh Milk",
+            "price": 100
+          },
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Iced Matcha Latte": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Iced Chocolate": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Milk",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oat Milk",
+            "price": 200
+          },
+          {
+            "name": "Almond Milk",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fresh Orange Juice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Ice",
+            "price": 0
+          },
+          {
+            "name": "No Ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Honey Lemon Ginger": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less Sweet",
+            "price": 0
+          },
+          {
+            "name": "No Added Sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Granola Yoghurt Cup": [
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Peanut Butter",
+            "price": 250
+          },
+          {
+            "name": "Chia Seeds",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Chia Pudding": [
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Granola",
+            "price": 200
+          },
+          {
+            "name": "Coconut Flakes",
+            "price": 150
+          },
+          {
+            "name": "Mixed Nuts",
+            "price": 300
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "muslim_friendly"
+  }
+}

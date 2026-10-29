@@ -1,0 +1,340 @@
+{
+  "Soup Pan Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat and egg noodles; ikan bilis soup and fried ikan bilis = fish; soy sauce = soy + gluten. Pork bone soup and minced pork, so not halal. Stated not spicy. Add-ons are modifiers and not counted in the base."
+  },
+  "Dry Chilli Pan Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Wheat and egg noodles, poached egg; dark soy = soy + gluten; ikan bilis = fish; chilli flakes fried with dried shrimp = crustaceans. Pork lard and minced pork. Stated spicy."
+  },
+  "Ban Mian": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat and egg noodles; ikan bilis = fish; soy sauce / dark soy = soy + gluten. Pork bone soup, minced pork. Soup or dry is a free choice; both have the same allergens."
+  },
+  "Yee Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "fish",
+      "soy",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat and egg noodles; ikan bilis = fish; soy sauce = soy + gluten; oyster sauce = molluscs + gluten (rule g). Pork bone stock, minced pork."
+  },
+  "Mee Hoon Kueh": {
+    "allergens": [
+      "gluten",
+      "fish",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat dough stated no egg; ikan bilis = fish; soy sauce = soy + gluten. Pork bone soup, minced pork."
+  },
+  "Tom Yam Pan Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat and egg noodles; shrimp paste and prawns = crustaceans; squid = molluscs; fish balls and fish sauce = fish; evaporated milk = milk. Chicken stock, stated no pork, no alcohol: halal from ingredients (v8 ruling 1). Stated spicy."
+  },
+  "Curry Pan Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat and egg noodles; dried shrimp in the curry paste = crustaceans; tofu puffs = soy. Coconut milk is not milk. Chicken, stated no pork: halal from ingredients. Stated spicy."
+  },
+  "Vegetarian Pan Mee": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg-free wheat noodles; soybean broth, tofu skin and light soy = soy + gluten. Merchant tag vegan. Stated not spicy."
+  },
+  "Hakka Lui Cha": {
+    "allergens": [
+      "peanuts",
+      "sesame",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Roasted peanuts, sesame seeds, firm tofu = soy. Brown rice, no wheat. Preserved radish has no allergen. Merchant tag vegan. Stated not spicy."
+  },
+  "Fried Wantan": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat and egg wrappers; prawn = crustaceans; sesame oil; mayonnaise = egg. Pork filling."
+  },
+  "Fu Chuk Rolls": {
+    "allergens": [
+      "soy",
+      "crustaceans",
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Beancurd skin = soy; prawns = crustaceans; oyster sauce = molluscs + gluten (rule g). Minced pork."
+  },
+  "Sui Kow": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat and egg wrappers; prawns = crustaceans; sesame oil. Pork. Wood ear is not an allergen. Soup or fried is a free choice."
+  },
+  "Fish Ball Soup": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish paste and ikan bilis soup = fish; tapioca starch, no wheat. No pork stated: halal from ingredients."
+  },
+  "Pork Meatball Soup": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Light soy sauce = soy + gluten. Pork. Sold out in extra.json."
+  },
+  "Braised Egg": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg; soy sauce = soy + gluten. Merchant tag vegetarian."
+  },
+  "Blanched Choy Sum": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten (rule g), so not vegetarian."
+  },
+  "Sweet Potato Leaves Belacan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan = crustaceans, so not vegetarian. Stated spicy."
+  },
+  "Kaya Butter Toast": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "White bread = gluten; kaya with egg; butter = milk. Coconut milk is not milk. Breakfast menu only."
+  },
+  "Half-boiled Eggs": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Eggs; light soy = soy + gluten. Breakfast menu only."
+  },
+  "Breakfast Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Kaya butter toast (gluten, egg, milk) + half-boiled eggs with soy (soy + gluten) + default hot kopi (condensed milk). Breakfast menu only."
+  },
+  "Chinese Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pu-erh tea."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk. The menu does not say the beans are butter-roasted, so milk comes from the condensed milk only."
+  },
+  "Kopi O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black coffee with sugar. No butter roast stated (rule o applies only where the menu says so)."
+  },
+  "Teh": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed and evaporated milk."
+  },
+  "Lime Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Calamansi and sugar syrup. The sour plum add-on is a modifier."
+  },
+  "Barley": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten (EU cereal rule). 薏米水 is the local name; the English line says pearl barley and the gold follows it (as v7)."
+  },
+  "Soya Bean Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy milk."
+  },
+  "Milo": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley = gluten; condensed milk."
+  },
+  "Luo Han Guo": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Monk fruit and longan."
+  },
+  "Herbal Jelly": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Guilinggao is a herbal jelly (no gelatine). Honey on the side rules out vegan."
+  }
+}
