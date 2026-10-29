@@ -182,7 +182,10 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
         // before it: "2 large iced", "两杯大杯", skipping what describes it (and a number of its own option, "12 wings")
         for (let i = s.from - 1; i >= from; i--) {
           const t = toks[i];
-          if (COUNTER.test(t) || DESCRIBES.test(t) || optionsSaid(t, s.dish, true).add.length) continue;
+          // (a Chinese add-on is a few characters: "两杯大杯椰果柠檬养乐多")
+          const plain = (a: number, b: number) => toks.slice(a, b).every((x, k) => !COUNTER.test(x) && !DESCRIBES.test(x) && !numberBefore(toks, a + k));
+          const zhOption = /[\u3400-\u9fff]/.test(t) && !numberBefore(toks, i) && [[i - 1, i + 1], [i, i + 2], [i - 2, i + 1], [i, i + 3]].some(([a, b]) => a >= from && b <= s.from && plain(a, b) && optionsSaid(toks.slice(a, b).join(""), s.dish, true).add.length > 0);
+          if (COUNTER.test(t) || DESCRIBES.test(t) || optionsSaid(t, s.dish, true).add.length || zhOption) continue;
           const n = numberBefore(toks, i);
           if (!n) break;
           if (nums.has(String(n.n)) && count === null && !/^(x|×)$/.test(toks[n.at + 1] ?? "")) {

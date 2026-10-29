@@ -348,11 +348,20 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
             }
       }
     }
-    // a menu Chinese name without its last character ("雪花芝士" for 雪花芝士粉), when only it starts so
+    // a menu Chinese name said only by its start ("雪花芝士" for 雪花芝士粉, "一片烧烤鸡" for 烧烤鸡肉披萨片), the
+    // start ending where the guest's words do; of the dishes that start so, the one with the shortest name
     for (const tr of Object.values(dish.translations ?? {})) {
       const zh = tr?.name ?? "";
-      const head = zh.slice(0, -1);
-      if (zh.length >= 5 && raw.includes(head) && !raw.includes(zh) && items.filter((o) => Object.values(o.translations ?? {}).some((x) => x?.name?.startsWith(head))).length === 1) return void found.push({ dish, at: raw.indexOf(head) / 100, covered: [], score: 1.6, zh: head });
+      if (zh.length < 4 || raw.includes(zh)) continue;
+      for (let len = zh.length - 1; len >= 3; len--) {
+        const head = zh.slice(0, len);
+        const at = raw.indexOf(head);
+        if (at < 0 || (/[\u4e00-\u9fff]/.test(raw[at + len] ?? "") && !/[，、。？！的走加少多和跟还要是吗呢有几怎可能会]/.test(raw[at + len]))) continue;
+        if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘片块两一二三四五六七八九十的要来加和与跟及还，、]/.test(raw[at - 1])) continue;
+        const starts = items.map((o) => Object.values(o.translations ?? {}).map((x) => x?.name ?? "").find((z) => z.startsWith(head))).filter((z): z is string => !!z);
+        if (starts.filter((z) => z.length <= zh.length).length === 1) return void found.push({ dish, at: at / 100, covered: [], score: 1.6, zh: head });
+        break;
+      }
     }
     // what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice), also when the menu's own
     // name is longer than what a guest says (三杯鸡 for its 三杯鸡饭, 千层面 for its 牛肉千层面)
@@ -894,7 +903,9 @@ export type Reading = Omit<Understanding, "intent" | "confidence" | "guess">;
 
 /** Everything but the intent: the slots, and the question as the intent model reads it. */
 export function read(items: Dish[], asked: string): Reading {
-  const { text: question, injected } = stripInjection(asked);
+  const { text: said, injected } = stripInjection(asked);
+  // what guests call a menu's drink for short ("柠檬多多" for its 柠檬养乐多)
+  const question = items.some((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes("养乐多"))) ? said.replace(/(?<!养乐)多多/g, "养乐多") : said;
   const raw = question.normalize("NFKC").toLowerCase();
   const ix = dishIndex(items);
   // fix typos in the words we read constraints from, but never in a word of a dish's name

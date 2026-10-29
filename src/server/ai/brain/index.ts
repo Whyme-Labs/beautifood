@@ -212,7 +212,11 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     for (const o of targets) {
       // (the words that pick the line aren't its add-ons: "the ayam one besar" isn't more ayam goreng)
       const picked = inClause.includes(o) && !named.some((n) => n.id === o.item.id) ? nameWords(o.item) : [];
-      const said = picked.length ? clause.replace(new RegExp(`\\b(${picked.join("|")})\\b`, "gi"), " ") : clause;
+      let said = picked.length ? clause.replace(new RegExp(`\\b(${picked.join("|")})\\b`, "gi"), " ") : clause;
+      // ("一杯拉茶换成冰美禄": what's after 换成 is the new one's, the 冰 isn't the teh tarik's)
+      const cue = clause.search(/换成|改成/);
+      const zhAt = (i: Item) => Math.max(...Object.values(i.translations ?? {}).map((x) => (x?.name ? clause.indexOf(x.name) : -1)));
+      if (cue >= 0 && targets.length >= 2 && zhAt(o.item) >= 0) said = zhAt(o.item) < cue ? clause.slice(0, cue) : clause.slice(cue);
       const { add, off } = optionsSaid(said, o.item);
       const chosen = optionsSaid(said, o.item, true).add;
       if (!add.length && !off.length && !chosen.length) continue;
