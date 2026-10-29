@@ -91,13 +91,16 @@ export function claims(answer: string, items: Item[], labels: { id: string; labe
     // a price after a dish's name, before the next dish or the sentence's end
     for (const [k, s] of here.entries()) {
       const win = sentence.slice(s.to, here[k + 1]?.from ?? sentence.length);
-      const m = /RM\s?(\d+(?:\.\d{1,2})?)/i.exec(win);
+      // (not "+RM2.00": an add-on's own price)
+      const m = /(?<!\+\s?)RM\s?(\d+(?:\.\d{1,2})?)/i.exec(win);
       if (!m || m.index > 60 || NOT_A_PRICE.test(sentence.slice(0, s.to + m.index))) continue;
       // "2 × Teh Tarik (RM3.50)" gives the unit price; "Teh Tarik x2 RM7.00" the line's
       const said = Math.round(Number(m[1]) * 100);
       const prices = [s.i.price, s.i.listPrice].filter((p): p is number => p != null);
       // with add-ons: any one option of each group, or none ("large iced" is both)
-      const extras = (s.i.modifiers ?? []).reduce((sums, g) => [...new Set(sums.flatMap((x) => [x, ...g.options.map((o) => x + o.price)]))], [0]);
+      // (a group that takes several, "Add-on: egg, onion", any of its options together)
+      const picks = (g: { max: number; options: { price: number }[] }) => (g.max > 1 ? g.options.reduce((sums, o) => [...sums, ...sums.map((x) => x + o.price)], [0]) : [0, ...g.options.map((o) => o.price)]);
+      const extras = (s.i.modifiers ?? []).reduce((sums, g) => [...new Set(sums.flatMap((x) => picks(g).map((p) => x + p)))], [0]);
       readCount++;
       if (!prices.some((p) => extras.some((e) => Array.from({ length: 20 }, (_, q) => (q + 1) * (p + e)).includes(said))))
         failed.push(`claims RM${(said / 100).toFixed(2)} for ${s.i.name} (menu: RM${(s.i.price / 100).toFixed(2)})`);

@@ -14,9 +14,13 @@ const ALSO: Record<string, string[]> = {
   oat: ["oat", "oatmilk"], almond: ["badam", "almond"], shot: ["shot", "double"],
   kuah: ["kuah", "sauce", "peanut sauce"], laksa: ["laksa", "curry"], chilli: ["chilli", "chili", "sambal"],
 };
-const ALSO_ZH: Record<string, RegExp> = { ais: /冰|凍|冻/, iced: /冰|凍|冻/, besar: /大杯|大份|加大/, large: /大杯|大份|加大/, telur: /加蛋|蛋/, egg: /加蛋|蛋/, oat: /燕麦/, almond: /杏仁/, shot: /加浓|浓缩/ };
+const ALSO_ZH: Record<string, RegExp> = {
+  ais: /冰|凍|冻/, iced: /冰|凍|冻/, besar: /大杯|大份|加大|大的/, large: /大杯|大份|加大|大的/, telur: /加蛋|蛋/, egg: /加蛋|蛋/, bawang: /洋葱/, onion: /洋葱/,
+  oat: /燕麦/, almond: /杏仁/, shot: /加浓|浓缩|多一份咖啡/, laksa: /叻沙|咖喱汤/, curry: /咖喱/, chilli: /辣椒酱|加辣|辣椒/, kuah: /花生酱|沙爹酱|花生酱汁/,
+  salmon: /三文鱼|烟熏三文鱼/, bacon: /培根/, poached: /水波蛋/, dry: /干捞|干的/, soup: /汤的|汤底/,
+};
 // words that say nothing of which option ("milk" is every milk option, "extra" every add-on)
-const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "beef", "poached", "susu"]);
+const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "beef", "susu", "regular", "biasa", "fresh", "normal"]);
 // "no ice", "without ice", "tak nak ais", "kurang ais", "走冰": an option taken off
 const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|kosong|hold the|less)\s+(\w+)/g;
 const OFF_ZH = /走(冰|蛋)|不要(冰|蛋)|去冰/g;
@@ -28,12 +32,12 @@ const keyWords = (o: ModifierOption) => {
 const said = (w: string, words: Set<string>, raw: string) => words.has(w) || (ALSO[w] ?? []).some((x) => (x.includes(" ") ? ` ${[...words].join(" ")} `.includes(` ${x} `) : words.has(x))) || !!ALSO_ZH[w]?.test(raw);
 
 /** The priced options of `dish` that `text` asks for, and the option words it takes off ("no ice"). */
-export function optionsSaid(text: string, dish: WithOptions): { add: ModifierOption[]; off: ModifierOption[] } {
+export function optionsSaid(text: string, dish: WithOptions, free = false): { add: ModifierOption[]; off: ModifierOption[] } {
   const t = normalize(text);
   const offWords = new Set([...t.matchAll(OFF)].map((m) => m[2]));
   const offZh = [...text.matchAll(OFF_ZH)].map((m) => m[1]);
   const words = new Set(t.split(" ").filter((w) => !offWords.has(w)));
-  const priced = (dish.modifiers ?? []).flatMap((g) => g.options).filter((o) => o.price > 0);
+  const priced = (dish.modifiers ?? []).flatMap((g) => g.options).filter((o) => free || o.price > 0);
   const add: ModifierOption[] = [];
   const off: ModifierOption[] = [];
   for (const o of priced) {
@@ -60,3 +64,14 @@ export function optionsAsked<T extends WithOptions>(text: string, dishes: T[]): 
 
 /** An option's name as a guest reads it: "Ais (iced)" is "iced", "Oat milk" stays. */
 export const optionLabel = (o: ModifierOption) => o.name.match(/\(([^)]+)\)/)?.[1] ?? o.name;
+
+/** A dish's choices as a guest reads them: "Base: Soup, Dry, Curry Laksa (+RM2.00)". */
+export function choicesText(dish: WithOptions, money: (n: number) => string): string {
+  return (dish.modifiers ?? []).map((g) => `${g.name}: ${g.options.map((o) => `${optionLabel(o)}${o.price ? ` (+${money(o.price)})` : ""}`).join(", ")}`).join("; ");
+}
+/** The option words a text uses for any of `dishes`' options (to keep "extra chilli sauce" from naming a chilli dish). */
+export function optionWordsSaid(text: string, dishes: WithOptions[]): Set<string> {
+  const out = new Set<string>();
+  for (const d of dishes) for (const o of optionsSaid(text, d, true).add) for (const w of keyWords(o)) out.add(w);
+  return out;
+}

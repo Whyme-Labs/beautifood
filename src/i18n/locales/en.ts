@@ -541,6 +541,7 @@ const en = {
     soldOutList: "Sold out today: {list}.",
     nothingSoldOut: "Nothing is sold out right now.",
     notOnNowList: "Not on right now: {list}.",
+    freeChoice: "{dish} with {option} is no extra charge: {price}.",
     basketIntro: "Here's an order for you:",
     basketTotal: "Total {total}.",
     withCharges: "With {service} service charge and {tax} tax, {total}.",
