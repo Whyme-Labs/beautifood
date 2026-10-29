@@ -893,3 +893,20 @@ availability, 71 deal cases, 336 multi-turn, 200 in Chinese, 318 safety-relevant
 of day. All `test`: never read case by case, scored at most twice a round.
 
 Fingerprints: `v10 956 e5a168d7337dc7c6`, `v10 menus 24 409423f6c5c20496`.
+
+Scored twice, read only as counts (95% Wilson intervals):
+
+| v10 (956) | Deployed brain (1d661c3) | This branch (363ea2e) |
+|---|---|---|
+| All | 51.9% (48.7–55.0), 1 unsafe | **67.6%** (64.5–70.5), 2 unsafe |
+| Bill (341) | 29.0% | 53.7% |
+| Add-ons (290) | 20.3% | 46.9% |
+| Follow-ups (205) | 33.7% | 62.9% |
+| Availability (112) | 66.1% | 74.1% |
+| Deals (71) | 40.8% | 57.7% |
+| Chinese (200) | 50.5% | 68.0% |
+| Safety-relevant (317) | 69.7% | 79.5% |
+
+About a third of v9 dev's gain carries over (dev 50.4% → 96.5%; held-out 51.9% → 67.6%), with
+the largest held-out gains where v9 dev worked: bills, add-ons and references back. The branch
+has one more unsafe answer than the deployed brain (2 against 1); they aren't read here.
