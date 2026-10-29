@@ -1317,7 +1317,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const total = d.price + with_.reduce((n, o) => n + o.price, 0);
       // ("RM16.90 (Extra kuah kacang +RM2.00)": what the add-on itself costs too)
       const each = ` (${with_.map((o) => `${optionLabel(o)} +${money(o.price)}`).join(", ")})`;
-      return reply("dish_info", `${t("assistantReply.pricedWith", { dish: t("assistantReply.withOptions", { dish: name(d), options: list(with_.map(optionLabel)) }), price: money(total) }).replace(/[.。]$/, "")}${each}${stop}`, [d]);
+      // ("tambah aloe vera dan coconut jelly" with no aloe vera: said, and left out)
+      const gone = missingAddOns(u.text, [d], ctx.items).map((x) => `${t("assistantReply.notAvailable", { thing: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })}${sp}`).join("");
+      return reply("dish_info", `${gone}${t("assistantReply.pricedWith", { dish: t("assistantReply.withOptions", { dish: name(d), options: list(with_.map(optionLabel)) }), price: money(total) }).replace(/[.。]$/, "")}${each}${stop}`, [d]);
     }
     // "can I get my eggs poached? extra charge?": a choice that costs nothing
     const freeOnes = optionsSaid(u.text, d, true).add.filter((o) => !o.price);
@@ -1544,7 +1546,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const avoidNow = [...new Set([...state.avoid, ...(takenOff ? [] : u.stated)])];
       const breaks = bill.filter((o) => o.item.allergens.some((a) => avoidNow.includes(a as Allergen)) || (o.options ?? []).some((x) => live.some((i) => normalize(i.name) === normalize(x.name) && i.allergens.some((a) => avoidNow.includes(a as Allergen)))));
       const warn = breaks.map((o) => `${t("assistantReply.notSafeFor", { dish: lineName(o), allergens: list([...new Set([...o.item.allergens, ...(o.options ?? []).flatMap((x) => live.find((i) => normalize(i.name) === normalize(x.name))?.allergens ?? [])])].filter((a) => avoidNow.includes(a as Allergen)).map(allergen)) })}${sp}`).join("");
-      return reply("recommend", `${warn}${goneNote}${mineOnly || mineByOwner ? `${t("assistantReply.yourPart")}${sp}` : ""}${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${charges}${each}`, bill.map((o) => o.item));
+      const noSuch = missingAddOns(u.text, bill.map((o) => o.item), ctx.items, /\b(?:tambah|add|extra|top with)\s+(.+)$/).map((x) => `${t("assistantReply.notAvailable", { thing: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })}${sp}`).join("");
+      return reply("recommend", `${warn}${noSuch}${goneNote}${mineOnly || mineByOwner ? `${t("assistantReply.yourPart")}${sp}` : ""}${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${charges}${each}`, bill.map((o) => o.item));
     }
   }
 
@@ -2063,6 +2066,34 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return reply("recommend", `${standing}${intro}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}${together}`, picks, { confident: !unsure || hasFilters });
     }
   }
+}
+
+/**
+ * What a message asks to add that nothing here has ("tambah aloe vera dan coconut jelly" where the
+ * toppings have no aloe vera): not an add-on of the dishes, nor a dish, nor in what they're made of.
+ */
+function missingAddOns(text: string, hosts: Item[], live: Item[], cue = /\b(?:tambah|add|extra|letak|top with|with)\s+(.+)$/): string[] {
+  if (/[\u3400-\u9fff]/.test(text)) return [];
+  const COUNTED = /^(one|two|three|four|five|satu|dua|tiga|empat|lima|another|lagi|sama|same|yang|again|more|order|now|shot|shots)$/;
+  const NOT_FOOD = /^(service|charge|charges|tax|taxes|sst|gst|cukai|caj|perkhidmatan|friend|friends|kawan|me|my|you|us|him|her|them|family|kids?|everything|all|that|this|those|one|ones|ice|ais|sugar|gula)$/;
+  const STOP = /^(a|an|the|some|extra|more|sikit|lagi|please|pls|also|too|on|top|it|in|of|with|and|dan|berapa|how|much|ah|lah|la|boleh|can|or|not)$/;
+  const out: string[] = [];
+  for (const clause of text.split(/[,.;?!]/)) {
+    const m = normalize(clause).match(cue);
+    if (!m) continue;
+    for (const part of m[1].split(/\b(?:and|dan|n)\b|&/)) {
+      const words = part.trim().split(" ").filter((w) => w && !STOP.test(w));
+      if (!words.length || words.some((w) => /^\d/.test(w) || NOT_FOOD.test(w))) continue;
+      const phrase = words.join(" ");
+      if (hosts.some((h) => optionsSaid(phrase, h, true).add.length || optionsSaid(phrase, h, true, true).add.length)) continue;
+      // (a count or another of something is a dish ordered, and so is a word of a dish's name)
+      if (words.some((w) => COUNTED.test(w))) continue;
+      if (live.some((i) => words.some((w) => w.length > 2 && normalize(i.name).split(" ").some((x) => x === w || x === `${w}s` || `${x}s` === w)))) continue;
+      if (live.some((i) => words.every((w) => normalize(`${i.name} ${i.description ?? ""}`).split(" ").some((x) => x === w || x === `${w}s` || `${x}s` === w)))) continue;
+      out.push(phrase);
+    }
+  }
+  return out;
 }
 
 /** `n` of `pool` (best first) that cost no more than `budget` together, as near the top as can be. */
