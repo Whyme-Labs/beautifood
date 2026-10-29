@@ -141,7 +141,12 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
   const changedZh = raw.match(/([\u4e00-\u9fff]{1,6}?)(?:可以|要)?(?:换成|改成|换做|改做)/)?.[1];
   const asked = new Set([...t.matchAll(/\b(?:add|tambah|with|put|plus)\s+(?:some |a |an |the )?(\w+)/g)].map((m) => m[1]));
   // ("remove the extra cheese": its next word too)
-  const offWords = new Set([...[...t.matchAll(OFF)].flatMap((m) => [m[2], ...(GENERIC.has(m[2]) ? [t.slice((m.index ?? 0) + m[0].length).trim().split(" ")[0]] : [])]), ...changed].filter((w) => w && !asked.has(w)));
+  // ("take out the sambal udang": both words of a two-word choice)
+  const names = (dish.modifiers ?? []).flatMap((g) => g.options.map((o) => ` ${normalize(o.name)} `));
+  const offWords = new Set([...[...t.matchAll(OFF)].flatMap((m) => {
+    const next = t.slice((m.index ?? 0) + m[0].length).trim().split(" ")[0];
+    return [m[2], ...(GENERIC.has(m[2]) || (next && names.some((n) => n.includes(` ${m[2]} ${next} `))) ? [next] : [])];
+  }), ...changed].filter((w) => w && !asked.has(w)));
   const offZh = [...[...raw.matchAll(OFF_ZH)].map((m) => m[1] ?? m[2] ?? m[3]), changedZh].filter((x): x is string => !!x);
   const words = new Set(t.split(" ").filter((w) => !offWords.has(w)));
   let joined = ` ${[...words].join(" ")} `;

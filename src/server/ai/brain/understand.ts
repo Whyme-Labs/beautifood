@@ -11,6 +11,7 @@ import { classify, loadModel, type Intent, type IntentGuess, type IntentModel, t
 import { editDistance, normalize, osaDistance, tokens } from "../../../shared/brain/text";
 import { WEIGHTS } from "../../../shared/brain/weights.gen";
 import { mentionedAllergens } from "../local";
+import { optionsSaid } from "./modifiers";
 
 export interface Dish {
   id: string;
@@ -347,6 +348,12 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
             }
       }
     }
+    // a menu Chinese name without its last character ("雪花芝士" for 雪花芝士粉), when only it starts so
+    for (const tr of Object.values(dish.translations ?? {})) {
+      const zh = tr?.name ?? "";
+      const head = zh.slice(0, -1);
+      if (zh.length >= 5 && raw.includes(head) && !raw.includes(zh) && items.filter((o) => Object.values(o.translations ?? {}).some((x) => x?.name?.startsWith(head))).length === 1) return void found.push({ dish, at: raw.indexOf(head) / 100, covered: [], score: 1.6, zh: head });
+    }
     // what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice), also when the menu's own
     // name is longer than what a guest says (三杯鸡 for its 三杯鸡饭, 千层面 for its 牛肉千层面)
     if (HAN_RE.test(raw)) {
@@ -486,7 +493,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       if (!spans(m)) continue;
       const after = m.covered.filter((i) => i > withAt).map((i) => toks[i]);
       const host = found.find((o) => o !== m && !spans(o) && o.covered.some((i) => m.covered.includes(i)) && o.dish.modifiers?.some((g) => g.options.some((x) => { const ws = normalize(x.name).split(" "); return after.every((w) => ws.some((y) => same(w, y))); })));
-      if (host) m.score = Math.min(m.score, host.score - 0.01);
+      if (host) m.score = Math.min(m.score, host.score - 0.01, 0.99);
     }
   }
   // two dishes claiming the same words: the better match keeps them
@@ -931,7 +938,9 @@ export function read(items: Dish[], asked: string): Reading {
   // allergen is avoided unless the guest plainly asks for it (a request word, and no cue governing it)
   // ...and not when they say they have it ("fish is fine", "eggs and milk are ok", "I eat fish")
   const allowedFoods = allergens.filter((a) => allowedSaid(fixed, a) && !governed(fixed, a));
-  const avoid = allergens.filter((a) => !allowedFoods.includes(a) && (governed(fixed, a) || !requested(fixed, a)));
+  // "takoyaki can no bonito?": a dish's own "No bonito flakes" choice, not an allergy said
+  const offChoice = (a: Allergen) => !ALLERGY_WORD.test(question) && mentions.some((m) => (m.dish.modifiers ?? []).some((g) => g.options.some((o) => /^(no|without|less|tanpa|kurang|tak nak)\b/i.test(o.name) && mentionedAllergens(o.name).includes(a) && optionsSaid(question, m.dish, true).add.some((x) => x.name === o.name))));
+  const avoid = allergens.filter((a) => !allowedFoods.includes(a) && !offChoice(a) && (governed(fixed, a) || !requested(fixed, a)));
   // "anything 100% allergen free?": none of them at all
   if (/\b(allergen|allergy|allergic|alergen)[\s-]*free\b|\bno allergens?\b|\bwithout (any )?allergens?\b|\bfree (of|from) (all |any )?allergens\b|\btiada alergen\b/.test(restText) || /无过敏原|不含过敏原|没有过敏原/.test(restRaw)) avoid.push(...ALLERGENS);
 
@@ -1004,7 +1013,7 @@ export function read(items: Dish[], asked: string): Reading {
     // "is the X gluten free?", "X有没有花生？", "X ada udang tak?": asking whether a dish they named has
     // it isn't saying they avoid it (the dish is shown with the answer). Not "I'm dairy free, is X ok?",
     // "is there a dairy-free lassi?" or "got dairy-free kaya toast?": those say what they need
-    stated: allergens.filter((a) => governed(asksOfDish ? fixed.replace(/有没有|有冇|含不含/g, "有").replace(/([\w]+)[\s-]free\b/gi, "$1").replace(/\b(tak|ke|x|or not)\s*[?？]?\s*$/i, "") : fixed, a)),
+    stated: allergens.filter((a) => !offChoice(a) && governed(asksOfDish ? fixed.replace(/有没有|有冇|含不含/g, "有").replace(/([\w]+)[\s-]free\b/gi, "$1").replace(/\b(tak|ke|x|or not)\s*[?？]?\s*$/i, "") : fixed, a)),
     statedDiet: saysDiet ? diet : [],
     delexicalized,
     dishes: mentions.map((m) => m.dish),

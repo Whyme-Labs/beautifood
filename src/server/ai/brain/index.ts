@@ -185,10 +185,12 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     const c = normalize(clause);
     // ("我对虾过敏", "allergic to egg": what they can't have is never an add-on)
     if (/\b(allerg\w*|alergi|alah|intoleran\w*|cannot eat|can t eat|cant eat|tak boleh makan)\b/.test(c) || /过敏|不能吃|不吃/.test(clause)) continue;
-    const inClause = order.filter((o) => named.some((n) => n.id === o.item.id) && nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} `)));
+    // (or by two of its own words, when the message names no dish of it outright: "one of the nasi
+    // lemak", or one with "one": "the ayam one")
+    const inClause = order.filter((o) => (named.some((n) => n.id === o.item.id) ? nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} `)) : nameWords(o.item).filter((w) => ` ${c} `.includes(` ${w} `)).length >= 2 || nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} one `))));
     const zhIn = order.filter((o) => Object.values(o.item.translations ?? {}).some((x) => x?.name && clause.includes(x.name)));
     // ("add another teh tarik, both iced": every line of what's named)
-    const both = /\b(both|all|semua|kedua|dua dua)\b/.test(c) || /都/.test(clause);
+    const both = /\b(both|all|each|semua|kedua|dua dua|masing masing)\b/.test(c) || /都|各/.test(clause);
     // ("upsize all the drinks", "all the pizzas thin crust"): every line of that kind
     const allOf = /\ball (the )?(drinks?|beverages?|pizzas?|noodles?|minuman|air)\b|\bsemua (air|minuman)\b/.test(c) || /饮料都|全部饮料/.test(clause);
     const kindLines = allOf ? order.filter((o) => (/drink|minuman|air|beverage|饮料/.test(c + clause) ? isDrink(o.item) : !isDrink(o.item))) : [];
@@ -208,15 +210,18 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
       targets.splice(0, 1, copy);
     }
     for (const o of targets) {
-      const { add, off } = optionsSaid(clause, o.item);
-      const chosen = optionsSaid(clause, o.item, true).add;
+      // (the words that pick the line aren't its add-ons: "the ayam one besar" isn't more ayam goreng)
+      const picked = inClause.includes(o) && !named.some((n) => n.id === o.item.id) ? nameWords(o.item) : [];
+      const said = picked.length ? clause.replace(new RegExp(`\\b(${picked.join("|")})\\b`, "gi"), " ") : clause;
+      const { add, off } = optionsSaid(said, o.item);
+      const chosen = optionsSaid(said, o.item, true).add;
       if (!add.length && !off.length && !chosen.length) continue;
       // (a choice of a group that takes one replaces the one before it: "change the original to snow cheese")
       const groupOf = (x: ModifierOption) => o.item.modifiers?.find((g) => g.options.some((y) => y.name === x.name));
       const keep = (o.options ?? []).filter((x) => !off.some((y) => y.name === x.name) && !chosen.some((y) => y.name !== x.name && groupOf(y) === groupOf(x) && (groupOf(x)?.max ?? 1) <= 1));
       o.options = [...keep, ...add.filter((x) => !keep.some((y) => y.name === x.name))];
     }
-    if (inClause.length || zhIn.length) before = lines;
+    if (inClause.length || zhIn.length) before = oneOf ? targets : lines;
   }
 }
 
@@ -381,7 +386,8 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
   }
   if (!named.length) return false;
   // "make that 3 roti telur", "jadikan dua": the count it is now, not more of it
-  if (swap && named.length === 1 && ordered(named[0]) && (COUNT_SAID.test(t) || COUNT_SAID.test(text))) {
+  // (not "one of the teh tarik iced": one of them changed, not the count)
+  if (swap && named.length === 1 && ordered(named[0]) && (COUNT_SAID.test(t) || COUNT_SAID.test(text)) && !/\b(one of (the|them|those)|satu daripada|salah satu)\b/.test(t) && !/其中一/.test(text)) {
     // (the number after the cue: "teh tarik pun jadikan dua", "make the kopi two")
     const after = t.match(/\b(?:make (?:it|that|them|the \w+)|jadikan|jadi|change (?:it )?to|tukar jadi)\s+(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\b/)?.[1];
     const n = after ? ({ one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5 } as Record<string, number>)[after] ?? Number(after) : countsOf(text, named as Dish[]).get(named[0] as Dish) ?? 1;
@@ -1334,6 +1340,21 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   };
   // "Teh Tarik with iced": a line's add-ons
   const lineName = (o: OrderLine) => (o.options?.length ? t("assistantReply.withOptions", { dish: name(o.item), options: list(o.options.map(optionLabel)) }) : name(o.item));
+  // "does the cheese foam have dairy?", "我吃全素，可以加奶盖吗？", "what's in the snow cheese?": an add-on
+  // asked about on its own, by what the menu's lines say it's made of ("salted cheese foam (cream cheese, …)")
+  const askedOpt = !mentioned.length && !nth && !state.order.length && !u.superlative && u.budget === null && !CHEAPEST_WAY.test(nt1) && !CHEAPEST_WAY_ZH.test(u.text) && (u.asksContents || u.allergens.length > 0 || u.diet.length > 0 || /\b(what is|whats|what s|apa itu)\b/.test(nt1) || /是什么/.test(u.text)) && (/[?？]|吗/.test(u.text) || QUESTION.test(nt1))
+    ? optionsAsked(u.text, live).sort((a, b) => b.dishes.length - a.dishes.length)[0]
+    : undefined;
+  const madeOf = askedOpt && live.map((i) => (i.description ?? "").match(new RegExp(`${normalize(askedOpt.option.name).replace(/[^a-z0-9 ]/g, "")}\\s*\\(([^)]+)\\)`, "i"))?.[1]).find(Boolean);
+  if (askedOpt && madeOf) {
+    const has = mentionedAllergens(madeOf).filter((a) => !u.allergens.length || u.allergens.includes(a) || u.diet.length > 0);
+    const notVegan = u.diet.includes("vegan") && mentionedAllergens(madeOf).some((a) => a === "milk" || a === "egg");
+    const parts = [t("assistantReply.optionMadeOf", { option: optionLabel(askedOpt.option), made: madeOf })];
+    if (has.length) parts.push(t("assistantReply.optionHas", { allergens: list(has.map(allergen)) }));
+    else if (u.allergens.length) parts.push(t("assistantReply.optionHasNone", { allergens: list(u.allergens.map(allergen)) }));
+    if (notVegan) parts.push(t("assistantReply.optionNotVegan"));
+    return reply("dish_allergen", parts.join(""), []);
+  }
   // "what's the cheapest way to get half a chicken with fries, coleslaw and a drink?": a set, a dish with
   // its combo add-ons or the things one by one, whichever costs least of what's served now
   const wanted = (CHEAPEST_WAY.test(nt1) || CHEAPEST_WAY_ZH.test(u.text)) && !u.budget ? needsOf(u.text) : null;
@@ -1427,7 +1448,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     applyOptions(existing, u.text, [...mentioned, ...pointed.map((p) => p.item)], bill.length > existing.length ? bill.filter((o) => !existing.includes(o)).map((o) => o.item) : false);
     // (a line split off one of them: "one of them thin crust")
     for (const o of existing) if (!bill.includes(o)) bill.splice(bill.indexOf(existing[existing.indexOf(o) - 1]) + 1, 0, o);
-    for (const o of bill) if (pointed.some((p) => p.item.id === o.item.id) && !o.options?.length) o.options = optionsSaid(u.text, o.item).add;
+    // (each its own clause's: "the first one with telur mata, plus one of the second")
+    const pointedLines = bill.filter((o) => pointed.some((p) => p.item.id === o.item.id) && !o.options?.length);
+    if (pointedLines.length) applyOptions(pointedLines, u.text, pointedLines.map((o) => o.item));
     // "I'll take that, and a teh", "ok add it": the one dish the last answer suggested
     const accepts = (ordering || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)));
     if (accepts && !edited && state.shown.length === 1 && !bill.some((o) => o.item.id === state.shown[0].id) && !mentioned.includes(state.shown[0])) bill.push({ item: state.shown[0], count: 1 });
@@ -1987,7 +2010,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // "cheapest poke bowl?", "what's the priciest thing?": the one, not a list (with any at the same price)
       const one = literal && !u.howMany && !/\b(dishes|options|things|items|ones|drinks|bowls|plates|few|some|list|top)\b/.test(normalize(u.text));
       const pool2 = wantsDrinks || literal || u.signatures ? order : [...order.filter((i) => !isDrink(i)), ...order.filter(isDrink).slice(0, 1)];
-      const picks = (one ? pool2.filter((i) => i.price === pool2[0].price) : pool2).slice(0, Math.min(4, u.howMany ?? 4));
+      let picks = (one ? pool2.filter((i) => i.price === pool2[0].price) : pool2).slice(0, Math.min(4, u.howMany ?? 4));
+      // "I have RM30, pick 3 drinks": three that come to it together, the best placed first
+      const within = u.budget !== null && (u.howMany ?? 0) >= 2 && picks.length === u.howMany && picks.reduce((n, i) => n + i.price, 0) > u.budget ? fitTogether(pool2.slice(0, 30), u.howMany!, u.budget) : null;
+      if (within) picks = within;
       const filters = filterWords();
       const signatures = picks.filter((p) => p.isSignature);
       const intro = spiced.mildest
@@ -2001,9 +2027,25 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
             : t("assistantReply.knownFor", { restaurant: ctx.restaurant.name, list: list((signatures.length ? signatures : picks.slice(0, 1)).map(name)) });
       // (halal asked where the branch isn't certified: what it declares first)
       const standing = c.diet.includes("halal") && halalAt !== "certified" && ctx.halal ? `${halalAt === "expired" ? t("assistantReply.halalExpired") : halalAt === "muslim_friendly" ? t("assistantReply.halalMuslimFriendly") : halalAt === "pork_free" ? t("assistantReply.halalPorkFree") : t("assistantReply.halalNone")}${sp}` : "";
-      return reply("recommend", `${standing}${intro}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks, { confident: !unsure || hasFilters });
+      const together = within ? `${sp}${t("assistantReply.basketWithin", { total: money(within.reduce((n, i) => n + i.price, 0)), budget: money(u.budget!) })}` : "";
+      return reply("recommend", `${standing}${intro}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}${together}`, picks, { confident: !unsure || hasFilters });
     }
   }
+}
+
+/** `n` of `pool` (best first) that cost no more than `budget` together, as near the top as can be. */
+function fitTogether(pool: Item[], n: number, budget: number): Item[] | null {
+  let best: { picks: Item[]; rank: number } | null = null;
+  const pick = (from: number, chosen: number[], spent: number) => {
+    if (chosen.length === n) {
+      const rank = chosen.reduce((a, b) => a + b, 0);
+      if (!best || rank < best.rank) best = { picks: chosen.map((k) => pool[k]), rank };
+      return;
+    }
+    for (let k = from; k < pool.length; k++) if (spent + pool[k].price <= budget) pick(k + 1, [...chosen, k], spent + pool[k].price);
+  };
+  pick(0, [], 0);
+  return (best as { picks: Item[] } | null)?.picks ?? null;
 }
 
 const allyNote = (locale: string) => allergyNote(locale);
