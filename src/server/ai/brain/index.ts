@@ -1782,11 +1782,23 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       );
 
     case "dish_allergen": {
+      // "is the beef pepperoni made of pork?", "牛肉香肠是猪肉做的吗？": that meat, said apart from the dish's name
+      const MEAT_ZH: Record<Meat, RegExp> = { pork: /猪/, beef: /牛/, chicken: /鸡/, lamb: /羊/, duck: /鸭/ };
+      const meatAsked = (item: Item) => {
+        let rest = u.text;
+        for (const n of [item.name, ...Object.values(item.translations ?? {}).map((x) => x?.name ?? "")]) if (n) rest = rest.replace(new RegExp(n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), " ");
+        for (const sp_ of u.spots) if (sp_.dish.id === item.id) for (const k of sp_.covered) rest = rest.replace(new RegExp(`\\b${u.toks[k]}\\b`, "i"), " ");
+        return (Object.keys(MEAT_WORDS) as Meat[]).find((m) => MEAT_WORDS[m].test(rest) || MEAT_ZH[m].test(rest.replace(/[a-z]/gi, "")));
+      };
+      const meatOf = (item: Item) => (Object.keys(MEAT_WORDS) as Meat[]).filter((m) => MEAT_WORDS[m].test(unsaid(`${item.name} ${item.description ?? ""}`)));
       const parts = focus.map((item) => {
+        const m = meatAsked(item);
+        const meatLine = m ? (meatOf(item).includes(m) ? t("assistantReply.meatYes", { dish: name(item), meat: t(`assistantReply.meat_${m}` as MessageKey) }) : t("assistantReply.meatNo", { dish: name(item), meat: t(`assistantReply.meat_${m}` as MessageKey), made: meatOf(item).length ? t("assistantReply.meatMadeWith", { meat: list(meatOf(item).map((x) => t(`assistantReply.meat_${x}` as MessageKey))) }) : "" })) : "";
         const asked = u.allergens;
         const conflict = asked.filter((a) => item.allergens.includes(a));
         let s = item.allergens.length ? t("assistantReply.contains", { dish: name(item), list: list(item.allergens.map(allergen)) }) : t("assistantReply.noAllergens", { dish: name(item) });
         if (u.diet.length) s = `${dietVerdict(item)}${sp}${s}`;
+        if (meatLine) s = `${meatLine}${sp}${s}`;
         if (asked.length) s += conflict.length ? t("assistantReply.notSuitable", { list: list(conflict.map(allergen)) }) : t("assistantReply.doesntList", { list: list(asked.map((a) => (en ? allergen(a).toLowerCase() : allergen(a)))) });
         // what's in it, in the menu's words: "belacan", "cashew paste", "butter", "oyster sauce"
         if (desc(item)) s += `${sp}${t("assistantReply.madeWith", { description: desc(item).replace(/[.。]+$/, "") })}`;
@@ -1949,6 +1961,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       }
       const picks = ranked(pool).slice(0, Math.min(4, u.howMany ?? 4));
       if (spiced.mildest) return reply(intent, `${t("assistantReply.mildestOfThose")}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
+      // ("are those two spicy?": a yes or no about all of them)
+      const yesNo = /^(are|is|r) (those|these|they|both|the two|all)\b/.test(nt0) || /^(这|那)(两|几)?(个|样|些)?都/.test(u.text) || /都.{0,4}吗[?？]?$/.test(u.text);
+      if (yesNo && filterWords() && pool.length === state.shown.length) return reply(intent, `${t(state.shown.length === 2 ? "assistantReply.bothAre" : "assistantReply.allAreYes", { filters: filterWords() })}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
       return reply(intent, `${t("assistantReply.ofThose", { filters: filterWords() || t("assistantReply.whatYouAsked") })}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
     }
 

@@ -32,7 +32,8 @@ export type Diet = "vegetarian" | "vegan" | "halal";
 export type Meat = "pork" | "beef" | "chicken" | "lamb" | "duck";
 /** The words a menu uses for each meat, so "no pork" also keeps out the char siu and the lard. */
 export const MEAT_WORDS: Record<Meat, RegExp> = {
-  pork: /\b(pork|babi|bacon|ham|lard|char siu|cha siu|siu yuk|lap cheong|chinese sausage|chashu|samgyeopsal|carnitas|chorizo|pepperoni|salami|prosciutto|pancetta|spare ?ribs?|trotters?|tonkotsu)\b/i,
+  // (not "beef pepperoni", "chicken ham", "turkey bacon")
+  pork: /\b(pork|babi|lard|char siu|cha siu|siu yuk|lap cheong|chinese sausage|chashu|samgyeopsal|carnitas|prosciutto|pancetta|spare ?ribs?|trotters?|tonkotsu)\b|(?<!\b(beef|chicken|turkey|lamb|halal|veggie|vegan|plant-based|daging|ayam)[\s-])\b(bacon|ham|chorizo|pepperoni|salami)\b/i,
   beef: /\b(beef|daging lembu|lembu|brisket|wagyu|ribeye|sirloin|steak|oxtail|bulgogi beef|galbi|kalbi|rendang daging)\b/i,
   chicken: /\b(chicken|ayam|poultry)\b/i,
   lamb: /\b(lamb|mutton|kambing|goat)\b/i,
