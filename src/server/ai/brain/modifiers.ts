@@ -186,7 +186,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     const own = ks.filter((k) => (count.get(k) ?? 0) < 2);
     const need = own.length ? own : ks;
     // ("those two noodles" isn't Extra Noodles: more of something is asked for as more)
-    if (!loose && /^(extra|add|more|double|tambah|lebih)\b/i.test(o.name) && !/加|多/.test(raw)) {
+    // (taking it off needs no such word: "remove the egg" is the Extra Egg gone)
+    if (!loose && /^(extra|add|more|double|tambah|lebih)\b/i.test(o.name) && !/加|多/.test(raw) && !need.some((k) => offWords.has(k) || offWords.has(`${k}s`))) {
       const toks = t.split(" ");
       const at = toks.findIndex((x) => need.some((k) => x === k || x === `${k}s` || x === k.replace(/(es|s)$/, "") || (ALSO[k] ?? []).includes(x)));
       const near = at >= 0 ? toks.slice(Math.max(0, at - 3), at) : toks;

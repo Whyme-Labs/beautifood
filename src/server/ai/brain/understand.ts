@@ -495,7 +495,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   }
   // "a classic acai with peanut butter topping": the Classic Acai Bowl with its topping, not the Peanut
   // Butter Acai Bowl made of words from both sides of the "with"
-  const withAt = toks.findIndex((t) => /^(with|dengan)$/.test(t));
+  const withAt = toks.findIndex((t) => /^(with|dengan|tambah|plus|w)$/.test(t));
   if (withAt > 0) {
     const spans = (m: Mention) => m.covered.some((i) => i < withAt) && m.covered.some((i) => i > withAt);
     for (const m of found) {

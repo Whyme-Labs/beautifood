@@ -413,6 +413,8 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
     const clauses = text.split(/[.;,，。；]|\band\b|\bdan\b/i);
     const cut = clauses.filter((c) => REMOVE.test(normalize(c)) || REMOVE.test(c));
     const inCut = (i: Item) => cut.some((c) => normalize(i.name).split(" ").filter((w) => w.length > 2).some((w) => ` ${normalize(c)} `.includes(` ${w} `) || ` ${normalize(c)} `.includes(` ${w}s `)) || Object.values(i.translations ?? {}).some((x) => x?.name && c.includes(x.name)));
+    // ("take off the honey butter, make the whole chicken all original": an add-on taken off, no dish)
+    if (!named.some(inCut) && order.some((o) => cut.some((c) => optionsSaid(c, o.item).off.length > 0))) return false;
     const outs = named.filter((i) => ordered(i) && (inCut(i) || named.filter(ordered).length === 1));
     const ins = named.filter((i) => !ordered(i) && (ORDERING.test(t) || ORDERING_ZH.test(text)));
     const less = (i: Item) => {
@@ -488,7 +490,12 @@ export function pointedAt(text: string, shown: Item[]): { item: Item; count: num
   // ("those two with seafood", "the cheaper egg"): of the ones its words name
   const SEAFOOD = /\b(seafood|shellfish|makanan laut)\b/.test(t) || /海鲜/.test(text);
   const wordOf = t.match(/\b(?:with|got|ada|yang ada)\s+([a-z]+)\b/)?.[1] ?? t.match(/\b(?:cheaper|cheapest|pricier|murah|mahal)\s+([a-z]+)\b/)?.[1];
-  const narrowed = SEAFOOD ? can.filter((i) => i.allergens.some((a) => a === "crustaceans" || a === "molluscs" || a === "fish")) : wordOf && !/^(one|ones|of|the|and|for)$/.test(wordOf) ? can.filter((i) => normalize(`${i.name} ${i.description ?? ""}`).split(" ").some((w) => w === wordOf || w === `${wordOf}s` || w.replace(/s$/, "") === wordOf.replace(/s$/, ""))) : can;
+  // (when every one of them has some, as nasi lemak's ikan bilis and belacan: the ones with more)
+  const sea = (i: Item) => i.allergens.filter((a) => a === "crustaceans" || a === "molluscs" || a === "fish");
+  const withSea = can.filter((i) => sea(i).length > 0);
+  const seaAll = withSea.length ? sea(withSea[0]).filter((a) => withSea.every((i) => sea(i).includes(a))) : [];
+  const more = withSea.filter((i) => sea(i).some((a) => !seaAll.includes(a)));
+  const narrowed = SEAFOOD ? (more.length ? more : withSea) : wordOf && !/^(one|ones|of|the|and|for)$/.test(wordOf) ? can.filter((i) => normalize(`${i.name} ${i.description ?? ""}`).split(" ").some((w) => w === wordOf || w === `${wordOf}s` || w.replace(/s$/, "") === wordOf.replace(/s$/, ""))) : can;
   const pool = narrowed.length ? narrowed : can;
   if (!out.length && can.length >= 2 && (firstTwo || lastTwo || both)) {
     // ("those two cheaper ones": the two cheapest)
@@ -1211,7 +1218,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // (or, asked of a kind of dish, "smoothies with no sugar?", "奶昔最多可以加几种营养粉？": the first of that kind with choices)
   const ofKind = !mentioned.length && !earlierHost && u.categories.length ? live.find((i) => u.categories.includes(i.category ?? "") && i.modifiers?.length) : undefined;
   const optHost = (earlierHost && mentioned.length && !mentioned.some(fully) ? earlierHost : null) ?? mentioned.find((i) => i.modifiers?.length) ?? mentioned[0] ?? earlierHost ?? ofKind;
-  if (asksOption && optHost && orderable(optHost) && !u.budget && !(mentioned.length >= 2 && mentioned.every((i) => !optionsSaid(u.text, i, true).add.length) && !mentioned.slice(1).some((i) => optionsAsked(name(i), live).length))) {
+  // ("remove the egg and add minced pork instead. how much?": a change to the line ordered, not a question of the choice)
+  const editsLine = state.order.some((o) => o.item.id === optHost?.id) && !/\b(can|could|may|boleh|bole|leh)\b/.test(nt1) && !/可以|能不能|可不可以/.test(u.text) && (REMOVE.test(nt1) || /\b(add|tambah)\b/.test(nt1));
+  if (asksOption && optHost && orderable(optHost) && !editsLine && !u.budget && !(mentioned.length >= 2 && mentioned.every((i) => !optionsSaid(u.text, i, true).add.length) && !mentioned.slice(1).some((i) => optionsAsked(name(i), live).length))) {
     const said = optionsSaid(u.text, optHost, true).add;
     const priced = said.filter((o) => o.price > 0);
     const free = said.filter((o) => !o.price);
@@ -1454,7 +1463,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     for (const o of existing) if (!bill.includes(o)) bill.splice(bill.indexOf(existing[existing.indexOf(o) - 1]) + 1, 0, o);
     // (each its own clause's: "the first one with telur mata, plus one of the second")
     const pointedLines = bill.filter((o) => pointed.some((p) => p.item.id === o.item.id) && !o.options?.length);
-    if (pointedLines.length) applyOptions(pointedLines, u.text, pointedLines.map((o) => o.item));
+    // ("2 of the first one, iced, and one of the last one, hot": each pointer's words, up to the next)
+    const pointers = [...u.text.toLowerCase().matchAll(/\b(first|second|third|fourth|fifth|last|1st|2nd|3rd|4th|5th|pertama|kedua|ketiga|terakhir)\b|第[一二三四五]|最后/g)].map((m) => m.index ?? 0);
+    if (pointedLines.length >= 2 && pointers.length === pointedLines.length && pointed.every((p, k) => pointedLines[k]?.item.id === p.item.id))
+      pointedLines.forEach((o, k) => applyOptions([o], u.text.slice(k ? pointers[k] : 0, pointers[k + 1] ?? u.text.length), [o.item]));
+    else if (pointedLines.length) applyOptions(pointedLines, u.text, pointedLines.map((o) => o.item));
     // "I'll take that, and a teh", "ok add it": the one dish the last answer suggested
     const accepts = (ordering || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)));
     if (accepts && !edited && state.shown.length === 1 && !bill.some((o) => o.item.id === state.shown[0].id) && !mentioned.includes(state.shown[0])) bill.push({ item: state.shown[0], count: 1 });
@@ -1469,7 +1482,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (adding && !state.order.length && state.shown.length && state.shown.length <= 2 && !state.shown.some((i) => mentioned.includes(i))) for (const item of [...state.shown].reverse()) if (!bill.some((o) => o.item.id === item.id) && allowed(item, { ...c, maxSpice: null, minSpice: null, budget: null })) bill.unshift({ item, count: 1 });
     // "total for both?" with nothing ordered: the dishes just talked about
     // (not when this message ordered something of its own: "then one large milk tea with pudding, total?")
-    if (totalWord && !edited && !pointed.length && bill.reduce((n, o) => n + o.count, 0) < 2 && (bill.length === existing.length || /\b(both|those|them|these|all|semua|kedua)\b/.test(nt1) || /这两|两个都|都/.test(u.text))) for (const item of state.shown) if (!bill.some((o) => o.item.id === item.id)) bill.push({ item, count: 1 });
+    if (totalWord && !billSoFar && !edited && !pointed.length && bill.reduce((n, o) => n + o.count, 0) < 2 && (bill.length === existing.length || /\b(both|those|them|these|all|semua|kedua)\b/.test(nt1) || /这两|两个都|都/.test(u.text))) for (const item of state.shown) if (!bill.some((o) => o.item.id === item.id)) bill.push({ item, count: 1 });
     // "one nasi lemak each" for three: three of it
     if (oneEach && party && party >= 2) for (const o of bill) if (mentioned.includes(o.item) && o.count === 1) o.count = party;
     // "just the food", "without the drinks", "minus the satay", "not counting the kopi": what they leave out

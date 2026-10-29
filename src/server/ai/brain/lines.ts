@@ -64,7 +64,7 @@ export const phrase = (toks: string[]) => toks.join(" ").replace(/(?<=[㐀-鿿])
  */
 export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], breaks: number[] = []): Set<Spot> {
   const out = new Set<Spot>();
-  const CUE = /^(with|w|add|added|adding|extra|plus|tambah|dengan|topping|toppings|on|put|in|upgrade|upgraded|upsize|drink|minuman|sauce|sos|加|换|换成|配|要|走|少|多)$/;
+  const CUE = /^(with|w|add|added|adding|extra|plus|remove|without|minus|tambah|dengan|topping|toppings|on|put|in|upgrade|upgraded|upsize|drink|minuman|sauce|sos|加|换|换成|配|要|走|少|多)$/;
   for (const spot of spots) {
     let x = spot;
     if (x.from < 0) continue;
@@ -100,7 +100,10 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     // ("boneless saiz besar sos honey butter": said right after another dish, with no count and nothing
     // joining them, it's that dish's choice)
     const host = [...spots].filter((y) => y !== spot && y.from >= 0 && y.to <= x.from && !breaks.some((b) => b > y.from && b <= x.from) && !toks.slice(y.to, x.from).some((t) => JOIN.test(t))).sort((a, b) => b.to - a.to)[0];
-    const follows = !!host && whole && !counted && !cued && optionsSaid(text, host.dish, true).add.length > 0 && !/[\u3400-\u9fff]/.test(text);
+    const follows = !!host && whole && !counted && !cued && (/[\u3400-\u9fff]/.test(text)
+      // ("半只炸鸡甜辣酱": a sauce's menu line said right on the dish is its sauce, by the line's own name)
+      ? host.to === x.from && optionsSaid(x.dish.name, host.dish, true).add.length > 0
+      : optionsSaid(text, host.dish, true).add.length > 0);
     // (a menu line that is exactly another dish's option, said after that dish: "margherita 9-inch, extra
     // cheese and mushrooms", "两个烧烤鸡披萨，一个加菠萝")
     const optionLine = whole && spots.some((y) => y !== spot && y.from >= 0 && y.to <= x.from && (y.dish.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name) === normalize(x.dish.name))));
@@ -120,7 +123,8 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     const said = phrase([...lead, ...words]);
     // (its own words must be the option's: "large berry blast" isn't the bowl's Large; "the avocado one" is a dish)
     if (/^(one|tu|itu|ni|ini)$/.test(toks[x.to] ?? "")) continue;
-    if (hosts.some((d) => optionsSaid(said, d, true).add.some((o) => optionsSaid(phrase(words), { ...d, modifiers: [{ name: "", options: [o] }] }, true, true).add.length))) out.add(spot);
+    // (or taken off: "remove the egg" is the pan mee's Extra Egg)
+    if (hosts.some((d) => { const r = optionsSaid(said, d, true); return [...r.add, ...r.off].some((o) => optionsSaid(phrase(words), { ...d, modifiers: [{ name: "", options: [o] }] }, true, true).add.length); })) out.add(spot);
   }
   return out;
 }
