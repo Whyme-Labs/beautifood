@@ -85,7 +85,21 @@ if [[ -n "$LAUNCHER" ]]; then
 ]}
 JSON
 )
-  aws_ iam put-user-policy --user-name "$LAUNCHER" --policy-name beautifood-reader-launch --policy-document "$USER_POLICY"
+  # (a managed policy, attached: a user's inline policies share a 2 KB limit)
+  POLICY_ARN="arn:aws:iam::$ACCOUNT:policy/BeautifoodReaderLaunch"
+  if aws_ iam get-policy --policy-arn "$POLICY_ARN" >/dev/null 2>&1; then
+    # (a policy keeps at most 5 versions: drop the old ones, then make this the default)
+    for v in $(aws_ iam list-policy-versions --policy-arn "$POLICY_ARN" --query 'Versions[?!IsDefaultVersion].VersionId' --output text); do
+      aws_ iam delete-policy-version --policy-arn "$POLICY_ARN" --version-id "$v"
+    done
+    aws_ iam create-policy-version --policy-arn "$POLICY_ARN" --policy-document "$USER_POLICY" --set-as-default >/dev/null
+    echo "policy updated: BeautifoodReaderLaunch"
+  else
+    aws_ iam create-policy --policy-name BeautifoodReaderLaunch --policy-document "$USER_POLICY" \
+      --description "Launch the Beautifood reader's SageMaker training jobs (one bucket, one role)" >/dev/null
+    echo "policy created: BeautifoodReaderLaunch"
+  fi
+  aws_ iam attach-user-policy --user-name "$LAUNCHER" --policy-arn "$POLICY_ARN"
   echo "launch permissions given to IAM user: $LAUNCHER"
 fi
 
