@@ -154,7 +154,9 @@ function dishIndex(items: Dish[]): DishIndex {
   if (ix) return ix;
   // (a menu's own words as it writes them: its "Wat Tan Hor" isn't "what")
   const own = new Set(items.flatMap((i) => i.name.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean)));
-  const names = items.map((i) => tokens(normalize(i.name.replace(/\(.*?\)/g, " "), own), true));
+  // (a bracket's words count when they're all that tells two dishes apart: Fried Carrot Cake (White) and (Black))
+  const bare = items.map((i) => normalize(i.name.replace(/\(.*?\)/g, " ")));
+  const names = items.map((i, k) => tokens(normalize(bare.filter((b) => b === bare[k]).length > 1 ? i.name.replace(/[()]/g, " ") : i.name.replace(/\(.*?\)/g, " "), own), true));
   const df = new Map<string, number>();
   for (const n of names) for (const w of new Set(n)) df.set(w, (df.get(w) ?? 0) + 1);
   const courseWords = new Set(items.flatMap((i) => tokens(normalize(i.category ?? ""), true)).flatMap((w) => [w, w.replace(/s$/, "")]));
@@ -326,6 +328,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
       if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2, zh: tr.name });
+    // a bracket said beside the name ("炒萝卜糕白的", "白的炒萝卜糕" for 炒萝卜糕（白）)
+    for (const tr of Object.values(dish.translations ?? {})) {
+      const m = (tr?.name ?? "").match(/^(.+?)[（(](.{1,3})[)）]$/);
+      if (m && raw.includes(m[1]) && [`${m[1]}${m[2]}`, `${m[2]}的${m[1]}`, `${m[2]}${m[1]}`].some((x) => raw.includes(x))) return void found.push({ dish, at: raw.indexOf(m[1]) / 100, covered: [], score: 2, zh: raw.includes(`${m[1]}${m[2]}`) ? `${m[1]}${m[2]}` : m[1] });
+    }
     // a menu's Chinese name by its distinctive end ("八件套" for 安邦八件套, "六件套"), when only it ends so
     for (const tr of Object.values(dish.translations ?? {})) {
       const zh = tr?.name ?? "";

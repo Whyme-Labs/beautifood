@@ -31,7 +31,7 @@ const ALSO: Record<string, string[]> = {
   strawberries: ["strawberry"], chocolate: ["choc", "coklat", "chocolate"], mayo: ["mayonnaise"],
   seaweed: ["nori"], spicy: ["spicy", "pedas", "hot"], yuja: ["yuzu", "citron"], cola: ["coke", "cola"], cider: ["cider", "chilsung"],
   bucket: ["bucket", "baldi"], crust: ["crust"], thin: ["thin"], stuffed: ["stuffed", "cheese crust"],
-  chicken: ["ayam"], beef: ["daging"],
+  chicken: ["ayam"], beef: ["daging"], duck: ["itik"], cockles: ["kerang", "cockle"], taugeh: ["tauge", "bean sprouts", "beansprouts", "sprouts"], cheong: ["lap cheong", "lapcheong", "chinese sausage", "sausage"],
 };
 // ...and in Chinese, as a guest writes it
 const ALSO_ZH: Record<string, RegExp> = {
@@ -40,14 +40,15 @@ const ALSO_ZH: Record<string, RegExp> = {
   telur: /加蛋|蛋/, egg: /加蛋|鸡蛋|蛋/, mata: /荷包蛋|煎蛋|太阳蛋/, rebus: /水煮蛋|白煮蛋|煮蛋/, bawang: /洋葱/, onion: /洋葱/,
   oat: /燕麦/, almond: /杏仁(?!酱)/, shot: /加浓|浓缩|多一份咖啡/, laksa: /叻沙|咖喱汤/, curry: /咖喱/, chilli: /辣椒酱|辣椒碎|辣椒干|辣椒/, kuah: /花生酱|沙爹酱|花生酱汁/,
   salmon: /三文鱼|烟熏三文鱼/, bacon: /培根/, poached: /水波蛋/, dry: /干捞|干的/, soup: /汤的|汤底/,
-  balls: /鱼丸/, minced: /肉碎|肉末|肉燥/, bilis: /江鱼仔|小鱼干/, hoon: /米粉/, prawns: /虾/, puffs: /豆卜|豆泡/,
+  balls: /鱼丸/, minced: /肉碎|肉末|肉燥/, bilis: /江鱼仔|小鱼干/, hoon: /米粉/, prawns: /(?<!濑尿|螳螂|琵琶)虾(?!蛄)/,
+  duck: /鸭蛋|鸭/, cockles: /蚶|血蛤|鲜蛤/, cheong: /腊肠|臘腸/, taugeh: /豆芽/, puffs: /豆卜|豆泡/,
   noodles: /加面|多面|面加倍/, mushrooms: /蘑菇|香菇/, skin: /腐竹|豆皮/, peanuts: /花生/, tofu: /豆腐/, milo: /美禄/,
   pearls: /珍珠|波霸/, pudding: /布丁/, grass: /仙草/, coconut: /椰果|椰子片|椰丝/, bean: /红豆/, foam: /奶盖/,
   cheese: /芝士|起司|奶酪/, ramyeon: /拉面|泡面|快熟面/, rice: /年糕/, cake: /年糕|鱼饼/, fries: /薯条/, coleslaw: /凉拌|卷心菜沙拉/, soft: /饮料|汽水|饮品/,
   kimchi: /泡菜/, yangnyeom: /甜辣/, garlic: /蒜/, butter: /黄油|牛油/, snow: /雪花/, honey: /蜂蜜/,
   pineapple: /菠萝|黄梨/, pepperoni: /意大利辣香肠|辣香肠/, parmesan: /帕玛森|帕马森/, cream: /冰淇淋|雪糕/, whey: /乳清/, plant: /植物蛋白/,
   chia: /奇亚籽/, peanut: /花生/, granola: /燕麦脆片|格兰诺拉|燕麦片/, flakes: /椰子片|椰丝/, nuts: /坚果/, cacao: /可可/, spirulina: /螺旋藻/,
-  avocado: /牛油果|鳄梨/, feta: /菲达/, kaya: /咖椰|加椰/, sambal: /参巴|叁巴/, rendang: /仁当/, sotong: /苏东|鱿鱼/, udang: /虾/,
+  avocado: /牛油果|鳄梨/, feta: /菲达/, kaya: /咖椰|加椰/, sambal: /参巴|叁巴/, rendang: /仁当/, sotong: /苏东|鱿鱼/, udang: /(?<!濑尿|螳螂|琵琶)虾(?!蛄)/,
   ayam: /炸鸡|鸡肉|鸡(?!蛋)/, lime: /酸柑|桔子|桔仔|青柠/, plum: /酸梅/, strawberries: /草莓/, chocolate: /巧克力/, mayo: /美乃滋|蛋黄酱/,
   seaweed: /海苔/, matcha: /抹茶/, spicy: /加辣|特辣|很辣/, yuja: /柚子/, cola: /可乐/, cider: /七星|雪碧/, bucket: /一桶|桶/,
   thin: /薄底|薄饼底|薄脆/, penne: /笔管面|通心粉|长通粉/, spaghetti: /意大利面|意面|细面/, stuffed: /芝心/, teh: /奶茶|茶/, kopi: /咖啡/, chicken: /鸡肉|鸡(?!蛋|翅)/, beef: /牛肉/,
@@ -218,6 +219,12 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
       const near = [toks[at + 1], toks[at - 1]];
       const food = (x: string | undefined) => !!x && x.length > 2 && !named.includes(x) && !LEAD.test(x) && !GENERIC.has(x) && !SIZE_TEMP.test(x) && !/^(on|top|please|pls|and|or|to|in|for|with|inside|dalam|lah|la|ah|ok|boleh|too|also|one|the|how|berapa|not|tak|can|plus|then|extra|more|instead|nak|mau|want|add|put|letak|tambah|large|besar|cup|hot|iced|ais|panas)$/.test(x);
       if (at >= 0 && near.some(food)) continue;
+    }
+    // ("no taugeh" of a "No taugeh" choice: that choice, made)
+    const without = normalize(o.name).match(/^(?:no|without|tanpa|tak nak)\s+(.+)$/)?.[1];
+    if (without && new RegExp(`\\b(no|without|tanpa|tak nak|x nak|xnak|tak mau|hold the) (the )?${without.replace(/s$/, "")}s?\\b`).test(` ${t} `)) {
+      add.push(o);
+      continue;
     }
     const isOff = need.some((k) => offWords.has(k) || (ALSO[k] ?? []).some((x) => offWords.has(x)) || offZh.some((z) => ALSO_ZH[k]?.test(z)));
     if (isOff) off.push(o);

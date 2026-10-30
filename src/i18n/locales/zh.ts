@@ -539,6 +539,8 @@ const zh = {
     daily: "每天",
     weekdays: "平日（周一至周五）",
     weekends: "周末",
+    orderWithout: "可以选：{option}。点餐时请告诉店员您的过敏情况。",
+    allDay: "全天",
     timeRange: "{from}至{to}",
     seasonDates: "{start}至{end}",
     percentOff: "{value}%折扣",
