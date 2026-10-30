@@ -9,8 +9,10 @@ import argparse, io, os, tarfile, time
 
 import boto3
 
-# the Hugging Face training image (PyTorch 2.5, transformers 4.49), as the SageMaker SDK names it
-IMAGE = "763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-training:2.5-transformers4.49.0-gpu-py311-cu124-ubuntu22.04"
+# AWS's PyTorch training image (PyTorch 2.10, Python 3.13, the Python the script is tested with);
+# requirements.txt adds transformers. (The tag the SageMaker SDK gave for the Hugging Face image
+# didn't exist: a tag is only trusted once a job has run on it.)
+IMAGE = "763104351884.dkr.ecr.{region}.amazonaws.com/pytorch-training:2.10.0-gpu-py313-cu130-ubuntu22.04-sagemaker"
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 def source_tar():
