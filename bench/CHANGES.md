@@ -939,3 +939,17 @@ one of the dish's choices, not a claim that it has no egg: a free-of match that 
 the dish's own option names is no longer read as a claim (a unit test keeps "Fried Mee has no egg"
 caught). It changes the counts on every set; the only case it flipped is v10u-char-kway-teow-041
 (an unsafe that wasn't). The 363ea2e and deployed v10 scorings above were under the old checker.
+
+## v10 dev, round 1 of fixes: 74.2% → 83.5% (no case or label changed)
+
+- The owner chose to make all 956 v10 cases dev, so these numbers measure fit to v10, not how well
+  the brain does on questions it hasn't seen. v8 test is the only held-out set left.
+- v10 dev went from 74.2% to 83.5%, with 0 unsafe answers on every set. The other dev sets held: v1 99.2,
+  v2 98.2, v3 97.6, v4 98.6, v5 97.6, v6 96.9, v8 dev 87.2, v9 96.8.
+- Every char-kway-teow failure is fixed, and the japanese-curry list is down to its hard ones (a
+  family plan within a budget). Five menus are still open: fish-soup, cendol, ayam-penyet,
+  curry-laksa, western, wantan.
+- The fixes are engine rules (lines, add-ons, deals, zh/Malay words, safety readings). The safety
+  ones have unit tests: a soy add-on asked for by a soy-allergic guest, and an add-on taken off that
+  isn't an allergy. A guest who takes no alcohol is kept away from dishes cooked with wine, mirin
+  or sake.
