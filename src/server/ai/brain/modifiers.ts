@@ -151,8 +151,16 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
   }), ...changed].filter((w) => w && !asked.has(w)));
   const offZh = [...[...raw.matchAll(OFF_ZH)].map((m) => m[1] ?? m[2] ?? m[3]), changedZh].filter((x): x is string => !!x);
   const words = new Set(t.split(" ").filter((w) => !offWords.has(w)));
-  let joined = ` ${[...words].join(" ")} `;
   const all = (dish.modifiers ?? []).flatMap((g) => g.options);
+  // ("big prawns", "udang besar": more of an add-on, not the dish's size)
+  const toks0 = t.split(" ");
+  const BIG = /^(big|large|besar|jumbo)$/;
+  // (an add-on's word, of a group it isn't required to choose from: not "large iced", "ais besar")
+  const addOns = (dish.modifiers ?? []).filter((g) => !(g.min ?? 0)).flatMap((g) => g.options);
+  const addOnWord = (w = "") => !SIZE_TEMP.test(w) && addOns.some((o) => o.price > 0 && keyWords(o).some((k) => k === w || `${k}s` === w || k === w.replace(/(es|s)$/, "")));
+  const bigOf = toks0.map((x, i) => BIG.test(x) && (addOnWord(toks0[i + 1]) || (toks0[i - 1] !== "and" && addOnWord(toks0[i - 1]) && x === "besar")));
+  if (bigOf.some(Boolean) && toks0.every((x, i) => !BIG.test(x) || bigOf[i])) for (const x of toks0.filter((_, i) => bigOf[i])) words.delete(x);
+  let joined = ` ${[...words].join(" ")} `;
   // a word two options share ("telur" of Telur Mata and Telur Rebus) doesn't say which
   const count = new Map<string, number>();
   // (not the ones said as a phrase: "Less chilli" doesn't share "chilli" with Chilli Flakes)
@@ -198,7 +206,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
       const at = toks.findIndex((x) => need.some((k) => x === k || x === `${k}s` || x === k.replace(/(es|s)$/, "") || (ALSO[k] ?? []).includes(x)));
       // (or said right after, as in Malay: "sayur lebih")
       const near = at >= 0 ? [...toks.slice(Math.max(0, at - 3), at), ...(/^(lebih|lagi)$/.test(toks[at + 1] ?? "") ? [toks[at + 1]] : [])] : toks;
-      if (!near.some((x) => /^(extra|add|adding|added|more|double|tambah|lebih|another|plus|with|w|dinosaur|godzilla)$/.test(x)) && !/\b(dinosaur|godzilla)\b/.test(t)) continue;
+      const bigBefore = at > 0 && bigOf[at - 1];
+      if (!bigBefore && !near.some((x) => /^(extra|add|adding|added|more|double|tambah|lebih|another|plus|with|w|dinosaur|godzilla)$/.test(x)) && !/\b(dinosaur|godzilla)\b/.test(t)) continue;
     }
     // ("almond butter" isn't the Almond Milk: its word said, then another food's)
     const named = normalize(o.name.replace(/[()]/g, " ")).split(" ");
