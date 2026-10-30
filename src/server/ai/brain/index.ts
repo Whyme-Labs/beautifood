@@ -171,6 +171,19 @@ function turnLines(ctx: AssistantContext, rules: OrderLine[]): OrderLine[] {
     return { item: ctx.items.find((i) => i.id === l.dish.id) as Item, count: l.count, options: priced.length ? priced : undefined };
   }).filter((l) => !!l.item);
   if (ctx.readerPolicy === "replace") return model;
+  // "merge": the rules' dishes only; for a dish the model read with more (a count, add-ons, a split),
+  // the model's lines for it
+  if (ctx.readerPolicy === "merge") {
+    const out: OrderLine[] = [];
+    for (const id of [...new Set(rules.map((l) => l.item.id))]) {
+      const mine = rules.filter((l) => l.item.id === id);
+      const theirs = model.filter((l) => l.item.id === id);
+      const more = (ls: OrderLine[]) => ls.length + ls.reduce((n, l) => n + (l.options?.length ?? 0), 0);
+      const sum = (ls: OrderLine[]) => ls.reduce((n, l) => n + l.count, 0);
+      out.push(...(theirs.length && more(theirs) > more(mine) && sum(theirs) >= sum(mine) ? theirs : mine));
+    }
+    return out;
+  }
   const ids = (ls: OrderLine[]) => new Set(ls.map((l) => l.item.id));
   const [a, b] = [ids(rules), ids(model)];
   return !rules.length || ([...a].every((x) => b.has(x)) && b.size > a.size) ? model : rules;

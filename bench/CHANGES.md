@@ -999,3 +999,20 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   synthetic messages are only orders, so "monday" and "promo" were read as dishes. Next run: the tagger
   marks any dish word and only the linker, which sees the menu, decides it isn't on it; and the generator
   writes the rest of a guest's message (days, deals, people, questions, "that one") and more kinds of add-on.
+
+## The owned reader, run 2: what it must show (written before it ran)
+
+- Run 1's best case: on the 465 v10 dev bill/modifier cases, a case passed under some policy only where
+  the rules passed it too (upper bound 75.9% = rules). Half the rules' 112 failures there are
+  multi-turn (56), out of reach of a reader of the latest message; of the 56 single-turn ones, most are
+  deals, hours, availability, allergen facts or wording, and about 10 to 15 turn on reading counts,
+  sizes or add-ons. So a reader can move this subset by about 2 to 3 points at most.
+- Run 2's changes: the tagger marks any dish word and only the linker (which sees the menu) says one
+  isn't on it; the linker learns against up to 24 of the menu's dishes as at inference; the data has
+  many more kinds of add-on (egg, noodle, spice level, rice size, ice, milk, dips), groups only on
+  dishes they fit, a plain rice and "Special" dishes beside the others, guest chat from the reader's own
+  templates around the order, and dishes the menu lacks anywhere in it.
+- **The bar:** worth a run 3 only if, on those 465 cases, the upper bound beats the rules by at least
+  3 points and some policy fixes at least twice what it breaks, with 0 unsafe. Otherwise stop: the
+  contract, the checks, the generator, the trainer, the server and the log-to-harvest hook stay, and the
+  next lever is real, labelled guest turns from the log (which needs a teacher model's key).

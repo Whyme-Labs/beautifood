@@ -11,7 +11,7 @@
 // checks (checkReading), so the model learns only readings the brain would accept.
 //
 //   npx tsx scripts/reader/gen.ts <out.jsonl> [examples=60000] [seed=11]   (menus go to <out>.menus.json)
-import { appendFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { DISH_NAMES_ZH } from "../../src/shared/dishNamesZh";
 import { checkReading, dishKey, linesKey, rulesLines, type RawOrderReading } from "../../src/server/ai/brain/reading";
 import type { Dish } from "../../src/server/ai/brain/understand";
@@ -29,27 +29,82 @@ export interface Example { id: string; lang: Lang; menu: string; message: string
 
 const o = (name: string, price: number, en: string[], ms: string[], zh: string[]): Opt => ({ name, price, en, ms, zh });
 // add-on groups by kind of dish; a menu gives each dish a few, with prices varied
+// add-ons a menu may offer, by kind: many, so a model learns to read the menu's own choices rather
+// than a short list (a menu draws a few of them, with prices varied)
+const ADD_ONS: Opt[] = [
+  o("Extra egg", 150, ["extra egg", "add egg", "egg"], ["tambah telur", "telur lebih"], ["加蛋"]),
+  o("Fried egg", 150, ["fried egg", "sunny side up"], ["telur mata", "telur goreng"], ["荷包蛋", "煎蛋"]),
+  o("Onsen egg", 250, ["onsen egg", "soft egg"], ["telur separuh masak"], ["温泉蛋"]),
+  o("Extra meat", 300, ["extra meat", "more meat"], ["tambah daging", "daging lebih"], ["加肉"]),
+  o("Extra chicken", 400, ["extra chicken", "more chicken"], ["tambah ayam", "ayam lebih"], ["加鸡肉"]),
+  o("Extra vegetables", 150, ["extra vegetables", "more veg"], ["sayur lebih", "tambah sayur"], ["加菜"]),
+  o("Cheese", 300, ["cheese", "extra cheese"], ["keju", "tambah keju"], ["芝士", "加芝士"]),
+  o("Extra prawns", 400, ["extra prawns", "more prawns", "big prawns"], ["tambah udang", "udang lebih"], ["加虾"]),
+  o("Cockles", 300, ["cockles", "add cockles"], ["kerang", "tambah kerang"], ["加蚶"]),
+  o("Lap cheong", 200, ["lap cheong", "chinese sausage"], ["lap cheong"], ["腊肠"]),
+  o("Fish balls", 250, ["fish balls", "fishball"], ["bebola ikan", "fishball"], ["鱼丸"]),
+  o("Fish cake", 200, ["fish cake"], ["kek ikan"], ["鱼饼"]),
+  o("Tofu puff", 150, ["tofu puff", "taupok"], ["tau pok"], ["豆卜"]),
+  o("Corn", 200, ["corn"], ["jagung"], ["玉米"]),
+  o("Spinach", 200, ["spinach"], ["bayam"], ["菠菜"]),
+  o("Kimchi", 300, ["kimchi"], ["kimchi"], ["泡菜"]),
+  o("Extra sambal", 100, ["extra sambal", "more sambal"], ["sambal lebih", "tambah sambal"], ["多参巴"]),
+  o("Extra noodles", 200, ["extra noodles", "more noodles"], ["mee lebih", "tambah mee"], ["加面"]),
+  o("Extra rice", 200, ["extra rice", "more rice"], ["nasi lebih", "tambah nasi"], ["加饭"]),
+  o("Seaweed", 150, ["seaweed", "nori"], ["rumpai laut"], ["紫菜"]),
+];
+const FREE_PREFS: Opt[] = [
+  o("No chilli", 0, ["no chilli", "not spicy"], ["tak nak pedas", "x pedas"], ["不要辣", "走辣"]),
+  o("More chilli", 0, ["more chilli", "extra spicy"], ["pedas lebih", "lebih pedas"], ["多辣", "加辣"]),
+  o("No onion", 0, ["no onion"], ["tak nak bawang"], ["不要洋葱"]),
+  o("No spring onion", 0, ["no spring onion", "no green onion"], ["tak nak daun bawang"], ["不要葱", "走葱"]),
+  o("Less oil", 0, ["less oil"], ["kurang minyak"], ["少油"]),
+  o("Less salt", 0, ["less salt"], ["kurang masin"], ["少盐"]),
+  o("No taugeh", 0, ["no taugeh", "no bean sprouts"], ["tak nak taugeh", "x taugeh"], ["不要豆芽"]),
+  o("No coriander", 0, ["no coriander", "no cilantro"], ["tak nak daun ketumbar"], ["不要香菜"]),
+];
+const DRINK_ADDS: Opt[] = [
+  o("Pearls", 150, ["pearls", "boba"], ["pearl"], ["珍珠"]), o("Grass jelly", 100, ["grass jelly", "cincau"], ["cincau"], ["仙草"]),
+  o("Sour plum", 50, ["sour plum", "asam boi"], ["asam boi"], ["酸梅"]), o("Nata de coco", 100, ["nata de coco", "coconut jelly"], ["nata"], ["椰果"]),
+  o("Aloe vera", 100, ["aloe vera", "aloe"], ["lidah buaya"], ["芦荟"]), o("Cheese foam", 200, ["cheese foam"], ["cheese foam"], ["奶盖"]),
+  o("Lime", 50, ["lime", "add lime"], ["limau", "tambah limau"], ["加酸柑"]),
+];
+const DESSERT_ADDS: Opt[] = [
+  o("Extra ice cream", 300, ["extra ice cream", "add ice cream", "ice cream"], ["tambah aiskrim", "aiskrim"], ["加雪糕", "雪糕"]),
+  o("Red bean", 100, ["red bean"], ["kacang merah"], ["红豆"]), o("Durian", 400, ["durian"], ["durian"], ["榴莲"]),
+  o("Pulut", 150, ["pulut", "glutinous rice"], ["pulut"], ["糯米"]), o("Attap chee", 150, ["attap chee", "attap seed"], ["atap"], ["亚答子"]),
+  o("Peanuts", 50, ["peanuts", "nuts"], ["kacang"], ["花生"]),
+];
+const N_ZH = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+const level = (n: number, price: number) => o(`Level ${n}`, price, [`level ${n}`, `lvl ${n}`, `spicy level ${n}`], [`level ${n}`, `tahap ${n}`], [`${n}级辣`, `${N_ZH[n]}级辣`]);
+const sample = <T,>(r: () => number, xs: T[], n: number) => [...xs].sort(() => r() - 0.5).slice(0, n);
+const priced = (r: () => number, x: Opt) => ({ ...x, price: x.price ? x.price + pick(r, [-50, 0, 0, 50, 100]) : 0 });
 const GROUPS: Record<Kind, (r: () => number) => Group[]> = {
   drink: (r) => [
     { name: "Temperature", min: 1, max: 1, options: [o("Hot", 0, ["hot"], ["panas"], ["热"]), o("Iced", pick(r, [30, 50, 80]), ["iced", "ice", "cold"], ["ais", "sejuk", "peng"], ["冰"])] },
     { name: "Sugar", min: 1, max: 1, options: [o("Normal sugar", 0, [], [], []), o("Less sweet", 0, ["less sweet", "less sugar"], ["kurang manis", "siew dai"], ["少甜", "少糖"]), o("No sugar", 0, ["no sugar"], ["kosong", "tak nak gula"], ["无糖", "走糖"])] },
     { name: "Size", min: 1, max: 1, options: [o("Regular", 0, [], [], []), o("Large", pick(r, [100, 150, 200]), ["large", "big"], ["besar"], ["大杯"])] },
-    { name: "Add", min: 0, max: 2, options: [o("Pearls", 150, ["pearls", "boba"], ["pearl"], ["珍珠"]), o("Grass jelly", 100, ["grass jelly", "cincau"], ["cincau"], ["仙草"]), o("Sour plum", 50, ["sour plum", "asam boi"], ["asam boi"], ["酸梅"])] },
+    { name: "Ice", min: 1, max: 1, options: [o("Normal ice", 0, [], [], []), o("Less ice", 0, ["less ice"], ["kurang ais", "ais sikit"], ["少冰"]), o("No ice", 0, ["no ice"], ["tak nak ais", "x ais"], ["走冰", "去冰"])] },
+    { name: "Milk", min: 1, max: 1, options: [o("Fresh milk", 0, [], [], []), o("Oat milk", pick(r, [150, 200]), ["oat milk", "oat"], ["susu oat"], ["燕麦奶"]), o("Soy milk", 100, ["soy milk"], ["susu soya"], ["豆奶"])] },
+    { name: pick(r, ["Add", "Toppings"]), min: 0, max: 2, options: sample(r, DRINK_ADDS, 2 + Math.floor(r() * 3)).map((x) => priced(r, x)) },
   ],
   main: (r) => [
-    { name: "Size", min: 1, max: 1, options: [o("Regular", 0, [], [], []), o("Large", pick(r, [200, 250, 300]), ["large", "big", "upsize"], ["besar"], ["大份", "加大"])] },
-    { name: pick(r, ["Add-ons", "Extras", "Toppings"]), min: 0, max: pick(r, [2, 3, 4]), options: [
-      o("Extra egg", 150, ["extra egg", "add egg"], ["tambah telur", "telur lebih"], ["加蛋"]),
-      o("Fried egg", pick(r, [150, 200]), ["fried egg", "sunny side up"], ["telur mata", "telur goreng"], ["荷包蛋", "煎蛋"]),
-      o("Extra meat", pick(r, [300, 400]), ["extra meat", "more meat"], ["tambah daging", "daging lebih"], ["加肉"]),
-      o("Extra vegetables", 150, ["extra vegetables", "more veg"], ["sayur lebih", "tambah sayur"], ["加菜"]),
-      o("Cheese", 300, ["cheese", "extra cheese"], ["keju", "tambah keju"], ["芝士", "加芝士"]),
-      o("Extra prawns", 400, ["extra prawns", "more prawns"], ["tambah udang", "udang lebih"], ["加虾"]),
-    ] },
-    { name: "Preferences", min: 0, max: 3, options: [o("No chilli", 0, ["no chilli", "not spicy"], ["tak nak pedas", "x pedas"], ["不要辣", "走辣"]), o("No onion", 0, ["no onion"], ["tak nak bawang"], ["不要洋葱"]), o("Less oil", 0, ["less oil"], ["kurang minyak"], ["少油"]), o("No taugeh", 0, ["no taugeh", "no bean sprouts"], ["tak nak taugeh", "x taugeh"], ["不要豆芽"])] },
+    pick(r, [
+      { name: "Size", min: 1, max: 1, options: [o("Regular", 0, [], [], []), o("Large", pick(r, [200, 250, 300]), ["large", "big", "upsize"], ["besar"], ["大份", "加大"])] },
+      { name: "Size", min: 1, max: 1, options: [o("Small", 0, ["small"], ["kecil"], ["小份", "小碗"]), o("Medium", pick(r, [200, 300]), ["medium"], ["sederhana"], ["中份", "中碗"]), o("Large", pick(r, [400, 600]), ["large", "big"], ["besar"], ["大份", "大碗"])] },
+      { name: "Rice size", min: 1, max: 1, options: [o("Regular rice", 0, [], [], []), o("Large rice", 200, ["large rice", "more rice", "big rice"], ["nasi besar", "nasi lebih"], ["大饭", "饭多"]), o("Less rice", 0, ["less rice"], ["nasi kurang", "nasi sikit"], ["饭少", "少饭"])] },
+    ]),
+    { name: "Egg", min: 1, max: 1, options: [o("Chicken egg", 0, [], [], []), o("Duck egg", 100, ["duck egg"], ["telur itik"], ["鸭蛋"]), o("Salted egg", 150, ["salted egg"], ["telur masin"], ["咸蛋"]), o("No egg", 0, ["no egg"], ["tak nak telur", "tanpa telur"], ["不要蛋", "走蛋"])] },
+    { name: "Noodles", min: 1, max: 1, options: [o("Yellow mee", 0, ["yellow mee", "mee"], ["mee kuning", "mee"], ["黄面"]), o("Bee hoon", 0, ["bee hoon", "bihun", "vermicelli"], ["bihun", "mihun"], ["米粉"]), o("Kway teow", 50, ["kway teow", "flat noodles"], ["kuey teow"], ["粿条"]), o("Udon", 200, ["udon"], ["udon"], ["乌冬"])] },
+    { name: "Spice level", min: 1, max: 1, options: Array.from({ length: pick(r, [5, 10]) }, (_, k) => level(k + 1, k + 1 > 5 ? pick(r, [50, 100]) : 0)) },
+    { name: pick(r, ["Add-ons", "Extras", "Toppings"]), min: 0, max: pick(r, [2, 3, 4]), options: sample(r, ADD_ONS, 3 + Math.floor(r() * 5)).map((x) => priced(r, x)) },
+    { name: "Preferences", min: 0, max: 3, options: sample(r, FREE_PREFS, 3 + Math.floor(r() * 3)) },
   ],
-  side: (r) => [{ name: "Portion", min: 1, max: 1, options: [o("5 pcs", 0, ["5 pcs", "five pieces"], ["5 ketul"], ["五粒", "五个"]), o("10 pcs", pick(r, [500, 600, 800]), ["10 pcs", "ten pieces"], ["10 ketul"], ["十粒", "十个"])] }],
-  dessert: () => [{ name: "Add", min: 0, max: 2, options: [o("Extra ice cream", 300, ["extra ice cream", "add ice cream"], ["tambah aiskrim"], ["加雪糕"]), o("Red bean", 100, ["red bean"], ["kacang merah"], ["红豆"])] }],
+  side: (r) => [
+    { name: "Portion", min: 1, max: 1, options: [o("5 pcs", 0, ["5 pcs", "five pieces"], ["5 ketul"], ["五粒", "五个"]), o("10 pcs", pick(r, [500, 600, 800]), ["10 pcs", "ten pieces"], ["10 ketul"], ["十粒", "十个"])] },
+    { name: "Dip", min: 0, max: 2, options: [o("Chilli sauce", 0, ["chilli sauce"], ["sos cili"], ["辣椒酱"]), o("Mayo", 0, ["mayo", "mayonnaise"], ["mayo"], ["美乃滋"]), o("Peanut sauce", 100, ["peanut sauce"], ["kuah kacang"], ["花生酱"]), o("Sweet sauce", 0, ["sweet sauce"], ["sos manis"], ["甜酱"])] },
+  ],
+  dessert: (r) => [{ name: pick(r, ["Add", "Toppings"]), min: 0, max: 3, options: sample(r, DESSERT_ADDS, 3 + Math.floor(r() * 3)).map((x) => priced(r, x)) }],
 };
 const pick = <T,>(r: () => number, xs: T[]): T => xs[Math.floor(r() * xs.length)];
 const kindOf = (name: string): Kind =>
@@ -69,8 +124,23 @@ function menu(r: () => number): (Dish & { kind: Kind })[] {
     if (![...chosen.values()].some((x) => x.zh === d.zh)) chosen.set(d.name, d);
   }
   const price = (k: Kind) => 10 * Math.round((k === "drink" ? 200 + r() * 1000 : k === "main" ? 800 + r() * 2000 : 400 + r() * 1100) / 10);
-  return [...chosen.values()].map((d, i) => {
-    const groups = GROUPS[d.kind](r).filter(() => r() < 0.6);
+  // confusers: a plain rice beside dishes with a large rice, and a dish's "Special" beside it
+  const list = [...chosen.values()];
+  if (r() < 0.5) list.push(pick(r, [{ name: "Steamed Rice", zh: "白饭", kind: "side" as Kind }, { name: "Nasi Putih", zh: "白饭", kind: "side" as Kind }, { name: "Japanese Rice", zh: "日本米饭", kind: "side" as Kind }]));
+  for (const d of list.filter((x) => x.kind === "main").slice(0, 2)) if (r() < 0.3) list.push({ name: `${d.name} Special`, zh: `特别${d.zh}`, kind: "main" });
+  // (each group only on dishes it fits: a noodle choice on noodles, spice levels on curries)
+  const FITS: Record<string, RegExp> = {
+    Noodles: /mee|noodle|laksa|kway teow|koay teow|hor fun|bihun|bee hoon|ramen|udon|pho|mee hoon|kolo/i,
+    "Rice size": /rice|nasi|don\b|biryani|briyani|claypot|bowl/i,
+    Egg: /fried|goreng|char |kway teow|koay teow|mee|nasi|rice|omelette|hor fun/i,
+    "Spice level": /curry|kari|tom yum|laksa|mala|sambal|rendang|spicy|asam|jjigae|tikka|masala|penyet/i,
+    Portion: /dumpling|gyoza|wonton|wantan|siu mai|har gow|wings|nuggets|karaage|satay|spring roll|\bbun|\bpau|popiah|croquette/i,
+    Dip: /fried|goreng|wings|nuggets|karaage|satay|spring roll|fries|cucur|keropok|croquette|popiah/i,
+    Milk: /latte|milk|teh\b|tea|coffee|kopi|matcha|chocolate|milo|mocha|cappuccino|flat white/i,
+  };
+  const plain = new Set(["Steamed Rice", "Nasi Putih", "Japanese Rice"]);
+  return list.map((d, i) => {
+    const groups = plain.has(d.name) ? [] : GROUPS[d.kind](r).filter((g) => (!FITS[g.name] || FITS[g.name].test(d.name)) && r() < 0.6);
     return {
       id: `d${i}`, name: d.name, category: d.kind, description: "", price: price(d.kind), allergens: [], dietary: [], spiceLevel: 0, isSignature: false, kind: d.kind,
       translations: r() < 0.8 ? { zh: { name: d.zh } } : undefined,
@@ -80,8 +150,9 @@ function menu(r: () => number): (Dish & { kind: Kind })[] {
 }
 
 // (a guest doesn't name a dish by "rice", "tea" or "cheese" alone)
-const COMMON = new Set(["rice", "noodle", "noodles", "soup", "tea", "coffee", "milk", "juice", "cake", "fried", "chicken", "beef", "pork", "fish", "with", "special", "set", "spicy", "sweet", "iced", "small", "large", "mixed", "steamed", "roast", "grilled", "curry"]);
-const OPTION_WORDS = new Set(Object.values(GROUPS).flatMap((g) => g(() => 0.5)).flatMap((g) => g.options).flatMap((x) => [...x.en, ...x.ms].join(" ").split(/\s+/)).filter((w) => w.length >= 3));
+const COMMON = new Set(["rice", "noodle", "noodles", "soup", "tea", "coffee", "milk", "juice", "cake", "fried", "chicken", "beef", "pork", "fish", "with", "special", "set", "spicy", "sweet", "iced", "small", "large", "mixed", "steamed", "roast", "grilled", "curry",
+  "three", "black", "white", "green", "yellow", "double", "layer", "paste", "sauce", "style", "house", "mixed", "plain", "kung", "salted", "baked", "cheese", "golden", "crispy", "honey", "butter", "cereal", "paper", "stone"]);
+const OPTION_WORDS = new Set([...ADD_ONS, ...FREE_PREFS, ...DRINK_ADDS, ...DESSERT_ADDS, ...Object.values(GROUPS).flatMap((g) => g(() => 0.5)).flatMap((g) => g.options)].flatMap((x) => [...x.en, ...x.ms].join(" ").split(/\s+/)).filter((w) => w.length >= 3));
 const NUM_EN = ["", "one", "two", "three", "four", "five", "six"];
 const NUM_MS = ["", "satu", "dua", "tiga", "empat", "lima", "enam"];
 const NUM_ZH = ["", "一", "两", "三", "四", "五", "六"];
@@ -147,6 +218,12 @@ function splitPieces(d: Dish, a: Line, b: Line, k: number, all: Dish[], lang: La
   return [...head, { text: sep }, { text: one, label: "SPLIT", line: k }, { text: lang === "zh" ? "" : pick(r, [" with ", " ", " add "]) }, ...optText(a, k), { text: sep }, { text: other, label: "SPLIT", line: k + 1 }, { text: lang === "zh" ? "" : " " }, ...optText(b, k + 1)];
 }
 
+// what a guest says around an order ("hi", "can pay by card?", "ada promosi hari ni?"): the reader's
+// own service and small-talk templates (scripts/brain/reader-templates.json), none of it a dish
+const CHAT = (() => {
+  const t = JSON.parse(readFileSync(new URL("../brain/reader-templates.json", import.meta.url), "utf8")) as Record<string, string[]>;
+  return [...t.service, ...t.smalltalk].filter((x) => !x.includes("{") && x.length < 60);
+})();
 const TAIL: Record<Lang, string[]> = {
   en: ["total?", "how much?", "how much altogether?", "total how much", "what's the total"],
   manglish: ["total how much ah", "berapa ah", "how much ah", "total?"],
@@ -218,11 +295,14 @@ function example(m: (Dish & { kind: Kind })[], menuId: string, id: string, r: ()
       pieces.push(join, ...linePieces(l, lines.length, m, lang, r));
       lines.push(l);
     }
-    // a dish this menu doesn't have
-    if (r() < 0.12) {
+    // a dish this menu doesn't have, anywhere in the order (first, between lines, or last)
+    if (r() < 0.15) {
       const other = pick(r, POOL.filter((p) => !m.some((d) => d.name === p.name || d.translations?.zh?.name === p.zh)));
       const text = lang === "zh" ? other.zh : other.name.toLowerCase();
-      pieces.push({ text: pick(r, JOIN[lang]) }, { text: lang === "zh" ? "一份" : pick(r, ["1 ", "a ", ""]) }, { text, label: "UNMATCHED" });
+      const piece: Piece[] = [{ text: pick(r, JOIN[lang]) }, { text: lang === "zh" ? "一份" : pick(r, ["1 ", "a ", "", "2 "]) }, { text, label: "UNMATCHED" }];
+      const joins = pieces.map((p, k) => (!p.label && JOIN[lang].includes(p.text) ? k : -1)).filter((k) => k > 0);
+      if (joins.length && r() < 0.6) pieces.splice(pick(r, joins), 0, ...piece);
+      else pieces.push(...piece);
       unmatched.push(text);
     }
     if (r() < 0.45) {
@@ -232,6 +312,12 @@ function example(m: (Dish & { kind: Kind })[], menuId: string, id: string, r: ()
       each = true;
       pieces.push({ text: lang === "zh" ? "。" : ". " }, { text: pick(r, EACH[lang]) });
     }
+  }
+  // and what else the guest says, before or after the order
+  if (r() < 0.35) {
+    const chat = pick(r, CHAT);
+    if (r() < 0.5) pieces.unshift({ text: `${chat}${pick(r, [" ", ". ", ", ", "? "])}` });
+    else pieces.push({ text: `${pick(r, [". ", " ", "? ", ", "])}${chat}` });
   }
   // the message, and where each labelled piece is
   let message = "";

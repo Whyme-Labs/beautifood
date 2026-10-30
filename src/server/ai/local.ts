@@ -40,11 +40,12 @@ export interface AssistantContext {
   halal?: Halal;
   /**
    * The latest message as a model read it (./brain/modelReader), checked against the menu, and how
-   * the brain uses it for this turn's order lines: "replace" the rules' lines, or "fill" only where
-   * the rules found fewer dishes. Absent: the rules read alone.
+   * the brain uses it for this turn's order lines: "replace" the rules' lines, "fill" only where the
+   * rules found fewer dishes, or "merge" (the rules' dishes, with the model's counts and add-ons where
+   * it read more of them). Absent: the rules read alone.
    */
   reading?: OrderReading;
-  readerPolicy?: "replace" | "fill";
+  readerPolicy?: "replace" | "fill" | "merge";
 }
 
 export interface AssistantReply {

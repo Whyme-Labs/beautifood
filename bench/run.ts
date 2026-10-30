@@ -271,7 +271,7 @@ export async function readAll(cases: Case[], data: "gold" | "parser", call: Read
   return out;
 }
 
-export function runEngine(engine: string, cases: Case[], data: "gold" | "parser" = "gold", readings?: Map<string, RawOrderReading | null>, policy?: "replace" | "fill") {
+export function runEngine(engine: string, cases: Case[], data: "gold" | "parser" = "gold", readings?: Map<string, RawOrderReading | null>, policy?: "replace" | "fill" | "merge") {
   const menus = new Map<string, AssistantContext>();
   return cases.map((c) => {
     const key = `${c.menu} ${JSON.stringify(c.at ?? null)}`;
@@ -369,7 +369,7 @@ if (import.meta.url === `file://${process.argv[1]}`) void (async () => {
   const cases = loadCases(SPLIT, SET).filter((c) => !TAGS || (c.tags ?? []).some((t) => TAGS.includes(t)));
   // a model reader (--reader-url, an OpenAI-style endpoint such as llama.cpp's server), its readings cached
   const readerUrl = arg("--reader-url", "");
-  const policy = arg("--reader-policy", "") as "" | "replace" | "fill";
+  const policy = arg("--reader-policy", "") as "" | "replace" | "fill" | "merge";
   const readings = readerUrl ? await readAll(cases, DATA, openAiReader(readerUrl, "none", arg("--reader-model", "local")), arg("--reader-cache", "/tmp/reader-cache.json"), true) : undefined;
   const rows = runEngine(ENGINE, cases, DATA, readings, policy || undefined);
   const s = summarise(rows);

@@ -23,7 +23,7 @@ TAGS = ["O"] + [f"{p}-{l}" for l in LABELS for p in ("B", "I")]
 ANCHOR = ("DISH", "SPLIT")
 MAX_MSG = 96
 MAX_ENTRY = 24
-NEG_DISHES = 7
+NEG_DISHES = 23
 
 # ---- data ----
 
@@ -152,7 +152,7 @@ def check(path, tok=None):
         for r in rows:
             ids, tags, _, offs, _ = token_tags(tok, r["message"], r["spans"])
             back, _ = spans_from_tags(r["message"], offs, [max(t, 0) for t in tags])
-            gold = sorted((s["start"], s["end"], s["label"]) for s in r["spans"] if s["end"] > s["start"])
+            gold = sorted((s["start"], s["end"], "DISH" if s["label"] == "UNMATCHED" else s["label"]) for s in r["spans"] if s["end"] > s["start"])
             got = sorted((s["start"], s["end"], s["label"]) for s in back)
             n += 1; ok += gold == got
         print(f"spans read back from gold tags: {ok}/{n}")
@@ -195,9 +195,12 @@ def token_tags(tok, message, spans):
                 first += 1
             if first != s["start"] or offs[idx[-1]][1] != s["end"]:
                 misaligned += 1
-            tags[idx[0]] = TAGS.index(f"B-{s['label']}")
+            # (a dish the menu doesn't have is tagged as a dish: whether it's on the menu is the
+            # linker's to say, as only it sees the menu)
+            label = "DISH" if s["label"] == "UNMATCHED" else s["label"]
+            tags[idx[0]] = TAGS.index(f"B-{label}")
             for t in idx[1:]:
-                tags[t] = TAGS.index(f"I-{s['label']}")
+                tags[t] = TAGS.index(f"I-{label}")
         span_tokens.append(idx)
     for t, (a, b) in enumerate(offs):
         if a == b or not message[a:b].strip():
@@ -257,11 +260,16 @@ def batch_texts(tok, texts, dev):
 def batch_losses(model, tok, rows, idx, h, span_tokens, dev, rng):
     """The linking and attaching losses of a batch, its messages already encoded (h). Every dish and
     option text the batch needs is encoded once, in one call."""
-    texts, at = [], {}
-    def text_id(t):
+    texts, at, frozen = [], {}, set()
+    def text_id(t, grad=True):
         if t not in at:
             at[t] = len(texts); texts.append(t)
+        if grad:
+            frozen.discard(at[t])
+        elif at[t] not in grad_ids:
+            frozen.add(at[t])
         return at[t]
+    grad_ids = set()
     plans = []
     for k, i in enumerate(idx):
         r = rows[i]; spans = r["spans"]; menu = r["menu_items"]; keys = [d["key"] for d in menu]
@@ -270,7 +278,13 @@ def batch_losses(model, tok, rows, idx, h, span_tokens, dev, rng):
         rng.shuffle(others)
         cand = sorted(golds) + others[:NEG_DISHES]
         dspans = [(j, s) for j, s in enumerate(spans) if s["label"] in ("DISH", "UNMATCHED") and span_tokens[i][j]]
-        dish_ids = [text_id(dish_text(menu[keys.index(c)])) for c in cand] if dspans else []
+        # (the gold dishes and 7 others learn; the rest of the menu is there to be told apart, without gradients)
+        dish_ids = []
+        for n_, c in enumerate(cand if dspans else []):
+            tid = text_id(dish_text(menu[keys.index(c)]), grad=n_ < len(golds) + 7)
+            if n_ < len(golds) + 7:
+                grad_ids.add(tid)
+            dish_ids.append(tid)
         att = gold_attach(spans)
         anchor_dish, last = {}, None
         for j in sorted(range(len(spans)), key=lambda j: spans[j]["start"]):
@@ -288,13 +302,22 @@ def batch_losses(model, tok, rows, idx, h, span_tokens, dev, rng):
             opts = option_texts(menu[keys.index(dk)])
             names = [n for n, _ in opts]
             if s.get("ref") in names:
-                optq.append((j, [text_id(t) for _, t in opts], names.index(s["ref"])))
+                tids = [text_id(t) for _, t in opts]
+                grad_ids.update(tids)
+                optq.append((j, tids, names.index(s["ref"])))
         plans.append((k, i, cand, dspans, dish_ids, att, optq))
     loss = torch.zeros((), device=dev)
     if not texts:
         return loss
-    ids, mask = batch_texts(tok, texts, dev)
-    kv = model.pooled(ids, mask)
+    live = [k for k in range(len(texts)) if k not in frozen]
+    still = [k for k in range(len(texts)) if k in frozen]
+    ids, mask = batch_texts(tok, [texts[k] for k in live], dev)
+    parts = {k: v for k, v in zip(live, model.pooled(ids, mask))}
+    if still:
+        with torch.no_grad():
+            ids2, mask2 = batch_texts(tok, [texts[k] for k in still], dev)
+            parts.update({k: v for k, v in zip(still, model.pooled(ids2, mask2))})
+    kv = torch.stack([parts[k] for k in range(len(texts))])
     n = 0
     for k, i, cand, dspans, dish_ids, att, optq in plans:
         spans = rows[i]["spans"]; st = span_tokens[i]
