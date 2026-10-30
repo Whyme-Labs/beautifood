@@ -138,6 +138,8 @@ export function reanchor<T extends { dishes: Dish[]; toks: string[]; spots: Spot
 
 /** The dishes a message names as dishes, not as another's add-on ("with pudding and pearls", "加鱼丸"). */
 export function ownDishes(u: { dishes: Dish[]; toks: string[]; spots: Spot[]; breaks: number[] }, others: Item[] = [], ordered: Item[] = []): Item[] {
+  // ("difference between wantan and sui kow?": a comparison names dishes, not one's add-on)
+  if (/\b(difference|differences|compare|comparing|vs|versus|beza|bandingkan)\b/.test(u.toks.join(" ")) || /区别|比较|差别/.test(u.toks.join(""))) return u.dishes as Item[];
   const asOption = optionSpots(u.toks, u.spots, others as Dish[], u.breaks);
   // (a dish already on the order is that dish: "remove the sotong"; not "make the noodles less chilli")
   // ("change the telur mata to telur rebus": changing a dish ordered, the new one named whole is a dish)

@@ -247,7 +247,7 @@ const COOKING_PLACE = /^(grill|grills|bbq|barbecue|wok|oven|tandoor|charcoal|kit
 const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
   ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
-  sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], tee: ["tea"], susu: ["milk"],
+  sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], tee: ["tea"], nasi: ["rice"], sup: ["soup"], susu: ["milk"],
   limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
 };
@@ -740,7 +740,8 @@ function governed(question: string, a: Allergen): boolean {
       const han = /[\u4e00-\u9fff]/.test(t) ? toks.slice(i, i + 3).filter((x) => /[\u4e00-\u9fff]/.test(x)).join("") : "";
       const here = mentionedAllergens(t).includes(a) || mentionedAllergens(`${t} ${toks[i + 1] ?? ""}`).includes(a) || (!!han && mentionedAllergens(han).includes(a));
       if (!here) return false;
-      if (toks.slice(Math.max(0, i - 4), i).some((w) => NEG_CUE.test(w))) return true;
+      // ("nak tambah telur" wants it; "tak nak telur", "x boleh makan telur" don't)
+      if (toks.slice(Math.max(0, i - 4), i).some((w, k, ws) => NEG_CUE.test(w) && (!/^(nak|boleh)$/.test(w) || /^(tak|x|tk|tidak|tak)$/.test(ws[k - 1] ?? toks[Math.max(0, i - 4) - 1] ?? "")))) return true;
       return /^(free|less|allergy|allergies|alahan)$/.test(toks[i + 1] ?? "");
     });
   });

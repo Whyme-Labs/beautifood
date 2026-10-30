@@ -52,7 +52,8 @@ function numberAfter(toks: string[], from: number): { n: number; end: number } |
 }
 
 /** A dish's option numbers ("12" of "12 pcs", "10" of "10 pcs"): said before the dish, they name the option, not a count. */
-const optionNumbers = (d: Dish) => new Set((d.modifiers ?? []).flatMap((g) => g.options.flatMap((o) => optionWords(o).filter((w) => /^\d+$/.test(w)))));
+// (not a count in brackets that describes an add-on: "Sui kow (2 pcs)" leaves "2 dry wantan mee" a count)
+const optionNumbers = (d: Dish) => new Set((d.modifiers ?? []).flatMap((g) => g.options.filter((o) => !/\(\s*\d/.test(o.name)).flatMap((o) => optionWords(o).filter((w) => /^\d+$/.test(w)))));
 
 /** The words as a phrase, Chinese characters joined again. */
 export const phrase = (toks: string[]) => toks.join(" ").replace(/(?<=[㐀-鿿]) (?=[㐀-鿿])/g, "");

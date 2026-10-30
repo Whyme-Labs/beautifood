@@ -11,7 +11,7 @@ const ALSO: Record<string, string[]> = {
   ais: ["ice", "iced", "cold", "peng", "sejuk"], iced: ["ice", "ais", "cold", "peng", "sejuk"],
   panas: ["hot", "warm"], hot: ["panas", "warm"], suam: ["warm"],
   besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger"],
-  telur: ["egg", "eggs"], egg: ["telur", "eggs"], bawang: ["onion"], onion: ["bawang"],
+  telur: ["egg", "eggs"], egg: ["telur", "eggs"], fried: ["goreng"], vegetables: ["sayur", "veg", "veggie", "veggies", "greens"], bawang: ["onion"], onion: ["bawang"],
   mata: ["fried egg", "sunny side"], rebus: ["boiled egg", "hard boiled"],
   oat: ["oat", "oatmilk"], almond: ["badam", "almond"], shot: ["shot", "double"],
   kuah: ["kuah", "sauce", "peanut sauce"], laksa: ["laksa", "curry"], chilli: ["chilli", "chili", "sambal", "cili"],
@@ -89,7 +89,9 @@ const keyWords = (o: ModifierOption) => {
 };
 const has = (w: string, words: Set<string>, joined: string) => (w.includes(" ") ? joined.includes(` ${w} `) : words.has(w));
 // said as itself (or in Chinese), or only in the guest's other words for it ("ikan" for fish)
-const typo = (w: string, words: Set<string>) => w.length >= 5 && !/\d/.test(w) && [...words].some((x) => x.length >= 4 && x[0] === w[0] && x !== w && (editDistance(x, w, 1) <= 1 || (w.startsWith(x) && w.length - x.length === 1) || (x.length >= 5 && w.length - x.length === 2 && w.startsWith(x.slice(0, 3)) && subseq(x, w))));
+// (not an everyday word one letter from it: "my friend" isn't Fried egg, "dried" isn't fried)
+const EVERYDAY = new Set(["friend", "friends", "dried", "tried", "fired", "bread", "breads", "fries", "fried", "plain", "place", "large", "lunch", "sauce", "spice", "share", "shared", "table", "drink", "drinks"]);
+const typo = (w: string, words: Set<string>) => w.length >= 5 && !/\d/.test(w) && [...words].some((x) => x.length >= 4 && x[0] === w[0] && x !== w && !EVERYDAY.has(x) && (editDistance(x, w, 1) <= 1 || (w.startsWith(x) && w.length - x.length === 1) || (x.length >= 5 && w.length - x.length === 2 && w.startsWith(x.slice(0, 3)) && subseq(x, w))));
 // "pudin" for "pudding": the letters typed are all in it, in order, with two left out
 const subseq = (typed: string, w: string) => {
   let k = 0;
@@ -175,7 +177,9 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
   for (const o of all) {
     if (!free && !(o.price > 0)) continue;
     if (phraseOf(o)) continue;
-    const ks = keyWords(o);
+    // (a count in brackets describes it, "Sui kow (2 pcs)": its words name it, not the number)
+    const counted = /\(\s*\d+\s*(pcs|pc|pieces?|ketul|biji)?\s*\)/i.test(o.name);
+    const ks = keyWords(o).filter((k) => !counted || (!/^\d+$/.test(k) && !/^(pcs|pc|pieces?|ketul|biji)$/.test(k)));
     if (!ks.length) continue;
     // ("12 pcs", "12 inch": its number, said as a count of pieces or a size)
     const nums = ks.filter((k) => /^\d+$/.test(k));
@@ -190,7 +194,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     if (!loose && /^(extra|add|more|double|tambah|lebih)\b/i.test(o.name) && !/加|多/.test(raw) && !need.some((k) => offWords.has(k) || offWords.has(`${k}s`))) {
       const toks = t.split(" ");
       const at = toks.findIndex((x) => need.some((k) => x === k || x === `${k}s` || x === k.replace(/(es|s)$/, "") || (ALSO[k] ?? []).includes(x)));
-      const near = at >= 0 ? toks.slice(Math.max(0, at - 3), at) : toks;
+      // (or said right after, as in Malay: "sayur lebih")
+      const near = at >= 0 ? [...toks.slice(Math.max(0, at - 3), at), ...(/^(lebih|lagi)$/.test(toks[at + 1] ?? "") ? [toks[at + 1]] : [])] : toks;
       if (!near.some((x) => /^(extra|add|adding|added|more|double|tambah|lebih|another|plus|with|w|dinosaur|godzilla)$/.test(x)) && !/\b(dinosaur|godzilla)\b/.test(t)) continue;
     }
     // ("almond butter" isn't the Almond Milk: its word said, then another food's)
@@ -213,8 +218,10 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
   const fullySaid = add.filter((o) => whole(o).includes(" ") && ` ${t} `.includes(` ${whole(o)} `));
   const sauceZh = /酱/.test(raw);
   const kept = add.filter((o) => !fullySaid.some((x) => x !== o && keyWords(o).every((k) => whole(x).split(" ").includes(k))) && !(sauceZh && !/sauce|酱/i.test(o.name) && add.some((x) => x !== o && /sauce/i.test(x.name) && keyWords(o).every((k) => keyWords(x).includes(k)))));
+  // (and in other words: "telur goreng" is the Fried egg, not also the wantan's Fried)
+  const longer = (o: ModifierOption) => add.some((x) => x !== o && keyWords(x).length > keyWords(o).length && keyWords(o).every((k) => keyWords(x).includes(k)));
   // one option of a group that takes one: the one whose words were said most fully
-  const out = kept.filter((o) => {
+  const out = kept.filter((o) => !longer(o)).filter((o) => {
     const g = (dish.modifiers ?? []).find((x) => x.options.includes(o));
     if (!g || (g.max ?? 1) > 1) return true;
     const rivals = add.filter((x) => x !== o && g.options.includes(x));
@@ -235,8 +242,8 @@ export function optionsAsked<T extends WithOptions>(text: string, dishes: T[]): 
   return [...out.values()];
 }
 
-/** An option's name as a guest reads it: "Ais (iced)" is "iced", "Oat milk" stays. */
-export const optionLabel = (o: ModifierOption) => o.name.match(/\(([^)]+)\)/)?.[1] ?? o.name;
+/** An option's name as a guest reads it: "Ais (iced)" is "iced", "Oat milk" and "Sui kow (2 pcs)" stay. */
+export const optionLabel = (o: ModifierOption) => (/\(\s*\d/.test(o.name) ? o.name : (o.name.match(/\(([^)]+)\)/)?.[1] ?? o.name));
 
 /** A dish's choices as a guest reads them: "Base: Soup, Dry, Curry Laksa (+RM2.00)". */
 export function choicesText(dish: WithOptions, money: (n: number) => string): string {
