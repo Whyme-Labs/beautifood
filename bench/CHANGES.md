@@ -1016,3 +1016,28 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   3 points and some policy fixes at least twice what it breaks, with 0 unsafe. Otherwise stop: the
   contract, the checks, the generator, the trainer, the server and the log-to-harvest hook stay, and the
   next lever is real, labelled guest turns from the log (which needs a teacher model's key).
+
+## The owned reader, run 2: the result (the bar not met; training stops)
+
+- Same encoder and recipe as run 1 with the changes above, 3 epochs on one ml.g5.xlarge: 4,896 billed
+  seconds. Never trained on a benchmark question.
+- Synthetic valid set (exact reading): zh 89.7%, Manglish 89.8%, en 90.6%, ms 92.6%, all 90.4%. It now
+  reads things run 1 didn't: a split order's lines, "monday promo" left out, Malay "nasi besar" as Large,
+  "jagung" as Corn.
+- On the 465 v10 dev cases tagged bill or modifier:
+
+| Policy | Pass | Unsafe | Fixed | Broke |
+|---|---|---|---|---|
+| rules alone | 75.9% | 0 | | |
+| fill | 75.3% | 0 | 0 | 3 |
+| merge | 74.4% | 0 | 3 | 10 |
+| replace | 65.4% | 0 | 4 | 53 |
+
+- Upper bound (the rules or any policy passes) 357/465 = 76.8%, +0.9 points; the bar asked for +3 and a
+  policy that fixes twice what it breaks. Its lines matched the rules' on 232 of 465 (run 1: 221); the
+  checks still dropped something in 214. Of the rules' 112 failures, 56 are multi-turn.
+- So, as written before the run: no run 3. The reader stays off by default; the contract, the checks,
+  the generator, the trainer, the server, the launch tooling and the log-to-harvest hook stay. Synthetic
+  orders taught the reading, not the real guests' menus and wording; the next lever is real, labelled
+  guest turns from the log, and reading with the conversation, not only the latest message. v8 test
+  was not scored for this.
