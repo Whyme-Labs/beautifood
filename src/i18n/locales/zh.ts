@@ -517,6 +517,7 @@ const zh = {
     noWordZh: "{dish}没有{word}。",
     halalListedNotHalal: "{dish}没有列出猪肉或酒精，但这家店不是清真认证的，厨房可能也煮猪肉或用酒。",
     moreFor: "{option}多 {more}：{dish}一共 {price}。",
+    oneFreeOtherExtra: "{dish}只配一种：选{first}，另一种加{extra}，多 {more}（一共 {price}）。",
     ofThose: "其中{filters}的有：",
     notHalal: "{dish}不是清真：含有{what}。",
     porkOrAlcohol: "猪肉或酒",

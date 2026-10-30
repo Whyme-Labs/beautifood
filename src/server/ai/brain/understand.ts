@@ -516,9 +516,15 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   const optionNames = items.flatMap((d) => (d.modifiers ?? []).flatMap((g) => g.options.map((o) => ` ${normalize(o.name)} `)));
   for (let k = found.length - 1; k >= 0; k--) {
     const m = found[k];
-    if (m.zh || m.covered.length >= normalize(m.dish.name).split(" ").length) continue;
+    // (its name said whole, side by side, is the dish: "mushroom burger")
+    const sorted = [...m.covered].sort((a, b) => a - b);
+    if (m.zh || (m.covered.length >= normalize(m.dish.name).split(" ").length && sorted.every((c, j) => !j || c === sorted[j - 1] + 1))) continue;
     const own = normalize(m.dish.name).split(" ");
-    if (m.covered.some((i) => toks[i + 1] && !own.includes(toks[i + 1]) && optionNames.some((o) => o.includes(` ${toks[i]} ${toks[i + 1]} `)))) found.splice(k, 1);
+    // (or a choice, by name, of another dish named: "both mushroom and black pepper sauce on my chicken chop")
+    const hostHas = (w: string) => found.some((o) => o !== m && (o.dish.modifiers ?? []).some((g) => g.options.some((x) => normalize(x.name) === w)));
+    // (only when the add-on's word is all it has of its own: its other words another dish named claims)
+    const alone = (i: number) => m.covered.every((c) => c === i || found.some((o) => o !== m && o.covered.includes(c)));
+    if (m.covered.some((i) => alone(i) && ((toks[i + 1] && !own.includes(toks[i + 1]) && optionNames.some((o) => o.includes(` ${toks[i]} ${toks[i + 1]} `))) || hostHas(toks[i])))) found.splice(k, 1);
   }
   // two dishes claiming the same words: the better match keeps them
   found.sort((a, b) => b.score - a.score);

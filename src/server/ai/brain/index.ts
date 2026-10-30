@@ -1240,7 +1240,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const fully = (i: Item) => u.spots.some((sp_) => sp_.dish.id === i.id && (sp_.covered.length >= normalize(i.name).split(" ").filter((w) => w.length > 1).length || /[\u3400-\u9fff]/.test(u.toks[sp_.from] ?? "")));
   const earlierHost = pointed[0]?.item ?? (state.order.length ? state.order[state.order.length - 1].item : state.focus);
   // what they ask to add, in their words ("almond butter", "mentega badam", "肉丸")
-  const thingAsked = nt1.match(/\b(?:add|tambah|put|letak|top with)\s+(?:some |extra |a |an )?([a-z]+(?: [a-z]+){0,2}?)(?=\s+(?:on top|in it|inside|dalam|to it|to the|on the|or not|boleh|please|pls|ah|lah|la|how|berapa|ke|tak)\b|\s*$)/)?.[1] ?? u.text.match(/加(?!钱|价|多少|几)([\u4e00-\u9fff]{1,5}?)(?:吗|可以|行|呢|[?？]|$)/)?.[1];
+  const thingAsked = nt1.match(/\b(?:add|tambah|put|letak|top with)\s+(?:some |extra |a |an )?([a-z]+(?: [a-z]+){0,2}?)(?=\s+(?:on top|in it|inside|dalam|to it|to the|to my|on the|on my|in my|or not|boleh|please|pls|ah|lah|la|how|berapa|ke|tak)\b|\s*$)/)?.[1] ?? u.text.match(/加(?!钱|价|多少|几)([\u4e00-\u9fff]{1,5}?)(?:吗|可以|行|呢|[?？]|$)/)?.[1];
   // (or, asked of a kind of dish, "smoothies with no sugar?", "奶昔最多可以加几种营养粉？": the first of that kind with choices)
   const ofKind = !mentioned.length && !earlierHost && u.categories.length ? live.find((i) => u.categories.includes(i.category ?? "") && i.modifiers?.length) : undefined;
   const optHost = (earlierHost && mentioned.length && !mentioned.some(fully) ? earlierHost : null) ?? mentioned.find((i) => i.modifiers?.length) ?? mentioned[0] ?? earlierHost ?? ofKind;
@@ -1255,6 +1255,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // (its own price too: "RM17.90 (RM16.90, Iced Milo +RM1.00)")
       const each = ` (${[money(optHost.price), ...priced.map((o) => `${optionLabel(o)} +${money(o.price)}`)].join(", ")})`;
       return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.pricedWith", { dish: t("assistantReply.withOptions", { dish: name(optHost), options: list(said.map(optionLabel)) }), price: money(total) }).replace(/[.。]$/, "")}${each}${stop}`, [optHost]);
+    }
+    // ("both mushroom and black pepper sauce?" where it takes one sauce: one free, the other as its extra)
+    const oneGroup = (optHost.modifiers ?? []).find((g) => (g.max ?? 1) <= 1 && free.filter((o) => g.options.includes(o)).length >= 2);
+    if (oneGroup) {
+      const [first, second] = free.filter((o) => oneGroup.options.includes(o));
+      const extra = (optHost.modifiers ?? []).flatMap((g) => g.options).find((o) => o.price > 0 && normalize(o.name).includes(normalize(second.name)));
+      if (extra) return reply("dish_info", t("assistantReply.oneFreeOtherExtra", { dish: name(optHost), first: optionLabel(first), extra: optionLabel(extra), more: money(extra.price), price: money(optHost.price + extra.price) }), [optHost]);
     }
     // (of a kind of dish: free on all of that kind that have it)
     if (free.length && ofKind === optHost) {
