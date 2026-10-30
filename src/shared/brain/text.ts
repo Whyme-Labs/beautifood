@@ -18,8 +18,11 @@ const PARTICLES = new Set(["lah", "la", "lor", "meh", "ah", "ar", "hor", "wor", 
 
 const HAN = /\p{Script=Han}/u;
 
-/** Lower case, one spelling per word, particles kept (the caller drops them when it wants). */
-export function normalize(text: string): string {
+/**
+ * Lower case, one spelling per word, particles kept (the caller drops them when it wants). `keep`:
+ * words left as they are, a menu's own ("Wat Tan Hor" isn't "what", "ckt" isn't "sikit" there).
+ */
+export function normalize(text: string, keep?: Set<string>): string {
   return text
     .normalize("NFKC")
     .toLowerCase()
@@ -33,7 +36,7 @@ export function normalize(text: string): string {
     .filter(Boolean)
     .map((w) => {
       const plain = w.replace(/'/g, "");
-      return LEXICON[plain] ?? plain;
+      return keep?.has(plain) ? plain : (LEXICON[plain] ?? plain);
     })
     .join(" ")
     .replace(/\s+/g, " ")

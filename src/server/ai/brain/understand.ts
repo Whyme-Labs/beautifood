@@ -143,6 +143,8 @@ interface DishIndex {
   df: Map<string, number>;
   /** Words of the menu's course names ("yakitori", "skewers"). */
   courseWords: Set<string>;
+  /** The words of its dishes' names as written, kept from shorthand ("wat", "ckt"). */
+  own: Set<string>;
 }
 
 const indexes = new WeakMap<Dish[], DishIndex>();
@@ -150,11 +152,13 @@ const indexes = new WeakMap<Dish[], DishIndex>();
 function dishIndex(items: Dish[]): DishIndex {
   let ix = indexes.get(items);
   if (ix) return ix;
-  const names = items.map((i) => tokens(normalize(i.name.replace(/\(.*?\)/g, " ")), true));
+  // (a menu's own words as it writes them: its "Wat Tan Hor" isn't "what")
+  const own = new Set(items.flatMap((i) => i.name.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean)));
+  const names = items.map((i) => tokens(normalize(i.name.replace(/\(.*?\)/g, " "), own), true));
   const df = new Map<string, number>();
   for (const n of names) for (const w of new Set(n)) df.set(w, (df.get(w) ?? 0) + 1);
   const courseWords = new Set(items.flatMap((i) => tokens(normalize(i.category ?? ""), true)).flatMap((w) => [w, w.replace(/s$/, "")]));
-  ix = { items, names, df, courseWords };
+  ix = { items, names, df, courseWords, own };
   indexes.set(items, ix);
   return ix;
 }
@@ -942,13 +946,21 @@ export function read(items: Dish[], asked: string): Reading {
   const { text: said, injected } = stripInjection(asked);
   // what guests call a menu's drink for short ("柠檬多多" for its 柠檬养乐多)
   // ...and "siu yuk"/"sio bak" for its roast pork, "char siew" for its char siu
+  const aliasedInitials: [RegExp, string][] = [];
   const menuText = items.map((i) => i.name.toLowerCase()).join(" | ");
-  const aliased = [[/\b(siu yuk|siu yoke|siew yoke|siew yuk|sio bak)\b/gi, "roast pork"], [/\b(char siew|cha siu|char sio)\b/gi, "char siu"]] as [RegExp, string][];
+  // ("2 ckt": a dish of three words or more by its initials, when only it has them)
+  const initials = new Map<string, string[]>();
+  for (const i of items) {
+    const ws = i.name.toLowerCase().replace(/\(.*?\)/g, " ").split(/[^a-z]+/).filter(Boolean);
+    if (ws.length >= 3) initials.set(ws.map((w) => w[0]).join(""), [...(initials.get(ws.map((w) => w[0]).join("")) ?? []), ws.join(" ")]);
+  }
+  for (const [ini, ns] of initials) if (ns.length === 1) aliasedInitials.push([new RegExp(`\\b${ini}\\b`, "gi"), ns[0]]);
+  const aliased = [[/\b(siu yuk|siu yoke|siew yoke|siew yuk|sio bak)\b/gi, "roast pork"], [/\b(char siew|cha siu|char sio)\b/gi, "char siu"], ...aliasedInitials] as [RegExp, string][];
   const question = aliased.reduce((q, [re, to]) => (menuText.includes(to) && !items.some((i) => re.test(i.name)) ? q.replace(re, to) : q), items.some((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes("养乐多"))) ? said.replace(/(?<!养乐)多多/g, "养乐多") : said);
   const raw = question.normalize("NFKC").toLowerCase();
   const ix = dishIndex(items);
   // fix typos in the words we read constraints from, but never in a word of a dish's name
-  const toks = tokens(normalize(question), true).map((t) => (ix.df.has(t) || MALAY_FOOD[t] ? t : correct(t)));
+  const toks = tokens(normalize(question, ix.own), true).map((t) => (ix.df.has(t) || MALAY_FOOD[t] ? t : correct(t)));
   // "saya alergi kacang", "allergic to nuts": the word after is an allergen, not a dish (Ais Kacang)
   const skip = new Set<number>();
   toks.forEach((t, i) => {
