@@ -125,6 +125,8 @@ export function claims(answer: string, items: Item[], labels: { id: string; labe
       for (const m of sentence.matchAll(re))
         for (const i of about(m.index!, m.index! + m[0].length))
           for (const a of allergensIn(clause(m[1]))) {
+            // ("Egg: Chicken egg, Duck egg, No egg": one of the dish's choices, listed, not a claim about it)
+            if ((i.modifiers ?? []).some((g) => g.options.some((o) => o.name.trim().toLowerCase() === m[0].trim().toLowerCase()))) continue;
             readCount++;
             if (i.allergens.includes(a)) (failed.push(`claims ${i.name} has no ${a}`), (unsafe = true));
           }

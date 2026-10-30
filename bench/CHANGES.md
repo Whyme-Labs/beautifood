@@ -930,6 +930,12 @@ phrasings, not the mix of natural guest traffic.
 
 At the product owner's choice, all of v10 becomes `dev` and is fixed case by case, over the
 alternative of keeping half of it held out. Only the split fields changed. v10's two scorings
-above are its only held-out results; from here no held-out set remains, and a new one (v11) is
-needed before progress can be measured again. Starting point on the current brain (06647fc):
+above are its only held-out results; from here v8 test (499) is the only held-out set left: this
+is a new round, so it may be scored at most twice, once at the end of this round's v10 work. Starting point on the current brain (06647fc):
 67.6%, 2 unsafe (the same counts as 363ea2e).
+
+**The claim checker skips a dish's own choice, listed.** "Egg: Chicken egg, Duck egg, No egg" is
+one of the dish's choices, not a claim that it has no egg: a free-of match that is exactly one of
+the dish's own option names is no longer read as a claim (a unit test keeps "Fried Mee has no egg"
+caught). It changes the counts on every set; the only case it flipped is v10u-char-kway-teow-041
+(an unsafe that wasn't). The 363ea2e and deployed v10 scorings above were under the old checker.

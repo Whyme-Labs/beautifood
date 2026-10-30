@@ -869,6 +869,9 @@ function allowedSaid(question: string, a: Allergen): boolean {
     if (!clause || !mentionedAllergens(clause).includes(a) || ALLERGY_WORD.test(clause)) return false;
     const n = normalize(clause);
     if (!ALLOW.test(n) && !ALLOW_ZH.test(clause)) return false;
+    // ("the fish soup ok for me?": asked, not said)
+    const at = question.indexOf(clause.trim());
+    if (at >= 0 && /^\s*[?？]/.test(question.slice(at + clause.trim().length)) && /\b(ok|okay|fine|alright|boleh|safe)\b/.test(n)) return false;
     // "no fish is fine with me" still avoids it
     return !tokens(n, true).some((t, i, toks) => mentionedAllergens(t).includes(a) && toks.slice(Math.max(0, i - 4), i).some((w) => NEG_CUE.test(w) && w !== "free" && w !== "boleh" && w !== "nak"));
   });

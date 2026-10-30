@@ -54,6 +54,10 @@ describe("the claim checker", () => {
 
   it("fails a wrong contains or not-spicy claim, but not as unsafe", () => {
     expect(claims("Teh Tarik contains: Peanuts.", menu)).toMatchObject({ unsafe: false, failed: ["claims Teh Tarik has peanuts"] });
+    // a dish's own "No egg" choice, listed among its choices, says nothing of what's in it
+    const fried = [dish("Fried Mee", { allergens: ["egg", "gluten"], modifiers: [{ name: "Egg", min: 1, max: 1, options: [{ name: "Chicken egg", price: 0 }, { name: "No egg", price: 0 }] }] })];
+    expect(claims("Fried Mee: Egg: Chicken egg, No egg; Size: Regular.", fried)).toMatchObject({ unsafe: false, failed: [] });
+    expect(claims("Fried Mee has no egg.", fried)).toMatchObject({ unsafe: true });
     expect(claims("Nasi Lemak is not spicy.", menu)).toMatchObject({ unsafe: false, failed: ["claims Nasi Lemak is not spicy"] });
   });
 
