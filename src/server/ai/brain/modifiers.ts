@@ -222,7 +222,9 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     }
     // ("no taugeh" of a "No taugeh" choice: that choice, made)
     const without = normalize(o.name).match(/^(?:no|without|tanpa|tak nak)\s+(.+)$/)?.[1];
-    if (without && new RegExp(`\\b(no|without|tanpa|tak nak|x nak|xnak|tak mau|hold the) (the )?${without.replace(/s$/, "")}s?\\b`).test(` ${t} `)) {
+    // (or in Chinese: "不要辣", "走辣" of the No chilli)
+    const zhOf = without ? ALSO_ZH[without.replace(/s$/, "")] ?? ALSO_ZH[without] ?? (/^(chilli|chili|spicy|spice)$/.test(without) ? /辣/ : undefined) : undefined;
+    if (without && (new RegExp(`\\b(no|without|tanpa|tak nak|x nak|xnak|tak mau|hold the) (the )?${without.replace(/s$/, "")}s?\\b`).test(` ${t} `) || (!!zhOf && new RegExp(`(不要|走|免|去|不放|不加)(${zhOf.source})`).test(raw)))) {
       add.push(o);
       continue;
     }

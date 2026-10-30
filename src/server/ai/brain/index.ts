@@ -966,6 +966,16 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const allBack = !mentioned.length && !nth && !pickedBack && state.shown.length >= 2 && aboutContents && (/\b(either|both|them|those|these|any of)\b/.test(nt0) || /它们|这些|那些|两个|两道|都/.test(u.text)) ? state.shown.slice(0, 4) : [];
   const focus = mentioned.length ? mentioned : nth ? [nth] : pickedBack ? [pickedBack] : allBack.length ? allBack : u.refersBack && state.focus ? [state.focus] : [];
 
+  // "第二个是猪油炒的吗？", "is the fried mee cooked in lard?": the fat it's cooked in, as the menu says
+  // (not "got pork or lard?": the meat answer covers both)
+  if (focus.length === 1 && (/\b(lard|pork fat|minyak babi)\b/.test(nt0) || /猪油/.test(u.text)) && !/\b(pork|babi)\b(?! fat)/.test(nt0.replace(/minyak babi/g, " ")) && !/猪肉/.test(u.text)) {
+    const d = focus[0];
+    const words = `${d.name} ${d.description ?? ""}`;
+    const oil = words.match(/\b(vegetable oil|palm oil|peanut oil|sesame oil|canola oil|olive oil|butter|ghee)\b/i)?.[1];
+    const noLard = /\b(no|without|non)[\s-]+(pork (and|or) (no )?)?lard\b|\blard[\s-]free\b/i.test(words);
+    const text = noLard ? t("assistantReply.lardNone", { dish: name(d) }) : /\blard\b/i.test(words) ? t("assistantReply.lardYes", { dish: name(d) }) : oil ? t("assistantReply.lardNo", { dish: name(d), oil: t(`assistantReply.oil.${oil.toLowerCase().split(" ")[0]}` as MessageKey) }) : t("assistantReply.lardUnsure", { dish: name(d) });
+    return reply("dish_allergen", text, [d]);
+  }
   // ---- decide ----
   let intent = u.intent;
   const unsure = u.confidence < 0.4;
@@ -974,7 +984,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("2 ckt, one with duck egg, the other add extra prawns": the dish's own choices, ordered, not asked about)
   // (not one they said they avoid, now or before: "allergic to milk" then "add cheese foam")
   const choicesOnly = u.allergens.length > 0 && !u.asksContents && !u.stated.length && !u.allergens.some((a) => state.avoid.includes(a) || u.avoid.includes(a)) && !/allerg|alergi|alah|过敏|[?？吗]/i.test(u.text) && u.allergens.every((a) => focus.some((d) => optionsSaid(u.text, d).add.some((o) => mentionedAllergens(o.name).includes(a))));
-  if (focus.length && (u.allergens.length || u.asksContents) && !choicesOnly && !["compare", "pairing", "group"].includes(intent)) intent = "dish_allergen";
+  // ("barley drink gluten free?": the dish's own kind said beside it, not a pairing asked)
+  const pairingSaid = /\b(with|go with|goes with|pair|pairs|pairing|match|matches|sesuai|dengan|along)\b/.test(normalize(u.text)) || /配|搭/.test(u.text);
+  if (focus.length && (u.allergens.length || u.asksContents) && !choicesOnly && (!["compare", "pairing", "group"].includes(intent) || (intent === "pairing" && !pairingSaid && u.allergens.length > 0))) intent = "dish_allergen";
   // "I'm vegan, can I have the pad thai?": a stated diet and a question about one dish is about that dish
   if (focus.length === 1 && u.statedDiet.length && intent === "recommend" && !u.courses.length && !u.categories.length && (/\b(can i|could i|can|ok|okay|safe|suitable|fine|boleh|is it|is the|does)\b/.test(normalize(u.text)) || /可以|能吃|能不能|行吗/.test(u.text))) intent = "dish_allergen";
   // "Coeliac. Can I have the bliss balls?", "Is the hibiscus drink vegan?", "Is the black pepper beef
@@ -1469,10 +1481,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // a classic with peanut butter topping?": each way as ordered, counts and add-ons too
   const alts = /\b(cheaper|cheapest|more expensive|pricier|less)\b/.test(nt1) || /便宜|划算|贵/.test(u.text) ? u.text.split(/\s+or\s+|还是|\s+atau\s+/i) : [];
   if (alts.length === 2) {
-    const priced = alts.map((w) => {
+    const linesOf_ = (w: string) => {
       const r = reanchor(read(live as Dish[], w), live);
       return orderedLines(r, ownDishes(r, live));
-    });
+    };
+    const priced = alts.map(linesOf_);
+    // ("oyster omelette medium or 2 small": the other way is of the same dish)
+    for (const k of [0, 1]) if (!priced[k].length && priced[1 - k].length === 1) priced[k] = linesOf_(`${alts[k].replace(/[,?？，].*$/, "")} ${priced[1 - k][0].item.name}`);
     if (priced.every((ls) => ls.length) && priced.some((ls) => ls.some((o) => o.count > 1 || o.options?.length))) {
       const cost = priced.map((ls) => ls.reduce((n, o) => n + unitPrice(o) * o.count, 0));
       const said = priced.map((ls) => list(ls.map((o) => `${o.count > 1 ? `${o.count} × ` : ""}${lineName(o)}`)));
@@ -1553,7 +1568,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const accepts = (ordering || !!makeN || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)));
     if (accepts && !edited && state.shown.length === 1 && !bill.some((o) => o.item.id === state.shown[0].id) && !mentioned.includes(state.shown[0])) {
       bill.push({ item: state.shown[0], count: makeN ? (NUMBER_OF[makeN] ?? (Number(makeN) || 1)) : 1 });
-      if (makeN) applyOptions(bill, u.text, [state.shown[0]]);
+      // ("ok that one, large, less oil. and a soy bean milk": its add-ons, said before the next dish)
+      const next = Math.min(u.text.length, ...mentioned.map((i) => u.text.toLowerCase().indexOf(normalize(i.name).split(" ")[0])).filter((x) => x >= 0));
+      applyOptions(bill, makeN ? u.text : u.text.slice(0, next), [state.shown[0]]);
     }
     // "2 bowls of rice", "satu nasi putih": the plain rice, when the menu has one
     const rice = plainRice(u.text, u.delexicalized.join(" "), live as Dish[]);
@@ -1930,6 +1947,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       if (item.isSignature) parts.push(t("assistantReply.isSignature", { restaurant: ctx.restaurant.name }));
       parts.push(`${money(item.price)}${stop}`);
       parts.push(item.spiceLevel ? t("assistantReply.spiceLevel", { level: item.spiceLevel }) : t("assistantReply.notSpicySentence"));
+      // ("可以不要辣吗？", "can I have it no chilli?": the dish's own free "No X" choice)
+      const without = optionsSaid(u.text, item, true).add.filter((o) => !o.price && /^(no|without|less|tanpa|kurang)\b/i.test(o.name));
+      if (without.length) parts.push(t("assistantReply.freeChoice", { dish: name(item), option: list(without.map(optionLabel)), price: money(item.price) }));
       if (item.allergens.length) parts.push(t("assistantReply.allergensLabel", { list: list(item.allergens.map(allergen)) }).trim());
       if (notNowNote(item)) parts.push(notNowNote(item));
       return { ...reply(intent, parts.join(sp), [item]), safetyNote: item.allergens.length || safety ? allyNote(locale) : undefined };

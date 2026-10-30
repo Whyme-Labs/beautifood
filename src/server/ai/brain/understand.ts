@@ -888,6 +888,8 @@ function requested(question: string, a: Allergen): boolean {
   const bare = normalize(question).split(" ").filter((w) => w && !/^(got|ada|any|ah|lah|pls|please|the|some)$/.test(w));
   if (bare.length <= 2 && bare.some((w) => FOOD_NOUN.test(w)) && mentionedAllergens(question).includes(a)) return true;
   if (/^[\s?？!！]*(有没有)?\s*(豆腐|虾|蟹|鱼|芝士|鸡蛋)\s*(吗)?[\s?？!！]*$/.test(question)) return true;
+  // ("有蛋的是哪几个？": the ones that have it, asked for, unless an allergy is said)
+  if (!/过敏|不能吃|不吃|不要|避免/.test(question) && [...question.matchAll(/(?<![没不无])有([^，。？！、的]{1,4})的/g)].some((m) => mentionedAllergens(m[1]).includes(a))) return true;
   // "milk tea", "奶茶", "奶昔" name a kind of drink: asking for one isn't avoiding milk
   if (a === "milk" && (/\bmilk\s?(tea|tee|teas|shakes?)\b/i.test(question) || /奶茶|奶昔/.test(question))) return true;
   // "egg dishes?", "seafood options", "any tofu stuff": the food asked for by its kind of dish
