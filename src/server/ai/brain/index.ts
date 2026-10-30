@@ -5,6 +5,7 @@
 // dish, price and allergen it states comes from the menu.
 import { ALLERGENS, ALLERGEN_LABELS, type Allergen } from "../../../shared/allergens";
 import { localizeItem } from "../../../shared/menuI18n";
+import { ingredientsZh } from "../../../shared/dishNamesZh";
 import type { MenuItem, ModifierOption } from "../../../shared/types";
 import { clockLabel, scheduleName, weekdayNames, type TimedMenu } from "../../../shared/schedule";
 import { formatters, translator, type MessageKey } from "../../../i18n/core";
@@ -80,13 +81,13 @@ export function ownersOf(text: string, named: Item[]): Record<string, string> {
     return mine.length ? mine : all(i);
   };
   const SELF = /^(me|i|i ll|i will|i m|my|mine|for me|saya|aku|sy|me the|myself)$/i;
-  const OTHER = /^(my friend|my wife|my husband|my son|my daughter|my mum|my mom|my dad|kawan saya|kawan aku|isteri saya|suami saya|anak saya|dia|he|she|friend)$/i;
+  const OTHER = /^(my friend|my frend|my fren|my gf|my bf|my wife|my husband|my son|my daughter|my mum|my mom|my dad|kawan saya|kawan aku|isteri saya|suami saya|anak saya|dia|he|she|friend)$/i;
   for (const seg of text.split(/[,;:，；：]|\.\s/)) {
     const raw = seg.trim().replace(/^(and|dan|then|so|ok|okay|also|plus)\s+/i, "");
     const two = raw.split(/\s+/).slice(0, 2).join(" ");
     const one = raw.split(/\s+/)[0] ?? "";
     // ("my friend" is the friend, though "my" alone would be the guest)
-    const who = OTHER.test(two) ? two.toLowerCase() : SELF.test(two) || SELF.test(one) ? "me" : /^[A-Z][a-z]+$/.test(one) && !/^(Separate|Bill|Bills|Please|Total|Actually|Then|So|Ok|Okay|Also|Plus|And|The|One|Two|Can|Could|How|What|Split)$/.test(one) && !named.some((i) => words(i).includes(one.toLowerCase())) ? one : null;
+    const who = OTHER.test(two) ? two.toLowerCase().replace(/\bfrend\b|\bfren\b/, "friend") : SELF.test(two) || SELF.test(one) ? "me" : /^[A-Z][a-z]+$/.test(one) && !/^(Separate|Bill|Bills|Please|Total|Actually|Then|So|Ok|Okay|Also|Plus|And|The|One|Two|Can|Could|How|What|Split)$/.test(one) && !named.some((i) => words(i).includes(one.toLowerCase())) ? one : null;
     if (!who) continue;
     const n = ` ${normalize(raw).replace(/\b(ketul|pcs|pieces)\b/g, "piece").replace(/\b(six|enam)\b/g, "6").replace(/\b(eight|lapan)\b/g, "8")} `;
     for (const i of named) if (own(i).some((w) => n.includes(` ${w} `) || n.includes(` ${w}s `))) out[i.id] ??= who;
@@ -264,7 +265,10 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
     if (h.role === "user") {
       const u = reanchor(read(ctx.items as Dish[], h.content), ctx.items);
       const own = ownDishes(u, [...s.order.map((o) => o.item), ...(s.focus ? [s.focus] : [])], s.order.map((o) => o.item));
-      s.avoid = [...new Set([...s.avoid, ...u.avoid])];
+      // ("actually take out the cheese": an add-on off a line ordered, not milk avoided, unless an allergy is said)
+      const offNow = /\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac|cannot eat|can t eat|cant eat)\b|过敏|不能吃/.test(normalize(h.content)) ? [] : s.order.flatMap((o) => optionsSaid(h.content, o.item).off.filter((x) => o.options?.some((y) => y.name === x.name)));
+      const offAllergens = new Set(offNow.flatMap((o) => mentionedAllergens(o.name)));
+      s.avoid = [...new Set([...s.avoid, ...u.avoid.filter((a) => !offAllergens.has(a))])];
       s.diet = [...new Set([...s.diet, ...u.diet])];
       if (u.maxSpice !== null) s.maxSpice = u.maxSpice;
       if (u.noAlcohol) s.noAlcohol = true;
@@ -371,7 +375,9 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
   if (!order.length) return false;
   // ("make it two, and add one hot teh o": the count of what's ordered, in its own clause, whatever comes after)
   const makeIt = text.split(/[,;，；]|\band\b|\bdan\b/i)[0];
-  const setTo = normalize(makeIt).match(/^(?:actually |ok |okay )?(?:make (?:it|that|them)|jadikan|jadi)\s+(\d{1,2}|two|three|four|five|dua|tiga|empat|lima)\b/)?.[1];
+  // ("改成两份": the same in Chinese)
+  const zhSet = makeIt.match(/^\s*(?:那就|那)?(?:改成|改为|变成|换成)([两二三四五\d])(?:份|个|碗|杯|碟|盘)/)?.[1];
+  const setTo = normalize(makeIt).match(/^(?:actually |ok |okay )?(?:make (?:it|that|them)|jadikan|jadi)\s+(\d{1,2}|two|three|four|five|dua|tiga|empat|lima)\b/)?.[1] ?? (zhSet ? String({ 两: 2, 二: 2, 三: 3, 四: 4, 五: 5 }[zhSet] ?? Number(zhSet)) : undefined);
   if (setTo && !named.some((i) => normalize(makeIt).includes(normalize(i.name).split(" ")[0]))) {
     order[order.length - 1].count = ({ two: 2, three: 3, four: 4, five: 5, dua: 2, tiga: 3, empat: 4, lima: 5 } as Record<string, number>)[setTo] ?? Number(setTo);
     return false;
@@ -477,7 +483,8 @@ const QUESTION_ZH = /吗|呢|什么|哪|多少|有没有|怎么|是不是|能不
  * one", "2 of the first one and 3 of the last one", "the cheaper one", "yang murah", "便宜的那个".
  */
 export function pointedAt(text: string, shown: Item[]): { item: Item; count: number }[] {
-  const t = normalize(text);
+  // (a level's number isn't a count: "level 3, large rice")
+  const t = normalize(text).replace(/\b(level|lvl|tahap|lv)\s+\d+\b/g, "$1");
   const can = shown.filter(orderable);
   if (can.length < 1) return [];
   const ORD: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, fourth: 3, last: -1, pertama: 0, kedua: 1, ketiga: 2, terakhir: -1 };
@@ -607,7 +614,8 @@ function allowed(i: Item, c: Constraints) {
   if (c.maxSpice !== null && i.spiceLevel > c.maxSpice) return false;
   if (c.minSpice !== null && i.spiceLevel < c.minSpice) return false;
   if (c.budget !== null && i.price > c.budget) return false;
-  if (c.noAlcohol && isAlcoholic(i)) return false;
+  // (cooked with it too: wine, mirin, sake)
+  if (c.noAlcohol && (isAlcoholic(i) || alcoholWord(i))) return false;
   if (c.noCaffeine && CAFFEINE.test(`${i.name} ${i.description ?? ""}`) && !/\b(decaf|caffeine[\s-]free|no caffeine)\b/i.test(`${i.name} ${i.description ?? ""}`)) return false;
   if (c.noMeat?.some((m) => MEAT_WORDS[m].test(unsaid(`${i.name} ${i.description ?? ""}`)))) return false;
   if (c.noWords?.some((w) => wordIn(w, normalize(`${i.name} ${i.description ?? ""}`)))) return false;
@@ -976,6 +984,16 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const text = noLard ? t("assistantReply.lardNone", { dish: name(d) }) : /\blard\b/i.test(words) ? t("assistantReply.lardYes", { dish: name(d) }) : oil ? t("assistantReply.lardNo", { dish: name(d), oil: t(`assistantReply.oil.${oil.toLowerCase().split(" ")[0]}` as MessageKey) }) : t("assistantReply.lardUnsure", { dish: name(d) });
     return reply("dish_allergen", text, [d]);
   }
+  // "kids curry plate got any alcohol?", "有酒精吗？": what the menu says it's made with
+  // (not "non-alcoholic drink to go with the nachos?": a drink asked for)
+  if (focus.length === 1 && (/\b(alcohol|alcoholic|alkohol|arak)\b/.test(nt0) || /酒精|含酒/.test(u.text)) && (/[?？吗]/.test(u.text) || /\b(got|any|is there|does|ada|contain|contains)\b/.test(nt0)) && !/\b(non|no|without|free|tanpa|tak)\s*(alcohol|alcoholic|alkohol)|\b(go with|goes with|pair|drink to|drinks to)\b/.test(nt0)) {
+    const d = focus[0];
+    const w = alcoholWord(d);
+    // (the menu's own words when it says: "naturally contains trace alcohol (under 0.5%)")
+    const own = /alcohol/i.test(d.description ?? "") ? desc(d) : "";
+    const text = own ? `${name(d)}: ${own.replace(/[.。]+$/, "")}${stop}` : w ? t("assistantReply.hasAlcohol", { dish: name(d), word: w }) : t("assistantReply.noAlcoholListed", { dish: name(d) });
+    return { ...reply("dish_allergen", text, [d]), safetyNote: allyNote(locale) };
+  }
   // ---- decide ----
   let intent = u.intent;
   const unsure = u.confidence < 0.4;
@@ -987,6 +1005,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("barley drink gluten free?": the dish's own kind said beside it, not a pairing asked)
   const pairingSaid = /\b(with|go with|goes with|pair|pairs|pairing|match|matches|sesuai|dengan|along)\b/.test(normalize(u.text)) || /配|搭/.test(u.text);
   if (focus.length && (u.allergens.length || u.asksContents) && !choicesOnly && (!["compare", "pairing", "group"].includes(intent) || (intent === "pairing" && !pairingSaid && u.allergens.length > 0))) intent = "dish_allergen";
+  // ("recommend me a curry with prawns": nothing to pair with, a dish with that food is asked for)
+  if (intent === "pairing" && !focus.length && !state.focus && !state.order.length && (u.allergens.length || u.categories.length) && !/\b(drink|drinks|minum|minuman|dessert|go with|goes with|pair)\b/.test(nt0)) intent = "recommend";
   // "I'm vegan, can I have the pad thai?": a stated diet and a question about one dish is about that dish
   if (focus.length === 1 && u.statedDiet.length && intent === "recommend" && !u.courses.length && !u.categories.length && (/\b(can i|could i|can|ok|okay|safe|suitable|fine|boleh|is it|is the|does)\b/.test(normalize(u.text)) || /可以|能吃|能不能|行吗/.test(u.text))) intent = "dish_allergen";
   // "Coeliac. Can I have the bliss balls?", "Is the hibiscus drink vegan?", "Is the black pepper beef
@@ -1120,16 +1140,21 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // ("is the slice deal still on? 3 BBQ chicken slices how much?": the bill answers both)
   const pricedToo = mentioned.length > 0 && (/\b(how much|berapa|total)\b/.test(nt0) || /多少|几钱/.test(u.text));
-  if ((askedRule || askedMenu) && !pricedToo && (asksWhen || (!!askedRule && /\b(on|apply|applies|valid)\b/.test(nt0))) && (!mentioned.length || mentioned.every(coveredBy))) {
+  // ("kirin how much? got happy hour now?": one dish's price is in the deal's answer)
+  const onePriced = pricedToo && mentioned.length === 1 && [...countsOf(u.text, mentioned as Dish[]).values()].every((n) => n <= 1) && orderedLines(u, mentioned).reduce((n, l) => n + l.count, 0) <= 1 && !/\b(total|altogether|jumlah)\b/.test(nt0);
+  if ((askedRule || askedMenu) && (!pricedToo || onePriced) && (asksWhen || (!!askedRule && /\b(on|apply|applies|valid)\b/.test(nt0))) && (!mentioned.length || mentioned.every(coveredBy))) {
     const on = askedRule ? ctx.now?.deals.find((d) => d.id === askedRule.id) : ctx.now?.menus.find((m) => m.id === askedMenu!.id);
     const next = askedRule ? ctx.now?.dealsNext?.find((d) => d.id === askedRule.id) : ctx.items.find((i) => (i.menuIds ?? []).includes(askedMenu!.id) && i.nextServed?.menuId === askedMenu!.id)?.nextServed;
     const head = askedRule ? t("assistantReply.dealIs", { deal: scheduleName(askedRule, locale), value: dealValue(askedRule), window: windowText(askedRule.windows) }) : t("assistantReply.menuIs", { menu: menuName(askedMenu!), window: windowText(askedMenu!.windows) });
     // (a deal on another day: "it isn't on today")
-    const now = on ? (on.until ? t("assistantReply.onNowUntil", { time: clockLabel(on.until, locale) }) : "") : next ? `${askedRule && !next.today ? `${t("assistantReply.notOnToday")}${sp}` : ""}${t("assistantReply.startsWhen", { when: when(next) })}` : t("assistantReply.notOnNow");
+    // (a daily one past its hours ended today, not "isn't on today")
+    const endedAt = askedRule && next && !next.today && "weekday" in next ? askedRule.windows.find((w) => w.days.includes(((next as { weekday: number }).weekday + 6) % 7) && w.days.includes((next as { weekday: number }).weekday))?.to : undefined;
+    const now = on ? (on.until ? t("assistantReply.onNowUntil", { time: clockLabel(on.until, locale) }) : "") : next ? `${askedRule && !next.today ? `${endedAt ? t("assistantReply.endedToday", { time: clockLabel(endedAt, locale) }) : t("assistantReply.notOnToday")}${sp}` : ""}${t("assistantReply.startsWhen", { when: when(next) })}` : t("assistantReply.notOnNow");
     // what it covers, now: the dishes and their prices (with the deal's when it's on)
     const covered = askedRule ? live.filter((i) => i.deal?.id === askedRule.id || askedRule.items.includes(i.id) || askedRule.categories.includes(i.categoryId)) : live.filter((i) => (i.menuIds ?? []).includes(askedMenu!.id));
     // ("the tea time price for the 6 piece set?": that dish, at its price now)
-    const picks = mentioned.length ? mentioned : on ? rank(covered.filter((i) => allowed(i, c))).slice(0, 4) : [];
+    // ("bir apa yang paling murah masa tu?": of what it covers, the cheapest, on or not)
+    const picks = mentioned.length ? mentioned : u.superlative === "cheapest" || u.superlative === "priciest" ? (() => { const s_ = covered.filter((i) => allowed(i, c)).sort((a, b) => (u.superlative === "cheapest" ? a.price - b.price : b.price - a.price)); return s_.filter((i) => i.price === s_[0]?.price).slice(0, 3); })() : on ? rank(covered.filter((i) => allowed(i, c))).slice(0, 4) : [];
     return reply("recommend", `${head}${sp}${now}${picks.length ? `${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}` : ""}`, picks);
   }
   // "anything sold out today?", "apa yang dah habis?", "有什么卖完了？": what can't be had, and what's on later
@@ -1182,7 +1207,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const m = timed[0];
     const later = ctx.items.find((i) => (i.menuIds ?? []).includes(m.id) && i.nextServed?.menuId === m.id)?.nextServed;
     const sig = rank(live.filter((i) => !isDrink(i) && allowed(i, c))).slice(0, 3);
-    if (later) return reply("recommend", t("assistantReply.menuLater", { menu: menuName(m), when: when(later), list: list(sig.map(line)) }), sig);
+    // (what's on it, and its hours: "Dinner only (daily 5:00 PM–10:00 PM): Gyusuji Curry, …")
+    const onIt = ctx.items.filter((i) => (i.menuIds ?? []).includes(m.id) && i.active !== false);
+    if (later) return reply("recommend", `${t("assistantReply.menuHours", { menu: menuName(m), window: windowText(m.windows), list: list(onIt.slice(0, 5).map((i) => `${name(i)} (${money(i.price)})`)) })}${sp}${t("assistantReply.menuLater", { menu: menuName(m), when: when(later), list: list(sig.map(line)) })}`, sig);
   }
   // the bill so far: what they've ordered in this conversation, and what they name now ("and a Peroni
   // with it - what's the total?", "a Margherita, a Carbonara and two Cappuccinos, how much?", "一共多少？")
@@ -1252,6 +1279,21 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return reply("order_help", t("assistantReply.moreFor", { option: list(extra.map(optionLabel)), more: money(extra.reduce((n, x) => n + x.price, 0)), dish: lineName(withIt), price: money(unitPrice(withIt)) }), [moreOn.item]);
     }
   }
+  // "most spicy you can do?" of a line ordered with a spice level: its hottest level
+  const hotOn = u.superlative === "spiciest" && !mentioned.length ? [...state.order].reverse().map((o) => o.item).find((i) => (i.modifiers ?? []).some((g) => /spic|level|pedas|辣/i.test(g.name))) : undefined;
+  if (hotOn) {
+    const g = (hotOn.modifiers ?? []).find((x) => /spic|level|pedas|辣/i.test(x.name))!;
+    const top = g.options[g.options.length - 1];
+    return reply("order_help", t("assistantReply.hottestLevel", { option: optionLabel(top), dish: name(hotOn), more: money(top.price), price: money(hotOn.price + top.price) }), [hotOn]);
+  }
+  // "rice small can cheaper?" of a line ordered (or the dish just talked about): a choice at the same price
+  // (asked, not pointed at: "ok the cheaper one" picks a dish)
+  const cheaperAsked = (/\b(cheaper|cheap|discount|murah|potong)\b/.test(nt1) || /便宜|少算|算便宜/.test(u.text)) && (/[?？吗]/.test(u.text) || /\b(can|boleh|ke|is it|will it)\b/.test(nt1)) && !/\b(the cheaper|cheaper one|cheapest|yang murah)\b/.test(nt1);
+  const sameOn = cheaperAsked && !mentioned.length ? ([...state.order].reverse().map((o) => o.item).find((i) => optionsSaid(u.text, i, true).add.some((x) => !x.price)) ?? (state.focus && optionsSaid(u.text, state.focus, true).add.some((x) => !x.price) ? state.focus : undefined)) : undefined;
+  if (sameOn) {
+    const free = optionsSaid(u.text, sameOn, true).add.filter((x) => !x.price);
+    return reply("order_help", t("assistantReply.samePrice", { option: list(free.map(optionLabel)), dish: name(sameOn), price: money(sameOn.price) }), [sameOn]);
+  }
   // "the ones with cockles, which one cheaper?": of the ones its words pick, that one
   if (pointed.length === 1 && u.superlative && state.shown.length >= 2 && /\b(the ones|those) (with|that have|that got|got|yang ada)\b/.test(nt1) && /\b(which|mana)\b/.test(nt1)) {
     const p = pointed[0].item;
@@ -1276,6 +1318,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const editsLine = state.order.some((o) => o.item.id === optHost?.id) && !/\b(can|could|may|boleh|bole|leh)\b/.test(nt1) && !/可以|能不能|可不可以/.test(u.text) && (REMOVE.test(nt1) || /\b(add|tambah)\b/.test(nt1));
   if (asksOption && optHost && orderable(optHost) && !editsLine && !u.budget && !(mentioned.length >= 2 && mentioned.every((i) => !optionsSaid(u.text, i, true).add.length) && !mentioned.slice(1).some((i) => optionsAsked(name(i), live).length))) {
     const said = optionsSaid(u.text, optHost, true).add;
+    // (more than its group takes: "ALL the toppings ... can?")
+    const over = (optHost.modifiers ?? []).filter((g) => (g.max ?? 1) > 1 && said.filter((o) => g.options.includes(o)).length > (g.max ?? 1));
+    if (over.length) return reply("dish_info", over.map((g) => t("assistantReply.maxChoices", { dish: name(optHost), group: g.name.toLowerCase(), max: g.max ?? 1, count: said.filter((o) => g.options.includes(o)).length })).join(sp), [optHost]);
     const priced = said.filter((o) => o.price > 0);
     const free = said.filter((o) => !o.price);
     if (priced.length) {
@@ -1338,7 +1383,14 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "what bases can I choose for the set?", "what milk do you have for the latte?", "可以加什么？": a dish's choices
   // (not "so many choice, which one confirm sedap?": that's asking for the best)
-  const asksChoices = !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (\w+ )?(can|could) (i|we) (add|put|get|have|change)( or (add|change|remove|swap))? (on|to|with|in|onto|for)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && (!/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) || /\b(and how much|how much each|each how much|berapa satu|berapa setiap)\b/.test(nt0)) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text));
+  // "got mentaiko mayo as a topping?": an add-on asked after by name, that no dish has
+  const asTopping = nt0.match(/\b(?:got|have|ada|any|you have|can i get|can i add|boleh tambah)\s+(?:the |some )?([a-z]+(?: [a-z]+){0,2}?)\s+(?:as|for)\s+(?:a |an |the )?(?:topping|toppings|add on|add ons|addon|extra|side)\b/)?.[1];
+  if (asTopping && !optionsAsked(asTopping, live).length && !live.some((i) => ` ${normalize(i.name)} `.includes(` ${asTopping} `)))
+    return reply("dish_info", t("assistantReply.addOnNone", { option: en ? asTopping.charAt(0).toUpperCase() + asTopping.slice(1) : asTopping }), []);
+  // ("how many dips can i pick with the karaage?": a group of the dish's, by its name)
+  // (its name in the plural, asked which or how many: not "what goes well with the chilli pan mee")
+  const namesGroup = mentioned.length === 1 && /\b(what|which|how many)\b/.test(nt0) && !/\b(go|goes|going|pair|pairs|match)\b/.test(nt0) && (mentioned[0].modifiers ?? []).some((g) => normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(level|size|rice|portion)$/.test(w) && new RegExp(`\\b${w.replace(/s$/, "")}(s|es)\\b`).test(nt0)));
+  const asksChoices = namesGroup || !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|flavou?rs?|perisa|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (\w+ )?(can|could) (i|we) (add|put|get|have|change)( or (add|change|remove|swap))? (on|to|with|in|onto|for)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && (!/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) || /\b(and how much|how much each|each how much|berapa satu|berapa setiap)\b/.test(nt0)) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text));
   if (asksChoices) {
     const groupWord = (g: { name: string }) => normalize(g.name).split(" ").some((w) => w.length > 2 && ` ${nt0} `.includes(` ${w.replace(/s$/, "")}`));
     const of = mentioned.filter((i) => i.modifiers?.length).length ? mentioned.filter((i) => i.modifiers?.length) : [...(state.order.length ? [state.order[state.order.length - 1].item] : []), ...(state.focus ? [state.focus] : [])].filter((i) => i.modifiers?.some(groupWord)).slice(0, 1);
@@ -1354,7 +1406,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const byText = new Map<string, Item[]>();
       for (const i of pool.slice(0, 8)) byText.set(choicesText(i, money), [...(byText.get(choicesText(i, money)) ?? []), i]);
       const text = [...byText].map(([c, xs]) => `${list(xs.map(name))}: ${c}.`).join(sp);
-      return reply("dish_info", text, pool.slice(0, 4));
+      // ("kena bayar lebih ke kalau pilih melon?": and that choice, free)
+      const freeOnes = pool.length === 1 && /\b(charge|caj|cost|bayar lebih|pay more|extra charge)\b/.test(nt0) ? optionsSaid(u.text, pool[0], true).add.filter((o) => !o.price) : [];
+      return reply("dish_info", freeOnes.length ? `${text}${sp}${t("assistantReply.freeChoice", { dish: name(pool[0]), option: list(freeOnes.map(optionLabel)), price: money(pool[0].price) })}` : text, pool.slice(0, 4));
     }
   }
   // "is aloe vera available today?", "芦荟还有吗？": an add-on (or anything) asked after by name, when no dish is it
@@ -1391,6 +1445,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const each = ` (${with_.map((o) => `${optionLabel(o)} +${money(o.price)}`).join(", ")})`;
       // ("tambah aloe vera dan coconut jelly" with no aloe vera: said, and left out)
       const gone = missingAddOns(u.text, [d], ctx.items).map((x) => `${t("assistantReply.notAvailable", { thing: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })}${sp}`).join("");
+      // ("ALL the toppings: cheese, onsen egg, natto, spinach, corn and extra chicken katsu": more than its group takes)
+      const over = (d.modifiers ?? []).filter((g) => (g.max ?? 1) > 1 && with_.filter((o) => g.options.includes(o)).length > (g.max ?? 1));
+      if (over.length) return reply("dish_info", over.map((g) => t("assistantReply.maxChoices", { dish: name(d), group: g.name.toLowerCase(), max: g.max ?? 1, count: with_.filter((o) => g.options.includes(o)).length })).join(sp), [d]);
       return reply("dish_info", `${gone}${t("assistantReply.pricedWith", { dish: t("assistantReply.withOptions", { dish: name(d), options: list(with_.map(optionLabel)) }), price: money(total) }).replace(/[.。]$/, "")}${each}${stop}`, [d]);
     }
     // "can I get my eggs poached? extra charge?": a choice that costs nothing
@@ -1667,7 +1724,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const searchable = !notFood && !mentioned.length && !nth && !focus.length && !u.superlative && !u.party && !u.signatures && !u.choosing && !(u.avoid.length || u.diet.length || u.maxSpice !== null || u.minSpice !== null || u.budget !== null || u.noMeat.length || u.noWords.length || u.noAlcohol) &&
     // "有没有云吞面？" names a dish more exactly than its course (面) does
     // "do you have a coffee frappuccino?", "got bak kut teh?": a search, even with a course word in it
-    (!(u.courses.length || u.categories.length) || /有没有|有.+吗/.test(u.text) || /^(do you have|do you serve|do you sell|have you got|you got|got|ada|any chance)\b/.test(normalize(u.text))) && !["thanks", "compare", "pairing", "refine", "group"].includes(intent);
+    // ("any prawn curry?", "a curry with prawns": a food asked for within the course)
+    (!(u.courses.length || u.categories.length) || /有没有|有.+吗/.test(u.text) || /^(do you have|do you serve|do you sell|have you got|you got|got|ada|any chance)\b/.test(normalize(u.text)) || (u.allergens.length > 0 && !u.stated.length)) && !["thanks", "compare", "pairing", "refine", "group"].includes(intent);
   // constraints said earlier still hold ("no peanuts" two questions ago)
   // (not a hello, an instruction to the assistant, or a question about how the restaurant works)
   const found = searchable && intent !== "greeting" && !(u.injected && intent === "out_of_scope") && !(intent === "order_help" && (booking || howItWorks)) && (intent !== "order_help" || conceptTerms(u.text).length) ? search(u.text, live.filter((i) => allowed(i, c)), // a staff request ("nk panggil waiter") is a search only for a food it names ("do you have pizza?")
@@ -1676,6 +1734,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (found && (u.courses.length || u.categories.length)) {
     const ids = new Set(u.courses.flatMap((k) => courseDishes(ctx.items as Dish[], k).map((d) => d.id)));
     found.hits = found.hits.filter((i) => u.categories.includes(i.category ?? "") || ids.has(i.id));
+    // (and has the food asked for: "a curry with prawns" is the ones with prawns)
+    const withFood = u.allergens.length && !u.stated.length ? rank(live.filter((i) => allowed(i, c) && (u.categories.includes(i.category ?? "") || ids.has(i.id)) && u.allergens.every((a) => i.allergens.includes(a)))) : [];
+    if (withFood.length) found.hits = withFood;
   }
   if (found && (found.hits.length || found.missing)) {
     const top = found.hits.slice(0, found.missing ? 2 : 4);
@@ -1901,10 +1962,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         const m = meatAsked(item);
         const meatLine = m ? (meatOf(item).includes(m) ? t("assistantReply.meatYes", { dish: name(item), meat: t(`assistantReply.meat.${m}` as MessageKey) }) : t("assistantReply.meatNo", { dish: name(item), meat: t(`assistantReply.meat.${m}` as MessageKey), made: meatOf(item).length ? t("assistantReply.meatMadeWith", { meat: list(meatOf(item).map((x) => t(`assistantReply.meat.${x}` as MessageKey))) }) : "" })) : "";
         const asked = u.allergens;
-        const conflict = asked.filter((a) => item.allergens.includes(a));
+        // ("allergic to soy. can i put natto on it?": what the add-ons asked for bring too)
+        // (only when they say to add it: "got egg?" asks of the dish, "can i put natto on it?" adds)
+        const adding = /\b(add|put|with|tambah|letak|top|topping|extra)\b/.test(nt0) || /加/.test(u.text);
+        const optHas = (adding ? optionsSaid(u.text, item, true).add : []).map((o) => ({ o, has: mentionedAllergens(o.name).filter((a) => asked.includes(a) && !item.allergens.includes(a)) })).filter((x) => x.has.length);
+        const conflict = asked.filter((a) => item.allergens.includes(a) || optHas.some((x) => x.has.includes(a)));
         let s = item.allergens.length ? t("assistantReply.contains", { dish: name(item), list: list(item.allergens.map(allergen)) }) : t("assistantReply.noAllergens", { dish: name(item) });
         if (u.diet.length) s = `${dietVerdict(item)}${sp}${s}`;
         if (meatLine) s = `${meatLine}${sp}${s}`;
+        const GLOSSED = /^(natto|edamame|miso|tempeh|tofu|ghee|paneer|tahini)$/;
+        const glossOf = (o: ModifierOption) => { const w = normalize(o.name).split(" ").find((x) => GLOSSED.test(x)); return w ? ` (${t(`assistantReply.gloss.${w}` as MessageKey)})` : ""; };
+        if (optHas.length) s += `${sp}${optHas.map((x) => t("assistantReply.addOnHas", { option: optionLabel(x.o), what: glossOf(x.o), list: list(x.has.map(allergen)) })).join(sp)}`;
         if (asked.length) s += conflict.length ? t("assistantReply.notSuitable", { list: list(conflict.map(allergen)) }) : t("assistantReply.doesntList", { list: list(asked.map((a) => (en ? allergen(a).toLowerCase() : allergen(a)))) });
         // ("allergic to egg. the vegetarian ckt can make for him?": its own "No egg" choice, with the allergy told to the staff)
         const without = (item.modifiers ?? []).flatMap((g) => g.options).filter((o) => /^(no|without|tanpa)\b/i.test(o.name) && mentionedAllergens(o.name).some((a) => conflict.includes(a)));
@@ -1945,6 +2013,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       if (!/[.!?。]$/.test(parts[0])) parts[0] += stop;
       if (u.diet.length) parts.unshift(dietVerdict(item));
       if (item.isSignature) parts.push(t("assistantReply.isSignature", { restaurant: ctx.restaurant.name }));
+      // ("可乐饼是什么做的？": the main ingredients in Chinese, when the description is English)
+      if (!en && description && !/[\u4e00-\u9fff]/.test(description) && ingredientsZh(description).length) parts.splice(1, 0, t("assistantReply.mainIngredients", { list: ingredientsZh(description).slice(0, 6).join("、") }));
       parts.push(`${money(item.price)}${stop}`);
       parts.push(item.spiceLevel ? t("assistantReply.spiceLevel", { level: item.spiceLevel }) : t("assistantReply.notSpicySentence"));
       // ("可以不要辣吗？", "can I have it no chilli?": the dish's own free "No X" choice)
@@ -2020,7 +2090,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // "what drink goes with chilli crab?": the drinks are the answer; the crab is already chosen
       // "what goes well with the X?": X is already chosen, so only what goes with it
       const withIt = anchors.length === 1 && /\b(go|goes|going) (well )?with\b|\bpairs? (well )?with\b/.test(nt0) || /配什么|搭配什么|配甚么/.test(u.text);
-      return reply(intent, answer, [...picks.map((p) => p.i), ...(wanted.length || wantedCats.length || withIt ? [] : anchors)]);
+      // ("the second one ok, level 4 pls. and what side goes well with it?": the one taken, too)
+      const taken = (!!nth || pointedAt(u.text, state.shown).length > 0) && /\b(ok|okay|yes|take|i ll have|nak|that one)\b/.test(nt0);
+      return reply(intent, answer, [...picks.map((p) => p.i), ...(!taken && (wanted.length || wantedCats.length || withIt) ? [] : anchors)]);
     }
 
     case "group": {
@@ -2150,7 +2222,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // within what fits, a dish whose own name or description has the guest's words comes first: "which
       // tauhu dish?" in a "Vegetables & tauhu" section, "a rice dish" among "Curries & rice"
       const said = [...typed, ...normalize(u.text).split(" ").filter((w) => courseOfWord(w) && !NOT_A_TERM.has(w) && !u.noWords.includes(w))];
-      const relevance = (i: Item) => said.reduce((n, w) => n + (hasTerm({ ...i, description: "", category: "" }, w) ? 2 : hasTerm({ ...i, category: "" }, w) ? 1 : 0), 0);
+      // ("a curry with prawns": the ones with the food asked for first)
+      const foodAsked = u.allergens.filter((a) => !c.avoid.includes(a) && !u.stated.includes(a));
+      const relevance = (i: Item) => said.reduce((n, w) => n + (hasTerm({ ...i, description: "", category: "" }, w) ? 2 : hasTerm({ ...i, category: "" }, w) ? 1 : 0), 0) + (foodAsked.length && foodAsked.every((a) => i.allergens.includes(a)) ? 3 : 0);
       const relevant = (xs: Item[]) => (xs.some((i) => relevance(i) > 0) ? [...xs].sort((a, b) => relevance(b) - relevance(a)) : xs);
       const order = u.superlative ? sorted(pool, u.superlative) : u.appetite === "hearty" ? pool : relevant(ranked(pool));
       // food first: drinks are ordered most, but "anything vegetarian?" means a dish (one drink at most)

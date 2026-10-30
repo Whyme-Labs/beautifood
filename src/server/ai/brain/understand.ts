@@ -256,6 +256,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], tee: ["tea"], nasi: ["rice"], sup: ["soup"], kari: ["curry"], dri: ["dry"], susu: ["milk"],
   limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
+  hijau: ["green"], hitam: ["black"], putih: ["white"], merah: ["red"], vege: ["vegetable", "vegetables"], veggie: ["vegetable", "vegetables"], veg: ["vegetable", "vegetables"],
 };
 
 /** Where a dish is named among the question's words (`from` up to, not including, `to`). */
@@ -367,11 +368,13 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     for (const tr of Object.values(dish.translations ?? {})) {
       const zh = tr?.name ?? "";
       if (zh.length < 4 || raw.includes(zh)) continue;
-      for (let len = zh.length - 1; len >= 3; len--) {
+      for (let len = zh.length - 1; len >= 2; len--) {
         const head = zh.slice(0, len);
         const at = raw.indexOf(head);
-        if (at < 0 || (/[\u4e00-\u9fff]/.test(raw[at + len] ?? "") && !/[，、。？！的走加少多和跟还要是吗呢有几怎可能会]/.test(raw[at + len]))) continue;
-        if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘片块两一二三四五六七八九十的要来加和与跟及还，、]/.test(raw[at - 1])) continue;
+        // (two characters only as a brand said with its kind: "麒麟啤酒" for 麒麟一番榨)
+        if (len === 2 && (at < 0 || !/^(啤酒|汽水|苏打)/.test(raw.slice(at + 2)))) continue;
+        if (at < 0 || (len > 2 && /[\u4e00-\u9fff]/.test(raw[at + len] ?? "") && !/[，、。？！的走加少多和跟还要是吗呢有几怎可能会]/.test(raw[at + len]))) continue;
+        if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘片块瓶罐包支两一二三四五六七八九十的要来加和与跟及还，、]/.test(raw[at - 1])) continue;
         const starts = items.map((o) => Object.values(o.translations ?? {}).map((x) => x?.name ?? "").find((z) => z.startsWith(head))).filter((z): z is string => !!z);
         if (starts.filter((z) => z.length <= zh.length).length === 1) return void found.push({ dish, at: at / 100, covered: [], score: 1.6, zh: head });
         break;
@@ -586,7 +589,7 @@ function partyOf(text: string, raw: string): number | null {
     text.match(new RegExp(`\\b(?:we are|we re|were|we r|party of|table for|table of|group of|family of|team of|office of|there are|there will be|kami|we have)\\s+(${NUMS})\\b(?!\\s*(?:rm|ringgit|dollars?|minutes?|mins?|sticks?|pieces?|pcs))`)) ??
     text.match(new RegExp(`\\b(${NUMS})\\s+(?:of us|people|persons?|adults|orang|heads|guests|diners|pax|kids and adults)\\b`)) ??
     text.match(new RegExp(`\\bfor\\s+(${NUMS})\\b(?!\\s*(?:rm|ringgit|dollars?|minutes?|mins?|sticks?|pieces?|pcs|\\.))`));
-  const z = raw.match(/([\d一二两三四五六七八九十]+)\s*(?:个人|个|位|人)/);
+  const z = raw.match(/(?<!第|[\d一二两三四五六七八九十])([\d一二两三四五六七八九十]+)\s*(?:个人|个|位|人)/);
   const n = m ? num(m[1]) : z ? num(z[1]) : /\b(couple|two of us|the 2 of us|berdua|date night)\b/.test(text) || /两个人|俩/.test(raw) ? 2 : (BER[text.match(/\b(bertiga|berempat|berlima|berenam|bertujuh|berlapan)\b/)?.[1] ?? ""] ?? null);
   return n && n >= 2 && n <= 40 ? n : null;
 }
@@ -649,7 +652,8 @@ function spiceByClause(question: string, dishWords: Set<string>, raw: string) {
 
 /** Spice limits from the question, with the negation in front of a spice word taken into account. */
 function spiceOf(toks: string[], raw: string): { max: number | null; min: number | null } {
-  if (/不辣|不要辣|不吃辣|别辣|免辣|无辣|不能吃辣|怕辣|走辣|吃不了辣|不敢吃辣|受不了辣|不会吃辣/.test(raw)) return { max: 0, min: null };
+  // ("辣不辣？" asks whether it is, it doesn't say they want it mild)
+  if (/(?<!辣)不辣|不要辣|不吃辣|别辣|免辣|无辣|不能吃辣|怕辣|走辣|吃不了辣|不敢吃辣|受不了辣|不会吃辣/.test(raw)) return { max: 0, min: null };
   if (/微辣|小辣|少辣|不太辣|一点点辣|中辣|不太能吃辣|不太吃辣|不怎么吃辣|不太会吃辣/.test(raw)) return { max: 1, min: null };
   if (/很辣|特辣|超辣|最辣|重辣|大辣|越辣越好/.test(raw)) return { max: null, min: 2 };
   let res: { max: number | null; min: number | null } = { max: null, min: null };
@@ -1124,7 +1128,7 @@ export function read(items: Dish[], asked: string): Reading {
     noMeat: pescatarian ? MEAT_NAMES.map(([m]) => m) : meatsAvoided(question),
     noWords,
     noCaffeine: /\b(no|not|without|tak|x|less|zero|avoid|dont|don t|cannot|cant)\s+(want\s+|take\s+|have\s+|drink\s+|any\s+)?(caffeine|caffein|kafein|coffee|kopi)\b|\b(decaf|decaffeinated|caffeine free|non caffeinated|uncaffeinated)\b/.test(restText) || /不要咖啡因|无咖啡因|不含咖啡因|低咖啡因|不喝咖啡|不能喝咖啡/.test(restRaw),
-    noAlcohol: /\b(no|not|without|tanpa|tak|takde|tiada|x|tak nak|dont|don t|do not|non|cannot|cant|tidak|no more|never)\s+(minum\s+|drink\s+|take\s+|touch\s+|have\s+|ada\s+|guna\s+|pakai\s+)?(alcohol|alcoholic|arak|alkohol|beer|booze|liquor|drinking)\b|\b(alcohol free|non alcoholic|nonalcoholic|mocktail|mocktails)\b/.test(restText) || /不要酒|不喝酒|无酒精|不含酒|没有酒精|不能喝酒/.test(restRaw) ||
+    noAlcohol: /\b(no|not|without|tanpa|tak|takde|tiada|x|tak nak|dont|don t|do not|doesn t|doesnt|does not|non|cannot|cant|tidak|no more|never)\s+(minum\s+|drink\s+|take\s+|touch\s+|have\s+|ada\s+|guna\s+|pakai\s+)?(alcohol|alcoholic|arak|alkohol|beer|booze|liquor|drinking)\b|\b(alcohol free|non alcoholic|nonalcoholic|mocktail|mocktails)\b/.test(restText) || /不要酒|不喝酒|无酒精|不含酒|没有酒精|不能喝酒/.test(restRaw) ||
       // a guest under 18 is never offered a drink, nor is a child ordered for
       /\b(i m|im|i am|we re|we are|she s|he s|my (son|daughter|kid) is)\s+(1[0-7]|underage|under age|a minor|minor)\b|\bunder 18\b|\bbawah umur\b|\bfor (my|the|our) (kid|kids|child|children|son|daughter|boy|girl|little one|baby|toddler)\b|\b(untuk )?(anak|budak) (saya|aku|kecil)\b/.test(restText) || /未成年|小孩|孩子|儿子|女儿/.test(restRaw),
     signatures: /\b(known for|famous for|famous|signature|signatures|specials|speciality|specialty|specialities|starred|must try|must tries|terkenal|istimewa|paling terkenal|house special)\b/.test(restText) || /招牌|拿手|必点|特色菜|最有名|镇店/.test(restRaw),

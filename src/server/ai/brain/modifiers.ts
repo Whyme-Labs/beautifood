@@ -31,7 +31,7 @@ const ALSO: Record<string, string[]> = {
   strawberries: ["strawberry"], chocolate: ["choc", "coklat", "chocolate"], mayo: ["mayonnaise"],
   seaweed: ["nori"], spicy: ["spicy", "pedas", "hot"], yuja: ["yuzu", "citron"], cola: ["coke", "cola"], cider: ["cider", "chilsung"],
   bucket: ["bucket", "baldi"], crust: ["crust"], thin: ["thin"], stuffed: ["stuffed", "cheese crust"],
-  chicken: ["ayam"], beef: ["daging"], duck: ["itik"], cockles: ["kerang", "cockle"], taugeh: ["tauge", "bean sprouts", "beansprouts", "sprouts"], cheong: ["lap cheong", "lapcheong", "chinese sausage", "sausage"],
+  chicken: ["ayam"], beef: ["daging"], duck: ["itik"], corn: ["jagung"], spinach: ["bayam"], cockles: ["kerang", "cockle"], taugeh: ["tauge", "bean sprouts", "beansprouts", "sprouts"], cheong: ["lap cheong", "lapcheong", "chinese sausage", "sausage"],
 };
 // ...and in Chinese, as a guest writes it
 const ALSO_ZH: Record<string, RegExp> = {
@@ -41,7 +41,7 @@ const ALSO_ZH: Record<string, RegExp> = {
   oat: /燕麦/, almond: /杏仁(?!酱)/, shot: /加浓|浓缩|多一份咖啡/, laksa: /叻沙|咖喱汤/, curry: /咖喱/, chilli: /辣椒酱|辣椒碎|辣椒干|辣椒/, kuah: /花生酱|沙爹酱|花生酱汁/,
   salmon: /三文鱼|烟熏三文鱼/, bacon: /培根/, poached: /水波蛋/, dry: /干捞|干的/, soup: /汤的|汤底/,
   balls: /鱼丸/, minced: /肉碎|肉末|肉燥/, bilis: /江鱼仔|小鱼干/, hoon: /米粉/, prawns: /(?<!濑尿|螳螂|琵琶)虾(?!蛄)/,
-  duck: /鸭蛋|鸭/, cockles: /蚶|血蛤|鲜蛤/, cheong: /腊肠|臘腸/, taugeh: /豆芽/, puffs: /豆卜|豆泡/,
+  duck: /鸭蛋|鸭/, natto: /纳豆/, corn: /玉米/, spinach: /菠菜/, onsen: /温泉蛋/, cockles: /蚶|血蛤|鲜蛤/, cheong: /腊肠|臘腸/, taugeh: /豆芽/, puffs: /豆卜|豆泡/,
   noodles: /加面|多面|面加倍/, mushrooms: /蘑菇|香菇/, skin: /腐竹|豆皮/, peanuts: /花生/, tofu: /豆腐/, milo: /美禄/,
   pearls: /珍珠|波霸/, pudding: /布丁/, grass: /仙草/, coconut: /椰果|椰子片|椰丝/, bean: /红豆/, foam: /奶盖/,
   cheese: /芝士|起司|奶酪/, ramyeon: /拉面|泡面|快熟面/, rice: /年糕/, cake: /年糕|鱼饼/, fries: /薯条/, coleslaw: /凉拌|卷心菜沙拉/, soft: /饮料|汽水|饮品/,
@@ -123,14 +123,15 @@ const saysOption = (ks: string[], words: Set<string>, joined: string, raw: strin
 };
 // a number names an option only as its count's unit says ("12 pcs", "12 wings", "十个", "12寸")
 const numberSaid = (n: string, t: string, raw: string) => new RegExp(`(^| )${n} ?(pcs|pc|pieces?|ketul|inch|inches|in|wings?|keping|biji)?( |$)`).test(t) || new RegExp(`(^|[^0-9])${n}\\s*(个|件|只|粒|寸|块|片|pcs)`).test(raw) || (ZH_NUM[n] ? new RegExp(`${ZH_NUM[n]}(个|件|只|粒|寸|块|片)`).test(raw) : false);
-const ZH_NUM: Record<string, string> = { "6": "六", "8": "八", "9": "九", "10": "十", "12": "十二", "16": "十六", "20": "二十" };
+const ZH_NUM: Record<string, string> = { "1": "一", "2": "二", "3": "三", "4": "四", "5": "五", "6": "六", "7": "七", "8": "八", "9": "九", "10": "十", "12": "十二", "16": "十六", "20": "二十" };
 
 /** `text` without the dish's own name, so its words aren't read as an option ("Nasi Lemak Ayam Goreng"). */
 const withoutName = (text: string, dish: WithOptions) => {
   let t = ` ${normalize(text)} `;
   // (its name's words side by side, two or more: "chilli pan mee" of the Dry Chilli Pan Mee)
   const n = normalize(dish.name).split(" ");
-  for (let len = n.length; len >= 2; len--) for (let k = 0; k + len <= n.length; k++) t = t.split(` ${n.slice(k, k + len).join(" ")} `).join("  ");
+  // (not after "extra": "pork katsu curry + extra pork katsu" asks for the Extra Pork Katsu)
+  for (let len = n.length; len >= 2; len--) for (let k = 0; k + len <= n.length; k++) t = t.replace(new RegExp(`(?<!\\b(?:extra|add|more|double|another|tambah)) ${n.slice(k, k + len).join(" ")}(?= )`, "g"), " ");
   let raw = text;
   for (const zh of Object.values(dish.translations ?? {}).map((x) => x?.name).filter((x): x is string => !!x && x.length > 1)) raw = raw.split(zh).join(" ");
   return { t: t.trim(), raw };
@@ -194,6 +195,12 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     if (!ks.length) continue;
     // ("12 pcs", "12 inch": its number, said as a count of pieces or a size)
     const nums = ks.filter((k) => /^\d+$/.test(k));
+    // ("Level 6": said as a level, "level 6", "lvl 6", "6辣", "7级辣"; a bare number is a count)
+    const level = o.name.match(/\b(level|lvl|tahap)\s*(\d+)\b/i)?.[2];
+    if (level) {
+      if (new RegExp(`\\b(level|lvl|tahap|lv|spicy|pedas)\\s*${level}\\b`).test(t) || new RegExp(`(^|[^0-9])${level}\\s*(级|辣|度)|辣度?\\s*${level}(?![0-9])|${ZH_NUM[level] ?? "∅"}(级|辣)`).test(raw)) add.push(o);
+      continue;
+    }
     if (nums.length) {
       if (nums.every((k) => numberSaid(k, t, raw))) add.push(o);
       continue;
@@ -230,6 +237,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     }
     const isOff = need.some((k) => offWords.has(k) || (ALSO[k] ?? []).some((x) => offWords.has(x)) || offZh.some((z) => ALSO_ZH[k]?.test(z)));
     if (isOff) off.push(o);
+    // ("level 5 spicy" isn't the Spicy mayo: a describing word, all that's its own)
+    else if (own.length === 1 && ks.length > 1 && /^(spicy|pedas|hot|sweet|sour|plain|original|classic|regular|fresh|crispy)$/.test(own[0]) && !ks.some((k) => k !== own[0] && said(k, words, joined, zhLeft))) continue;
     else if (own.length ? saysOption(own, words, joined, zhLeft) : ks.every((k) => said(k, words, joined, zhLeft))) add.push(o);
   }
   // an option said by its whole name wins over one whose words it has ("chocolate sauce" isn't also
@@ -267,7 +276,8 @@ export const optionLabel = (o: ModifierOption) => (/\(\s*\d/.test(o.name) ? o.na
 
 /** A dish's choices as a guest reads them: "Base: Soup, Dry, Curry Laksa (+RM2.00)". */
 export function choicesText(dish: WithOptions, money: (n: number) => string): string {
-  return (dish.modifiers ?? []).map((g) => `${g.name}: ${g.options.map((o) => `${optionLabel(o)}${o.price ? ` (+${money(o.price)})` : ""}`).join(", ")}`).join("; ");
+  // (a group that takes several says how many: "Dip (up to 2)")
+  return (dish.modifiers ?? []).map((g) => `${g.name}${(g.max ?? 1) > 1 && (g.max ?? 1) < g.options.length ? ` (up to ${g.max})` : ""}: ${g.options.map((o) => `${optionLabel(o)}${o.price ? ` (+${money(o.price)})` : ""}`).join(", ")}`).join("; ");
 }
 /** The option words a text uses for any of `dishes`' options (to keep "extra chilli sauce" from naming a chilli dish). */
 export function optionWordsSaid(text: string, dishes: WithOptions[]): Set<string> {

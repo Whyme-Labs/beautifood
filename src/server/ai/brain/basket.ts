@@ -158,7 +158,7 @@ const ZH_NUMBER: Record<string, number> = { 一: 1, 两: 2, 二: 2, 三: 3, 四:
 export function countsOf(text: string, dishes: Dish[]): Map<Dish, number> {
   // ("2 six piece sets": the "six" is the 6-Piece Set's own, the 2 its count)
   const digits = new Set(dishes.flatMap((d) => normalize(d.name).split(" ").filter((w) => /^\d+$/.test(w))));
-  const toks = normalize(text).split(" ").map((t) => (NUMBER_WORD[t] && digits.has(NUMBER_WORD[t]) ? NUMBER_WORD[t] : /^(ketul|pcs|pc|pieces)$/.test(t) ? "piece" : t));
+  const toks = normalize(text).replace(/\b(level|lvl|tahap|lv)\s+\d+\b/g, "$1").split(" ").map((t) => (NUMBER_WORD[t] && digits.has(NUMBER_WORD[t]) ? NUMBER_WORD[t] : /^(ketul|pcs|pc|pieces)$/.test(t) ? "piece" : t));
   const out = new Map<Dish, number>();
   for (const d of dishes) {
     let n = 1;

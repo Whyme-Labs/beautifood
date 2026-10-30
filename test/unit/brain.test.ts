@@ -1171,3 +1171,33 @@ describe("a dish's own \"no X\" choice", () => {
     expect(r.items.map((i) => i.name)).toContain("Takoyaki");
   });
 });
+
+describe("what an add-on or the cooking brings", () => {
+  const dishes = asItems([
+    { id: "c1", name: "Pork Katsu Curry", category: "Curry rice", description: "pork cutlet (wheat flour, egg, panko) on rice with house curry sauce (butter roux)", price: 2290, allergens: ["gluten", "egg", "milk"], dietary: [], spiceLevel: 1, isSignature: true },
+    { id: "c2", name: "Beef Curry", category: "Curry rice", description: "beef chuck in curry sauce finished with red wine, on rice", price: 2390, allergens: ["gluten", "milk"], dietary: [], spiceLevel: 1, isSignature: false },
+    { id: "c3", name: "Vegetable Curry", category: "Curry rice", description: "pumpkin, okra and potato in vegetable curry sauce, on rice", price: 1890, allergens: ["gluten"], dietary: ["vegan"], spiceLevel: 1, isSignature: false },
+    { id: "c4", name: "Kids Curry Plate", category: "Curry rice", description: "small rice, sweet curry, chicken karaage marinated in soy sauce and sake", price: 1390, allergens: ["gluten", "soy"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "c1" ? { ...i, modifiers: [{ name: "Toppings", min: 0, max: 5, options: [{ name: "Cheese", price: 300 }, { name: "Natto", price: 300 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  it("says a soy add-on has soy, to a guest allergic to soy", () => {
+    const r = answerGuest(shop, [{ role: "user", content: "i'm allergic to soy. can i put natto on my pork katsu curry?" }]);
+    expect(r.answer).toMatch(/Natto add-on \(fermented soybeans\) has Soy/);
+    expect(r.answer).toMatch(/not safe/);
+  });
+  it("doesn't take an add-on taken off for an allergy", () => {
+    const r = answerGuest(shop, [
+      { role: "user", content: "pork katsu curry with cheese" },
+      { role: "assistant", content: "Pork Katsu Curry with Cheese: RM25.90." },
+      { role: "user", content: "actually take out the cheese" },
+      { role: "assistant", content: "Done. Pork Katsu Curry: RM22.90." },
+      { role: "user", content: "how much now" },
+    ]);
+    expect(r.answer).not.toMatch(/you said you avoid/);
+  });
+  it("leaves out dishes cooked with wine or sake for a guest who takes no alcohol", () => {
+    const r = answerGuest(shop, [{ role: "user", content: "my mum doesn't take alcohol at all, even in cooking. which curry rice for her?" }]);
+    expect(r.items.map((i) => i.name)).not.toContain("Beef Curry");
+    expect(r.items.map((i) => i.name)).not.toContain("Kids Curry Plate");
+  });
+});

@@ -11,7 +11,8 @@ const PORK =
   /\b(pork|lard|bacon|ham|babi|char siu|lap cheong|chinese sausage|pork floss|siu yuk|bak kut teh)\b|猪|叉烧|腊肠|烧肉|肉骨茶/i;
 const BEEF_OR_CHICKEN_HAM = /\b(beef|chicken|turkey|duck)\s+(bacon|ham)\b/gi;
 const ALCOHOL =
-  /\b(wine|shaoxing|hua tiao|beer|lager|stout|sake|soju|mirin|rum|brandy|whisky|whiskey|liqueur|baileys|cocktail|gin|vodka|tequila|champagne|prosecco)\b|酒/i;
+  // (not root beer or ginger beer, which are sodas)
+  /\b(wine|shaoxing|hua tiao|(?<!\b(?:root|ginger) )beer|lager|stout|sake|soju|mirin|rum|brandy|whisky|whiskey|liqueur|baileys|cocktail|gin|vodka|tequila|champagne|prosecco)\b|酒/i;
 
 const text = (
   i: Pick<MenuItem, "name" | "description"> & {

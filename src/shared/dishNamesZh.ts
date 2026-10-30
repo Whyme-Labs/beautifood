@@ -1045,3 +1045,23 @@ export function zhNamesOf(name: string): { key: string; names: string[] } | null
   const hit = keys.filter((k) => n.includes(` ${k} `));
   return hit.length ? { key: hit[0], names: [...new Set(hit.flatMap((k) => DISH_NAMES_ZH[k]))] } : null;
 }
+
+// The everyday ingredients a description names, in Chinese, so a guest who asks 是什么做的 gets the
+// main ones in their own language when the menu's description is only in English.
+const INGREDIENTS_ZH: [RegExp, string][] = [
+  [/\bpotato(es)?\b/i, "土豆"], [/\bsweet potato\b/i, "番薯"], [/\bonions?\b/i, "洋葱"], [/\bgarlic\b/i, "蒜"], [/\bginger\b/i, "姜"],
+  [/\bchicken\b/i, "鸡肉"], [/\bpork\b/i, "猪肉"], [/\bbeef\b/i, "牛肉"], [/\bmutton|lamb\b/i, "羊肉"], [/\bduck\b/i, "鸭肉"],
+  [/\bprawns?|shrimps?\b/i, "虾"], [/\bsquid\b/i, "鱿鱼"], [/\bclams?\b/i, "蛤"], [/\bfish\b/i, "鱼"], [/\banchov(y|ies)\b/i, "江鱼仔"],
+  [/\beggs?\b/i, "蛋"], [/\bmilk\b/i, "牛奶"], [/\bbutter\b/i, "牛油"], [/\bcheese\b/i, "芝士"], [/\bcream\b/i, "奶油"],
+  [/\btofu|beancurd\b/i, "豆腐"], [/\bsoy sauce\b/i, "酱油"], [/\bpeanuts?\b/i, "花生"], [/\bsesame\b/i, "芝麻"], [/\bcoconut\b/i, "椰子"],
+  [/\bwheat|flour\b/i, "面粉"], [/\bpanko|breadcrumbs\b/i, "面包糠"], [/\brice\b/i, "米饭"], [/\bnoodles?\b/i, "面"], [/\budon\b/i, "乌冬面"],
+  [/\bcarrots?\b/i, "胡萝卜"], [/\bcabbage\b/i, "包菜"], [/\bmushrooms?\b/i, "蘑菇"], [/\bcorn\b/i, "玉米"], [/\bpumpkin\b/i, "南瓜"],
+  [/\bchilli|chili\b/i, "辣椒"], [/\bcurry\b/i, "咖喱"], [/\bapple\b/i, "苹果"], [/\btomato(es)?\b/i, "番茄"], [/\bcucumber\b/i, "黄瓜"],
+];
+/** The main ingredients a description names, in Chinese, in the order it names them. */
+export function ingredientsZh(description: string): string[] {
+  const found = INGREDIENTS_ZH.map(([re, zh]) => ({ zh, at: description.search(re) })).filter((x) => x.at >= 0);
+  // ("sweet potato" is 番薯, not also 土豆)
+  const out = found.sort((a, b) => a.at - b.at).map((x) => x.zh);
+  return [...new Set(out.includes("番薯") && /\bsweet potato\b/i.test(description) && !/\b(?<!sweet )potato/i.test(description) ? out.filter((x) => x !== "土豆") : out)];
+}

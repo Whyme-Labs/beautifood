@@ -53,7 +53,8 @@ function numberAfter(toks: string[], from: number): { n: number; end: number } |
 
 /** A dish's option numbers ("12" of "12 pcs", "10" of "10 pcs"): said before the dish, they name the option, not a count. */
 // (not a count in brackets that describes an add-on: "Sui kow (2 pcs)" leaves "2 dry wantan mee" a count)
-const optionNumbers = (d: Dish) => new Set((d.modifiers ?? []).flatMap((g) => g.options.filter((o) => !/\(\s*\d/.test(o.name)).flatMap((o) => optionWords(o).filter((w) => /^\d+$/.test(w)))));
+// (nor a level's: "Level 2" leaves "2 chicken katsu curry" a count)
+const optionNumbers = (d: Dish) => new Set((d.modifiers ?? []).flatMap((g) => g.options.filter((o) => !/\(\s*\d/.test(o.name) && !/\b(level|tahap|lvl|no|number)\s*\d/i.test(o.name)).flatMap((o) => optionWords(o).filter((w) => /^\d+$/.test(w)))));
 
 /** The words as a phrase, Chinese characters joined again. */
 export const phrase = (toks: string[]) => toks.join(" ").replace(/(?<=[㐀-鿿]) (?=[㐀-鿿])/g, "");
@@ -163,14 +164,14 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
   });
   const clauseOf = (i: number) => Math.max(...[...starts].filter((b) => b <= i), 0);
   const lines: (Line & { clause: number; counted?: boolean })[] = [];
-  let lastClause: (Line & { clause: number })[] = [];
+  let lastClause: (Line & { clause: number; counted?: boolean })[] = [];
   const bounds = [...starts].sort((a, b) => a - b);
   const clauseEnd = (c: number) => bounds.find((b) => b > c) ?? toks.length;
   for (const c of bounds) {
     const end = clauseEnd(c);
     const here = placed.filter((s) => s.from >= c && s.from < end);
     if (here.length) {
-      const made: (Line & { clause: number })[] = [];
+      const made: (Line & { clause: number; counted?: boolean })[] = [];
       here.forEach((s, k) => {
         const nums = optionNumbers(s.dish);
         // what goes with it: from the last dish (or the clause's start) to the next dish's words
@@ -225,10 +226,20 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
     if (!words.length || !lastClause.length) continue;
     const text = phrase(words);
     let n: number | null = null;
-    const first = numberAfter(words, 0);
+    // ("其中一份加芝士": one of them)
+    const lead = words[0] === "其" && words[1] === "中" ? 2 : 0;
+    const first = numberAfter(words, lead);
     if (first && (first.end === words.length || COUNTER.test(words[first.end] ?? "") || /^(of|daripadanya|with|w|less|no|extra|large|besar|tambah|add|加|换|要|走|少|冰|热|大)$/.test(words[first.end] ?? "") || /[㐀-鿿]/.test(words[first.end] ?? ""))) n = first.n;
     if (/^(both|all|semua|kedua|dua dua|全部|都)$/.test(words[0])) n = null;
     const targets = lastClause.filter((l) => optionsSaid(text, l.dish, true).add.length || optionsSaid(text, l.dish, true).off.length);
+    // ("kirin? 2 bottles how much": the count of the one dish just named, said on its own)
+    // (only the count and its unit: not "2 bowls of rice")
+    const alone = first && words.slice(first.end + 1).every((w) => /^(how|much|berapa|total|please|pls|ah|la|lah|ya|ok|okay|price|harga|多少|钱|一共)$/.test(w));
+    if (!targets.length && n !== null && first && alone && COUNTER.test(words[first.end] ?? "") && !/^(x|×|of|the)$/.test(words[first.end]) && lastClause.length === 1 && !lastClause[0].counted) {
+      lastClause[0].count = n;
+      lastClause[0].counted = true;
+      continue;
+    }
     if (!targets.length) continue;
     for (const l of n === null ? targets : targets.slice(-1)) {
       const { add, off } = optionsSaid(text, l.dish);
