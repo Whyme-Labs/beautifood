@@ -59,6 +59,8 @@ export interface Understanding {
   breaks: number[];
   /** Allergens the guest is avoiding. */
   avoid: Allergen[];
+  /** Of `avoid`, the ones a named dish's own choice takes off ("takoyaki can no bonito?": its "No bonito flakes"): still avoided, but that dish can be shown. */
+  choiceOff: Allergen[];
   /** Of `avoid`, the ones the guest stated ("allergic to", "no prawns", "过敏"), not just asked about. */
   stated: Allergen[];
   /** Of `diet`, what the guest said they are ("I'm vegetarian"), not asked of a dish ("is it vegetarian?"). */
@@ -953,7 +955,8 @@ export function read(items: Dish[], asked: string): Reading {
   const allowedFoods = allergens.filter((a) => allowedSaid(fixed, a) && !governed(fixed, a));
   // "takoyaki can no bonito?": a dish's own "No bonito flakes" choice, not an allergy said
   const offChoice = (a: Allergen) => !ALLERGY_WORD.test(question) && mentions.some((m) => (m.dish.modifiers ?? []).some((g) => g.options.some((o) => /^(no|without|less|tanpa|kurang|tak nak)\b/i.test(o.name) && mentionedAllergens(o.name).includes(a) && optionsSaid(question, m.dish, true).add.some((x) => x.name === o.name))));
-  const avoid = allergens.filter((a) => !allowedFoods.includes(a) && !offChoice(a) && (governed(fixed, a) || !requested(fixed, a)));
+  // (it still counts as avoided, safety first: only that dish's own card may show, `choiceOff`)
+  const avoid = allergens.filter((a) => !allowedFoods.includes(a) && (governed(fixed, a) || !requested(fixed, a)));
   // "anything 100% allergen free?": none of them at all
   if (/\b(allergen|allergy|allergic|alergen)[\s-]*free\b|\bno allergens?\b|\bwithout (any )?allergens?\b|\bfree (of|from) (all |any )?allergens\b|\btiada alergen\b/.test(restText) || /无过敏原|不含过敏原|没有过敏原/.test(restRaw)) avoid.push(...ALLERGENS);
 
@@ -1026,7 +1029,8 @@ export function read(items: Dish[], asked: string): Reading {
     // "is the X gluten free?", "X有没有花生？", "X ada udang tak?": asking whether a dish they named has
     // it isn't saying they avoid it (the dish is shown with the answer). Not "I'm dairy free, is X ok?",
     // "is there a dairy-free lassi?" or "got dairy-free kaya toast?": those say what they need
-    stated: allergens.filter((a) => !offChoice(a) && governed(asksOfDish ? fixed.replace(/有没有|有冇|含不含/g, "有").replace(/([\w]+)[\s-]free\b/gi, "$1").replace(/\b(tak|ke|x|or not)\s*[?？]?\s*$/i, "") : fixed, a)),
+    choiceOff: allergens.filter(offChoice),
+    stated: allergens.filter((a) => governed(asksOfDish ? fixed.replace(/有没有|有冇|含不含/g, "有").replace(/([\w]+)[\s-]free\b/gi, "$1").replace(/\b(tak|ke|x|or not)\s*[?？]?\s*$/i, "") : fixed, a)),
     statedDiet: saysDiet ? diet : [],
     delexicalized,
     dishes: mentions.map((m) => m.dish),

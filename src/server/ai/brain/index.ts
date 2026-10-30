@@ -880,7 +880,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ...and none for a dish that isn't served right now (it can't be ordered yet)
   // (and no hotter than they said they can take: "saya tak tahan pedas", "my kid cannot take spicy")
   const spiceLimit = state.maxSpice ?? (/\b(cannot|can t|cant|tak tahan|tak boleh|tidak tahan|x tahan|tak makan pedas|can t take|cannot take|no spicy)\b/.test(normalize(u.text)) || /不能吃辣|怕辣|不吃辣/.test(u.text) ? u.maxSpice : null);
-  const safeCard = (i: Item) => i.servedNow !== false && !i.soldOut && allowed(i, { ...said, maxSpice: spiceLimit, minSpice: null, budget: null });
+  // ("takoyaki can no bonito?": the takoyaki itself can be shown, its bonito taken off; the fish stays avoided
+  // for everything else, and an allergy said before still keeps it out)
+  const choiceHost = (i: Item) => u.choiceOff.length > 0 && mentioned.some((m) => m.id === i.id) && (i.modifiers ?? []).some((g) => g.options.some((o) => /^(no|without|less|tanpa|kurang|tak nak)\b/i.test(o.name) && mentionedAllergens(o.name).some((a) => u.choiceOff.includes(a))));
+  const safeCard = (i: Item) => i.servedNow !== false && !i.soldOut && allowed(i, { ...said, avoid: choiceHost(i) ? said.avoid.filter((a) => !u.choiceOff.includes(a) || state.avoid.includes(a)) : said.avoid, maxSpice: spiceLimit, minSpice: null, budget: null });
   // a dish named that can't be had now: said first ("Sorry, the X is sold out today", "X is on our
   // Breakfast, served from 7:00 am"), never a card, and when it was the dish asked for, the closest
   // ones that can be had (its own section, what the guest can eat)
@@ -1210,7 +1213,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
     (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many \w+ can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
-    !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.length && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text);
+    !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text);
   // (a dish named only in part, "change the milk to oat milk", is a word of the choice, not the dish: the order's or the one talked about is)
   const fully = (i: Item) => u.spots.some((sp_) => sp_.dish.id === i.id && (sp_.covered.length >= normalize(i.name).split(" ").filter((w) => w.length > 1).length || /[\u3400-\u9fff]/.test(u.toks[sp_.from] ?? "")));
   const earlierHost = pointed[0]?.item ?? (state.order.length ? state.order[state.order.length - 1].item : state.focus);
@@ -1547,8 +1550,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const charges = withCharges ? `${sp}${t(`assistantReply.${chargesKey}` as MessageKey, { service: `${ch.serviceChargePct}%`, tax: `${ch.taxPct}%`, total: money(due) })}` : "";
       const each = shares && shares >= 2 ? `${sp}${t("assistantReply.splitEach", { count: shares, each: money(Math.ceil(due / shares)) })}` : "";
       // (something on it that breaks what they said they avoid: said first)
-      // ("no ice cream" takes an add-on off: it says nothing of what they can eat)
-      const avoidNow = [...new Set([...state.avoid, ...(takenOff ? [] : u.stated)])];
+      const avoidNow = [...new Set([...state.avoid, ...u.stated])];
       const breaks = bill.filter((o) => o.item.allergens.some((a) => avoidNow.includes(a as Allergen)) || (o.options ?? []).some((x) => live.some((i) => normalize(i.name) === normalize(x.name) && i.allergens.some((a) => avoidNow.includes(a as Allergen)))));
       const warn = breaks.map((o) => `${t("assistantReply.notSafeFor", { dish: lineName(o), allergens: list([...new Set([...o.item.allergens, ...(o.options ?? []).flatMap((x) => live.find((i) => normalize(i.name) === normalize(x.name))?.allergens ?? [])])].filter((a) => avoidNow.includes(a as Allergen)).map(allergen)) })}${sp}`).join("");
       const noSuch = missingAddOns(u.text, bill.map((o) => o.item), ctx.items, /\b(?:tambah|add|extra|top with)\s+(.+)$/).map((x) => `${t("assistantReply.notAvailable", { thing: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })}${sp}`).join("");

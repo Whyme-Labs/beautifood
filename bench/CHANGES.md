@@ -910,3 +910,18 @@ Scored twice, read only as counts (95% Wilson intervals):
 About a third of v9 dev's gain carries over (dev 50.4% → 96.5%; held-out 51.9% → 67.6%), with
 the largest held-out gains where v9 dev worked: bills, add-ons and references back. The branch
 has one more unsafe answer than the deployed brain (2 against 1); they aren't read here.
+
+**After scoring: one likely cause of the extra unsafe answer, found on dev menus.** v10's two
+unsafe answers weren't read. On v9 dev menus, though, this round's "takoyaki can no bonito?" change
+made the guest's words "no bonito" or "tanpa ikan bilis" (a dish's own "No bonito flakes" or "Tanpa
+Ikan Bilis" choice) stop counting as fish avoided, so later turns could suggest fish or prawn
+dishes. That breaks the rule that a doubtful avoid stays avoided. Fixed: the food stays avoided for
+everything, and only the card of the dish being customised may show; a unit test covers it (it
+fails on the old code). Dev sets unchanged, 0 unsafe. v10 isn't re-scored this round (both
+scorings are used), so whether this was the held-out case is unconfirmed.
+
+**What v10 measures.** Its authors were blind to the engine, but the brief's list of what to cover
+was written after this round's fixes and names the kinds of question they handle (cheapest way,
+either-or prices, what an add-on is made of, how many of a group, an add-on not on the menu). So
+v10 measures carry-over on the kinds of question the engine was built for, on unseen menus and
+phrasings, not the mix of natural guest traffic.

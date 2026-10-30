@@ -1148,3 +1148,26 @@ describe("bills and add-ons in the guest's own words (v8 dev)", () => {
     expect(ask("Got service charge ah?")).toMatch(/no service charge/);
   });
 });
+
+describe("a dish's own \"no X\" choice", () => {
+  const dishes = asItems([
+    { id: "k1", name: "Takoyaki", category: "Snacks", description: "octopus balls in wheat batter, mayo, bonito flakes", price: 990, allergens: ["molluscs", "gluten", "egg", "fish"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "k2", name: "Fish Cake", category: "Snacks", description: "fried fish cake", price: 800, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "k3", name: "Fish Ball Soup", category: "Snacks", description: "fish balls in clear soup", price: 700, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "k4", name: "Popcorn Chicken", category: "Snacks", description: "fried chicken bites", price: 990, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "k1" ? { ...i, modifiers: [{ name: "Toppings", min: 0, max: 2, options: [{ name: "No bonito flakes", price: 0 }, { name: "Extra mayo", price: 0 }] }] } : i));
+  const stall = { ...ctx, items: dishes } as unknown as AssistantContext;
+  it("still keeps that food out of everything shown later", () => {
+    const later = answerGuest(stall, [
+      { role: "user", content: "1 takoyaki, no bonito please" },
+      { role: "assistant", content: "Takoyaki, RM9.90." },
+      { role: "user", content: "what other snacks can I have?" },
+    ]);
+    expect(later.items.map((i) => i.name)).not.toContain("Fish Cake");
+    expect(later.items.map((i) => i.name)).not.toContain("Fish Ball Soup");
+  });
+  it("shows the dish itself when the choice is asked about", () => {
+    const r = answerGuest(stall, [{ role: "user", content: "takoyaki can no bonito? got extra charge?" }]);
+    expect(r.items.map((i) => i.name)).toContain("Takoyaki");
+  });
+});
