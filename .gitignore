@@ -31,3 +31,6 @@ crates/core/target/
 # Agents' isolated worktrees
 /.claude/worktrees/
 /devpost/qloo-submission.md
+
+# Python bytecode (scripts/reader)
+__pycache__/
