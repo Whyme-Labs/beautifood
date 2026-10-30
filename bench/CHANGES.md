@@ -974,3 +974,28 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   keep it from making an answer unsafe, not from making it wrong. The reader stays off. The next step
   is a reader trained on this task (scripts/reader/gen.ts writes its training data), judged on the
   same cases.
+
+## The owned reader, run 1 (no case or label changed)
+
+- A span-and-link encoder (mDeBERTa-v3-base, scripts/reader/train.py) trained on 59,979 synthetic orders
+  on ~3,000 generated menus (scripts/reader/gen.ts), 3 epochs on one ml.g5.xlarge: 4,190 billed
+  seconds (about US$1.6 at on-demand price). Never trained on a benchmark question.
+- On the synthetic valid set (2,999, exact reading: every line, count, add-on, unmatched dish and flag):
+  zh 93.8%, Manglish 91.9%, en 92.0%, ms 95.1%, all 92.8%. (The job's own end-of-run score, 60.8%, was
+  from a decoding bug, fixed: a space-only token broke a span in half the English and Malay messages.)
+  About 0.2 seconds a message on CPU.
+- On the 465 v10 dev cases tagged bill or modifier, as the model reader:
+
+| Policy | Pass | Unsafe | Fixed | Broke |
+|---|---|---|---|---|
+| rules alone | 75.9% | 0 | | |
+| fill | 75.3% | 0 | 0 | 3 |
+| replace | 64.5% | 0 | 0 | 53 |
+
+- So it doesn't carry over to real menus yet. Its lines matched the rules' on 221 of 465 (Qwen3-1.7B: 131),
+  and the checks dropped 457 dishes it linked that the message never named. Two causes, both of the
+  design, not of training: the tagger reads the message without the menu, so whether a food word is on
+  the menu was learnt from where it stood (the generator always put a dish the menu lacks last); and the
+  synthetic messages are only orders, so "monday" and "promo" were read as dishes. Next run: the tagger
+  marks any dish word and only the linker, which sees the menu, decides it isn't on it; and the generator
+  writes the rest of a guest's message (days, deals, people, questions, "that one") and more kinds of add-on.
