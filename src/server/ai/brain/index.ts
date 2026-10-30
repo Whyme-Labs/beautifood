@@ -203,7 +203,8 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     const fallback = !onlyNamed || (fresh && Math.max(0, ...order.map(fit)) > Math.max(0, ...fresh.map(fitOf)) && !fresh.some((i) => nameWords(i).every((w) => ` ${c} `.includes(` ${w} `))));
     const targets = [...(lines.length || !fallback ? lines : [...order].reverse().filter((o) => fit(o) > 0).sort((a, b) => fit(b) - fit(a)).slice(0, 1))];
     // ("make one of the nasi lemak large", "one of the teh tarik iced": one of that line, on a line of its own)
-    const oneOf = /\b(one of (the|them|those)|satu daripada|salah satu)\b/.test(c) || /其中一/.test(clause);
+    // (and "make it two, one with extra scoop": one of them)
+    const oneOf = /\b(one of (the|them|those)|satu daripada|salah satu)\b|^\s*(one|satu) (with|w|dengan|tambah|add)\b/.test(c) || /其中一|^\s*一(个|份|杯|碗)?(要|加)/.test(clause);
     if (oneOf && targets.length === 1 && targets[0].count > 1) {
       const o = targets[0];
       o.count -= 1;
@@ -1212,6 +1213,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     return reply("order_help", text, []);
   }
   const pointed = pointedAt(u.text, state.shown);
+  const lineName = (o: OrderLine) => (o.options?.length ? t("assistantReply.withOptions", { dish: name(o.item), options: list(o.options.map(optionLabel)) }) : name(o.item));
+  // "how much more for large?" of a line ordered: what the choice adds, and the line with it
+  const moreAsked = /\bhow much (more|extra)\b|\bberapa (lagi|lebih|tambah)\b|\bextra how much\b/.test(nt1) || /贵多少|加多少|多多少/.test(u.text);
+  const moreOn = moreAsked && !mentioned.length ? [...state.order].reverse().find((o) => optionsSaid(u.text, o.item).add.some((x) => x.price > 0)) : undefined;
+  if (moreOn) {
+    const extra = optionsSaid(u.text, moreOn.item).add.filter((x) => x.price > 0 && !(moreOn.options ?? []).some((y) => y.name === x.name));
+    if (extra.length) {
+      const withIt: OrderLine = { item: moreOn.item, count: 1, options: [...(moreOn.options ?? []), ...extra] };
+      return reply("order_help", t("assistantReply.moreFor", { option: list(extra.map(optionLabel)), more: money(extra.reduce((n, x) => n + x.price, 0)), dish: lineName(withIt), price: money(unitPrice(withIt)) }), [moreOn.item]);
+    }
+  }
   // "the ones with cockles, which one cheaper?": of the ones its words pick, that one
   if (pointed.length === 1 && u.superlative && state.shown.length >= 2 && /\b(the ones|those) (with|that have|that got|got|yang ada)\b/.test(nt1) && /\b(which|mana)\b/.test(nt1)) {
     const p = pointed[0].item;
@@ -1240,7 +1252,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const free = said.filter((o) => !o.price);
     if (priced.length) {
       const total = optHost.price + priced.reduce((n, o) => n + o.price, 0);
-      const each = ` (${priced.map((o) => `${optionLabel(o)} +${money(o.price)}`).join(", ")})`;
+      // (its own price too: "RM17.90 (RM16.90, Iced Milo +RM1.00)")
+      const each = ` (${[money(optHost.price), ...priced.map((o) => `${optionLabel(o)} +${money(o.price)}`)].join(", ")})`;
       return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.pricedWith", { dish: t("assistantReply.withOptions", { dish: name(optHost), options: list(said.map(optionLabel)) }), price: money(total) }).replace(/[.。]$/, "")}${each}${stop}`, [optHost]);
     }
     // (of a kind of dish: free on all of that kind that have it)
@@ -1375,7 +1388,6 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     return { ch, exact, due: Math.round(exact / Math.max(1, ch.cashRounding)) * Math.max(1, ch.cashRounding) };
   };
   // "Teh Tarik with iced": a line's add-ons
-  const lineName = (o: OrderLine) => (o.options?.length ? t("assistantReply.withOptions", { dish: name(o.item), options: list(o.options.map(optionLabel)) }) : name(o.item));
   // "does the cheese foam have dairy?", "我吃全素，可以加奶盖吗？", "what's in the snow cheese?": an add-on
   // asked about on its own, by what the menu's lines say it's made of ("salted cheese foam (cream cheese, …)")
   const askedOpt = !mentioned.length && !nth && !state.order.length && !u.superlative && u.budget === null && !CHEAPEST_WAY.test(nt1) && !CHEAPEST_WAY_ZH.test(u.text) && (u.asksContents || u.allergens.length > 0 || u.diet.length > 0 || /\b(what is|whats|what s|apa itu)\b/.test(nt1) || /是什么/.test(u.text)) && (/[?？]|吗/.test(u.text) || QUESTION.test(nt1))
@@ -1492,8 +1504,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       pointedLines.forEach((o, k) => applyOptions([o], u.text.slice(k ? pointers[k] : 0, pointers[k + 1] ?? u.text.length), [o.item]));
     else if (pointedLines.length) applyOptions(pointedLines, u.text, pointedLines.map((o) => o.item));
     // "I'll take that, and a teh", "ok add it": the one dish the last answer suggested
-    const accepts = (ordering || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)));
-    if (accepts && !edited && state.shown.length === 1 && !bill.some((o) => o.item.id === state.shown[0].id) && !mentioned.includes(state.shown[0])) bill.push({ item: state.shown[0], count: 1 });
+    // ("make it two, one with extra scoop. total" of the dish just priced: two of it)
+    const makeN = nt1.match(/\b(?:make (?:it|that)|jadikan)\s+(\d|one|two|three|four|five|dua|tiga|empat|lima)\b/)?.[1];
+    const accepts = (ordering || !!makeN || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)));
+    if (accepts && !edited && state.shown.length === 1 && !bill.some((o) => o.item.id === state.shown[0].id) && !mentioned.includes(state.shown[0])) {
+      bill.push({ item: state.shown[0], count: makeN ? (NUMBER_OF[makeN] ?? (Number(makeN) || 1)) : 1 });
+      if (makeN) applyOptions(bill, u.text, [state.shown[0]]);
+    }
     // "2 bowls of rice", "satu nasi putih": the plain rice, when the menu has one
     const rice = plainRice(u.text, u.delexicalized.join(" "), live as Dish[]);
     if (rice && !edited && !bill.some((o) => o.item.id === rice.dish.id)) bill.push({ item: rice.dish as Item, count: rice.count });

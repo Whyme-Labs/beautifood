@@ -518,6 +518,7 @@ const en = {
     hasWordZh: "{dish} has {word}.",
     noWordZh: "{dish} has no {word}.",
     halalListedNotHalal: "{dish} lists no pork or alcohol, but this branch isn't halal-certified, so its kitchen may also cook pork or use alcohol.",
+    moreFor: "{option} is {more} more: {dish} comes to {price}.",
     ofThose: "Of those, here's what's {filters}:",
     notHalal: "{dish} is not halal: it has {what}.",
     porkOrAlcohol: "pork or alcohol",
