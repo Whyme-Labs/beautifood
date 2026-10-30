@@ -7,6 +7,7 @@ import type { Clock, PriceRule, TimedMenu } from "../../shared/schedule";
 import { localizeItem } from "../../shared/menuI18n";
 import { formatters, translator, type MessageKey } from "../../i18n/core";
 import type { PlatformPairs } from "./brain/concepts";
+import type { OrderReading } from "./brain/reading";
 import type { Halal } from "./halal";
 
 export interface AssistantContext {
@@ -37,6 +38,13 @@ export interface AssistantContext {
   charges?: { serviceChargePct: number; taxPct: number; taxInclusive: boolean; cashRounding: number };
   /** The branch's halal standing (certified by whom, Muslim-friendly, pork-free, or nothing declared). */
   halal?: Halal;
+  /**
+   * The latest message as a model read it (./brain/modelReader), checked against the menu, and how
+   * the brain uses it for this turn's order lines: "replace" the rules' lines, or "fill" only where
+   * the rules found fewer dishes. Absent: the rules read alone.
+   */
+  reading?: OrderReading;
+  readerPolicy?: "replace" | "fill";
 }
 
 export interface AssistantReply {

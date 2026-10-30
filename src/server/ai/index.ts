@@ -20,6 +20,8 @@ import { likedThing, tasteHint } from "../taste/bridge";
 import { tasteEnabled, tasteRunner, type TasteEnv } from "../taste/client";
 import { tasteLocation } from "../taste/brief";
 import { chatStats, logTurn } from "./brain/log";
+import { modelReader, readWithModel, type ReaderEnv } from "./brain/modelReader";
+import { linesKey, rulesLines } from "./brain/reading";
 import { platformPairs } from "./brain/platform";
 import { answerWithModel, guestModel, type AiBinding } from "./guestModel";
 import { limitsFrom, mayUseModel, recordUsage, type Usage } from "./usage";
@@ -98,9 +100,22 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
  * is set. Any model failure, or a model answer that puts an allergen the guest named in front of
  * them, falls back to the brain's answer.
  */
-export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & TasteEnv & { AI?: AiBinding }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply & { turn?: string }> {
+export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & TasteEnv & ReaderEnv & { AI?: AiBinding; READER_POLICY?: string }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply & { turn?: string }> {
   const actx = await assistantContext(db, ctx);
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
+  // A model reader (off unless READER_PROVIDER is set): the latest message read into order lines,
+  // checked against the menu, for the brain to price. A guest never waits on it past 4 seconds.
+  const reader = modelReader(env);
+  let readerDiffers = false;
+  if (reader && question) {
+    const dishes = actx.items.filter((i) => i.active !== false && !i.soldOut && i.servedNow !== false) as unknown as Parameters<typeof readWithModel>[1];
+    const reading = await Promise.race([readWithModel(reader, dishes, question, (n) => formatMoney(n, actx.currency)), new Promise<null>((r) => setTimeout(() => r(null), 4000))]).catch(() => null);
+    if (reading) {
+      actx.reading = reading;
+      actx.readerPolicy = env.READER_POLICY === "replace" ? "replace" : "fill";
+      readerDiffers = linesKey(reading.lines) !== linesKey(rulesLines(dishes, question));
+    }
+  }
   // "I love BTS…": what fans of it love near this branch, from Qloo, as a boost on the menu's dishes.
   // A guest never waits on a sleeping taste service: past 2.5 seconds the brain answers without it
   // (the request still wakes the container, so the next guest gets Qloo).
@@ -123,7 +138,8 @@ export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSet
     intent: brain.intent,
     confidence: brain.confidence ?? 0,
     confident: brain.confident !== false,
-    engine: r.engine,
+    // (a turn the model reader read differently from the rules: the review queue for the learning loop)
+    engine: readerDiffers ? `${r.engine}+reader-differs` : r.engine,
     shown: items.map((i) => i.id),
   }).catch((e) => (console.warn("assistant log", e), undefined));
   return { answer: r.answer, items, safetyNote: r.safetyNote, engine: r.engine, confident: r.confident, taste: r.taste, turn };

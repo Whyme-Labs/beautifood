@@ -158,6 +158,23 @@ function orderedLines(u: { dishes: Dish[]; toks: string[]; spots: Spot[]; breaks
     .filter((l) => !(l.ref && order.some((o) => o.item.id === l.dish.id)))
     .map((l) => ({ item: l.dish as Item, count: l.count, options: l.options.length ? l.options : undefined }));
 }
+/**
+ * This turn's order lines: the rules' reading, or a model's (ctx.reading, already checked against
+ * the menu) as the policy says. "fill" takes the model's only when it finds every dish the rules
+ * did and more; "replace" whenever it read any line. (Priced add-ons only, as the rules' lines.)
+ */
+function turnLines(ctx: AssistantContext, rules: OrderLine[]): OrderLine[] {
+  const r = ctx.reading;
+  if (!r || !r.lines.length || !ctx.readerPolicy) return rules;
+  const model: OrderLine[] = r.lines.filter((l) => orderable(l.dish as Item)).map((l) => {
+    const priced = l.options.filter((o) => o.price > 0);
+    return { item: ctx.items.find((i) => i.id === l.dish.id) as Item, count: l.count, options: priced.length ? priced : undefined };
+  }).filter((l) => !!l.item);
+  if (ctx.readerPolicy === "replace") return model;
+  const ids = (ls: OrderLine[]) => new Set(ls.map((l) => l.item.id));
+  const [a, b] = [ids(rules), ids(model)];
+  return !rules.length || ([...a].every((x) => b.has(x)) && b.size > a.size) ? model : rules;
+}
 /** Adds lines to an order: more of a line with the same add-ons, else a line of its own. */
 function addLines(order: OrderLine[], lines: OrderLine[]) {
   for (const l of lines) {
@@ -1585,7 +1602,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // (not "remove the sotong, too spicy for me")
     const mineSaid = state.order.length > 0 && mentioned.length > 0 && !editing && (/\b(i only had|i had|i just had|i ate|i got|mine|my share|my part|my portion|for me|i ll pay for|i will pay for|i pay for|i m paying for|saya (makan|ambil|order|minum|bayar)|aku (makan|ambil|minum|bayar))\b/.test(nt1) || /我只(吃|喝|点|要)了?|我(吃|喝|点)了|我的那|我付/.test(u.text)) && mentioned.every((i) => state.order.some((o) => o.item.id === i.id));
     if (mentioned.length && !edited && !mineSaid && (ordering || totalWord || howMuch || changing || priceClaimed))
-      addLines(bill, orderedLines(u, mentioned, existing).filter((l) => (ordering || !existing.some((o) => o.item.id === l.item.id)) && !((REMOVE.test(nt1) || REMOVE.test(u.text)) && !ORDERING.test(nt1))));
+      addLines(bill, turnLines(ctx, orderedLines(u, mentioned, existing)).filter((l) => (ordering || !existing.some((o) => o.item.id === l.item.id)) && !((REMOVE.test(nt1) || REMOVE.test(u.text)) && !ORDERING.test(nt1))));
     if (again) {
       // ("那个再来一份" after a slice and a sprite: the food, said first)
       const main = state.last.find((o) => !isDrink(o.item)) ?? state.last[state.last.length - 1];

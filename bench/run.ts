@@ -3,6 +3,8 @@
 // reading, the decision rules, ranking or wording.
 //
 //   npx tsx bench/run.ts [--engine brain|rules] [--split test|dev|all] [--data gold|parser] [--label name] [--fail]
+//     [--tags bill,modifier] [--reader-url http://127.0.0.1:8080/v1 --reader-policy replace|fill --reader-cache file]
+import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { parseMenuText } from "../src/shared/menuParser";
@@ -12,6 +14,8 @@ import { answerLocally, type AssistantContext } from "../src/server/ai/local";
 import { withBranchHalal } from "../src/server/ai/halal";
 import { menuNow, type Clock, type PriceRule, type TimedMenu, type Window } from "../src/shared/schedule";
 import { halalStanding, type HalalInfo, type Menu, type ModifierGroup } from "../src/shared/types";
+import { checkReading, type RawOrderReading } from "../src/server/ai/brain/reading";
+import { openAiReader, readerSchema, readerSystem, type ReaderCall } from "../src/server/ai/brain/modelReader";
 import { claims } from "./claims";
 import type { Case, Expect } from "./schema";
 
@@ -22,6 +26,8 @@ const ENGINE = arg("--engine", "brain");
 const SPLIT = arg("--split", "");
 const SET = arg("--set", "v1") as Set;
 const DATA = arg("--data", "gold") as "gold" | "parser";
+// only the cases with one of these tags (comma-separated), for a quicker run
+const TAGS = arg("--tags", "") ? arg("--tags", "").split(",") : null;
 
 type Item = AssistantContext["items"][number];
 
@@ -222,11 +228,56 @@ interface Trace {
   delexicalized: string;
 }
 
-export function runEngine(engine: string, cases: Case[], data: "gold" | "parser" = "gold") {
+/** What a guest can order now, in the menu's order: the dishes a model reader is shown. */
+export const readable = (ctx: AssistantContext) => ctx.items.filter((i) => i.active !== false && !i.soldOut && i.servedNow !== false) as unknown as Dish[];
+
+/**
+ * Each case's latest message read by a model (--reader-url), as the raw JSON it returned, cached in
+ * --reader-cache by prompt and message so a run can be repeated without the model.
+ */
+export async function readAll(cases: Case[], data: "gold" | "parser", call: ReaderCall, cachePath: string, log = false): Promise<Map<string, RawOrderReading | null>> {
+  const cache: Record<string, string> = existsSync(cachePath) ? JSON.parse(readFileSync(cachePath, "utf8")) : {};
+  const out = new Map<string, RawOrderReading | null>();
+  const money = (n: number) => `RM${(n / 100).toFixed(2)}`;
+  // (by menu, so the model server's prompt cache holds the menu between calls)
+  const sorted = [...cases].sort((a, b) => `${a.menu}${JSON.stringify(a.at ?? null)}`.localeCompare(`${b.menu}${JSON.stringify(b.at ?? null)}`));
+  let n = 0;
+  for (const c of sorted) {
+    const dishes = readable(loadMenu(c.menu, data, c.at));
+    const system = readerSystem(dishes, money);
+    const k = createHash("sha256").update(`${system}\n${c.question}`).digest("hex").slice(0, 24);
+    if (!(k in cache)) {
+      try {
+        cache[k] = await call(system, `Message: ${c.question}\nJSON:`, readerSchema(dishes));
+      } catch (e) {
+        cache[k] = "";
+        if (log) console.error(`reader failed on ${c.id}: ${(e as Error).message}`);
+      }
+      if (++n % 10 === 0) {
+        writeFileSync(cachePath, JSON.stringify(cache));
+        if (log) console.error(`read ${n}`);
+      }
+    }
+    const json = cache[k].replace(/<think>[\s\S]*?<\/think>/g, "").match(/\{[\s\S]*\}/)?.[0];
+    let raw: RawOrderReading | null = null;
+    try {
+      raw = json ? (JSON.parse(json) as RawOrderReading) : null;
+    } catch {
+      raw = null;
+    }
+    out.set(c.id, raw);
+  }
+  writeFileSync(cachePath, JSON.stringify(cache));
+  return out;
+}
+
+export function runEngine(engine: string, cases: Case[], data: "gold" | "parser" = "gold", readings?: Map<string, RawOrderReading | null>, policy?: "replace" | "fill") {
   const menus = new Map<string, AssistantContext>();
   return cases.map((c) => {
     const key = `${c.menu} ${JSON.stringify(c.at ?? null)}`;
-    const ctx = menus.get(key) ?? menus.set(key, loadMenu(c.menu, data, c.at)).get(key)!;
+    const base = menus.get(key) ?? menus.set(key, loadMenu(c.menu, data, c.at)).get(key)!;
+    const raw = readings?.get(c.id);
+    const ctx: AssistantContext = raw && policy ? { ...base, reading: checkReading(raw, readable(base), () => true, c.question), readerPolicy: policy } : base;
     const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.user }, { role: "assistant" as const, content: b.assistant }]), { role: "user" as const, content: c.question }];
     const t0 = performance.now();
     let answer = "";
@@ -310,13 +361,17 @@ export function summarise(rows: Row[]) {
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === `file://${process.argv[1]}`) void (async () => {
   if (!["dev", "test", "all"].includes(SPLIT)) {
     console.error("usage: npx tsx bench/run.ts --split dev|test|all [--set v1|heldout|v3|v4|v5|v6|v7|v8|v9|v10] [--engine brain|rules] [--data gold|parser] [--label name] [--fail]");
     process.exit(1);
   }
-  const cases = loadCases(SPLIT, SET);
-  const rows = runEngine(ENGINE, cases, DATA);
+  const cases = loadCases(SPLIT, SET).filter((c) => !TAGS || (c.tags ?? []).some((t) => TAGS.includes(t)));
+  // a model reader (--reader-url, an OpenAI-style endpoint such as llama.cpp's server), its readings cached
+  const readerUrl = arg("--reader-url", "");
+  const policy = arg("--reader-policy", "") as "" | "replace" | "fill";
+  const readings = readerUrl ? await readAll(cases, DATA, openAiReader(readerUrl, "none", arg("--reader-model", "local")), arg("--reader-cache", "/tmp/reader-cache.json"), true) : undefined;
+  const rows = runEngine(ENGINE, cases, DATA, readings, policy || undefined);
   const s = summarise(rows);
   const sha = (() => {
     try {
@@ -331,4 +386,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (process.argv.includes("--fail"))
     for (const r of rows.filter((x) => !x.pass)) console.log(`✗ [${r.stage}] ${r.id} (${r.lang}) ${r.question.slice(0, 80)}\n    → ${r.failed.join("; ")}\n    intent ${r.trace.modelIntent} ${r.trace.confidence} (margin ${r.trace.margin}) → ${r.trace.decided} | ${r.answer.slice(0, 140)}`);
   console.log(JSON.stringify({ label, n: s.n, pass: s.pass, unsafe: s.unsafe, p50ms: s.p50ms, p99ms: s.p99ms, failuresByStage: s.failuresByStage, intentConfidence: s.intentConfidence, byLang: s.byLang }, null, 1));
-}
+})();

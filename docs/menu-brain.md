@@ -121,6 +121,43 @@ templates.
   wording goes in the locale files. New dish concepts and classic pairings go in `concepts.ts`.
 - **Run the checks:** `npx vitest run test/unit/brain.test.ts`.
 
+## The model reader (an experiment, off by default)
+
+A language model can read a guest's latest message into an order reading
+(`src/server/ai/brain/reading.ts`): the lines it orders, each a dish of this menu with its count,
+the add-ons it asks for and the ones it takes off, plus anything it names that the menu doesn't
+have. The model only reads. The brain prices the reading, checks it and writes the reply, and the
+rules alone read what a guest avoids (allergens, diet, spice, alcohol), so a model can't make an
+answer less safe.
+
+```
+message ─► model (JSON schema: this menu's dish keys only) ─► checkReading ─► brain prices it
+                                                               │  dish on the menu, orderable now
+                                                               │  dish named in the message (grounded)
+                                                               │  add-ons the dish's own, group limits
+                                                               └  count 1–20; the rest kept as "unmatched"
+```
+
+- **The contract** (`OrderReading`) is what any reader returns: the rules' lines are one,
+  `modelReader.ts` another, and an owned small reader trained on the log would be a third.
+- **Grounded.** A model may find a dish the rules missed, but not one the guest never named: the
+  message must hold a word of its name only it has on the menu (in any spelling the rules accept,
+  "kari ayam" for chicken curry) or two characters of its Chinese name.
+- **Policies.** `fill` takes the model's lines only when they find every dish the rules did and
+  more; `replace` takes them whenever it read any line. Off unless `READER_PROVIDER` is set
+  (`workers-ai`, or `openai` with `READER_BASE_URL`, `READER_API_KEY`, `READER_MODEL`);
+  `READER_POLICY` picks the policy. A guest never waits on it past 4 seconds.
+- **The learning loop.** A turn the model read differently from the rules is logged with engine
+  `…+reader-differs`, and `harvest.ts` picks those first (`readers_differ`): the review queue for
+  the readings an owned reader most needs to learn.
+- **Limits.** It reads only the latest message: earlier turns are still read by the rules, so a
+  bill built over several turns gains only from what this turn adds. Grounding catches a dish
+  the guest never named, not the wrong one of two dishes both named.
+
+Benchmark it with `bench/run.ts --reader-url <OpenAI-style endpoint> --reader-policy fill|replace
+--reader-cache <file>` (readings are cached by prompt and message; `--tags bill,modifier` for the
+cases it is meant for).
+
 ## Learning across restaurants
 
 Each dish maps to shared concepts (`src/server/ai/brain/concepts.ts`): curry noodles, coconut rice,

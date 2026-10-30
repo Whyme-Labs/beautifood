@@ -1,10 +1,11 @@
 // Picks the guest questions worth teaching the brain from the assistant's log: ones it wasn't sure
-// of, called off-topic, or answered with dishes nobody added. Writes them for labelling
+// of, called off-topic, answered with dishes nobody added, or that the model reader read differently
+// from the rules (engine "…+reader-differs": the reading the next owned reader most needs to learn). Writes them for labelling
 // (./label.ts). The log holds questions only as the model read them (dish names as §dish).
 //
 // Get a dump of the log (production, last 30 days):
 //   npx wrangler d1 execute beautifood-app-db --remote --json \
-//     --command "SELECT question, lang, intent, confidence, confident, shown, added FROM assistant_turns WHERE created_at > (strftime('%s','now') - 30*86400) * 1000" > turns.json
+//     --command "SELECT question, lang, intent, confidence, confident, engine, shown, added FROM assistant_turns WHERE created_at > (strftime('%s','now') - 30*86400) * 1000" > turns.json
 // or locally: npx void db execute "<the same SELECT>" (and save its rows as JSON).
 // Then:
 //   npx tsx scripts/brain/harvest.ts turns.json [scripts/brain/to-label.json]
@@ -18,6 +19,7 @@ interface Row {
   intent: string;
   confidence: number;
   confident: number;
+  engine?: string;
   shown: string;
   added: string;
 }
@@ -27,7 +29,7 @@ export interface ToLabel {
   lang: string;
   /** What the brain read it as, and why it's here. */
   intent: string;
-  reason: "unsure" | "off_topic" | "not_added";
+  reason: "unsure" | "off_topic" | "not_added" | "readers_differ";
   count: number;
 }
 
@@ -47,7 +49,7 @@ export function harvest(rows: Row[]): ToLabel[] {
     const shown = JSON.parse(r.shown || "[]") as string[];
     const added = JSON.parse(r.added || "[]") as string[];
     const reason: ToLabel["reason"] | null =
-      r.intent === "out_of_scope" ? "off_topic" : !r.confident || r.confidence < 600 ? "unsure" : r.intent === "recommend" && shown.length && !added.length ? "not_added" : null;
+      r.intent === "out_of_scope" ? "off_topic" : !r.confident || r.confidence < 600 ? "unsure" : r.engine?.endsWith("+reader-differs") ? "readers_differ" : r.intent === "recommend" && shown.length && !added.length ? "not_added" : null;
     if (!reason) continue;
     const hit = picked.get(q);
     if (hit) hit.count++;
