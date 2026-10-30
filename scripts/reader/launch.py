@@ -4,7 +4,7 @@
 #
 #   python launch.py --bucket <bucket> --role <role arn> --data <dir with train.jsonl, valid.jsonl, *.menus.json>
 #                    [--prefix beautifood-reader] [--instance ml.g5.xlarge] [--hours 3] [--epochs 3]
-#   python launch.py --status <job name>
+#   python launch.py --status <job name>     python launch.py --logs <job name>
 import argparse, io, os, tarfile, time
 
 import boto3
@@ -46,6 +46,15 @@ def launch(a):
     )
     print(job)
 
+def logs(name, last=20):
+    """The job's last log lines (CloudWatch): training steps, losses, valid scores."""
+    cw = boto3.client("logs")
+    streams = cw.describe_log_streams(logGroupName="/aws/sagemaker/TrainingJobs", logStreamNamePrefix=name)["logStreams"]
+    for st in streams[:1]:
+        ev = cw.get_log_events(logGroupName="/aws/sagemaker/TrainingJobs", logStreamName=st["logStreamName"], startFromHead=False, limit=last)["events"]
+        for e in ev:
+            print(e["message"][:300])
+
 def status(name):
     d = boto3.client("sagemaker").describe_training_job(TrainingJobName=name)
     print(d["TrainingJobStatus"], d.get("SecondaryStatus"), d.get("FailureReason", ""), d.get("ModelArtifacts", {}).get("S3ModelArtifacts", ""))
@@ -60,5 +69,6 @@ if __name__ == "__main__":
     p.add_argument("--batch", type=int, default=32)
     p.add_argument("--lr", type=float, default=3e-5)
     p.add_argument("--status")
+    p.add_argument("--logs")
     a = p.parse_args()
-    status(a.status) if a.status else launch(a)
+    logs(a.logs) if a.logs else status(a.status) if a.status else launch(a)
