@@ -953,3 +953,24 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   ones have unit tests: a soy add-on asked for by a soy-allergic guest, and an add-on taken off that
   isn't an allergy. A guest who takes no alcohol is kept away from dishes cooked with wine, mirin
   or sake.
+
+## The model reader, measured with an off-the-shelf small model (no case or label changed)
+
+- The model reader (docs/menu-brain.md) read the latest message of the 465 v10 dev cases tagged bill
+  or modifier, with Qwen3-1.7B (Q8, llama.cpp, CPU, reasoning off, JSON schema limited to the menu's
+  dish keys). LFM3-1.7B was tried first on a few messages and read worse (dishes the guest never
+  named).
+- It returned a reading for 396 of 465; the checks dropped something (a dish not named in the
+  message, an add-on the dish doesn't have, a second size) from 232 of them, and 131 matched the
+  rules' lines exactly. About 1 to 25 seconds a message on 4 CPU cores.
+
+| Policy | Pass | Unsafe | Fixed | Broke |
+|---|---|---|---|---|
+| rules alone | 75.9% | 0 | | |
+| fill (the model's lines only when they find every dish the rules did and more) | 75.3% | 0 | 0 | 3 |
+| replace (the model's lines whenever it read any) | 65.2% | 0 | 1 | 51 |
+
+- So an off-the-shelf model of this size reads these orders worse than the rules, and the checks
+  keep it from making an answer unsafe, not from making it wrong. The reader stays off. The next step
+  is a reader trained on this task (scripts/reader/gen.ts writes its training data), judged on the
+  same cases.
