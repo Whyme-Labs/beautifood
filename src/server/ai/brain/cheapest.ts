@@ -28,7 +28,7 @@ export const CHEAPEST_WAY_ZH = /怎(样|么)(买|点)(最)?(便宜|划算)|最(�
 const NUM: Record<string, number> = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5 };
 const ZH_NUM: Record<string, number> = { 一: 1, 两: 2, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6 };
 // words that say nothing about the food: the ask itself, and how it's served
-const STOP = /^(i|we|want|wanna|need|would|like|what|whats|s|is|it|its|the|a|an|some|me|my|please|pls|can|could|how|do|does|to|get|order|buy|have|that|this|those|them|all|of|for|cheapest|cheaper|economical|best|value|way|way to|or|in|on|which|nak|mau|saya|kami|hot|iced|cold|warm|panas|ais|sejuk|cara|paling|murah)$/;
+const STOP = /^(today|now|tonight|please|i|we|want|wanna|need|would|like|what|whats|s|is|it|its|the|a|an|some|me|my|please|pls|can|could|how|do|does|to|get|order|buy|have|that|this|those|them|all|of|for|cheapest|cheaper|economical|best|value|way|way to|or|in|on|which|nak|mau|saya|kami|hot|iced|cold|warm|panas|ais|sejuk|cara|paling|murah)$/;
 const WITH = /^(with|plus|dengan|tambah)$/;
 const SPLIT = /^(and|dan|n|plus|then|also|&)$/;
 
@@ -53,7 +53,7 @@ export function needsOf(text: string): Need[] | null {
     });
     return needs.length && (needs.length >= 2 || needs[0].count >= 2) ? needs : null;
   }
-  const toks = normalize(text.replace(CHEAPEST_WAY, " ").replace(/[,;]/g, " and ")).split(" ").filter(Boolean);
+  const toks = normalize(text.replace(CHEAPEST_WAY, " ").replace(/[,;+&]/g, " and ")).split(" ").filter(Boolean);
   const needs: Need[] = [];
   let cur: string[] = [];
   let count = 1;

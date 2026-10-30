@@ -574,7 +574,7 @@ const en = {
     withTaxOnly: "With {tax} tax (no service charge), {total}.",
     optionYes: "Yes.",
     itsAddOns: "Add-ons for {dish}: {list}.",
-    optionNotOn: "{option} isn't available on {dish}; it comes on {list}.",
+    optionNotOn: "{option} isn't an option on {dish}; it comes on {list}.",
     optionNotOnNone: "{option} isn't available on {dish}.",
     noHot: "{dish} isn't available hot; it can't be made hot.",
     noSweetness: "{dish}'s sweetness is fixed; it can't be made less sweet.",

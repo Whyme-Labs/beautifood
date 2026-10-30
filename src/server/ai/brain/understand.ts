@@ -167,7 +167,7 @@ const KEYWORDS = (
 ).split(" ");
 
 /** Real words that are one letter off a keyword ("there" and "these", "daily" and "dairy"): never "corrected". */
-const REAL = new Set("bill bills batter batters there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story carb carbs keto protein calorie calories".split(" "));
+const REAL = new Set("cheese cheesy bill bills batter batters there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story carb carbs keto protein calorie calories".split(" "));
 
 /**
  * Allergen words, which are worth correcting even when short ("egs", "nutz"): missing one is the
@@ -511,6 +511,15 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     }
     for (let k = found.length - 1; k >= 0; k--) if (found[k].score < 0) found.splice(k, 1);
   }
+  // "classic burger can add mushroom sauce?": a word that, with the next, is an add-on somewhere on
+  // the menu ("mushroom sauce") doesn't name a dish it is only part of (the Mushroom Burger)
+  const optionNames = items.flatMap((d) => (d.modifiers ?? []).flatMap((g) => g.options.map((o) => ` ${normalize(o.name)} `)));
+  for (let k = found.length - 1; k >= 0; k--) {
+    const m = found[k];
+    if (m.zh || m.covered.length >= normalize(m.dish.name).split(" ").length) continue;
+    const own = normalize(m.dish.name).split(" ");
+    if (m.covered.some((i) => toks[i + 1] && !own.includes(toks[i + 1]) && optionNames.some((o) => o.includes(` ${toks[i]} ${toks[i + 1]} `)))) found.splice(k, 1);
+  }
   // two dishes claiming the same words: the better match keeps them
   found.sort((a, b) => b.score - a.score);
   if (process.env.DISH_DEBUG) console.log(found.map((m) => [m.dish.name, m.covered.map((i) => toks[i]).join("+"), m.score.toFixed(2)]));
@@ -523,6 +532,13 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     if (shared.length && m.score < 1 && !(shared.every(common) && m.covered.some((i) => !claimed.has(i) && !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))) return false;
     m.covered.forEach((i) => claimed.add(i));
     return true;
+  });
+  // "1 coke", "a sprite": a required choice of exactly one dish (the Canned Soft Drink's Flavour) names it
+  toks.forEach((t, i) => {
+    if (t.length < 3 || GENERIC.has(t) || kept.some((m) => m.covered.includes(i)) || skip.has(i)) return;
+    const forms = [t, t.replace(/s$/, "")];
+    const hosts = items.filter((d) => (d.modifiers ?? []).some((g) => (g.min ?? 0) >= 1 && g.options.some((o) => forms.includes(normalize(o.name)))));
+    if (hosts.length === 1 && !kept.some((m) => m.dish === hosts[0])) kept.push({ dish: hosts[0], at: i, covered: [i], score: 0.5 });
   });
   // "large fries", "a rice": a word several dishes end in names the plain one ("French Fries",
   // "Steamed Rice"), when nothing else took it
@@ -944,7 +960,8 @@ export function read(items: Dish[], asked: string): Reading {
   const dishWords = new Set(mentions.flatMap((m) => m.covered));
   // the question without its dish names: "vegetarian" in Vegetarian Mee Goreng is not a diet ask
   const rest = toks.filter((_, i) => !dishWords.has(i));
-  const restText = rest.join(" ");
+  // (a dish named in Chinese takes its characters too: 炸鱼薯条 says nothing of fish)
+  const restText = mentions.reduce((r, m) => (m.zh ? ` ${r} `.split(` ${[...m.zh].join(" ")} `).join(" ").trim() : r), rest.join(" "));
   let restRaw = raw;
   for (const m of mentions) for (const tr of Object.values(m.dish.translations ?? {})) if (tr?.name) restRaw = restRaw.split(tr.name).join(" ");
 

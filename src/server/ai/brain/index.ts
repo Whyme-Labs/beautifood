@@ -1847,7 +1847,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         if (asked.length) s += conflict.length ? t("assistantReply.notSuitable", { list: list(conflict.map(allergen)) }) : t("assistantReply.doesntList", { list: list(asked.map((a) => (en ? allergen(a).toLowerCase() : allergen(a)))) });
         // ("第一个有蛋吗？", "那个有没有虾？": the answer in the guest's own word first)
         // (each word once, and "has it" when the dish has any of what the word covers: 海鲜 is fish and shellfish)
-        const zhWords = en ? [] : [...new Set(asked.map((a) => zhAllergenWord(u.text, a)).filter((w): w is string => !!w))];
+        // (not inside the dish's own name: 炸鱼薯条 asks nothing about fish)
+        const askedZh = Object.values(item.translations ?? {}).reduce((q, x) => (x?.name ? q.split(x.name).join(" ") : q), u.text);
+        const zhWords = en ? [] : [...new Set(asked.map((a) => zhAllergenWord(askedZh, a)).filter((w): w is string => !!w))];
         if (zhWords.length) s = `${zhWords.map((w) => t(mentionedAllergens(w).some((a) => item.allergens.includes(a)) ? "assistantReply.hasWordZh" : "assistantReply.noWordZh", { dish: name(item), word: w })).join("")}${s}`;
         // what's in it, in the menu's words: "belacan", "cashew paste", "butter", "oyster sauce"
         if (desc(item)) s += `${sp}${t("assistantReply.madeWith", { description: desc(item).replace(/[.。]+$/, "") })}`;

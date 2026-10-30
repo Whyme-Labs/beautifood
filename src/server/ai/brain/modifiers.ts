@@ -90,7 +90,7 @@ const keyWords = (o: ModifierOption) => {
 const has = (w: string, words: Set<string>, joined: string) => (w.includes(" ") ? joined.includes(` ${w} `) : words.has(w));
 // said as itself (or in Chinese), or only in the guest's other words for it ("ikan" for fish)
 // (not an everyday word one letter from it: "my friend" isn't Fried egg, "dried" isn't fried)
-const EVERYDAY = new Set(["friend", "friends", "dried", "tried", "fired", "bread", "breads", "fries", "fried", "plain", "place", "large", "lunch", "sauce", "spice", "share", "shared", "table", "drink", "drinks"]);
+const EVERYDAY = new Set(["cheese", "cheesy", "friend", "friends", "dried", "tried", "fired", "bread", "breads", "fries", "fried", "plain", "place", "large", "lunch", "sauce", "spice", "share", "shared", "table", "drink", "drinks"]);
 const typo = (w: string, words: Set<string>) => w.length >= 5 && !/\d/.test(w) && [...words].some((x) => x.length >= 4 && x[0] === w[0] && x !== w && !EVERYDAY.has(x) && (editDistance(x, w, 1) <= 1 || (w.startsWith(x) && w.length - x.length === 1) || (x.length >= 5 && w.length - x.length === 2 && w.startsWith(x.slice(0, 3)) && subseq(x, w))));
 // "pudin" for "pudding": the letters typed are all in it, in order, with two left out
 const subseq = (typed: string, w: string) => {
@@ -177,6 +177,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
   for (const o of all) {
     if (!free && !(o.price > 0)) continue;
     if (phraseOf(o)) continue;
+    // ("Set: mushroom soup + iced lemon tea" is asked for as a set or combo, not by "mushrooms")
+    if (/^(set|combo|make it a set)\b/i.test(o.name) && !/\b(set|sets|combo|combos|meal)\b/.test(t) && !/套餐|配套|套/.test(raw)) continue;
     // (a count in brackets describes it, "Sui kow (2 pcs)": its words name it, not the number)
     const counted = /\(\s*\d+\s*(pcs|pc|pieces?|ketul|biji)?\s*\)/i.test(o.name);
     const ks = keyWords(o).filter((k) => !counted || (!/^\d+$/.test(k) && !/^(pcs|pc|pieces?|ketul|biji)$/.test(k)));
