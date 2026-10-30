@@ -54,7 +54,7 @@ describe("the menu brain on timed menus, seasons and deals", () => {
     const hh = ask(contextAt(KOPI_KAKI, at(3, "16:20", "2026-10-21")), "any promo now?");
     expect(hh.answer).toMatch(/Happy hour drinks -30%.*until 6:00\s?PM.*Kopi O Kosong \(RM2\.45, usually RM3\.50\)/);
     const none = ask(contextAt(SAKE_SMOKE, at(5, "23:40", "2026-10-23")), "any happy hour now?");
-    expect(none.answer).toMatch(/No deals on right now\. Happy hour beer & highballs -30% starts from Sat 5:00\s?PM/);
+    expect(none.answer).toMatch(/No deals on right now\. Happy hour beer & highballs -30% \(Mon, Tue, Wed, Thu, Fri, Sat 5:00\s?PM–7:30\s?PM\) starts from Sat 5:00\s?PM/);
   });
 
   it("serves a timed menu while it's on, and says when it's served when it isn't", () => {

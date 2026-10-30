@@ -247,7 +247,7 @@ const COOKING_PLACE = /^(grill|grills|bbq|barbecue|wok|oven|tandoor|charcoal|kit
 const MALAY_FOOD: Record<string, string[]> = {
   ayam: ["chicken"], udang: ["prawn", "prawns", "shrimp"], keju: ["cheese", "cheesy"], lala: ["clam", "clams"], kerang: ["cockle", "cockles"], daging: ["beef"],
   ikan: ["fish"], sotong: ["squid", "calamari"], telur: ["egg", "eggs"], kambing: ["mutton", "lamb"], ketam: ["crab"], tauhu: ["tofu"], itik: ["duck"],
-  sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], tee: ["tea"], nasi: ["rice"], sup: ["soup"], susu: ["milk"],
+  sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], tee: ["tea"], nasi: ["rice"], sup: ["soup"], kari: ["curry"], dri: ["dry"], susu: ["milk"],
   limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
 };
@@ -426,6 +426,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       if (df(w) === 1 && !GENERIC.has(w) && !ORIGIN.has(w) && ((!ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, ""))) || pointed) && w.length >= 4 && w !== "kacang" && (!allergenWord(w) || pointed)) unique = true;
     }
     if (!covered.length) return;
+    // a number alone ("those two") is a count, not the Two-Meat Rice
+    if (covered.every((i) => /^(\d+|one|two|three|four|five|six|seven|eight|nine|ten|satu|dua|tiga|empat|lima)$/.test(toks[i]))) return;
     // only the course's own words ("breakfast" of The Big Breakfast in "vegetarian breakfast?") don't name it
     if (!aimed && covered.length < name.length && covered.every((i) => ix.courseWords.has(toks[i]) || ix.courseWords.has(toks[i].replace(/s$/, "")))) return;
     // two or more of its words side by side ("steamed fish", "mee goreng") name it, generic or not
@@ -684,6 +686,9 @@ function meatsAvoided(question: string): Meat[] {
 }
 
 /** The course a single word asks for ("noodle", "kuih", "饭"), if any. */
+/** A word that names a kind of dish ("laksa", "pizza", "ramen"), on this menu or not. */
+export const dishWord = (word: string) => COURSES.some((c) => c.dish?.test(word)) || /^(laksa|cendol|rojak|satay|sate|dimsum|sushi|pizza|burger|kebab|shawarma|biryani|roti|dosai|thosai|tosai|ramen|udon|pho|bibimbap|tteokbokki|paella|lasagna|lasagne|taco|tacos|burrito|steak|sandwich|salad|congee|porridge|bubur)$/.test(word);
+
 export function courseOfWord(word: string): Course | null {
   return COURSES.find((c) => c.course !== "food" && (c.ask.test(word) || c.askZh.test(word)))?.course ?? null;
 }
@@ -725,7 +730,8 @@ function governed(question: string, a: Allergen): boolean {
     if (!mentionedAllergens(clause).includes(a)) return false;
     if (ALLERGY_WORD.test(clause)) return true;
     // Chinese: a cue just before the allergen word, or 过敏 after it
-    const zh = clause.match(/[\u4e00-\u9fff]/) ? clause : "";
+    // ("有没有虾？" asks whether there are prawns: its 没 isn't a "no")
+    const zh = clause.match(/[\u4e00-\u9fff]/) ? clause.replace(/有没有|有冇|有无/g, "有") : "";
     if (zh) {
       for (let i = 0; i < zh.length; i++) {
         if (!mentionedAllergens(zh.slice(i, i + 2)).includes(a) && !mentionedAllergens(zh[i]).includes(a)) continue;
@@ -913,7 +919,10 @@ export type Reading = Omit<Understanding, "intent" | "confidence" | "guess">;
 export function read(items: Dish[], asked: string): Reading {
   const { text: said, injected } = stripInjection(asked);
   // what guests call a menu's drink for short ("柠檬多多" for its 柠檬养乐多)
-  const question = items.some((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes("养乐多"))) ? said.replace(/(?<!养乐)多多/g, "养乐多") : said;
+  // ...and "siu yuk"/"sio bak" for its roast pork, "char siew" for its char siu
+  const menuText = items.map((i) => i.name.toLowerCase()).join(" | ");
+  const aliased = [[/\b(siu yuk|siu yoke|siew yoke|siew yuk|sio bak)\b/gi, "roast pork"], [/\b(char siew|cha siu|char sio)\b/gi, "char siu"]] as [RegExp, string][];
+  const question = aliased.reduce((q, [re, to]) => (menuText.includes(to) && !items.some((i) => re.test(i.name)) ? q.replace(re, to) : q), items.some((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes("养乐多"))) ? said.replace(/(?<!养乐)多多/g, "养乐多") : said);
   const raw = question.normalize("NFKC").toLowerCase();
   const ix = dishIndex(items);
   // fix typos in the words we read constraints from, but never in a word of a dish's name

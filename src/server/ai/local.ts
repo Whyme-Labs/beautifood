@@ -110,6 +110,9 @@ const ALLERGEN_WORDS_ZH: Partial<Record<Allergen, RegExp>> = {
   mustard: /芥末/,
 };
 
+/** The guest's own Chinese word for allergen `a` in `q` ("虾", "蛋", "花生"), if they used one. */
+export const zhAllergenWord = (q: string, a: Allergen) => ALLERGEN_WORDS_ZH[a]?.exec(q)?.[0];
+
 export function mentionedAllergens(q: string): Allergen[] {
   const found = ALLERGENS.filter((a) => ALLERGEN_WORDS[a].test(q) || ALLERGEN_WORDS_ZH[a]?.test(q) || ALLERGEN_WORDS_MS[a]?.test(q));
   // "saya alergi kacang": allergic to nuts, so peanuts and tree nuts both
