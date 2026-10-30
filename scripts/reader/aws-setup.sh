@@ -35,7 +35,7 @@ BUCKET=${BUCKET:-beautifood-reader-training-$(openssl rand -hex 4)}
 echo "account ${ACCOUNT:0:4}…, region $REGION, bucket $BUCKET"
 
 # 1. the bucket
-if aws_ s3api head-bucket --bucket "$BUCKET" 2>/dev/null; then
+if aws_ s3api head-bucket --bucket "$BUCKET" >/dev/null 2>&1; then
   echo "bucket exists: $BUCKET"
 else
   if [[ "$REGION" == "us-east-1" ]]; then
