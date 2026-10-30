@@ -925,3 +925,11 @@ was written after this round's fixes and names the kinds of question they handle
 either-or prices, what an add-on is made of, how many of a group, an add-on not on the menu). So
 v10 measures carry-over on the kinds of question the engine was built for, on unseen menus and
 phrasings, not the mix of natural guest traffic.
+
+## v10 turned into a dev set (2026-10-30)
+
+At the product owner's choice, all of v10 becomes `dev` and is fixed case by case, over the
+alternative of keeping half of it held out. Only the split fields changed. v10's two scorings
+above are its only held-out results; from here no held-out set remains, and a new one (v11) is
+needed before progress can be measured again. Starting point on the current brain (06647fc):
+67.6%, 2 unsafe (the same counts as 363ea2e).
