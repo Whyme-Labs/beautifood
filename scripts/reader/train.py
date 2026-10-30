@@ -143,9 +143,19 @@ def line_set(r):
 def same_reading(a, b):
     return line_set(a) == line_set(b) and sorted(a["unmatched"]) == sorted(b["unmatched"]) and a["total"] == b["total"] and a["each"] == b["each"]
 
-def check(path):
-    """The decoder on the gold spans, links and attachments must give every gold reading."""
+def check(path, tok=None):
+    """The decoder on the gold spans, links and attachments must give every gold reading; and so
+    must the spans read back from the gold token tags (what the model's tags go through)."""
     rows = load(path)
+    if tok is not None:
+        ok, n = 0, 0
+        for r in rows:
+            ids, tags, _, offs, _ = token_tags(tok, r["message"], r["spans"])
+            back, _ = spans_from_tags(r["message"], offs, [max(t, 0) for t in tags])
+            gold = sorted((s["start"], s["end"], s["label"]) for s in r["spans"] if s["end"] > s["start"])
+            got = sorted((s["start"], s["end"], s["label"]) for s in back)
+            n += 1; ok += gold == got
+        print(f"spans read back from gold tags: {ok}/{n}")
     for name, how in (("gold attach", gold_attach), ("rule attach", rule_attach)):
         ok = Counter(); n = Counter(); bad = []
         for r in rows:
@@ -190,7 +200,7 @@ def token_tags(tok, message, spans):
                 tags[t] = TAGS.index(f"I-{s['label']}")
         span_tokens.append(idx)
     for t, (a, b) in enumerate(offs):
-        if a == b:
+        if a == b or not message[a:b].strip():
             tags[t] = -100
     return enc["input_ids"], tags, span_tokens, offs, misaligned
 
@@ -309,6 +319,28 @@ def batch_losses(model, tok, rows, idx, h, span_tokens, dev, rng):
 
 # ---- inference ----
 
+def spans_from_tags(message, offs, tags):
+    """The spans a token tagging marks, with each span's tokens."""
+    # (a token that is only a space, "▁", belongs to no span and doesn't break one: "Green ▁ Curry")
+    spans, toks = [], []
+    prev = None  # the last token that isn't a space
+    for t, (a, b) in enumerate(offs):
+        if a == b or not message[a:b].strip():
+            continue
+        name = TAGS[tags[t]]
+        if name == "O":
+            prev = t
+            continue
+        kind, label = name.split("-", 1)
+        if kind == "I" and spans and spans[-1]["label"] == label and toks[-1][-1] == prev:
+            spans[-1]["end"] = b; toks[-1].append(t); prev = t
+        else:
+            while a < b and message[a].isspace():
+                a += 1
+            spans.append({"start": a, "end": b, "label": label}); toks.append([t])
+        prev = t
+    return spans, toks
+
 class Inference:
     def __init__(self, model, tok, dev):
         self.m, self.tok, self.dev = model.eval(), tok, dev
@@ -337,20 +369,7 @@ class Inference:
         tags = self.m.tag(h).argmax(-1).tolist()
         flags = torch.sigmoid(self.m.flags(h[0])).tolist()
         # spans from the tags
-        spans, toks = [], []
-        for t, (a, b) in enumerate(offs):
-            if a == b:
-                continue
-            name = TAGS[tags[t]]
-            if name == "O":
-                continue
-            kind, label = name.split("-", 1)
-            if kind == "I" and spans and spans[-1]["label"] == label and toks[-1][-1] == t - 1:
-                spans[-1]["end"] = b; toks[-1].append(t)
-            else:
-                while a < b and message[a].isspace():
-                    a += 1
-                spans.append({"start": a, "end": b, "label": label}); toks.append([t])
+        spans, toks = spans_from_tags(message, offs, tags)
         dishes, opts = self.menu_keys(menu)
         keys = [d["key"] for d in menu]
         dish_link, option_link, attach = {}, {}, {}
@@ -465,7 +484,8 @@ if __name__ == "__main__":
     p.add_argument("--valid-limit", dest="valid_limit", type=int, default=0)
     a = p.parse_args()
     if a.check:
-        check(a.check)
-        alignment_report(AutoTokenizer.from_pretrained(a.base), load(a.check))
+        t = AutoTokenizer.from_pretrained(a.base)
+        check(a.check, t)
+        alignment_report(t, load(a.check))
     else:
         train(a)
