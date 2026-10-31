@@ -1041,3 +1041,27 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   orders taught the reading, not the real guests' menus and wording; the next lever is real, labelled
   guest turns from the log, and reading with the conversation, not only the latest message. v8 test
   was not scored for this.
+
+## Where a reader could still help (after run 2), and what open data there is
+
+- Reading the rules' 112 failures on the 465 v10 dev bill/modifier cases one by one (dev only):
+  - Single-turn (56): about 15 to 18 turn on reading the order. Most of those are Chinese (sizes, add-ons, swaps), plus
+    typos ("cendl orginal", "seafod lrg watr") and a few Malay or Manglish. The rest are about deals,
+    sets, prices by time, availability and allergen facts, which no reader fixes. That is the
+    run-2 reader's ceiling: about 3 to 4 points, the bar's +3.
+  - Multi-turn (56): about 40 are edits to the order so far ("remove the extra patty", "make it 2
+    only, one of them iced", "one of the laksa change to asam laksa"), who pays for what ("I only had
+    the X and the Y"), or references ("the first one", "one more of that"). A reader of the latest
+    message can't see these. One that reads the conversation and gives the order as it now stands could,
+    so its ceiling is about 8 to 9 points of this subset.
+- Openly licensed data (checked 2026-10-31):
+  - Google Taskmaster-1 (pizza, coffee) and Taskmaster-2 (food ordering), CC BY 4.0. Real English,
+    multi-turn, spoken and written ordering dialogues with spans for items, sizes, toppings, milk and
+    accept/reject. No menus. Usable for wording and edits across turns, with attribution.
+  - Amazon MASSIVE, CC BY 4.0. Only 177 take-away orders per language (en, ms, zh). Voice-assistant
+    requests ("order me some pizza from dominos"), translated, with no counts, add-ons or menus. Too
+    little to be worth it.
+  - Amazon PIZZA (CC BY-NC 4.0, non-commercial) and a crawled foodpanda menu dump (no licence) are
+    not used.
+  - Nothing open covers Malaysian Chinese, Malay or Manglish ordering against a menu, so that has to
+    be generated.
