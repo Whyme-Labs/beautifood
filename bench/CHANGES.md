@@ -1238,3 +1238,14 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     against its menu: 61 cases corrected, none deleted, no gold reading or branch setting changed
     (`bench/v11/REVIEW-xy.md`).
   - Fingerprints: `v11 492 98a33e85d0c4ea38`, `v11 menus 12 5a02a8322cbf5c94`.
+- **Amendment before scoring: the reader's vocabulary and weights format.**
+  - mDeBERTa's 250k-piece vocabulary is two thirds of the encoder (192M of 287M parameters), mostly
+    scripts no guest here writes; fp32 that is 1.1 GB in a phone's memory. The reader may be trained
+    with a trimmed vocabulary (`scripts/reader/trim_vocab.py`: ASCII, Latin and CJK pieces, every
+    single character of them kept, so text only splits into smaller pieces). The encoder's layers
+    are unchanged.
+  - Full and trimmed are trained on the same teacher data; the pick is made on the teacher's
+    validation turns alone (exact readings), before v11 is touched, and written here.
+  - The browser graph's format (fp32, fp16, or int8) is picked the same way: decisions identical to
+    PyTorch on the validation turns (`export_gl.py --check`). Its time a turn is what the bar's
+    300 ms applies to.
