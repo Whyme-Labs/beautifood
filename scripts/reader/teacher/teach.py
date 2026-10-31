@@ -97,19 +97,21 @@ def parse_json(text):
 
 
 def turns_of(c):
-    """The chat's turns, however the answer wraps them ({"turns": [...]}, {"": {"turns": [...]}}, {"chat": [...]})."""
-    if isinstance(c, dict):
-        if isinstance(c.get("turns"), list):
-            return c["turns"]
-        for v in c.values():
-            if isinstance(v, list) and v and all(isinstance(t, dict) and "guest" in t for t in v):
-                return v
-            t = turns_of(v) if isinstance(v, dict) else None
-            if t:
-                return t
-    if isinstance(c, list) and c and all(isinstance(t, dict) and "guest" in t for t in c):
-        return c
-    return None
+    """The chat's turns, however the answer wraps them ({"turns": [...]}, {"": {"turns": [...]}},
+    {"/turns": ["/turns", [{...}]]}): every object with a "guest" message, in order, at any depth."""
+    found = []
+    def walk(v):
+        if isinstance(v, dict):
+            if isinstance(v.get("guest"), str):
+                found.append(v)
+                return
+            for x in v.values():
+                walk(x)
+        elif isinstance(v, list):
+            for x in v:
+                walk(x)
+    walk(c)
+    return found or None
 
 
 def menu_of(m):
@@ -163,12 +165,14 @@ def main():
         llm = LLM(**common)
     try:
         from vllm.sampling_params import StructuredOutputsParams
-        params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500, structured_outputs=StructuredOutputsParams(json_object=True))
+        menu_params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500, structured_outputs=StructuredOutputsParams(json_object=True))
     except Exception as e:  # (an older vLLM: free text, parsed as before)
         print("no structured outputs:", e, flush=True)
-        params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500)
+        menu_params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500)
+    # (chats: free text, parsed after; forced JSON mangled their keys)
+    params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500)
 
-    def chat(prompts, what):
+    def chat(prompts, what, params=params):
         """The model's answers, and what happened to them: how many ran out of room, didn't parse, tokens a second."""
         t = time.time()
         outs = [o.outputs[0] for o in llm.chat([[{"role": "user", "content": p}] for p in prompts], params, chat_template_kwargs={"enable_thinking": False}, use_tqdm=False)]
@@ -190,7 +194,7 @@ def main():
     while not os.path.exists(given) and len(menus) < a.menus and time.time() - t0 < a.minutes * 60 * 0.3:
         # (a small first batch: if something's wrong, it shows within minutes)
         batch = [MENU_PROMPT.format(cuisine=r.choice(CUISINES), n=r.randint(14, 24)) for _ in range(min(16 if not menus else 128, a.menus - len(menus)))]
-        for text in chat(batch, "menus"):
+        for text in chat(batch, "menus", menu_params):
             m = menu_of(parse_json(text))
             if m and len(m["dishes"]) >= 8:
                 menus.append(m)
@@ -203,7 +207,7 @@ def main():
 
     # 2. conversations on them, labelled turn by turn
     done = 0
-    with open(os.path.join(a.out, "convs.jsonl"), "w", encoding="utf-8") as f:
+    with open(os.path.join(a.out, "convs.jsonl"), "w", encoding="utf-8") as f, open(os.path.join(a.out, "rejected.jsonl"), "w", encoding="utf-8") as rej:
         while done < a.convs and time.time() - t0 < a.minutes * 60:
             batch, meta = [], []
             # (a batch on 32 menus, 8 chats each, in menu order: the menu is most of a prompt, and the
@@ -225,8 +229,10 @@ def main():
                 if turns:
                     f.write(json.dumps({**m, "turns": turns}, ensure_ascii=False) + "\n")
                     done += 1
-                elif rejected is None and parse_json(text) is not None:
-                    rejected = text
+                else:
+                    if rejected is None and parse_json(text) is not None:
+                        rejected = text
+                    rej.write(json.dumps({**m, "raw": text}, ensure_ascii=False) + "\n")
             if rejected:
                 print("  e.g. parsed but no turns:", repr(rejected[:300]), flush=True)
             f.flush()
