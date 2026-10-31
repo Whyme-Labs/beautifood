@@ -1142,6 +1142,15 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   The 99.3% on its own data against 56.6% on real menus is the same gap as the span reader's: its
   synthetic menus reuse one pool of add-on names, so it learnt those names rather than to copy
   this menu's.
+- **Checked after scoring.**
+  - The model as served (8-bit GGUF, llama-server, the reader's own call and parser) gets 298/300
+    of the synthetic valid turns exactly, so the serving isn't the problem.
+  - Across the 465 final readings:
+    - 746 lines were read and the checks kept 675;
+    - 71 lines in 59 cases were dropped as a dish the conversation never named (some are the
+      grounding check missing a name, "asam laksa");
+    - 86 add-ons in 74 cases were dropped as not that dish's;
+    - 68 cases read no line at all.
 - What would change this, for the record: menus whose add-ons and wording are as varied as real
   ones (an LLM writing the menus and guest turns, or real menus and turns from the log), and add-on
   names copied from the prompt by construction (constrained decoding to the short menu's options).
