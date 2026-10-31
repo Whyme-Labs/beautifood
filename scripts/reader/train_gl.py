@@ -28,8 +28,8 @@ ACTS = ["order", "change", "ask_total", "ask_price", "split", "ask_dish", "diet"
 GENERIC = ["count", "person", "pointer"]
 MAX_W = 12          # longest span, in tokens
 MAX_TEXT = 96       # message tokens kept
-MAX_LEN = 512       # whole input
-MAX_DISHES = 40
+MAX_LEN = 640       # whole input
+MAX_DISHES = 20
 MAX_OPTIONS = 60
 
 
@@ -44,24 +44,28 @@ def dish_label(d):
     return f"dish: {d['zh']} {d['name']}" if d.get("zh") else f"dish: {d['name']}"
 
 
-def select_labels(tok, menu, text, keep=(), rng=None):
-    """The labels for a message, all fitting the input: generic ones; then dishes, the ones `keep` names
-    first (the order's; in training also the gold ones), then those the message's words hit, then the rest
-    of the menu, up to MAX_DISHES; then those dishes' add-ons in the same order, while they fit. In
+def select_labels(tok, menu, text, keep=(), rng=None, gold=()):
+    """The labels for a message, all fitting the input: generic ones; then dishes, the ones the message's
+    words hit first (most hits first), then (in training) the gold ones, then the order's (`keep`), then the
+    rest of the menu, up to MAX_DISHES; then those dishes' add-ons in the same order, while they fit. In
     training (`rng`), dishes and add-ons are shuffled, so a label's place says nothing about the answer."""
     words = set(norm(text).split())
     def hit(d):
         zh = d.get("zh") or ""
         return sum(w in words for w in norm(d["name"]).split() if len(w) >= 3) + sum(zh[k:k + 2] in text for k in range(max(0, len(zh) - 1)))
-    kept = [d for d in menu if d["name"] in keep]
-    rest = [d for d in menu if d["name"] not in keep]
-    ranked = kept + sorted([d for d in rest if hit(d)], key=lambda d: -hit(d)) + [d for d in rest if not hit(d)]
+    hits = sorted([d for d in menu if hit(d)], key=lambda d: -hit(d))
+    seen = {d["name"] for d in hits}
+    ranked = hits + [d for d in menu if d["name"] in gold and d["name"] not in seen]
+    seen |= set(gold)
+    ranked += [d for d in menu if d["name"] in keep and d["name"] not in seen]
+    seen |= set(keep)
+    ranked += [d for d in menu if d["name"] not in seen]
     budget = MAX_LEN - MAX_TEXT - 3
     cost = lambda l, cap: 1 + min(cap, len(tok(l, add_special_tokens=False).input_ids))
     used = sum(cost(l, 8) for l in GENERIC)
     dishes, dish_labels, opt_labels = [], [], []
     for d in ranked[:MAX_DISHES]:
-        c = cost(dish_label(d), 12)
+        c = cost(dish_label(d), 10)
         if used + c > budget:
             break
         used += c
@@ -88,7 +92,7 @@ def encode(tok, text, labels):
     ids, markers = [tok.cls_token_id], []
     for l in labels:
         markers.append(len(ids))
-        ids += [tok.mask_token_id] + tok(l, add_special_tokens=False).input_ids[: 12 if l.startswith("dish: ") else 8]
+        ids += [tok.mask_token_id] + tok(l, add_special_tokens=False).input_ids[: 10 if l.startswith("dish: ") else 8]
     ids.append(tok.sep_token_id)
     enc = tok(text, add_special_tokens=False, return_offsets_mapping=True)
     tid, offs = enc.input_ids[:MAX_TEXT], enc.offset_mapping[:MAX_TEXT]
@@ -109,8 +113,8 @@ def char_to_tokens(offs, span, text=None):
 
 
 def example_targets(ex, menu, tok, rng=None):
-    keep = {i["dish"] for i in ex["items"]} | {l["dish"] for l in ex["before"]}
-    dishes, labels = select_labels(tok, menu, ex["text"], keep, rng)
+    gold = {i["dish"] for i in ex["items"]}
+    dishes, labels = select_labels(tok, menu, ex["text"], {l["dish"] for l in ex["before"]}, rng, gold)
     ids, markers, start, offs = encode(tok, ex["text"], labels)
     lab = {l: k for k, l in enumerate(labels)}
     dish_lab = {d["name"]: lab.get(dish_label(d)) for d in dishes}
