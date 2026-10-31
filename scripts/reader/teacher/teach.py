@@ -114,6 +114,8 @@ def main():
     ap.add_argument("--convs", type=int, default=8000)
     ap.add_argument("--minutes", type=float, default=150, help="stop starting new work after this long")
     ap.add_argument("--seed", type=int, default=31)
+    ap.add_argument("--tag", default="", help="prefix for menu ids, so runs can be pooled")
+    ap.add_argument("--kv-cache", default="fp8", help="KV cache dtype (fp8 or auto)")
     a = ap.parse_args()
     t0 = time.time()
     r = random.Random(a.seed)
@@ -124,8 +126,16 @@ def main():
     from vllm import LLM, SamplingParams
 
     # (text only: the model can read images too, which this doesn't need)
-    llm = LLM(model=a.model, max_model_len=12288, gpu_memory_utilization=0.92, max_num_seqs=128, enable_prefix_caching=True, limit_mm_per_prompt={"image": 0, "video": 0})
-    params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500)
+    # The weights take 28 of the GPU's 44 GB: the KV cache holds ~110k tokens, ~22 answers at once. An fp8
+    # KV cache holds twice that; JSON forced compact (no indentation) makes each answer ~a third shorter.
+    llm = LLM(model=a.model, max_model_len=12288, gpu_memory_utilization=0.92, max_num_seqs=128, enable_prefix_caching=True, limit_mm_per_prompt={"image": 0, "video": 0},
+              kv_cache_dtype=a.kv_cache, structured_outputs_config={"disable_any_whitespace": True})
+    try:
+        from vllm.sampling_params import StructuredOutputsParams
+        params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500, structured_outputs=StructuredOutputsParams(json_object=True))
+    except Exception as e:  # (an older vLLM: free text, parsed as before)
+        print("no structured outputs:", e, flush=True)
+        params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500)
 
     def chat(prompts, what):
         """The model's answers, and what happened to them: how many ran out of room, didn't parse, tokens a second."""
@@ -154,7 +164,7 @@ def main():
             sys.exit("no menu parsed from the first batch: stopping")
     with open(os.path.join(a.out, "menus.jsonl"), "w", encoding="utf-8") as f:
         for i, m in enumerate(menus):
-            f.write(json.dumps({"id": f"tm{i}", **m}, ensure_ascii=False) + "\n")
+            f.write(json.dumps({"id": f"{a.tag}tm{i}", **m}, ensure_ascii=False) + "\n")
 
     # 2. conversations on them, labelled turn by turn
     done = 0
@@ -170,7 +180,7 @@ def main():
                 people = "The guest is ordering for a group and says who has what." if any(p.startswith("whose") for p in plan) else ""
                 lang = weighted(r, LANGS)
                 batch.append(CONV_PROMPT.format(menu=menu_text(menus[k]), turns=turns, lang=lang, plan="; then ".join(f"({i + 1}) {p}" for i, p in enumerate(plan)), people=people))
-                meta.append({"menu": f"tm{k}", "lang": lang.split(" ")[0], "plan": plan})
+                meta.append({"menu": f"{a.tag}tm{k}", "lang": lang.split(" ")[0], "plan": plan})
             for m, text in zip(meta, chat(batch, "convs")):
                 c = parse_json(text)
                 if c and isinstance(c.get("turns"), list):
