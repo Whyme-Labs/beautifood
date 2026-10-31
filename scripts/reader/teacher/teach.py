@@ -124,7 +124,7 @@ def main():
     from vllm import LLM, SamplingParams
 
     # (text only: the model can read images too, which this doesn't need)
-    llm = LLM(model=a.model, max_model_len=8192, gpu_memory_utilization=0.92, enable_prefix_caching=True, limit_mm_per_prompt={"image": 0, "video": 0})
+    llm = LLM(model=a.model, max_model_len=8192, gpu_memory_utilization=0.92, max_num_seqs=128, enable_prefix_caching=True, limit_mm_per_prompt={"image": 0, "video": 0})
     params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=3000)
     chat = lambda prompts: [o.outputs[0].text for o in llm.chat([[{"role": "user", "content": p}] for p in prompts], params, chat_template_kwargs={"enable_thinking": False}, use_tqdm=False)]
     print(f"model loaded in {time.time() - t0:.0f}s", flush=True)
