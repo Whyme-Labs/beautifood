@@ -15,6 +15,8 @@ export interface RawLine {
   count?: number;
   options?: string[];
   off?: string[];
+  /** Whose it is, for a bill split by what each had: "me", "friend", "sister"… (a conversation reader's) */
+  owner?: string;
 }
 /** A reader's output, before it is checked. */
 export interface RawOrderReading {
@@ -31,6 +33,7 @@ export interface ReadingLine {
   count: number;
   options: ModifierOption[];
   off: ModifierOption[];
+  owner?: string;
 }
 export interface OrderReading {
   source: "rules" | "model";
@@ -114,9 +117,20 @@ export function checkReading(raw: RawOrderReading, dishes: Dish[], orderable: (d
         if ((g.max ?? 1) <= 1) options = options.filter((o) => !chosen.includes(o));
       }
     }
-    lines.push({ dish, count, options, off: pick(l.off).filter((o) => !options.includes(o)) });
+    const owner = typeof l.owner === "string" && /^[\p{L} ]{1,20}$/u.test(l.owner.trim()) ? l.owner.trim().toLowerCase() : undefined;
+    lines.push({ dish, count, options, off: pick(l.off).filter((o) => !options.includes(o)), ...(owner ? { owner } : {}) });
   }
   return { source: "model", lines, unmatched: [...new Set(unmatched)], total: raw.total === true, each: raw.each === true, dropped };
+}
+
+/**
+ * A conversation reader's reading: the order as it stands after the latest message (every line so
+ * far, with this turn's edits made), checked as `checkReading` does, except that a dish may be
+ * named anywhere in the conversation (an earlier message, or a list the assistant gave), not only
+ * in the latest message.
+ */
+export function checkBasket(raw: RawOrderReading, dishes: Dish[], orderable: (d: Dish) => boolean, conversation: string[]): OrderReading {
+  return checkReading(raw, dishes, orderable, conversation.join("\n"));
 }
 
 /** The same lines, as the dish ids and add-on names they hold (to compare two readers). */

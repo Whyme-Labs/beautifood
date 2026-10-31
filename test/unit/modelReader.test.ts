@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { answerGuest } from "../../src/server/ai/brain";
-import { checkReading, grounded, linesKey, rulesLines } from "../../src/server/ai/brain/reading";
+import { checkBasket, checkReading, grounded, linesKey, rulesLines } from "../../src/server/ai/brain/reading";
 import { readWithModel, readerSchema, type ReaderCall } from "../../src/server/ai/brain/modelReader";
 import type { Dish } from "../../src/server/ai/brain/understand";
 import type { AssistantContext } from "../../src/server/ai/local";
@@ -77,5 +77,33 @@ describe("the brain with a model's reading", () => {
     const a = answerGuest({ ...ctx, reading: r, readerPolicy: "replace" }, [{ role: "user", content: said }]);
     expect(a.answer).toMatch(/peanut/i);
     expect(a.answer).toMatch(/not safe/);
+  });
+});
+
+describe("the brain with a conversation reader's order", () => {
+  const history = [
+    { role: "user" as const, content: "2 char kway teow and 2 sugarcane" },
+    { role: "assistant" as const, content: "2 Char Kway Teow RM20.00 and 2 Sugarcane Juice RM7.00: RM27.00." },
+  ];
+  const q = "make it 1 sugarcane only, and one of the kway teow large. total?";
+  const conversation = [...history.map((h) => h.content), q];
+  const basket = checkBasket({ lines: [{ dish: "D1", count: 1, options: ["Large"] }, { dish: "D1", count: 1 }, { dish: "D3", count: 1 }] }, menu, () => true, conversation);
+  it("checks dishes against the whole conversation, not only the latest message", () => {
+    expect(basket.lines.map((l) => l.dish.name)).toEqual(["Char Kway Teow", "Char Kway Teow", "Sugarcane Juice"]);
+    expect(checkBasket({ lines: [{ dish: "D2", count: 1 }] }, menu, () => true, conversation).dropped).toContain("Chicken Curry isn't named in the message");
+  });
+  it("bills the order as it now stands, in place of the rules' edits to it", () => {
+    const a = answerGuest({ ...ctx, basket, basketChanged: true, basketPolicy: "replace" }, [...history, { role: "user", content: q }]);
+    expect(a.answer).toMatch(/RM26\.50/);
+  });
+  it("splits by whose each line is", () => {
+    const owned = checkBasket({ lines: [{ dish: "D1", count: 2, owner: "me" }, { dish: "D3", count: 1, owner: "me" }, { dish: "D3", count: 1, owner: "friend" }] }, menu, () => true, conversation);
+    const a = answerGuest({ ...ctx, basket: owned, basketPolicy: "replace" }, [...history, { role: "user", content: "my friend had one sugarcane, I had the rest. how much each?" }]);
+    expect(a.answer).toMatch(/RM23\.50/);
+    expect(a.answer).toMatch(/Friend.*RM3\.50/);
+  });
+  it("without a policy, leaves the rules' bill alone", () => {
+    const rules = answerGuest(ctx, [...history, { role: "user", content: q }]).answer;
+    expect(answerGuest({ ...ctx, basket }, [...history, { role: "user", content: q }]).answer).toBe(rules);
   });
 });

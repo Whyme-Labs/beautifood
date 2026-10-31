@@ -1065,3 +1065,44 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     not used.
   - Nothing open covers Malaysian Chinese, Malay or Manglish ordering against a menu, so that has to
     be generated.
+
+## The conversation reader: what it must show (written before any data or training)
+
+- **What it reads.** For each guest turn: the order so far, as the reader itself last gave it (empty
+  at the start), the assistant's last reply, and the guest's latest message. It gives back the order
+  as it now stands, in the menu's own dishes and add-ons, with whose each line is when the guest says
+  ("me", "friend", "sister"). It's state in, state out, one turn at a time, as the brain replays a
+  conversation.
+- **The checks** (`checkBasket`): the same as for a single message (on the menu, can be ordered, the
+  dish's own add-ons, no more of a group than it takes, a count from 1 to 20), except that a dish may
+  be named anywhere in the conversation, not only in the latest message.
+- **Where the brain uses it.** The bill: when the turn asks what it costs, or the reader says the order
+  changed, the reader's lines are the bill, and its owners say whose part is whose. The rules' edits
+  (swap, remove, "one more of that", "the first one", add-ons to earlier lines) are skipped then. What
+  a guest avoids, the prices, the deals, the service charge and tax are still the rules'. Two
+  policies: "replace" (whenever a reading is there) and "edits" (only on a turn that builds on an
+  earlier one). With no reader set, every answer is unchanged: all 2,702 dev answers were checked.
+- **Its ceiling, measured.** The right order for 41 of the rules' multi-turn failures was written by
+  hand (dev, eval only, never training data) and given to the brain as a perfect reader's:
+  - "replace": 385/465 (82.8%, +6.9 points);
+  - "edits": 381/465;
+  - 0 unsafe.
+  So the bar below can be met.
+- **How it's scored.** The 465 v10 dev cases tagged bill or modifier, as before. The reader replays
+  each case's earlier turns in order from an empty order, given the written assistant replies, and
+  its order after the last turn is what the brain uses.
+- **The bar:** the upper bound must beat the rules by at least 3 points (at least 367/465), and some
+  policy must fix at least twice what it breaks, with 0 unsafe. It must also take at most 2 seconds a
+  turn (median) on 4 CPU cores; otherwise it needs a GPU to serve and is reported as such.
+- **The model.** A small open decoder (Qwen3-0.6B, Apache-2.0), fully fine-tuned once on one
+  ml.g5.xlarge for at most 2 hours. It's prompted with the order so far, the last reply, the message,
+  and only the menu's dishes the conversation could mean. It's served by llama.cpp at 8-bit. As
+  measured here, it makes 40 tokens in 3.1 s on 4 cores unquantised.
+- **The data.** Synthetic conversations from scripts/reader/gen.ts menus (never a bench menu, and
+  leak-checked against every bench set): a first order, then turns that remove, set a count, split a
+  line ("2 only, one iced"), swap a dish, change or take off an add-on, add more, "one more of that",
+  "same again", point at a list just given ("the first one, large"), say whose is whose ("I only had
+  the X"), and turns that change nothing (questions, chat). They're in English, Manglish, Malay and
+  Chinese, with typos. English carrier phrases for orders come from Google's Taskmaster-1/2 (CC BY
+  4.0) ordering dialogues, with their items replaced by menu dishes.
+- If it misses the bar: no second run. The reader stays off, and the integration and the tooling stay.

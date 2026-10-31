@@ -46,6 +46,10 @@ export interface AssistantContext {
    */
   reading?: OrderReading;
   readerPolicy?: "replace" | "fill" | "merge";
+  /** A conversation reader's order as it now stands (checkBasket), whether this turn changed it, and when the bill uses it. */
+  basket?: OrderReading;
+  basketChanged?: boolean;
+  basketPolicy?: "replace" | "edits";
 }
 
 export interface AssistantReply {

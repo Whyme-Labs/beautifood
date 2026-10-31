@@ -14,7 +14,7 @@ import { answerLocally, type AssistantContext } from "../src/server/ai/local";
 import { withBranchHalal } from "../src/server/ai/halal";
 import { menuNow, type Clock, type PriceRule, type TimedMenu, type Window } from "../src/shared/schedule";
 import { halalStanding, type HalalInfo, type Menu, type ModifierGroup } from "../src/shared/types";
-import { checkReading, type RawOrderReading } from "../src/server/ai/brain/reading";
+import { checkBasket, checkReading, type RawOrderReading } from "../src/server/ai/brain/reading";
 import { openAiReader, readerSchema, readerSystem, type ReaderCall } from "../src/server/ai/brain/modelReader";
 import { claims } from "./claims";
 import type { Case, Expect } from "./schema";
@@ -271,13 +271,16 @@ export async function readAll(cases: Case[], data: "gold" | "parser", call: Read
   return out;
 }
 
-export function runEngine(engine: string, cases: Case[], data: "gold" | "parser" = "gold", readings?: Map<string, RawOrderReading | null>, policy?: "replace" | "fill" | "merge") {
+export function runEngine(engine: string, cases: Case[], data: "gold" | "parser" = "gold", readings?: Map<string, RawOrderReading | null>, policy?: "replace" | "fill" | "merge", conv?: { baskets: Map<string, (RawOrderReading & { changed?: boolean }) | null>; policy: "replace" | "edits" }) {
   const menus = new Map<string, AssistantContext>();
   return cases.map((c) => {
     const key = `${c.menu} ${JSON.stringify(c.at ?? null)}`;
     const base = menus.get(key) ?? menus.set(key, loadMenu(c.menu, data, c.at)).get(key)!;
     const raw = readings?.get(c.id);
-    const ctx: AssistantContext = raw && policy ? { ...base, reading: checkReading(raw, readable(base), () => true, c.question), readerPolicy: policy } : base;
+    let ctx: AssistantContext = raw && policy ? { ...base, reading: checkReading(raw, readable(base), () => true, c.question), readerPolicy: policy } : base;
+    // a conversation reader's order as it stands after this turn (checked against the whole conversation)
+    const basket = conv?.baskets.get(c.id);
+    if (basket) ctx = { ...ctx, basket: checkBasket(basket, readable(base), () => true, [...(c.before ?? []).flatMap((b) => [b.user, b.assistant]), c.question]), basketChanged: basket.changed !== false, basketPolicy: conv!.policy };
     const history = [...(c.before ?? []).flatMap((b) => [{ role: "user" as const, content: b.user }, { role: "assistant" as const, content: b.assistant }]), { role: "user" as const, content: c.question }];
     const t0 = performance.now();
     let answer = "";
