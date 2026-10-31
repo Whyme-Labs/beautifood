@@ -1253,3 +1253,18 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   checked, 174 validation turns on held-out menus), full and trimmed to 90,000 pieces train to the same
   validation: exact items 29.3% each, all exact 22.4% (full) and 23.6% (trimmed). The trimmed one is
   kept: 69M embedding parameters for 192M.
+- **The browser reader on dev (v10 dev; v11 not scored).**
+  - Trained on teacher run a (2,394 fully labelled turns) after four fixes found on the way: the
+    teacher's unquoted parts recovered or the turn left out; the menu's labels chosen to fit the input
+    (half the add-ons used to be cut, so their words were taught as nothing); labels shuffled in
+    training; and a balanced span loss (the plain mean over ~30k span x label pairs barely moved: on
+    its own training turns the model missed 30% of the gold spans and marked ~20 others a message).
+  - Teacher validation (141 turns on held-out menus), judged by the order the reading gives: right 81,
+    refused 8, wrong 52. Leaving the turns it's least sure of to the rules: at 0.95, 68 / 53 / 20; at
+    0.98, 64 / 65 / 12.
+  - v10 dev, 544 cases tagged bill/modifier/followup, rules 418: replace 325 (fixed 10, broke 103),
+    edits 356 (5 / 67); at 0.98, replace 380 (3 / 41), edits 386 (2 / 34). Upper bound (rules or a
+    policy) 428 at best, under the 435 the bar would ask. Unsafe 0 throughout. ~350 ms a turn on the
+    server (PyTorch, 640 tokens, with the HTTP round trip).
+  - So the reader is rarely right where the rules are wrong, and v11 stays unscored: there's no reason
+    to spend its one scoring on this. The rules stay; the reader stays off.
