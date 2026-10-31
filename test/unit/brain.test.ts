@@ -1037,7 +1037,11 @@ describe("the branch's halal standing", () => {
     expect(porkFree).toMatch(/pork- and lard-free, but it isn't halal-certified/);
     expect(porkFree).toMatch(/Drunken Chicken \(shaoxing\)/);
     expect(porkFree).not.toMatch(/Ayam Goreng \(/);
-    expect(ask(at("none"), "I'm Muslim, is this place halal?").answer).toMatch(/This branch isn't halal-certified, and some dishes have pork or alcohol/);
+    // (nothing declared isn't "not certified": it says what it knows, the dishes, and asks the staff)
+    const none = ask(at("none"), "I'm Muslim, is this place halal?").answer;
+    expect(none).toMatch(/hasn't declared a halal certificate, and dishes with pork or alcohol aren't halal/);
+    expect(none).toMatch(/Our staff can tell you about the kitchen's halal certification/);
+    expect(none).not.toMatch(/isn't halal-certified/);
     expect(ask(at("certified", { standing: "expired" }), "I'm Muslim, is this place halal?").answer).toMatch(/certificate has expired/);
   });
   it("answers a dish's halal question from the branch's standing", () => {

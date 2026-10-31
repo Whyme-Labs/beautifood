@@ -1186,3 +1186,13 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   carried twice, owners, a dish lost) are untouched.
 - So the gap is in reading real menus' own words, not in the output's form. Structured output is
   kept (`basketGrammar`, `--structured`): it costs nothing and rules out a whole kind of misreading.
+
+## A branch with no halal standing declared: what it knows, then the staff
+
+- The "branch's halal standing" change on this branch answered a branch that declared nothing
+  with "this branch isn't halal-certified". But nothing declared isn't a declaration: the owner may
+  simply not have filled it in. The halal e2e caught it (a not-declared branch must send the guest
+  to the staff).
+- It now says only what it knows: no certificate is declared, dishes with pork or alcohol aren't
+  halal, and the staff can tell them about the kitchen's certification. Dev: 21 answers changed,
+  none passing or failing differently.

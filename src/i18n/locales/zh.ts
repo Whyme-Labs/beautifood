@@ -492,7 +492,7 @@ const zh = {
     halalCertifiedDish: "{dish}是清真的：本店已获{certifier}清真认证。",
     muslimFriendlyDish: "{dish}对穆斯林友好：厨房不使用猪肉、猪油或酒，但本店没有清真认证。",
     porkFreeDish: "{dish}不含猪肉或猪油（本店厨房无猪），但本店没有清真认证。如需清真，请向店员确认。",
-    halalNone: "本店没有清真认证，有些菜有猪肉或酒，请看清楚每道菜。",
+    halalNone: "本店没有登记清真认证，有猪肉或酒的菜不是清真的，请看清楚每道菜。厨房的清真认证请向店员确认。",
     staffHelpHalal: "厨房的清真认证请向店员确认。",
     notHalalDishes: "这些不是清真的：{list}{more}。",
     andMore: "，还有 {count} 道",

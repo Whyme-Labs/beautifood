@@ -494,7 +494,7 @@ const en = {
     halalCertifiedDish: "{dish} is halal: this branch is halal-certified by {certifier}.",
     muslimFriendlyDish: "{dish} is Muslim-friendly: this kitchen uses no pork, lard or alcohol, though it isn't halal-certified.",
     porkFreeDish: "{dish} has no pork or lard (this kitchen is pork-free), but the branch isn't halal-certified. Please ask our staff if you need it halal.",
-    halalNone: "This branch isn't halal-certified, and some dishes have pork or alcohol, so please check each dish.",
+    halalNone: "This branch hasn't declared a halal certificate, and dishes with pork or alcohol aren't halal, so please check each dish. Our staff can tell you about the kitchen's halal certification.",
     staffHelpHalal: "Our staff can tell you about the kitchen's halal certification.",
     notHalalDishes: "These aren't halal: {list}{more}.",
     andMore: ", and {count} more",
