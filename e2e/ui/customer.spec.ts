@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { join, json, open, seed, tableIds } from "../helpers";
+import { join, json, open, seatWalkIn, seed, tableIds } from "../helpers";
 
 test.describe("guest journey (browser)", () => {
   test("queue from the phone → called → seated → two diners share one cart live → send to kitchen", async ({ browser }) => {
@@ -78,5 +78,29 @@ test.describe("guest journey (browser)", () => {
     await input.fill("I'm allergic to peanuts, what's safe?");
     await input.press("Enter");
     await expect(page.getByRole("dialog")).toContainText("confirm with staff", { timeout: 15_000 });
+  });
+
+  test("a bill from the menu assistant comes as an order card, and goes into the table's cart in one tap", async ({ page }) => {
+    const s = await seed();
+    const t = await tableIds(s.owner, s.klcc.id);
+    const st = await seatWalkIn(s.owner, s.klcc.id, [t.T6.id], 2);
+    await open(page, st.sessionUrl);
+    await page.getByLabel("Your name").fill("Mei");
+    await page.getByRole("button", { name: "Start ordering" }).click();
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+    const input = page.getByLabel("Ask the menu assistant");
+    await input.fill("2 char kway teow, total with service and tax?");
+    await input.press("Enter");
+    const card = page.getByTestId("order-card");
+    await expect(card).toContainText("Char Kway Teow", { timeout: 15_000 });
+    await expect(card).toContainText("2×");
+    await expect(card).toContainText("Service charge 10%");
+    await expect(card).toContainText("To pay");
+    await card.getByRole("button", { name: "Add all to my order" }).click();
+    await expect(card.getByRole("button", { name: "Added to your order" })).toBeDisabled();
+    await page.keyboard.press("Escape");
+    await page.getByTestId("tab-cart").click();
+    await expect(page.getByTestId("cart-line")).toHaveCount(1);
+    await expect(page.getByTestId("cart-line")).toContainText("Char Kway Teow");
   });
 });

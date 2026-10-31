@@ -4,9 +4,12 @@ import { ArrowUp, Plus, ShieldAlert, Sparkles } from "lucide-react";
 import { api } from "./api";
 import { Money, errorText } from "./components";
 import { useI18n } from "../i18n/react";
+import { OrderCard, type OrderCardData } from "./orderCard";
 
 interface Reply {
   answer: string;
+  /** A bill, as data: shown as an order card in place of the answer's words. */
+  order?: OrderCardData;
   items: { id: string; name: string; price: number; reason?: string; /** The dish name in the guest's language. */ label?: string }[];
   safetyNote?: string;
   engine: string;
@@ -16,7 +19,7 @@ interface Reply {
   turn?: string;
 }
 
-export function AssistantChat({ branch, currency, onAdd }: { branch: string; currency: string; onAdd?: (itemId: string) => void }) {
+export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch: string; currency: string; onAdd?: (itemId: string) => void; onAddLines?: (lines: OrderCardData["lines"]) => void }) {
   const { t, locale } = useI18n();
   const [msgs, setMsgs] = useState<{ role: "user" | "assistant"; content: string; reply?: Reply }[]>([]);
   const [text, setText] = useState("");
@@ -50,8 +53,25 @@ export function AssistantChat({ branch, currency, onAdd }: { branch: string; cur
         )}
         {msgs.map((m, i) => (
           <div key={i} className={`bubble ${m.role === "user" ? "user" : "bot"}`} data-testid={m.role === "assistant" ? "assistant-answer" : undefined}>
-            {m.content}
-            {m.reply?.items.length ? (
+            {m.reply?.order ? (
+              <>
+                {m.reply.order.notes?.map((n) => <div key={n}>{n}</div>)}
+                <OrderCard
+                  order={m.reply.order}
+                  currency={currency}
+                  onAddAll={
+                    onAddLines &&
+                    ((lines) => {
+                      onAddLines(lines);
+                      if (m.reply?.turn) for (const l of lines) void api(`/api/public/branches/${branch}/assistant/added`, { body: { turn: m.reply.turn, item: l.id } }).catch(() => {});
+                    })
+                  }
+                />
+              </>
+            ) : (
+              m.content
+            )}
+            {!m.reply?.order && m.reply?.items.length ? (
               <div className="col tight" style={{ marginTop: 10 }}>
                 {m.reply.items.map((it) => (
                   <div key={it.id} className="row between nowrap card tight flat" style={{ padding: "8px 10px" }}>

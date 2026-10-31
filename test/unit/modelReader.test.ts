@@ -107,3 +107,27 @@ describe("the brain with a conversation reader's order", () => {
     expect(answerGuest({ ...ctx, basket }, [...history, { role: "user", content: q }]).answer).toBe(rules);
   });
 });
+
+describe("the bill as data, for the chat's order card", () => {
+  it("gives each line with its add-ons by group, the subtotal and the till's charges", () => {
+    const a = answerGuest(ctx, [{ role: "user", content: "2 char kway teow, one large. and 1 sugarcane. total with service and tax?" }]);
+    expect(a.order).toBeDefined();
+    const o = a.order!;
+    expect(o.lines.map((l) => [l.name, l.count, l.options.map((x) => `${x.group}:${x.name}`)])).toEqual([["Char Kway Teow", 1, []], ["Char Kway Teow", 1, ["Size:Large"]], ["Sugarcane Juice", 1, []]]);
+    expect(o.subtotal).toBe(2650);
+    expect(o.charges).toMatchObject({ servicePct: 10, taxPct: 6, service: 265 });
+    expect(a.answer).toContain((o.charges!.due / 100).toFixed(2));
+  });
+  it("says each person's part when they say who had what", () => {
+    const owned = checkBasket({ lines: [{ dish: "D1", count: 2, owner: "me" }, { dish: "D3", count: 1, owner: "friend" }] }, menu, () => true, ["2 char kway teow and a sugarcane"]);
+    const a = answerGuest({ ...ctx, basket: owned, basketPolicy: "replace" }, [
+      { role: "user", content: "2 char kway teow and a sugarcane" },
+      { role: "assistant", content: "2 Char Kway Teow and 1 Sugarcane Juice: RM23.50." },
+      { role: "user", content: "my friend had the sugarcane, i had the rest. how much each?" },
+    ]);
+    expect(a.order?.people?.map((p) => [p.who, p.total])).toEqual([["You", 2000], ["Friend", 350]]);
+  });
+  it("is only on a bill", () => {
+    expect(answerGuest(ctx, [{ role: "user", content: "is the chicken curry spicy?" }]).order).toBeUndefined();
+  });
+});

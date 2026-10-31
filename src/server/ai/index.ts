@@ -142,7 +142,7 @@ export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSet
     engine: readerDiffers ? `${r.engine}+reader-differs` : r.engine,
     shown: items.map((i) => i.id),
   }).catch((e) => (console.warn("assistant log", e), undefined));
-  return { answer: r.answer, items, safetyNote: r.safetyNote, engine: r.engine, confident: r.confident, taste: r.taste, turn };
+  return { answer: r.answer, items, ...(r.order ? { order: r.order } : {}), safetyNote: r.safetyNote, engine: r.engine, confident: r.confident, taste: r.taste, turn };
 }
 
 /** The brain's answer, or (only for what it can't place, and only when one is configured) a model's. */

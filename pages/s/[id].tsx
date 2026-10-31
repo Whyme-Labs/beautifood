@@ -336,6 +336,22 @@ export default function CartPage() {
               if (it) (it.modifiers.length ? setPicking(it) : add(it));
               setChat(false);
             }}
+            onAddLines={async (lines) => {
+              // (one after another, so the cart ends with all of them; a line whose required choices the
+              // guest hasn't made opens the picker, the rest go straight in)
+              let open: MenuItem | null = null;
+              for (const l of lines) {
+                const it = meta.menu?.items.find((x) => x.id === l.id);
+                if (!it) continue;
+                const mods = l.options.filter((o) => o.group).map((o) => ({ group: o.group, option: o.name }));
+                if (it.modifiers.every((g) => mods.filter((m) => m.group === g.name).length >= g.min)) await add(it, l.count, mods);
+                else open ??= it;
+              }
+              if (open) {
+                setPicking(open);
+                setChat(false);
+              }
+            }}
           />
         )}
       </Modal>

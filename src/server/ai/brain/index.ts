@@ -16,7 +16,7 @@ import { linesOf, optionSpots } from "./lines";
 import { CHEAPEST_WAY, CHEAPEST_WAY_ZH, cheapestWay, needsOf } from "./cheapest";
 import { mentionedAllergens, zhAllergenWord } from "../local";
 import type { Intent } from "../../../shared/brain/intentModel";
-import { allergyNote, type AssistantContext, type AssistantReply } from "../local";
+import { allergyNote, type AssistantContext, type AssistantReply, type OrderCard } from "../local";
 import type { TasteHint } from "../../taste/bridge";
 import { conceptsOf, conceptTerms, dishConceptLift, type ConceptId } from "./concepts";
 import { kindOf } from "./reader";
@@ -1298,6 +1298,24 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     return reply("order_help", text, []);
   }
   const pointed = pointedAt(u.text, state.shown);
+  // the bill as data, for the chat's order card: each line with its add-ons by group (to go into a cart as it is)
+  const orderCard = (lines: OrderLine[], extra: Partial<OrderCard> = {}, ownerOf?: (o: OrderLine) => string | undefined): OrderCard => ({
+    lines: lines.map((o) => {
+      const who = ownerOf?.(o);
+      return {
+        id: o.item.id,
+        name: o.item.name,
+        label: name(o.item),
+        count: o.count,
+        options: (o.options ?? []).map((x) => ({ group: o.item.modifiers?.find((g) => g.options.some((y) => y.name === x.name))?.name ?? "", name: x.name, label: optionLabel(x), price: x.price })),
+        unit: unitPrice(o),
+        total: unitPrice(o) * o.count,
+        ...(who ? { owner: who } : {}),
+      };
+    }),
+    subtotal: lines.reduce((n, o) => n + unitPrice(o) * o.count, 0),
+    ...extra,
+  });
   const lineName = (o: OrderLine) => (o.options?.length ? t("assistantReply.withOptions", { dish: name(o.item), options: list(o.options.map(optionLabel)) }) : name(o.item));
   // "how much more for large?" of a line ordered: what the choice adds, and the line with it
   const moreAsked = /\bhow much (more|extra)\b|\bberapa (lagi|lebih|tambah)\b|\bextra how much\b/.test(nt1) || /贵多少|加多少|多多少/.test(u.text);
@@ -1514,7 +1532,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const service = Math.round((total * ch.serviceChargePct) / 100);
     const tax = ch.taxInclusive ? 0 : Math.round(((total + service) * ch.taxPct) / 100);
     const exact = total + service + tax;
-    return { ch, exact, due: Math.round(exact / Math.max(1, ch.cashRounding)) * Math.max(1, ch.cashRounding) };
+    return { ch, service, tax, exact, due: Math.round(exact / Math.max(1, ch.cashRounding)) * Math.max(1, ch.cashRounding) };
   };
   // "Teh Tarik with iced": a line's add-ons
   // "does the cheese foam have dairy?", "我吃全素，可以加奶盖吗？", "what's in the snow cheese?": an add-on
@@ -1709,12 +1727,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (eachAsked && (readBill ? new Set(bill.map(ownerOf)).size >= 2 : Object.keys(ownersNow).length >= 2) && bill.every((o) => ownerOf(o))) {
       const people = [...new Set(bill.map((o) => ownerOf(o)!))];
       // (with service and tax, each one's share as the till would total it)
+      const who = (p: string) => (p === "me" ? t("assistantReply.you") : p.charAt(0).toUpperCase() + p.slice(1));
       const parts = people.map((p) => {
         const mine = bill.filter((o) => ownerOf(o) === p);
         const sum = mine.reduce((n, o) => n + unitPrice(o) * o.count, 0);
-        return `${p === "me" ? t("assistantReply.you") : p.charAt(0).toUpperCase() + p.slice(1)}: ${mine.map((o) => `${o.count > 1 ? `${o.count} × ` : ""}${lineName(o)}`).join(" + ")}${t("assistantReply.personTotal", { total: money(sum) })}${withCharges ? ` (${t("assistantReply.allIn", { total: money(till(sum).due) })})` : ""}`;
+        return `${who(p)}: ${mine.map((o) => `${o.count > 1 ? `${o.count} × ` : ""}${lineName(o)}`).join(" + ")}${t("assistantReply.personTotal", { total: money(sum) })}${withCharges ? ` (${t("assistantReply.allIn", { total: money(till(sum).due) })})` : ""}`;
       });
-      return reply("recommend", `${parts.join(t("assistantReply.itemSep"))}${stop}`, bill.map((o) => o.item));
+      const people_ = people.map((p) => {
+        const sum = bill.filter((o) => ownerOf(o) === p).reduce((n, o) => n + unitPrice(o) * o.count, 0);
+        return { who: who(p), total: sum, ...(withCharges ? { due: till(sum).due } : {}) };
+      });
+      return { ...reply("recommend", `${parts.join(t("assistantReply.itemSep"))}${stop}`, bill.map((o) => o.item)), order: orderCard(bill, { people: people_ }, (o) => who(ownerOf(o)!)) };
     }
     if (mineOnly) {
       // (as many of each as they said they had: "the avocado toast and one matcha")
@@ -1757,7 +1780,14 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const breaks = bill.filter((o) => o.item.allergens.some((a) => avoidNow.includes(a as Allergen)) || (o.options ?? []).some((x) => live.some((i) => normalize(i.name) === normalize(x.name) && i.allergens.some((a) => avoidNow.includes(a as Allergen)))));
       const warn = breaks.map((o) => `${t("assistantReply.notSafeFor", { dish: lineName(o), allergens: list([...new Set([...o.item.allergens, ...(o.options ?? []).flatMap((x) => live.find((i) => normalize(i.name) === normalize(x.name))?.allergens ?? [])])].filter((a) => avoidNow.includes(a as Allergen)).map(allergen)) })}${sp}`).join("");
       const noSuch = missingAddOns(u.text, bill.map((o) => o.item), ctx.items, /\b(?:tambah|add|extra|top with)\s+(.+)$/).map((x) => `${t("assistantReply.notAvailable", { thing: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })}${sp}`).join("");
-      return reply("recommend", `${warn}${noSuch}${goneNote}${mineOnly || mineByOwner ? `${t("assistantReply.yourPart")}${sp}` : ""}${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${charges}${each}`, bill.map((o) => o.item));
+      const { service, tax } = till(total);
+      const card = orderCard(bill, {
+        ...(tillIt ? { charges: { servicePct: ch.serviceChargePct, taxPct: ch.taxPct, taxInclusive: ch.taxInclusive, service, tax, due } } : {}),
+        ...(shares && shares >= 2 ? { split: { ways: shares, each: Math.ceil(due / shares) } } : {}),
+        ...(mineOnly || mineByOwner ? { mine: true } : {}),
+        notes: [warn, noSuch, goneNote].map((x) => x.trim()).filter(Boolean),
+      });
+      return { ...reply("recommend", `${warn}${noSuch}${goneNote}${mineOnly || mineByOwner ? `${t("assistantReply.yourPart")}${sp}` : ""}${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${charges}${each}`, bill.map((o) => o.item)), order: card };
     }
   }
 

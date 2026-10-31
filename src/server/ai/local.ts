@@ -52,8 +52,40 @@ export interface AssistantContext {
   basketPolicy?: "replace" | "edits";
 }
 
+/**
+ * A bill the brain worked out, as data, for the chat to show as an order card (money in cents). Each
+ * line has its add-ons by group, so it can go into a cart as it is.
+ */
+export interface OrderCard {
+  lines: {
+    id: string;
+    name: string;
+    /** The dish name in the guest's language. */
+    label: string;
+    count: number;
+    options: { group: string; name: string; label: string; price: number }[];
+    unit: number;
+    total: number;
+    /** Whose it is, as the guest said ("You", "Friend"). */
+    owner?: string;
+  }[];
+  subtotal: number;
+  /** As the till adds them, when asked for (or when a split needs them). */
+  charges?: { servicePct: number; taxPct: number; taxInclusive: boolean; service: number; tax: number; due: number };
+  /** An even split: how many ways, and each share (of `charges.due` when there are charges). */
+  split?: { ways: number; each: number };
+  /** Each person's part, by what they had. */
+  people?: { who: string; total: number; due?: number }[];
+  /** Only the guest's own part of the order. */
+  mine?: boolean;
+  /** What to say first: a dish that breaks what they avoid, one not served now, an add-on the menu lacks. */
+  notes?: string[];
+}
+
 export interface AssistantReply {
   answer: string;
+  /** A bill, as data (the answer says the same in words). */
+  order?: OrderCard;
   items: { id: string; name: string; price: number; reason?: string; /** The dish name in the guest's language. */ label?: string }[];
   safetyNote?: string;
   engine: "local" | "claude" | "model";
