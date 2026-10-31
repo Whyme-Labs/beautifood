@@ -33,7 +33,7 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
     edits.current.set(
       turn,
       setTimeout(() => {
-        void api(`/api/public/branches/${branch}/assistant/corrected`, { body: { turn, lines: lines.map((l) => ({ id: l.id, count: l.count, options: l.options.map((o) => ({ group: o.group, name: o.name })) })) } }).catch(() => {});
+        void api(`/api/public/branches/${branch}/assistant/corrected`, { body: { turn, lines: lines.map((l) => ({ id: l.id, count: l.count, options: l.options.map((o) => ({ group: o.group, name: o.name })), ...(l.owner ? { owner: l.owner } : {}) })) } }).catch(() => {});
       }, 2000),
     );
   };

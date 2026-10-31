@@ -104,6 +104,25 @@ test.describe("guest journey (browser)", () => {
     await expect(page.getByTestId("cart-line")).toContainText("Char Kway Teow");
   });
 
+  test("on a bill split by who had what, the guest moves a line to the other person", async ({ page }) => {
+    const s = await seed();
+    await open(page, `/r/${s.klcc.ref}`);
+    await page.getByRole("button", { name: /Ask what to eat/ }).click();
+    const input = page.getByLabel("Ask the menu assistant");
+    await input.fill("me the char kway teow and a teh tarik, my friend the nasi lemak ayam rempah. how much each?");
+    await input.press("Enter");
+    const card = page.getByTestId("order-card");
+    await expect(card.getByTestId("order-line")).toHaveCount(3, { timeout: 15_000 });
+    const sums = card.locator(".order-sums");
+    const before = await sums.innerText();
+    // the teh tarik was the friend's
+    await card.getByRole("button", { name: /^Teh Tarik is You's/ }).click();
+    await card.getByTestId("order-move").getByRole("button", { name: "My friend" }).click();
+    await expect(card.getByRole("button", { name: /^Teh Tarik is My friend's/ })).toBeVisible();
+    await expect(sums).not.toHaveText(before);
+    await expect(card.getByRole("button", { name: "Undo changes" })).toBeVisible();
+  });
+
   test("the guest fixes the order card before adding it: a count, and a drink's choice", async ({ page }) => {
     const s = await seed();
     const t = await tableIds(s.owner, s.klcc.id);

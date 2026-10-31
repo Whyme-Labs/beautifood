@@ -33,10 +33,10 @@ export interface Turn {
 }
 
 /** An order as the log keeps it: each line's dish, count and add-ons (by group). */
-export type OrderLines = { id: string; count: number; options: { group: string; name: string }[] }[];
+export type OrderLines = { id: string; count: number; options: { group: string; name: string }[]; owner?: string }[];
 
 const OrderLinesSchema = z
-  .array(z.object({ id: z.string().min(1).max(64), count: z.number().int().min(1).max(50), options: z.array(z.object({ group: z.string().max(80), name: z.string().max(80) })).max(12) }))
+  .array(z.object({ id: z.string().min(1).max(64), count: z.number().int().min(1).max(50), options: z.array(z.object({ group: z.string().max(80), name: z.string().max(80) })).max(12), owner: z.string().max(40).optional() }))
   .max(20);
 export { OrderLinesSchema };
 

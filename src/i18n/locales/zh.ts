@@ -253,6 +253,9 @@ const zh = {
     orderMore: "{dish}加一份",
     orderChange: "修改",
     orderDone: "完成",
+    orderWhose: "这是谁的？",
+    orderMoveOne: "只移一份",
+    orderOwnerOf: "{dish}是{who}的：改成别人的",
   },
   home: {
     title: "不用再站着干等。",

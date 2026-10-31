@@ -255,6 +255,9 @@ const en = {
     orderMore: "One more {dish}",
     orderChange: "Change",
     orderDone: "Done",
+    orderWhose: "Whose is it?",
+    orderMoveOne: "Just 1 of them",
+    orderOwnerOf: "{dish} is {who}'s: change whose",
   },
   home: {
     title: "Skip the standing around.",

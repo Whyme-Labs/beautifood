@@ -1,9 +1,10 @@
 // A bill from the menu assistant, as a card: each line with its add-ons and price, the charges as the
 // till adds them, a split, each person's part, and one button to put the whole order in the cart.
-// The guest can fix what it read before adding it: a line's count (to nought, which takes it off) and
-// its add-ons, from the dish's own choices; the money follows, as the till totals it.
+// The guest can fix what it read before adding it: a line's count (to nought, which takes it off), its
+// add-ons, from the dish's own choices, and on a bill split by who had what, whose it is (all of a
+// line, or one of several); the money follows, as the till totals it.
 import { useEffect, useMemo, useState } from "react";
-import { Check, Minus, Plus, ReceiptText, RotateCcw } from "lucide-react";
+import { Check, ChevronDown, Minus, Plus, ReceiptText, RotateCcw } from "lucide-react";
 import { Money } from "./components";
 import { useI18n } from "../i18n/react";
 
@@ -37,12 +38,25 @@ function till(subtotal: number, c: NonNullable<OrderCardData["charges"]>) {
   const step = Math.max(1, c.cashRounding);
   return { service, tax, due: Math.round((subtotal + service + tax) / step) * step };
 }
-const keyOf = (ls: Line[]) => JSON.stringify(ls.map((l) => [l.id, l.count, l.options.map((o) => `${o.group}:${o.name}`).sort()]));
+const optionsKey = (l: Line) => l.options.map((o) => `${o.group}:${o.name}`).sort().join("|");
+const keyOf = (ls: Line[]) => JSON.stringify(ls.map((l) => [l.id, l.count, optionsKey(l), l.owner ?? ""]));
+/** The same dish with the same add-ons for the same person is one line. */
+function merged(ls: Line[]): Line[] {
+  const out: Line[] = [];
+  for (const l of ls) {
+    const had = out.find((x) => x.id === l.id && optionsKey(x) === optionsKey(l) && x.owner === l.owner);
+    if (had) had.count += l.count;
+    else out.push({ ...l });
+  }
+  return out.map((l) => ({ ...l, total: l.unit * l.count }));
+}
 
 export function OrderCard({ order, currency, onAddAll, onEdit }: { order: OrderCardData; currency: string; onAddAll?: (lines: Line[]) => void; onEdit?: (lines: Line[]) => void }) {
   const { t } = useI18n();
   const [lines, setLines] = useState(order.lines);
   const [open, setOpen] = useState<number | null>(null);
+  const [moving, setMoving] = useState<number | null>(null);
+  const [justOne, setJustOne] = useState(false);
   const [added, setAdded] = useState(false);
   const edited = keyOf(lines) !== keyOf(order.lines);
   useEffect(() => {
@@ -64,7 +78,22 @@ export function OrderCard({ order, currency, onAddAll, onEdit }: { order: OrderC
 
   const setCount = (k: number, count: number) => {
     setLines((ls) => (count <= 0 ? ls.filter((_, j) => j !== k) : ls.map((l, j) => (j === k ? { ...l, count } : l))));
-    if (count <= 0) setOpen(null);
+    if (count <= 0) {
+      setOpen(null);
+      setMoving(null);
+    }
+  };
+  // "the lemon tea was my friend's": all of the line to them, or one of several
+  const moveTo = (k: number, who: string) => {
+    setLines((ls) => {
+      const l = ls[k];
+      if (!l || l.owner === who) return ls;
+      const one = justOne && l.count > 1;
+      const rest = ls.map((x, j) => (j === k ? (one ? { ...x, count: x.count - 1 } : { ...x, owner: who }) : x));
+      return merged(one ? [...rest, { ...l, count: 1, owner: who }] : rest);
+    });
+    setMoving(null);
+    setJustOne(false);
   };
   const toggle = (k: number, group: Line["groups"][number], o: Line["groups"][number]["options"][number]) =>
     setLines((ls) =>
@@ -92,6 +121,7 @@ export function OrderCard({ order, currency, onAddAll, onEdit }: { order: OrderC
             onClick={() => {
               setLines(order.lines);
               setOpen(null);
+              setMoving(null);
             }}
           >
             <RotateCcw size={13} aria-hidden /> {t("assistant.orderReset")}
@@ -124,11 +154,44 @@ export function OrderCard({ order, currency, onAddAll, onEdit }: { order: OrderC
                   {t("assistant.orderChange")}
                 </button>
               ) : null}
-              {order.people && l.owner ? <span className="badge order-owner">{l.owner}</span> : null}
+              {order.people && l.owner ? (
+                <button
+                  type="button"
+                  className="badge order-owner"
+                  aria-expanded={moving === k}
+                  aria-label={t("assistant.orderOwnerOf", { dish: l.label, who: l.owner })}
+                  onClick={() => {
+                    setMoving(moving === k ? null : k);
+                    setJustOne(false);
+                    setOpen(null);
+                  }}
+                >
+                  {l.owner} <ChevronDown size={12} aria-hidden />
+                </button>
+              ) : null}
             </span>
             <span className="order-price">
               <Money v={l.unit * l.count} c={currency} />
             </span>
+            {moving === k && order.people ? (
+              <div className="order-choices" data-testid="order-move">
+                <fieldset>
+                  <legend>{t("assistant.orderWhose")}</legend>
+                  <div className="chips">
+                    {order.people.map((p) => (
+                      <button key={p.who} type="button" className="chip" aria-pressed={l.owner === p.who} onClick={() => moveTo(k, p.who)}>
+                        {p.who}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+                {l.count > 1 ? (
+                  <label className="order-one">
+                    <input type="checkbox" checked={justOne} onChange={(e) => setJustOne(e.target.checked)} /> {t("assistant.orderMoveOne")}
+                  </label>
+                ) : null}
+              </div>
+            ) : null}
             {open === k ? (
               <div className="order-choices">
                 {l.groups.map((g) => (
