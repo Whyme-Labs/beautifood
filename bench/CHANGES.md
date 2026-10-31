@@ -1155,3 +1155,16 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   ones (an LLM writing the menus and guest turns, or real menus and turns from the log), and add-on
   names copied from the prompt by construction (constrained decoding to the short menu's options).
   Each would need its own pre-registered run.
+
+## The conversation reader with structured output: what it must show (written before it ran)
+
+- **The change: decoding only.** Same model, same prompt, same protocol, same 465 cases and bar as
+  above. The model's output is constrained by a grammar built from each turn's short menu: every
+  line is a count, one of the short menu's dish keys, then only that dish's own add-on names, and
+  an owner. So it can no longer write "Extra egg" on a menu whose add-on is "Hard-boiled Egg"; it
+  must pick a name the menu has.
+- **Why it's worth one scoring.** 86 add-ons in 74 cases were dropped as not the dish's own, which
+  is the largest measured cause. It costs no training.
+- **The bar** (as before): the upper bound at least 367/465, a policy fixing at least twice what it
+  breaks, 0 unsafe, median at most 2 s a turn on 4 CPU cores. Scored once; if it misses, the reader
+  stays off.
