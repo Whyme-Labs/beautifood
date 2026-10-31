@@ -206,9 +206,16 @@ that guests elsewhere have shown work, and its own data takes over as it comes i
    confidence, the dishes shown, and which of them the guest added from the chat card (the
    chat posts to `/api/public/branches/:ref/assistant/added`). Kept 90 days; the daily cron
    purges older entries.
-2. **Harvest.** `scripts/brain/harvest.ts` picks out the questions worth teaching: ones the
-   brain was unsure of, called off-topic, or answered with dishes nobody added. The most-asked
-   come first, and eval questions are never picked. Its header shows how to dump the log
+   - **Bills.** For a bill, the turn also keeps the order it read (`order_read`: each line's
+     dish, count and add-ons). The chat shows a bill as an order card (`src/ui/orderCard.tsx`),
+     and the guest can fix it there: change a count (to nought, which takes a line off), or a
+     line's add-ons from the dish's own choices. Their order is kept beside the one it read
+     (`order_final`; the chat posts to `/assistant/corrected` once they stop changing it). That
+     makes a labelled turn: what was said, what it read, what they meant.
+2. **Harvest.** `scripts/brain/harvest.ts` picks out the questions worth teaching. Bills a guest
+   fixed come first, with both orders. Then come ones the brain was unsure of, called off-topic,
+   or answered with dishes nobody added. Within each, the most-asked come first, and eval
+   questions are never picked. Its header shows how to dump the log
    with `wrangler d1 execute` (production) or `void db execute` (local).
 3. **Label.** `scripts/brain/label.ts` has a large model label them offline, 40 to a request.
    Only labels it is sure of are added to `scripts/brain/harvested.json`. The large model

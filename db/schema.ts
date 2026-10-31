@@ -742,8 +742,8 @@ export const conceptPairs = sqliteTable(
 
 /**
  * The guest assistant's turns, for learning what it misreads: the question as the intent model read
- * it (dish names as §dish, emails and phone numbers removed), what it decided, the dishes it showed
- * and which of them the guest added from the chat. Kept 90 days.
+ * it (dish names as §dish, emails and phone numbers removed), what it decided, the dishes it showed,
+ * which of them the guest added from the chat, and a bill it worked out with the guest's edit of it. Kept 90 days.
  */
 export const assistantTurns = sqliteTable(
   "assistant_turns",
@@ -762,6 +762,9 @@ export const assistantTurns = sqliteTable(
     /** JSON arrays of menu item ids. */
     shown: text("shown").notNull().default("[]"),
     added: text("added").notNull().default("[]"),
+    /** A bill it worked out, as JSON lines (dish id, count, add-ons), and the guest's own edit of it in the order card. */
+    orderRead: text("order_read"),
+    orderFinal: text("order_final"),
   },
   (t) => [index("assistant_turns_branch").on(t.branchId, t.createdAt), index("assistant_turns_created").on(t.createdAt)],
 );

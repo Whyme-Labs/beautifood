@@ -93,7 +93,7 @@ test.describe("guest journey (browser)", () => {
     await input.press("Enter");
     const card = page.getByTestId("order-card");
     await expect(card).toContainText("Char Kway Teow", { timeout: 15_000 });
-    await expect(card).toContainText("2×");
+    await expect(card.getByTestId("order-line").first().locator(".order-step")).toContainText("2");
     await expect(card).toContainText("Service charge 10%");
     await expect(card).toContainText("To pay");
     await card.getByRole("button", { name: "Add all to my order" }).click();
@@ -102,5 +102,37 @@ test.describe("guest journey (browser)", () => {
     await page.getByTestId("tab-cart").click();
     await expect(page.getByTestId("cart-line")).toHaveCount(1);
     await expect(page.getByTestId("cart-line")).toContainText("Char Kway Teow");
+  });
+
+  test("the guest fixes the order card before adding it: a count, and a drink's choice", async ({ page }) => {
+    const s = await seed();
+    const t = await tableIds(s.owner, s.klcc.id);
+    const st = await seatWalkIn(s.owner, s.klcc.id, [t.T6.id], 2);
+    await open(page, st.sessionUrl);
+    await page.getByLabel("Your name").fill("Mei");
+    await page.getByRole("button", { name: "Start ordering" }).click();
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+    const input = page.getByLabel("Ask the menu assistant");
+    await input.fill("2 char kway teow and 1 teh tarik, total?");
+    await input.press("Enter");
+    const card = page.getByTestId("order-card");
+    await expect(card.getByTestId("order-line")).toHaveCount(2, { timeout: 15_000 });
+    const before = await card.locator(".order-total dd").innerText();
+    // one char kway teow, not two
+    await card.getByRole("button", { name: "One fewer Char Kway Teow" }).click();
+    await expect(card.getByTestId("order-line").first()).toContainText("1");
+    await expect(card.locator(".order-total dd")).not.toHaveText(before);
+    await expect(card.getByRole("button", { name: "Undo changes" })).toBeVisible();
+    // the teh tarik iced
+    await card.getByTestId("order-line").nth(1).getByRole("button", { name: "Change" }).click();
+    await card.getByRole("button", { name: /^Iced/ }).click();
+    await card.getByRole("button", { name: "Done" }).click();
+    await expect(card.getByTestId("order-line").nth(1)).toContainText("Iced");
+    await card.getByRole("button", { name: "Add all to my order" }).click();
+    await page.keyboard.press("Escape");
+    await page.getByTestId("tab-cart").click();
+    await expect(page.getByTestId("cart-line")).toHaveCount(2);
+    await expect(page.getByTestId("tab-cart")).toContainText("Cart (2)");
+    await expect(page.getByTestId("cart-line").filter({ hasText: "Teh Tarik" })).toContainText("Iced");
   });
 });

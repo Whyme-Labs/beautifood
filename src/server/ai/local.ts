@@ -64,6 +64,9 @@ export interface OrderCard {
     label: string;
     count: number;
     options: { group: string; name: string; label: string; price: number }[];
+    /** The dish's own price, and its choices (to change a line's add-ons in the card). */
+    price: number;
+    groups: { name: string; min: number; max: number; options: { name: string; label: string; price: number }[] }[];
     unit: number;
     total: number;
     /** Whose it is, as the guest said ("You", "Friend"). */
@@ -71,7 +74,7 @@ export interface OrderCard {
   }[];
   subtotal: number;
   /** As the till adds them, when asked for (or when a split needs them). */
-  charges?: { servicePct: number; taxPct: number; taxInclusive: boolean; service: number; tax: number; due: number };
+  charges?: { servicePct: number; taxPct: number; taxInclusive: boolean; cashRounding: number; service: number; tax: number; due: number };
   /** An even split: how many ways, and each share (of `charges.due` when there are charges). */
   split?: { ways: number; each: number };
   /** Each person's part, by what they had. */

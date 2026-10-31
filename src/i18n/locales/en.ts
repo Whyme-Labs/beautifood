@@ -250,6 +250,11 @@ const en = {
     orderEach: "Each of {count} pays",
     orderAddAll: "Add all to my order",
     orderAdded: "Added to your order",
+    orderReset: "Undo changes",
+    orderFewer: "One fewer {dish}",
+    orderMore: "One more {dish}",
+    orderChange: "Change",
+    orderDone: "Done",
   },
   home: {
     title: "Skip the standing around.",

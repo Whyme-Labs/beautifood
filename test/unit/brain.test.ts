@@ -248,14 +248,18 @@ describe("the learning loop", () => {
             row("whats the weather", "out_of_scope", 990),
             row("what's your signature dish", "recommend", 990, '["d1"]'),
             row("anything §dish", "recommend", 990, '["d1"]', '["d1"]'),
+            { ...row("boss §num §dish lah, §num §dish also, berapa semua", "recommend", 990, '["d1"]', '["d1"]'), order_read: '[{"id":"d1","count":2,"options":[]}]', order_final: '[{"id":"d1","count":1,"options":[]}]' },
+            { ...row("§num §dish total", "recommend", 990, '["d1"]', '["d1"]'), order_read: '[{"id":"d1","count":1,"options":[]}]', order_final: null },
           ],
         },
       ]),
     );
     expect(picked.map((p) => [p.question, p.reason, p.count])).toEqual([
+      ["§num §dish §num §dish also berapa semua", "corrected", 1],
       ["got §dish halal cert or not", "unsure", 2],
       ["whats the weather", "off_topic", 1],
     ]);
+    expect(picked[0].meant).toEqual([{ id: "d1", count: 1, options: [] }]);
   }, 30_000);
 
   it("gates new weights: no worse anywhere, and never unsafe", () => {

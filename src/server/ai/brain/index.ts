@@ -1308,6 +1308,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         label: name(o.item),
         count: o.count,
         options: (o.options ?? []).map((x) => ({ group: o.item.modifiers?.find((g) => g.options.some((y) => y.name === x.name))?.name ?? "", name: x.name, label: optionLabel(x), price: x.price })),
+        price: o.item.price,
+        groups: (o.item.modifiers ?? []).map((g) => ({ name: g.name, min: g.min ?? 0, max: g.max ?? 1, options: g.options.map((x) => ({ name: x.name, label: optionLabel(x), price: x.price })) })),
         unit: unitPrice(o),
         total: unitPrice(o) * o.count,
         ...(who ? { owner: who } : {}),
@@ -1782,7 +1784,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const noSuch = missingAddOns(u.text, bill.map((o) => o.item), ctx.items, /\b(?:tambah|add|extra|top with)\s+(.+)$/).map((x) => `${t("assistantReply.notAvailable", { thing: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })}${sp}`).join("");
       const { service, tax } = till(total);
       const card = orderCard(bill, {
-        ...(tillIt ? { charges: { servicePct: ch.serviceChargePct, taxPct: ch.taxPct, taxInclusive: ch.taxInclusive, service, tax, due } } : {}),
+        ...(tillIt ? { charges: { servicePct: ch.serviceChargePct, taxPct: ch.taxPct, taxInclusive: ch.taxInclusive, cashRounding: ch.cashRounding, service, tax, due } } : {}),
         ...(shares && shares >= 2 ? { split: { ways: shares, each: Math.ceil(due / shares) } } : {}),
         ...(mineOnly || mineByOwner ? { mine: true } : {}),
         notes: [warn, noSuch, goneNote].map((x) => x.trim()).filter(Boolean),

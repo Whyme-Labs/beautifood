@@ -25,6 +25,18 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
+  // (a guest's edit of an order card, kept against its turn once they stop changing it: the learning loop's labelled turns)
+  const edits = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  const corrected = (turn: string | undefined, lines: OrderCardData["lines"]) => {
+    if (!turn) return;
+    clearTimeout(edits.current.get(turn));
+    edits.current.set(
+      turn,
+      setTimeout(() => {
+        void api(`/api/public/branches/${branch}/assistant/corrected`, { body: { turn, lines: lines.map((l) => ({ id: l.id, count: l.count, options: l.options.map((o) => ({ group: o.group, name: o.name })) })) } }).catch(() => {});
+      }, 2000),
+    );
+  };
   const ask = async (q: string) => {
     if (!q.trim()) return;
     const next = [...msgs, { role: "user" as const, content: q.trim() }];
@@ -59,6 +71,7 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
                 <OrderCard
                   order={m.reply.order}
                   currency={currency}
+                  onEdit={(lines) => corrected(m.reply?.turn, lines)}
                   onAddAll={
                     onAddLines &&
                     ((lines) => {

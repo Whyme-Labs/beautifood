@@ -66,6 +66,17 @@ test.describe("AI for guests and merchants", () => {
     expect((await added(cheapest.items[0].id)).counted).toBe(true);
     expect((await added(cheapest.items[0].id)).counted).toBe(false);
     expect((await added(m.items.find((x) => x.id !== cheapest.items[0].id)!.id)).counted).toBe(false);
+
+    // a bill comes back as an order card, and the guest's edit of it is kept beside what was read
+    const bill = await chat([{ role: "user", content: "2 char kway teow, total with service and tax?" }]);
+    expect(bill.order.lines[0]).toMatchObject({ name: "Char Kway Teow", count: 2 });
+    expect(bill.order.charges.due).toBeGreaterThan(bill.order.subtotal);
+    const corrected = async (turn: string, lines: unknown) => json((await guestClient()).post(`/api/public/branches/${s.klcc.ref}/assistant/corrected`, { data: { turn, lines } }));
+    const ckt = bill.order.lines[0].id;
+    expect((await corrected(bill.turn, [{ id: ckt, count: 1, options: [] }])).kept).toBe(true);
+    // (not for a turn without a bill, nor a dish off this menu)
+    expect((await corrected(cheapest.turn, [{ id: ckt, count: 1, options: [] }])).kept).toBe(false);
+    expect((await corrected(bill.turn, [{ id: "mi_not_on_menu", count: 1, options: [] }])).kept).toBe(false);
   });
 
   test("merchant onboarding copilot: paste a menu and describe the floor → reviewable draft → apply → checklist progresses", async () => {

@@ -1,7 +1,9 @@
 // The guest assistant's log, for the learning loop (docs/menu-brain.md): what each question was
-// read as, what the brain decided, what it showed, and what the guest added from the chat. It keeps
+// read as, what the brain decided, what it showed, and what the guest added from the chat; and for a
+// bill, the order it read and the guest's own edit of it in the order card (a labelled turn). It keeps
 // the question only as the intent model read it, with dish names as §dish, and with emails and
 // phone numbers removed, for 90 days.
+import { z } from "zod";
 import { newId } from "../../ids";
 
 const KEEP_DAYS = 90;
@@ -26,13 +28,23 @@ export interface Turn {
   confident: boolean;
   engine: string;
   shown: string[];
+  /** A bill it worked out: its lines. */
+  order?: OrderLines;
 }
+
+/** An order as the log keeps it: each line's dish, count and add-ons (by group). */
+export type OrderLines = { id: string; count: number; options: { group: string; name: string }[] }[];
+
+const OrderLinesSchema = z
+  .array(z.object({ id: z.string().min(1).max(64), count: z.number().int().min(1).max(50), options: z.array(z.object({ group: z.string().max(80), name: z.string().max(80) })).max(12) }))
+  .max(20);
+export { OrderLinesSchema };
 
 export async function logTurn(db: D1Database, t: Turn, at = Date.now()): Promise<string> {
   const id = newId("at_");
   await db
-    .prepare("INSERT INTO assistant_turns (id, tenant_id, branch_id, created_at, lang, question, intent, confidence, confident, engine, shown) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-    .bind(id, t.tenantId, t.branchId, at, t.lang.slice(0, 8), scrub(t.question), t.intent, Math.round(t.confidence * 1000), t.confident ? 1 : 0, t.engine, JSON.stringify(t.shown.slice(0, 8)))
+    .prepare("INSERT INTO assistant_turns (id, tenant_id, branch_id, created_at, lang, question, intent, confidence, confident, engine, shown, order_read) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+    .bind(id, t.tenantId, t.branchId, at, t.lang.slice(0, 8), scrub(t.question), t.intent, Math.round(t.confidence * 1000), t.confident ? 1 : 0, t.engine, JSON.stringify(t.shown.slice(0, 8)), t.order?.length ? JSON.stringify(t.order.slice(0, 20)) : null)
     .run();
   return id;
 }
@@ -45,6 +57,17 @@ export async function recordAdd(db: D1Database, branchId: string, turnId: string
   const added = JSON.parse(row.added) as string[];
   if (!shown.includes(itemId) || added.includes(itemId)) return false;
   await db.prepare("UPDATE assistant_turns SET added = ? WHERE id = ?").bind(JSON.stringify([...added, itemId]), turnId).run();
+  return true;
+}
+
+/**
+ * The guest changed the order card of a bill this turn worked out: their order, kept beside the one
+ * it read (only for a turn that had one, and only dishes of this branch's menu).
+ */
+export async function recordCorrection(db: D1Database, branchId: string, turnId: string, final: OrderLines, menuIds: Set<string>): Promise<boolean> {
+  const row = await db.prepare("SELECT order_read FROM assistant_turns WHERE id = ? AND branch_id = ?").bind(turnId, branchId).first<{ order_read: string | null }>();
+  if (!row?.order_read || final.some((l) => !menuIds.has(l.id))) return false;
+  await db.prepare("UPDATE assistant_turns SET order_final = ? WHERE id = ?").bind(JSON.stringify(final), turnId).run();
   return true;
 }
 

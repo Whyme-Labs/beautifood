@@ -141,6 +141,7 @@ export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSet
     // (a turn the model reader read differently from the rules: the review queue for the learning loop)
     engine: readerDiffers ? `${r.engine}+reader-differs` : r.engine,
     shown: items.map((i) => i.id),
+    ...(r.order ? { order: r.order.lines.map((l) => ({ id: l.id, count: l.count, options: l.options.map((o) => ({ group: o.group, name: o.name })) })) } : {}),
   }).catch((e) => (console.warn("assistant log", e), undefined));
   return { answer: r.answer, items, ...(r.order ? { order: r.order } : {}), safetyNote: r.safetyNote, engine: r.engine, confident: r.confident, taste: r.taste, turn };
 }

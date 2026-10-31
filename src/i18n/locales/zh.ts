@@ -248,6 +248,11 @@ const zh = {
     orderEach: "{count}人平分，每人",
     orderAddAll: "全部加入我的订单",
     orderAdded: "已加入你的订单",
+    orderReset: "撤销修改",
+    orderFewer: "{dish}减一份",
+    orderMore: "{dish}加一份",
+    orderChange: "修改",
+    orderDone: "完成",
   },
   home: {
     title: "不用再站着干等。",
