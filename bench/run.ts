@@ -42,8 +42,8 @@ export interface Gold {
 }
 
 /** Which case set: v1 (dev and test), v2 held-out, or v3 held-out (with its own menus, in v3/menus). */
-export type Set = "v1" | "heldout" | "v3" | "v4" | "v5" | "v6" | "v7" | "v8" | "v9" | "v10";
-const menuFile = (menu: string, ext: string) => ["", "v3/", "v4/", "v5/", "v6/", "v7/", "v8/", "v9/", "v10/"].map((d) => `${DIR}${d}menus/${menu}${ext}`).find((f) => existsSync(f)) ?? `${DIR}menus/${menu}${ext}`;
+export type Set = "v1" | "heldout" | "v3" | "v4" | "v5" | "v6" | "v7" | "v8" | "v9" | "v10" | "v11";
+const menuFile = (menu: string, ext: string) => ["", "v3/", "v4/", "v5/", "v6/", "v7/", "v8/", "v9/", "v10/", "v11/"].map((d) => `${DIR}${d}menus/${menu}${ext}`).find((f) => existsSync(f)) ?? `${DIR}menus/${menu}${ext}`;
 
 /**
  * What a branch's settings add to its menu (`<menu>.extra.json`, optional): dishes sold out, timed
@@ -146,7 +146,7 @@ function withExtra(ctx: AssistantContext, menu: string, x: Extra, at: NonNullabl
 
 /** `set`: "v1" (cases/, dev and test), "heldout" (heldout/, v2: new authors and menus, all test) "v3" or "v4" (v3/, v4/: the same again, each on its own menus). */
 export function loadCases(split = "all", set: Set = "v1"): Case[] {
-  const dir = `${DIR}${{ v1: "cases", heldout: "heldout", v3: "v3", v4: "v4", v5: "v5", v6: "v6", v7: "v7", v8: "v8", v9: "v9", v10: "v10" }[set]}`;
+  const dir = `${DIR}${{ v1: "cases", heldout: "heldout", v3: "v3", v4: "v4", v5: "v5", v6: "v6", v7: "v7", v8: "v8", v9: "v9", v10: "v10", v11: "v11" }[set]}`;
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
     .filter((f) => f.endsWith(".json"))
