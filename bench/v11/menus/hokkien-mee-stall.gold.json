@@ -1,0 +1,330 @@
+{
+  "KL Hokkien Mee": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "crustaceans",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Wheat noodles; dark soy = soy + gluten; prawns; squid = molluscs; sambal belacan = crustaceans, a chilli condiment on the side = 1. Pork and lard: not halal."
+  },
+  "Penang Hokkien Prawn Mee": {
+    "allergens": [
+      "crustaceans",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Prawns and prawn broth; yellow noodles = gluten (default noodles are mixed); egg. Pork ribs: not halal. Described as spicy."
+  },
+  "Loh Mee": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat noodles; dark soy = soy + gluten; egg; fish cake = fish. Black vinegar adds nothing new (gluten already). No chilli named: 0. Pork: not halal."
+  },
+  "Fried Bee Hoon": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Rice vermicelli has no gluten, but soy sauce does. Prawns. Pork and lard: not halal."
+  },
+  "Fried Kuey Teow": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "crustaceans",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Dark soy = soy + gluten; prawns; squid = molluscs. Pork and lard: not halal."
+  },
+  "Seafood Hokkien Mee (No Pork)": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "crustaceans",
+      "molluscs",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat noodles; dark soy; prawns; squid; fish cake. No pork, lard or alcohol: halal from ingredients at a 'none' branch (v8 ruling 1)."
+  },
+  "Vegetarian Fried Bee Hoon": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Light soy = soy + gluten; beancurd puffs = soy; egg: vegetarian, not vegan."
+  },
+  "Sang Har Mee": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg noodles = gluten + egg; giant prawn; Shaoxing = sulphites + gluten, not halal; lard. SOLD OUT in extra.json."
+  },
+  "Hokkien Mee Set": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "crustaceans",
+      "molluscs",
+      "fish",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Union of its default parts: small KL Hokkien Mee, Fried Fish Ball (fish), default Kopi Ais (condensed milk). Sambal and chilli sauce on the side = 1. Not halal (pork, lard)."
+  },
+  "Claypot Loh Shi Fun": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Rice noodles have no gluten, soy sauce does; egg; pork: not halal. Supper only (22:00-02:00)."
+  },
+  "Oyster Omelette": {
+    "allergens": [
+      "molluscs",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Oysters = molluscs; egg; sweet potato starch has no gluten; lard: not halal. Chilli sauce on the side = 1. Supper only."
+  },
+  "Kam Heong Lala": {
+    "allergens": [
+      "molluscs",
+      "crustaceans",
+      "milk",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Clams and oyster sauce = molluscs (+ gluten, rule g); dried shrimp = crustaceans; butter = milk. No pork, lard or alcohol: halal from ingredients. Spicy. Supper only."
+  },
+  "Fried Wantan": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Wheat and egg wrappers; prawn filling; pork: not halal. Sweet chilli dip = 1."
+  },
+  "Fried Fish Ball": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish paste; tapioca starch has no gluten. Chilli sauce on the side = 1. Halal from ingredients."
+  },
+  "Sambal Kangkung": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan and dried shrimp = crustaceans, so not vegetarian. Vegetable oil, no pork. Spicy."
+  },
+  "Choy Sum Oyster Sauce": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten (rule g), so not vegetarian."
+  },
+  "Braised Egg": {
+    "allergens": [
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg; dark soy = soy + gluten; pork stock: not vegetarian, not halal."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Kopi O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No milk; no butter roast stated (rule o does not apply)."
+  },
+  "Teh": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Teh O": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Milo": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley = gluten; condensed milk."
+  },
+  "Chinese Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Kopi Ais": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Teh Ais": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Milo Ais": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Malted barley = gluten; condensed milk."
+  },
+  "Limau Ais": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Barley Ais": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten."
+  },
+  "Soya Bean Ais": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Tiger Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol: not halal."
+  }
+}

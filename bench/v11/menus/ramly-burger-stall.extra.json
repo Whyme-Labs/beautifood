@@ -1,0 +1,1549 @@
+{
+  "soldOut": [
+    "Burger Kambing"
+  ],
+  "menus": [
+    {
+      "name": "Late night",
+      "dishes": [
+        "Burger Oblong",
+        "Benjo",
+        "Maggi Goreng Daging"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "21:00",
+          "to": "01:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Roti John 20% off",
+      "kind": "percent",
+      "value": 20,
+      "categories": [
+        "ROTI JOHN"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "17:00",
+          "to": "19:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Ramly Beef Burger": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra beef patty",
+            "price": 250
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Ramly Chicken Burger": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra chicken patty",
+            "price": 200
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Double Beef Burger": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra beef patty",
+            "price": 250
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Double Chicken Burger": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra chicken patty",
+            "price": 200
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Burger Special Daging": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra beef patty",
+            "price": 250
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Burger Special Ayam": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra chicken patty",
+            "price": 200
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Burger Kambing": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra lamb patty",
+            "price": 300
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Burger Ikan": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Burger Sayur": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra veggie patty",
+            "price": 250
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Burger Telur": [
+      {
+        "name": "Sauce",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chilli sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 0
+          },
+          {
+            "name": "Mayonnaise",
+            "price": 0
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Make it a meal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Meal: fries + sirap ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + teh o ais",
+            "price": 350
+          },
+          {
+            "name": "Meal: fries + air tin",
+            "price": 450
+          }
+        ]
+      }
+    ],
+    "Roti John Daging": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar (long loaf)",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Roti John Ayam": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar (long loaf)",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Roti John Sardin": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar (long loaf)",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra egg",
+            "price": 100
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          },
+          {
+            "name": "Extra onions",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Hot Dog Ayam": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra sausage",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Hot Dog Cheese": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra sausage",
+            "price": 200
+          },
+          {
+            "name": "Extra cheese sauce",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Kentang Goreng": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Seasoning",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Cheese powder",
+            "price": 50
+          },
+          {
+            "name": "Spicy seasoning",
+            "price": 50
+          },
+          {
+            "name": "Cheese sauce",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Cheesy Fries": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Nugget Ayam": [
+      {
+        "name": "Pieces",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pcs",
+            "price": 0
+          },
+          {
+            "name": "10 pcs",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Burger Oblong": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra cheese slice",
+            "price": 100
+          },
+          {
+            "name": "Extra egg",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Maggi Goreng Daging": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 100
+          },
+          {
+            "name": "Extra beef",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tak pedas",
+            "price": 0
+          },
+          {
+            "name": "Pedas sikit",
+            "price": 0
+          },
+          {
+            "name": "Pedas",
+            "price": 0
+          },
+          {
+            "name": "Extra pedas",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sirap Ais": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Kurang ais",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sirap Bandung Ais": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Kurang ais",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh O Ais": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Kurang ais",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh Ais": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Kurang ais",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi O Ais": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Kurang ais",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Milo Ais": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Kurang ais",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Air Tin": [
+      {
+        "name": "Flavour",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Cola",
+            "price": 0
+          },
+          {
+            "name": "100Plus",
+            "price": 0
+          },
+          {
+            "name": "Orange",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 0,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "certified",
+    "certifier": "JAKIM",
+    "certNo": "JAKIM.700-2/3/2-SL0418",
+    "validUntil": "2027-09-30"
+  }
+}

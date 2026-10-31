@@ -1,0 +1,349 @@
+{
+  "Claypot Chicken Rice": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "soy",
+      "sulphites",
+      "sesame",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten (g); soy sauce = soy + gluten; Shaoxing = sulphites + gluten, not halal; sesame oil; salted fish = fish; lap cheong is pork. Add-ons not counted."
+  },
+  "Claypot Mixed Meat Rice": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork waxed meats; soy sauce = soy + gluten; oyster sauce = molluscs + gluten; rose wine = not halal, no allergen."
+  },
+  "Claypot Spare Ribs Rice": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork; fermented black beans = soy; light soy = soy + gluten; a little chilli = 1."
+  },
+  "Claypot Chicken & Mushroom Rice": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "No pork, no wine: halal from ingredients at a 'none' branch (v8 ruling 1). Oyster sauce, soy sauce, sesame oil."
+  },
+  "Claypot Vegetarian Rice": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Vegetarian mushroom sauce (no oyster); tofu puff + light soy = soy + gluten; sesame oil. Vegan as stated."
+  },
+  "Claypot Tofu": {
+    "allergens": [
+      "egg",
+      "soy",
+      "crustaceans",
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg tofu = egg + soy; prawns; oyster sauce = molluscs + gluten; minced pork."
+  },
+  "Vegetarian Claypot Tofu": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tofu + light soy = soy + gluten. Stated no egg, vegan."
+  },
+  "Claypot Salted Fish Pork Belly": {
+    "allergens": [
+      "fish",
+      "sulphites",
+      "gluten",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Salted fish; Shaoxing = sulphites + gluten; oyster sauce = molluscs + gluten; pork."
+  },
+  "Claypot Prawns with Glass Noodles": {
+    "allergens": [
+      "crustaceans",
+      "soy",
+      "gluten",
+      "molluscs",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Prawns; light soy; oyster sauce; Shaoxing (not halal); mung bean noodles no gluten; mildly peppery = 1. SOLD OUT in extra.json."
+  },
+  "Claypot Dried Chilli Chicken": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "No pork, no wine: halal from ingredients. Dark soy = soy + gluten; oyster sauce. Spicy = 2."
+  },
+  "Black Chicken Herbal Soup": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dang gui is not celery (v10). No wine, no pork: halal from ingredients."
+  },
+  "Old Cucumber Pork Rib Soup": {
+    "allergens": [
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Dried scallop = molluscs; pork."
+  },
+  "Lotus Root Peanut Soup": {
+    "allergens": [
+      "peanuts",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Peanuts; dried octopus = molluscs; pork."
+  },
+  "Watercress Soup": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Chinese almonds / apricot kernels (南北杏) read as tree nuts (safe reading). Pork bones."
+  },
+  "Vegetarian Corn & Carrot Soup": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Vegan as stated; no allergen named."
+  },
+  "Garlic Kai Lan": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten (g); not vegetarian."
+  },
+  "Bean Sprouts with Salted Fish": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Salted fish = fish; not vegetarian."
+  },
+  "Belacan Kangkung": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan and dried shrimp = crustaceans. Spicy = 2."
+  },
+  "Garlic Choy Sum": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Vegan as stated."
+  },
+  "Pan-fried Lap Cheong": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork; soy sauce; rose wine not halal."
+  },
+  "Braised Peanuts": {
+    "allergens": [
+      "peanuts",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Peanuts; soy sauce = soy + gluten."
+  },
+  "White Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Chicken Rice Lunch Set": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "soy",
+      "sulphites",
+      "sesame",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Same as Claypot Chicken Rice; tea adds nothing. Default drink only."
+  },
+  "Mixed Meat Lunch Set": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Mixed meat rice (soy, gluten, molluscs) + dried scallop soup (molluscs). Pork."
+  },
+  "Vegetarian Lunch Set": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Vegetarian rice components; soup and tea add nothing. Default drink only."
+  },
+  "Chinese Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Barley Water": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten (v7 rule follows the English line)."
+  },
+  "Luo Han Guo": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Soy Bean Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk = milk; no butter roast stated."
+  },
+  "Tiger Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer = gluten, not halal; vegan as in v7/v8."
+  }
+}

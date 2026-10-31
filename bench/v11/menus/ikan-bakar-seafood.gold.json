@@ -1,0 +1,359 @@
+{
+  "Ikan Pari Bakar": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Stingray = fish; belacan = crustaceans; spicy = 2. Dips are modifiers, not counted."
+  },
+  "Ikan Kembung Bakar": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Mackerel; belacan. SOLD OUT in extra.json."
+  },
+  "Ikan Siakap Bakar": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Fish only; stated no belacan; a little chilli / mild = 1."
+  },
+  "Sotong Bakar": {
+    "allergens": [
+      "molluscs",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Squid = molluscs; kicap manis = soy + gluten; mild = 1."
+  },
+  "Udang Bakar": {
+    "allergens": [
+      "crustaceans",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Prawns; butter = milk; mild = 1."
+  },
+  "Platter Ikan Duo": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Stingray (belacan marinade) + siakap; sambal kicap (kicap manis) = soy + gluten; spicy stingray = 2."
+  },
+  "Platter Bakar Kampung": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "molluscs",
+      "soy",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Stingray, squid with kicap manis, prawns with butter, sambal belacan."
+  },
+  "Platter Bakar Besar": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "molluscs",
+      "soy",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Union of components and the three dips."
+  },
+  "Tom Yam Campur": {
+    "allergens": [
+      "crustaceans",
+      "molluscs",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns, squid, fish, fish sauce. Clear (no milk). Spicy = 2."
+  },
+  "Tom Yam Ayam": {
+    "allergens": [
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Fish sauce = fish; chilli paste stated no shrimp; oyster mushroom is not a mollusc."
+  },
+  "Sup Ikan": {
+    "allergens": [
+      "fish",
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fish; Chinese celery = celery; not spicy."
+  },
+  "Sotong Sambal": {
+    "allergens": [
+      "molluscs",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Squid; belacan."
+  },
+  "Udang Sambal Petai": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns; belacan."
+  },
+  "Ayam Goreng Berempah": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Rice flour, no gluten; mild = 1."
+  },
+  "Sotong Goreng Tepung": {
+    "allergens": [
+      "molluscs",
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Squid; wheat batter; egg; mayonnaise = egg."
+  },
+  "Telur Dadar": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg."
+  },
+  "Telur Goreng": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg. Also an add-on at the same price."
+  },
+  "Nasi Putih": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Nasi Lemak": {
+    "allergens": [
+      "crustaceans",
+      "fish",
+      "peanuts",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan; ikan bilis = fish; peanuts; egg; coconut milk is not milk."
+  },
+  "Nasi Goreng Kampung": {
+    "allergens": [
+      "fish",
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Ikan bilis = fish; egg; kicap = soy + gluten. No belacan stated."
+  },
+  "Kangkung Belacan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan."
+  },
+  "Sayur Campur": {
+    "allergens": [
+      "molluscs",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Oyster sauce = molluscs + gluten; not vegetarian."
+  },
+  "Ulam-ulaman": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Sambal belacan is part of the dish."
+  },
+  "Terung Bakar Kicap": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Kicap manis = soy + gluten; mildly spicy = 1."
+  },
+  "Sambal Kicap": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Kicap manis = soy + gluten."
+  },
+  "Air Asam": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "No belacan stated; vegan."
+  },
+  "Sambal Belacan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Shrimp paste; very spicy = 3."
+  },
+  "Sirap Bandung": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated + condensed milk."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Teh O Ais Limau": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Air Kelapa Muda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut is not a tree nut."
+  },
+  "Jus Tembikai": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Jus Oren": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  },
+  "Limau Ais": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "No allergen."
+  }
+}

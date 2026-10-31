@@ -1,0 +1,858 @@
+{
+  "soldOut": [
+    "Ikan Kembung Bakar"
+  ],
+  "menus": [
+    {
+      "name": "Dinner",
+      "dishes": [
+        "Platter Ikan Duo",
+        "Platter Bakar Kampung",
+        "Platter Bakar Besar"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "18:00",
+          "to": "23:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Monday ikan bakar",
+      "kind": "amount",
+      "value": 300,
+      "categories": [],
+      "dishes": [
+        "Ikan Pari Bakar",
+        "Ikan Kembung Bakar",
+        "Ikan Siakap Bakar"
+      ],
+      "windows": [
+        {
+          "days": [
+            1
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Ikan Pari Bakar": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 800
+          },
+          {
+            "name": "Large",
+            "price": 1600
+          }
+        ]
+      },
+      {
+        "name": "Dips (pick up to 2)",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Sambal kicap",
+            "price": 0
+          },
+          {
+            "name": "Air asam",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Petai",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Ikan Kembung Bakar": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 300
+          },
+          {
+            "name": "Large",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Dips (pick up to 2)",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Sambal kicap",
+            "price": 0
+          },
+          {
+            "name": "Air asam",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Petai",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Ikan Siakap Bakar": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 1000
+          },
+          {
+            "name": "Large",
+            "price": 2000
+          }
+        ]
+      },
+      {
+        "name": "Dips (pick up to 2)",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Sambal kicap",
+            "price": 0
+          },
+          {
+            "name": "Air asam",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Petai",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Sotong Bakar": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 600
+          },
+          {
+            "name": "Large",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Dips (pick up to 2)",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Sambal kicap",
+            "price": 0
+          },
+          {
+            "name": "Air asam",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Petai",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Udang Bakar": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 1000
+          },
+          {
+            "name": "Large",
+            "price": 2000
+          }
+        ]
+      },
+      {
+        "name": "Dips (pick up to 2)",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Sambal kicap",
+            "price": 0
+          },
+          {
+            "name": "Air asam",
+            "price": 0
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Petai",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Platter Ikan Duo": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Petai",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Platter Bakar Kampung": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Petai",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Tom Yam Campur": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 600
+          },
+          {
+            "name": "Large",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Tom Yam Ayam": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sotong Sambal": [
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Petai",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Nasi Putih": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Telur goreng",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Nasi Lemak": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra sambal",
+            "price": 100
+          },
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Ayam goreng berempah",
+            "price": 900
+          }
+        ]
+      }
+    ],
+    "Nasi Goreng Kampung": [
+      {
+        "name": "Spice level",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Telur goreng",
+            "price": 200
+          },
+          {
+            "name": "Petai",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Kangkung Belacan": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Sayur Campur": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Sirap Bandung": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh O Ais Limau": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Jus Tembikai": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Glass",
+            "price": 0
+          },
+          {
+            "name": "Jug",
+            "price": 900
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Jus Oren": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Glass",
+            "price": 0
+          },
+          {
+            "name": "Jug",
+            "price": 1000
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Limau Ais": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "muslim_friendly"
+  }
+}

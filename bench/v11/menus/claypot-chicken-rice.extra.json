@@ -1,0 +1,696 @@
+{
+  "soldOut": [
+    "Claypot Prawns with Glass Noodles"
+  ],
+  "menus": [
+    {
+      "name": "Lunch",
+      "dishes": [
+        "Chicken Rice Lunch Set",
+        "Mixed Meat Lunch Set",
+        "Vegetarian Lunch Set"
+      ],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "11:00",
+          "to": "14:30"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Weekend soup deal",
+      "kind": "percent",
+      "value": 10,
+      "categories": [
+        "HERBAL SOUPS"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            6
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Claypot Chicken Rice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "1-2 pax",
+            "price": 0
+          },
+          {
+            "name": "3-4 pax",
+            "price": 1400
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Salted fish",
+            "price": 300
+          },
+          {
+            "name": "Lap cheong",
+            "price": 400
+          },
+          {
+            "name": "Egg",
+            "price": 200
+          },
+          {
+            "name": "Extra chicken",
+            "price": 600
+          },
+          {
+            "name": "Mushroom",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "More dark soy",
+            "price": 0
+          },
+          {
+            "name": "Less salty",
+            "price": 0
+          },
+          {
+            "name": "Extra crispy rice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Claypot Mixed Meat Rice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "1-2 pax",
+            "price": 0
+          },
+          {
+            "name": "3-4 pax",
+            "price": 1600
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Salted fish",
+            "price": 300
+          },
+          {
+            "name": "Lap cheong",
+            "price": 400
+          },
+          {
+            "name": "Egg",
+            "price": 200
+          },
+          {
+            "name": "Extra chicken",
+            "price": 600
+          },
+          {
+            "name": "Mushroom",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "More dark soy",
+            "price": 0
+          },
+          {
+            "name": "Less salty",
+            "price": 0
+          },
+          {
+            "name": "Extra crispy rice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Claypot Spare Ribs Rice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "1-2 pax",
+            "price": 0
+          },
+          {
+            "name": "3-4 pax",
+            "price": 1400
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Salted fish",
+            "price": 300
+          },
+          {
+            "name": "Lap cheong",
+            "price": 400
+          },
+          {
+            "name": "Egg",
+            "price": 200
+          },
+          {
+            "name": "Extra chicken",
+            "price": 600
+          },
+          {
+            "name": "Mushroom",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "More dark soy",
+            "price": 0
+          },
+          {
+            "name": "Less salty",
+            "price": 0
+          },
+          {
+            "name": "Extra crispy rice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Claypot Chicken & Mushroom Rice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "1-2 pax",
+            "price": 0
+          },
+          {
+            "name": "3-4 pax",
+            "price": 1400
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Salted fish",
+            "price": 300
+          },
+          {
+            "name": "Egg",
+            "price": 200
+          },
+          {
+            "name": "Extra chicken",
+            "price": 600
+          },
+          {
+            "name": "Mushroom",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "More dark soy",
+            "price": 0
+          },
+          {
+            "name": "Less salty",
+            "price": 0
+          },
+          {
+            "name": "Extra crispy rice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Claypot Vegetarian Rice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "1-2 pax",
+            "price": 0
+          },
+          {
+            "name": "3-4 pax",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Egg",
+            "price": 200
+          },
+          {
+            "name": "Mushroom",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "More dark soy",
+            "price": 0
+          },
+          {
+            "name": "Less salty",
+            "price": 0
+          },
+          {
+            "name": "Extra crispy rice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Claypot Tofu": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Vegetarian Claypot Tofu": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Claypot Dried Chilli Chicken": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 1000
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Garlic Kai Lan": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Garlic Choy Sum": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Chicken Rice Lunch Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot Chinese tea",
+            "price": 0
+          },
+          {
+            "name": "Iced lemon tea",
+            "price": 200
+          },
+          {
+            "name": "Soy bean milk",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Salted fish",
+            "price": 300
+          },
+          {
+            "name": "Lap cheong",
+            "price": 400
+          },
+          {
+            "name": "Egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Mixed Meat Lunch Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot Chinese tea",
+            "price": 0
+          },
+          {
+            "name": "Iced lemon tea",
+            "price": 200
+          },
+          {
+            "name": "Soy bean milk",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Vegetarian Lunch Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot Chinese tea",
+            "price": 0
+          },
+          {
+            "name": "Iced lemon tea",
+            "price": 200
+          },
+          {
+            "name": "Soy bean milk",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Chinese Tea": [
+      {
+        "name": "Tea",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Pu-erh",
+            "price": 0
+          },
+          {
+            "name": "Tieguanyin",
+            "price": 0
+          },
+          {
+            "name": "Chrysanthemum",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Iced Lemon Tea": [
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Barley Water": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Luo Han Guo": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Soy Bean Milk": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

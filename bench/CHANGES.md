@@ -1232,3 +1232,9 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     browser runs a similar budget).
   - Scored once. If it misses, the reader stays off, and v11 stays usable as a held-out set for the
     rules.
+- **v11 frozen.**
+  - 4 menus (hokkien-mee-stall, ramly-burger-stall, claypot-chicken-rice, ikan-bakar-seafood), 492
+    cases (120, 124, 123, 125), by 2 authors who never saw the engine. A third reviewed every case
+    against its menu: 61 cases corrected, none deleted, no gold reading or branch setting changed
+    (`bench/v11/REVIEW-xy.md`).
+  - Fingerprints: `v11 492 98a33e85d0c4ea38`, `v11 menus 12 5a02a8322cbf5c94`.
