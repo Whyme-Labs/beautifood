@@ -20,14 +20,17 @@ def load(model_dir):
 
 
 def read(tok, model, text, menu, order):
-    dishes, opts = T.menu_labels(menu, text, set(order))
-    ids, markers, labels, start, offs = T.encode(tok, text, dishes, opts)
+    dishes, labels = T.select_labels(tok, menu, text, set(order))
+    ids, markers, start, offs = T.encode(tok, text, labels)
     x = {"ids": ids, "markers": markers, "start": start, "valid": T.text_tokens(text, offs), "labels": labels}
     if not x["valid"]:
         return {"acts": [], "items": []}
-    r = T.decode(model, x, "cpu")
+    # (an add-on goes only with a dish that has it; a pointer's dish isn't known yet, so anything may)
+    options = {T.dish_label(d): {o for g in d.get("groups", []) for o in g["options"]} for d in dishes}
+    allowed = lambda dish, part: not part.startswith("add-on: ") or dish not in options or part[len("add-on: "):] in options[dish]
+    r = T.decode(model, x, "cpu", allowed=allowed)
     chars = lambda span: (offs[span[0]][0], offs[span[1]][1])
-    names = {f"dish: {d['name']} {d.get('zh') or ''}".strip(): d["name"] for d in dishes}
+    names = {T.dish_label(d): d["name"] for d in dishes}
     items = []
     for it in r["items"]:
         a, b = chars(it["span"])

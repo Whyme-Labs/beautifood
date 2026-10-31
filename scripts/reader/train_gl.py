@@ -39,41 +39,62 @@ def norm(s):
     return re.sub(r"[^\w]+", " ", s.lower()).strip()
 
 
-def menu_labels(menu, text, keep=()):
-    """The label list for a message: generic ones, the menu's dishes (the ones the message or the order
-    names first, up to MAX_DISHES), then their add-on names (up to MAX_OPTIONS)."""
+def dish_label(d):
+    """A dish's label: its Chinese name first (what a Chinese guest matches, and kept if the label is cut)."""
+    return f"dish: {d['zh']} {d['name']}" if d.get("zh") else f"dish: {d['name']}"
+
+
+def select_labels(tok, menu, text, keep=(), rng=None):
+    """The labels for a message, all fitting the input: generic ones; then dishes, the ones `keep` names
+    first (the order's; in training also the gold ones), then those the message's words hit, then the rest
+    of the menu, up to MAX_DISHES; then those dishes' add-ons in the same order, while they fit. In
+    training (`rng`), dishes and add-ons are shuffled, so a label's place says nothing about the answer."""
     words = set(norm(text).split())
-    def score(d):
-        name_words = [w for w in norm(d["name"]).split() if len(w) >= 3]
+    def hit(d):
         zh = d.get("zh") or ""
-        hit = sum(w in words for w in name_words) + sum(zh[k:k + 2] in text for k in range(max(0, len(zh) - 1)))
-        return (d["name"] in keep) * 100 + hit
-    dishes = sorted(menu, key=lambda d: -score(d))[:MAX_DISHES]
-    opts = []
+        return sum(w in words for w in norm(d["name"]).split() if len(w) >= 3) + sum(zh[k:k + 2] in text for k in range(max(0, len(zh) - 1)))
+    kept = [d for d in menu if d["name"] in keep]
+    rest = [d for d in menu if d["name"] not in keep]
+    ranked = kept + sorted([d for d in rest if hit(d)], key=lambda d: -hit(d)) + [d for d in rest if not hit(d)]
+    budget = MAX_LEN - MAX_TEXT - 3
+    cost = lambda l, cap: 1 + min(cap, len(tok(l, add_special_tokens=False).input_ids))
+    used = sum(cost(l, 8) for l in GENERIC)
+    dishes, dish_labels, opt_labels = [], [], []
+    for d in ranked[:MAX_DISHES]:
+        c = cost(dish_label(d), 12)
+        if used + c > budget:
+            break
+        used += c
+        dishes.append(d)
+        dish_labels.append(dish_label(d))
     for d in dishes:
         for g in d.get("groups", []):
             for o in g["options"]:
-                if o not in opts:
-                    opts.append(o)
-    return dishes, opts[:MAX_OPTIONS]
+                l = f"add-on: {o}"
+                if l in opt_labels or len(opt_labels) >= MAX_OPTIONS:
+                    continue
+                c = cost(l, 8)
+                if used + c <= budget:
+                    used += c
+                    opt_labels.append(l)
+    if rng:
+        rng.shuffle(dish_labels)
+        rng.shuffle(opt_labels)
+    return dishes, GENERIC + dish_labels + opt_labels
 
 
-def encode(tok, text, dishes, opts):
-    """Token ids, the label markers' positions, and each text token's character span."""
-    labels = GENERIC + [f"dish: {d['name']} {d.get('zh') or ''}".strip() for d in dishes] + [f"add-on: {o}" for o in opts]
+def encode(tok, text, labels):
+    """Token ids, the label markers' positions, where the message starts, and each message token's character span."""
     ids, markers = [tok.cls_token_id], []
     for l in labels:
-        piece = tok(l, add_special_tokens=False).input_ids[:10]
-        if len(ids) + 1 + len(piece) > MAX_LEN - MAX_TEXT - 2:
-            break
         markers.append(len(ids))
-        ids += [tok.mask_token_id] + piece
+        ids += [tok.mask_token_id] + tok(l, add_special_tokens=False).input_ids[: 12 if l.startswith("dish: ") else 8]
     ids.append(tok.sep_token_id)
     enc = tok(text, add_special_tokens=False, return_offsets_mapping=True)
     tid, offs = enc.input_ids[:MAX_TEXT], enc.offset_mapping[:MAX_TEXT]
     start = len(ids)
     ids += tid + [tok.sep_token_id]
-    return ids, markers, labels[: len(markers)], start, offs
+    return ids, markers, start, offs
 
 
 def char_to_tokens(offs, span, text=None):
@@ -87,12 +108,12 @@ def char_to_tokens(offs, span, text=None):
     return toks[0], toks[-1]
 
 
-def example_targets(ex, menu, tok):
+def example_targets(ex, menu, tok, rng=None):
     keep = {i["dish"] for i in ex["items"]} | {l["dish"] for l in ex["before"]}
-    dishes, opts = menu_labels(menu, ex["text"], keep)
-    ids, markers, labels, start, offs = encode(tok, ex["text"], dishes, opts)
+    dishes, labels = select_labels(tok, menu, ex["text"], keep, rng)
+    ids, markers, start, offs = encode(tok, ex["text"], labels)
     lab = {l: k for k, l in enumerate(labels)}
-    dish_label = {d["name"]: lab.get(f"dish: {d['name']} {d.get('zh') or ''}".strip()) for d in dishes}
+    dish_lab = {d["name"]: lab.get(dish_label(d)) for d in dishes}
     spans, attach, change = [], [], []   # (start tok, end tok, label), (dish span idx, part span idx, kind 1=on/link 2=off), (dish span idx, change idx)
     def add_span(t, label):
         if t is None or label is None:
@@ -104,7 +125,7 @@ def example_targets(ex, menu, tok):
         return len(spans) - 1
     for it in ex["items"]:
         t = char_to_tokens(offs, it.get("dishSpan"), ex["text"])
-        lbl = lab["pointer"] if it.get("dishKind") == "pointer" else dish_label.get(it["dish"])
+        lbl = lab["pointer"] if it.get("dishKind") == "pointer" else dish_lab.get(it["dish"])
         di = add_span(t, lbl)
         if di is None:
             continue
@@ -199,7 +220,7 @@ def losses(model, batch, device):
 # ---------- decoding (the TypeScript runtime does the same) ----------
 
 @torch.no_grad()
-def decode(model, x, device, threshold=0.5):
+def decode(model, x, device, threshold=0.5, allowed=None):
     ids = torch.tensor([x["ids"]], device=device)
     hs = model.states(ids, torch.ones_like(ids))[0]
     idx, S = model.span_reps(hs, x["start"], x["valid"])
@@ -210,13 +231,14 @@ def decode(model, x, device, threshold=0.5):
         d, p = dish.unsqueeze(1).expand(n, k, -1), part.unsqueeze(0).expand(n, k, -1)
         attach = model.attach(torch.cat([d, p, d * p], -1)) if k else torch.zeros(n, 0, 3, device=device)
         return attach, model.change(torch.cat([dish, cls.unsqueeze(0).expand(n, -1)], -1)), model.acts(cls)
-    return decode_from(idx, S @ L.T, S, hs[0], heads, x["labels"], threshold)
+    return decode_from(idx, S @ L.T, S, hs[0], heads, x["labels"], threshold, allowed)
 
 
-def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5):
+def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5, allowed=None):
     """The reading from the encoder's outputs (span x label logits, span states, [CLS] state) and the
     heads (dish states, part states, cls) -> (attach [n, k, 3], change [n, changes], acts): the same
-    decoding for PyTorch and for the exported graphs (export_gl.py)."""
+    decoding for PyTorch and for the exported graphs (export_gl.py). `allowed(dish label, part label)`
+    says whether the menu lets that part go with that dish (an add-on only on a dish that has it)."""
     t = lambda v: v if torch.is_tensor(v) else torch.from_numpy(v)
     logits, S, cls = t(logits).float(), t(S).float(), t(cls).float()
     P = torch.sigmoid(logits)
@@ -253,6 +275,11 @@ def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5):
         # of two with the same label, the likelier
         chosen = {}
         for j, k in enumerate(parts):
+            if allowed:
+                ok = torch.tensor([allowed(labels[spans[d][2]], labels[spans[k][2]]) for d in dishes])
+                if not ok.any():
+                    continue
+                probs[~ok, j, 0] = 1.0
             best = int(torch.argmax(1 - probs[:, j, 0]))
             if probs[best, j, 0] < 0.5:
                 key = (best, spans[k][2])
@@ -364,7 +391,8 @@ def main():
     train_rows, valid_rows = read(a.train), read(a.valid)
     if a.limit:
         train_rows = train_rows[: a.limit]
-    train = [example_targets(e, menus[e["menu"]], tok) for e in train_rows]
+    label_rng = random.Random(11)
+    train = [example_targets(e, menus[e["menu"]], tok, label_rng) for e in train_rows]
     valid = [example_targets(e, menus[e["menu"]], tok) | {"lang": e.get("lang")} for e in valid_rows]
     for x, e in zip(train, train_rows):
         x["lang"] = e.get("lang")

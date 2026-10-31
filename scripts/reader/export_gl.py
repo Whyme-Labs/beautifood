@@ -151,8 +151,8 @@ def main():
     tok, m = T.load_reader(a.model)
     menu = [{"name": f"Dish {k}", "zh": "炒面", "groups": [{"name": "Size", "options": ["Small", "Large"]}, {"name": "Add-ons", "options": [f"Extra {w}" for w in ("egg", "prawns", "tofu", "noodles")]}]} for k in range(30)]
     text = "boss 2 dish 3 large tambah telur, and one dish 7 iced kurang manis. total brapa"
-    dishes, opts = T.menu_labels(menu, text)
-    ids, markers, labels, start, offs = T.encode(tok, text, dishes, opts)
+    _, labels = T.select_labels(tok, menu, text)
+    ids, markers, start, offs = T.encode(tok, text, labels)
     idx, sa, sb, sw = spans_of(T.text_tokens(text, offs), start)
     inputs = (torch.tensor([ids]), torch.ones(1, len(ids), dtype=torch.long), torch.tensor(markers), torch.tensor(sa), torch.tensor(sb), torch.tensor(sw))
     out = f"{a.model}/onnx"
@@ -173,7 +173,7 @@ def main():
     print("reader.onnx max |diff| vs PyTorch:", float(np.abs(got[0] - logits.numpy()).max()))
     # (and on a message of another length: DeBERTa's relative positions must not be fixed at the traced length)
     text2 = "dua dish 5 small, satu dish 9"
-    ids2, markers2, _, start2, offs2 = T.encode(tok, text2, *T.menu_labels(menu, text2))
+    ids2, markers2, start2, offs2 = T.encode(tok, text2, T.select_labels(tok, menu, text2)[1])
     _, sa2, sb2, sw2 = spans_of(T.text_tokens(text2, offs2), start2)
     with torch.no_grad():
         ref2 = ReaderGraph(m)(torch.tensor([ids2]), torch.ones(1, len(ids2), dtype=torch.long), torch.tensor(markers2), torch.tensor(sa2), torch.tensor(sb2), torch.tensor(sw2))[0].numpy()
