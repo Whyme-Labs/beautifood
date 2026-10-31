@@ -14,10 +14,7 @@ import train_gl as T
 
 
 def load(model_dir):
-    tok = AutoTokenizer.from_pretrained(model_dir)
-    model = T.Reader(T.load_encoder())
-    model.load_state_dict(torch.load(f"{model_dir}/reader.pt", map_location="cpu"))
-    model.eval()
+    tok, model = T.load_reader(model_dir)
     torch.set_num_threads(4)
     return tok, model
 

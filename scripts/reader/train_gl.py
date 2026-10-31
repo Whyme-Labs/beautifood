@@ -280,7 +280,27 @@ def evaluate(model, data, device, limit=1000):
 
 # ---------- training ----------
 
-def load_encoder():
+def tokenizer_from(vocab_json):
+    """The trimmed tokenizer trim_vocab.py wrote (its tokenizer.json text)."""
+    from tokenizers import Tokenizer
+    from transformers import PreTrainedTokenizerFast
+    return PreTrainedTokenizerFast(tokenizer_object=Tokenizer.from_str(vocab_json), cls_token="[CLS]", sep_token="[SEP]", pad_token="[PAD]", unk_token="[UNK]", mask_token="[MASK]")
+
+
+def load_reader(model_dir):
+    """A trained reader (reader.pt) and its tokenizer, the vocabulary however big it was trained."""
+    tok = AutoTokenizer.from_pretrained(model_dir)
+    sd = torch.load(os.path.join(model_dir, "reader.pt"), map_location="cpu")
+    cfg = DebertaV2Config.from_pretrained(TOKENIZER)
+    cfg.vocab_size = sd["encoder.embeddings.word_embeddings.weight"].shape[0]
+    model = Reader(DebertaV2Model(cfg))
+    model.load_state_dict(sd)
+    model.eval()
+    return tok, model
+
+
+def load_encoder(kept=None):
+    """GLiNER2.5-multi's encoder; with `kept` (trim_vocab.py), only those embedding rows, in that order."""
     from huggingface_hub import hf_hub_download
     from safetensors.torch import load_file
     enc = DebertaV2Model(DebertaV2Config.from_pretrained(TOKENIZER))
@@ -290,6 +310,12 @@ def load_encoder():
         enc.resize_token_embeddings(own["embeddings.word_embeddings.weight"].shape[0])
     missing, unexpected = enc.load_state_dict(own, strict=False)
     print(f"encoder from {BASE}: {len(own)} tensors, missing {len(missing)}, unexpected {len(unexpected)}", flush=True)
+    if kept:
+        rows = enc.embeddings.word_embeddings.weight.data[torch.tensor(kept)].clone()
+        enc.embeddings.word_embeddings = nn.Embedding(len(kept), rows.shape[1], padding_idx=0)
+        enc.embeddings.word_embeddings.weight.data.copy_(rows)
+        enc.config.vocab_size = len(kept)
+        print(f"vocabulary trimmed to {len(kept)} pieces", flush=True)
     return enc
 
 
@@ -299,6 +325,7 @@ def main():
     ap.add_argument("--train", default=os.path.join(data, "train.jsonl"))
     ap.add_argument("--valid", default=os.path.join(data, "train.valid.jsonl"))
     ap.add_argument("--menus", default=os.path.join(data, "train.menus.json"))
+    ap.add_argument("--vocab", default=os.path.join(data, "vocab.json"), help="trim_vocab.py's output (used if it exists)")
     ap.add_argument("--out", default=os.environ.get("SM_MODEL_DIR", "out"))
     ap.add_argument("--epochs", type=float, default=3)
     ap.add_argument("--lr", type=float, default=3e-5)
@@ -311,7 +338,8 @@ def main():
     random.seed(7)
     torch.manual_seed(7)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    tok = AutoTokenizer.from_pretrained(TOKENIZER)
+    vocab = json.load(open(a.vocab, encoding="utf-8")) if a.vocab and os.path.exists(a.vocab) else None
+    tok = tokenizer_from(vocab["tokenizer"]) if vocab else AutoTokenizer.from_pretrained(TOKENIZER)
     menus = json.load(open(a.menus, encoding="utf-8"))
     read = lambda p: [json.loads(l) for l in open(p, encoding="utf-8") if l.strip()]
     train_rows, valid_rows = read(a.train), read(a.valid)
@@ -322,7 +350,7 @@ def main():
     for x, e in zip(train, train_rows):
         x["lang"] = e.get("lang")
     print(f"train {len(train)}, valid {len(valid)}; spans a turn {sum(len(x['spans']) for x in train) / max(1, len(train)):.1f}", flush=True)
-    model = Reader(load_encoder()).to(device)
+    model = Reader(load_encoder(vocab["kept"] if vocab else None)).to(device)
     heads = [p for n, p in model.named_parameters() if not n.startswith("encoder.")]
     opt = torch.optim.AdamW([{"params": model.encoder.parameters(), "lr": a.lr}, {"params": heads, "lr": a.head_lr}], weight_decay=0.01)
     steps = math.ceil(len(train) / a.batch * a.epochs)
@@ -354,7 +382,7 @@ def main():
     os.makedirs(a.out, exist_ok=True)
     torch.save(model.state_dict(), os.path.join(a.out, "reader.pt"))
     tok.save_pretrained(a.out)
-    json.dump({"base": BASE, "changes": CHANGES, "acts": ACTS, "generic": GENERIC, "max_w": MAX_W, "max_text": MAX_TEXT, "max_len": MAX_LEN, "max_dishes": MAX_DISHES, "max_options": MAX_OPTIONS}, open(os.path.join(a.out, "reader.json"), "w"))
+    json.dump({"base": BASE, "vocab": len(tok), "changes": CHANGES, "acts": ACTS, "generic": GENERIC, "max_w": MAX_W, "max_text": MAX_TEXT, "max_len": MAX_LEN, "max_dishes": MAX_DISHES, "max_options": MAX_OPTIONS}, open(os.path.join(a.out, "reader.json"), "w"))
     print("saved", a.out, flush=True)
 
 

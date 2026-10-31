@@ -58,11 +58,12 @@ def compress(src, dst, kind):
     import onnx
     from onnx import helper, numpy_helper
     g = onnx.load(src)
+    graph_nodes = list(g.graph.node)
     users = {}
-    for n in g.graph.node:
+    for at, n in enumerate(graph_nodes):
         for k, i in enumerate(n.input):
-            users.setdefault(i, []).append((n, k))
-    keep, nodes = [], []
+            users.setdefault(i, []).append((at, k))
+    keep, nodes, gathered = [], [], {}
     for init in g.graph.initializer:
         w = numpy_helper.to_array(init)
         if w.dtype != np.float32 or w.ndim != 2 or w.size < 4096:
@@ -70,11 +71,29 @@ def compress(src, dst, kind):
             continue
         name = init.name
         if kind == "fp16":
+            # (fp16: every big weight, gathered or not, stored at half size and cast back on load)
             keep.append(numpy_helper.from_array(w.astype(np.float16), name + "_h"))
             nodes.append(helper.make_node("Cast", [name + "_h"], [name], to=onnx.TensorProto.FLOAT))
             continue
-        # the output channel: rows for a gathered table or a Gemm with transB, columns for a MatMul's B
-        axis = 1 if any(n.op_type == "MatMul" and k == 1 for n, k in users.get(name, [])) else 0
+        uses = [(graph_nodes[at], k, at) for at, k in users.get(name, [])]
+        if uses and all(n.op_type == "Gather" and k == 0 and not any(a.name == "axis" and a.i != 0 for a in n.attribute) for n, k, _ in uses):
+            # a table only ever gathered by rows (the word embeddings): gather the int8 rows and their
+            # scales, then scale just those, instead of turning the whole table back each call
+            scale = np.abs(w).max(axis=1) / 127.0
+            scale[scale == 0] = 1.0
+            keep += [numpy_helper.from_array(np.clip(np.round(w / scale[:, None]), -127, 127).astype(np.int8), name + "_q"), numpy_helper.from_array(scale.astype(np.float32)[:, None], name + "_s")]
+            for n, _, at in uses:
+                out_, ids_ = n.output[0], n.input[1]
+                n.input[0] = name + "_q"
+                n.output[0] = f"{out_}_q"
+                gathered[at] = ([
+                    helper.make_node("Gather", [name + "_s", ids_], [f"{out_}_s"], axis=0),
+                    helper.make_node("Cast", [f"{out_}_q"], [f"{out_}_f"], to=onnx.TensorProto.FLOAT),
+                    helper.make_node("Mul", [f"{out_}_f", f"{out_}_s"], [out_]),
+                ])
+            continue
+        # the output channel: rows for a Gemm with transB, columns for a MatMul's B
+        axis = 1 if any(n.op_type == "MatMul" and k == 1 for n, k, _ in uses) else 0
         scale = np.abs(w).max(axis=1 - axis) / 127.0
         scale[scale == 0] = 1.0
         q = np.clip(np.round(w / (scale[None, :] if axis == 1 else scale[:, None])), -127, 127).astype(np.int8)
@@ -82,9 +101,13 @@ def compress(src, dst, kind):
         nodes.append(helper.make_node("DequantizeLinear", [name + "_q", name + "_s", name + "_z"], [name], axis=axis))
     del g.graph.initializer[:]
     g.graph.initializer.extend(keep)
-    old = list(g.graph.node)
+    old = []
+    for n in graph_nodes:
+        c = onnx.NodeProto()
+        c.CopyFrom(n)
+        old.append(c)
     del g.graph.node[:]
-    g.graph.node.extend(nodes + old)
+    g.graph.node.extend(nodes + [x for at, n in enumerate(old) for x in [n] + gathered.get(at, [])])
     onnx.save(g, dst, save_as_external_data=True, location=os.path.basename(dst) + ".data", size_threshold=1024)
 
 
@@ -125,10 +148,7 @@ def main():
     from transformers import AutoTokenizer
     import onnxruntime as ort
 
-    tok = AutoTokenizer.from_pretrained(a.model)
-    m = T.Reader(T.load_encoder())
-    m.load_state_dict(torch.load(f"{a.model}/reader.pt", map_location="cpu"))
-    m.eval()
+    tok, m = T.load_reader(a.model)
     menu = [{"name": f"Dish {k}", "zh": "炒面", "groups": [{"name": "Size", "options": ["Small", "Large"]}, {"name": "Add-ons", "options": [f"Extra {w}" for w in ("egg", "prawns", "tofu", "noodles")]}]} for k in range(30)]
     text = "boss 2 dish 3 large tambah telur, and one dish 7 iced kurang manis. total brapa"
     dishes, opts = T.menu_labels(menu, text)
@@ -169,7 +189,8 @@ def main():
         g = onnx.load(path)
         del g.graph.value_info[:]
         onnx.save(g, f"{out}/reader.noshapes.onnx", save_as_external_data=True, location="reader.noshapes.data")
-        quantize_dynamic(f"{out}/reader.noshapes.onnx", f"{out}/reader.int8.onnx", weight_type=QuantType.QInt8)
+        # (per channel, and only the MatMuls: the embedding table stays out of the activation-quantised path)
+        quantize_dynamic(f"{out}/reader.noshapes.onnx", f"{out}/reader.int8.onnx", weight_type=QuantType.QInt8, per_channel=True, op_types_to_quantize=["MatMul"], use_external_data_format=True)
         path = f"{out}/reader.int8.onnx"
         q = ort.InferenceSession(path, opts_).run(None, feed)
         print("int8 max |diff| in logits:", float(np.abs(q[0] - logits.numpy()).max()), "| same spans above 0:", bool(((q[0] > 0) == (logits.numpy() > 0)).all()))
@@ -182,6 +203,10 @@ def main():
     for kind in ("fp16", "int8w"):
         compress(f"{out}/reader.onnx", f"{out}/reader.{kind}.onnx", kind)
         variants[kind] = f"{out}/reader.{kind}.onnx"
+    if a.quantize:
+        # dynamic int8 MatMuls, and the embedding table int8 by rows
+        compress(path, f"{out}/reader.int8all.onnx", "int8w")
+        variants["int8all"] = f"{out}/reader.int8all.onnx"
     for kind, p in variants.items():
         size = sum(os.path.getsize(os.path.join(out, f)) for f in os.listdir(out) if f.startswith(os.path.basename(p)))
         r = session(p)
