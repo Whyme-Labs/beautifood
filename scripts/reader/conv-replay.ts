@@ -4,7 +4,8 @@
 // brain bills. Prints the rules alone, each policy (fixed, broke, unsafe), the best of the rules and
 // the policies case by case, and the reader's time a turn.
 //
-//   npx tsx scripts/reader/conv-replay.ts --url http://127.0.0.1:8083 [--set v10] [--tags bill,modifier] [--cache <file.json>]
+//   npx tsx scripts/reader/conv-replay.ts --url http://127.0.0.1:8083 [--set v10] [--tags bill,modifier] [--cache <file.json>] [--structured]
+//   (--structured keeps the model's output to the menu: convReader.ts `basketGrammar`)
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { loadCases, loadMenu, readable, runEngine } from "../../bench/run";
 import { llamaBasketCall, readBasket, type BasketLine } from "../../src/server/ai/brain/convReader";
@@ -18,6 +19,7 @@ const url = arg("url");
 const set = arg("set", "v10");
 const tags = arg("tags", "bill,modifier").split(",");
 const cachePath = arg("cache");
+const structured = process.argv.includes("--structured");
 
 type Cached = { raw: RawOrderReading | null; changed: boolean; ms: number[] };
 
@@ -40,7 +42,7 @@ void (async () => {
     for (const t of turns) {
       said.push(reply, t.user);
       const t0 = performance.now();
-      raw = await readBasket(call, dishes, order, reply, t.user);
+      raw = await readBasket(call, dishes, order, reply, t.user, structured);
       ms.push(Math.round(performance.now() - t0));
       // (what the checks keep is the order the next turn starts from)
       const checked = raw ? checkBasket(raw, dishes, () => true, said) : null;

@@ -1168,3 +1168,21 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
 - **The bar** (as before): the upper bound at least 367/465, a policy fixing at least twice what it
   breaks, 0 unsafe, median at most 2 s a turn on 4 CPU cores. Scored once; if it misses, the reader
   stays off.
+
+## The conversation reader with structured output: the result (the bar not met)
+
+| | Pass | Unsafe | Fixed | Broke |
+|---|---|---|---|---|
+| rules alone | 353 (75.9%) | 0 | | |
+| replace | 266 (57.2%) | 0 | 22 | 109 |
+| edits | 306 (65.8%) | 0 | 11 | 58 |
+
+- Upper bound 375/465 (80.6%); the time a turn is a median of 499 ms. No policy fixes twice what it
+  breaks, so the bar is not met and the reader stays off.
+- The grammar did what it was for: 0 add-ons dropped as not the dish's own (86 before). But the
+  bills barely changed, because a wrong add-on became a wrong one the menu has. "add egg" on a
+  menu with "Hard-boiled Egg" is now "Extra Noodles": once the model has written "Extra", the grammar
+  only lets it finish with one of the menu's "Extra …" names. The other causes (counts, lines
+  carried twice, owners, a dish lost) are untouched.
+- So the gap is in reading real menus' own words, not in the output's form. Structured output is
+  kept (`basketGrammar`, `--structured`): it costs nothing and rules out a whole kind of misreading.

@@ -92,26 +92,48 @@ export function parseBasket(text: string, menu: Dish[], dishes: Dish[]): RawOrde
   return { lines };
 }
 
-/** Sends a prompt to the model and returns its text (a completion, greedy). */
-export type BasketCall = (prompt: string) => Promise<string>;
+/**
+ * The answers a model may give for a prompt on `menu`, as a llama.cpp grammar (GBNF): each line a
+ * count, one of the short menu's dish keys, then only that dish's own add-on names, and an owner. A
+ * model kept to it can't write an add-on the menu doesn't have ("Extra egg" where it has
+ * "Hard-boiled Egg"); it has to choose one of the menu's.
+ */
+export function basketGrammar(menu: Dish[]): string {
+  const lit = (s: string) => `"${s.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, " ")}"`;
+  const rules = menu.map((d, k) => {
+    const opts = [...new Set((d.modifiers ?? []).flatMap((g) => g.options.map((o) => o.name)))];
+    return opts.length ? [`d${k + 1} ::= ${lit(dishKey(k))} (": " o${k + 1} ("; " o${k + 1})*)?`, `o${k + 1} ::= ${opts.map(lit).join(" | ")}`] : [`d${k + 1} ::= ${lit(dishKey(k))}`];
+  });
+  return [
+    `root ::= (${lit(NOTHING)} | line ("\\n" line)*) "\\n"?`,
+    `line ::= count " x " dish owner?`,
+    `count ::= [1-9] | [1-2] [0-9]`,
+    `owner ::= " @" [a-z]+ (" " [a-z]+)?`,
+    menu.length ? `dish ::= ${menu.map((_, k) => `d${k + 1}`).join(" | ")}` : `dish ::= "D0"`,
+    ...rules.flat(),
+  ].join("\n");
+}
+
+/** Sends a prompt to the model and returns its text (a completion, greedy), kept to `grammar` when one is given. */
+export type BasketCall = (prompt: string, grammar?: string) => Promise<string>;
 
 /** A llama.cpp server's completion endpoint (`llama-server -m reader.gguf`). */
-export const llamaBasketCall = (baseUrl: string, timeoutMs = 4000): BasketCall => async (prompt) => {
+export const llamaBasketCall = (baseUrl: string, timeoutMs = 4000): BasketCall => async (prompt, grammar) => {
   const res = await fetch(`${baseUrl.replace(/\/$/, "")}/completion`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ prompt, n_predict: 160, temperature: 0, stop: ["\n\n", "Guest:", "Menu:"], cache_prompt: true }),
+    body: JSON.stringify({ prompt, n_predict: 160, temperature: 0, stop: ["\n\n", "Guest:", "Menu:"], cache_prompt: true, ...(grammar ? { grammar } : {}) }),
     signal: AbortSignal.timeout(timeoutMs),
   });
   if (!res.ok) throw new Error(`reader ${res.status}`);
   return ((await res.json()) as { content?: string }).content ?? "";
 };
 
-/** The order after `message`, as the model reads it (null if it can't be had). */
-export async function readBasket(call: BasketCall, dishes: Dish[], order: BasketLine[], reply: string, message: string): Promise<RawOrderReading | null> {
+/** The order after `message`, as the model reads it (null if it can't be had); `structured` keeps it to the menu (`basketGrammar`). */
+export async function readBasket(call: BasketCall, dishes: Dish[], order: BasketLine[], reply: string, message: string, structured = false): Promise<RawOrderReading | null> {
   const { prompt, menu } = basketPrompt(dishes, order, reply, message);
   try {
-    return parseBasket(await call(prompt), menu, dishes);
+    return parseBasket(await call(prompt, structured ? basketGrammar(menu) : undefined), menu, dishes);
   } catch {
     return null;
   }
