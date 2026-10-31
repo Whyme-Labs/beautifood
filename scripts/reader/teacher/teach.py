@@ -128,8 +128,12 @@ def main():
     # (text only: the model can read images too, which this doesn't need)
     # The weights take 28 of the GPU's 44 GB: the KV cache holds ~110k tokens, ~22 answers at once. An fp8
     # KV cache holds twice that; JSON forced compact (no indentation) makes each answer ~a third shorter.
-    llm = LLM(model=a.model, max_model_len=12288, gpu_memory_utilization=0.92, max_num_seqs=128, enable_prefix_caching=True, limit_mm_per_prompt={"image": 0, "video": 0},
-              kv_cache_dtype=a.kv_cache, structured_outputs_config={"disable_any_whitespace": True})
+    common = dict(model=a.model, max_model_len=12288, gpu_memory_utilization=0.92, max_num_seqs=128, enable_prefix_caching=True, limit_mm_per_prompt={"image": 0, "video": 0}, kv_cache_dtype=a.kv_cache)
+    try:
+        llm = LLM(**common, structured_outputs_config={"backend": "xgrammar", "disable_any_whitespace": True})
+    except Exception as e:  # (refused before the weights load: run without forcing compact JSON)
+        print("no compact JSON:", str(e)[:300], flush=True)
+        llm = LLM(**common)
     try:
         from vllm.sampling_params import StructuredOutputsParams
         params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500, structured_outputs=StructuredOutputsParams(json_object=True))
