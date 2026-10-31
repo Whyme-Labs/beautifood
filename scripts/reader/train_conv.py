@@ -7,6 +7,9 @@
 #   (on SageMaker: the data channel and the model dir come from SM_CHANNEL_DATA and SM_MODEL_DIR)
 import argparse, json, math, os, random, time, collections
 
+# (memory freed between batches of different lengths is reused, not left in pieces)
+os.environ.setdefault("PYTORCH_ALLOC_CONF", "expandable_segments:True")
+
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -105,7 +108,7 @@ def main():
     ap.add_argument("--base", default=BASE)
     ap.add_argument("--epochs", type=float, default=2)
     ap.add_argument("--lr", type=float, default=2e-5)
-    ap.add_argument("--tokens", type=int, default=12000, help="tokens per batch")
+    ap.add_argument("--tokens", type=int, default=6000, help="tokens per batch")
     ap.add_argument("--max-len", type=int, default=768)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--valid-limit", type=int, default=800)
@@ -119,6 +122,9 @@ def main():
         tok.pad_token = tok.eos_token
     model = AutoModelForCausalLM.from_pretrained(a.base, dtype=torch.float32).to(device)
     model.config.use_cache = False
+    # (each layer's activations recomputed in the backward pass: a 24 GB GPU holds the weights,
+    # their gradients and Adam's state, but not every layer's activations for a whole batch)
+    model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
     train = encode(tok, load(a.train, a.limit), a.max_len)
     valid_rows = load(a.valid)
     print(f"train {len(train)} examples, {sum(len(x) for x, _ in train)} tokens; valid {len(valid_rows)}", flush=True)
