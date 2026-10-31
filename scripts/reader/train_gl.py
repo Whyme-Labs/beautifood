@@ -195,9 +195,16 @@ def losses(model, batch, device):
         gold = [pos[(a, b)] for a, b, _ in x["spans"]]
         for (a, b, l), g in zip(x["spans"], gold):
             target[g, l] = 1.0
-        # (negatives are many: weigh the positives up)
-        w = torch.where(target > 0, torch.tensor(20.0, device=device), torch.tensor(1.0, device=device))
-        total["span"] = total["span"] + F.binary_cross_entropy_with_logits(logits, target, weight=w)
+        # A plain mean over every span x label pair (~30k, a handful positive) barely moves: a wrong
+        # span costs 1/30k of the loss. Balanced instead: the positives' mean, the hardest negatives' mean,
+        # and a little of all the negatives.
+        bce = F.binary_cross_entropy_with_logits(logits, target, reduction="none")
+        pos_m = target > 0
+        neg = bce[~pos_m]
+        span_loss = neg.topk(min(100, neg.numel())).values.mean() + 0.1 * neg.mean()
+        if pos_m.any():
+            span_loss = span_loss + bce[pos_m].mean()
+        total["span"] = total["span"] + span_loss
         if x["attach"] or x["change"]:
             G = S[torch.tensor(gold, device=device)] if gold else S[:0]
             dish_idx = sorted({d for d, _ in x["change"]})
@@ -316,8 +323,26 @@ def gold_view(x):
     return sorted(items), sorted(a for a, v in zip(ACTS, x["acts"]) if v)
 
 
+def span_fit(model, data, device):
+    """How the span scores sit: the mean score on gold spans, how many gold spans score below 0.5, and
+    how many other span x label pairs score above it, a message."""
+    gp, fp = [], 0
+    with torch.no_grad():
+        for x in data:
+            ids = torch.tensor([x["ids"]], device=device)
+            hs = model.states(ids, torch.ones_like(ids))[0]
+            idx, S = model.span_reps(hs, x["start"], x["valid"])
+            P = torch.sigmoid(S @ model.label(hs[torch.tensor(x["markers"], device=device)]).T)
+            pos = {(a, b): k for k, (a, b) in enumerate(idx)}
+            g = {(pos[(a, b)], l) for a, b, l in x["spans"]}
+            gp += [P[s_, l].item() for s_, l in g]
+            fp += sum(1 for s_, l in (P > 0.5).nonzero().tolist() if (s_, l) not in g)
+    return {"gold_p": round(sum(gp) / max(1, len(gp)), 3), "gold_missed": sum(p < 0.5 for p in gp), "gold": len(gp), "false_pos_a_turn": round(fp / max(1, len(data)), 2)}
+
+
 def evaluate(model, data, device, limit=1000):
     model.eval()
+    fit = span_fit(model, data[:200], device)
     hit, hit_items, by_lang = 0, 0, collections.defaultdict(lambda: [0, 0])
     for x in data[:limit]:
         r = decode(model, x, device)
@@ -331,7 +356,7 @@ def evaluate(model, data, device, limit=1000):
         by_lang[x.get("lang", "?")][1] += 1
     model.train()
     n = max(1, min(limit, len(data)))
-    return {"items_exact": round(hit_items / n, 4), "all_exact": round(hit / n, 4), "lang": {k: round(a / b, 3) for k, (a, b) in by_lang.items()}}
+    return {"items_exact": round(hit_items / n, 4), "all_exact": round(hit / n, 4), "spans": fit, "lang": {k: round(a / b, 3) for k, (a, b) in by_lang.items()}}
 
 
 # ---------- training ----------
@@ -430,12 +455,14 @@ def main():
             step += 1
             if step % 100 == 0:
                 print(f"step {step}/{steps} " + " ".join(f"{n} {float(v):.4f}" for n, v in L.items()) + f" {(time.time() - t0) / 60:.1f} min", flush=True)
-            if step % 1500 == 0:
+            if step % 400 == 0:
                 print("valid", json.dumps(evaluate(model, valid, device, 300)), flush=True)
             if step >= steps or (a.max_minutes and time.time() - t0 > a.max_minutes * 60):
                 steps = step
                 break
     print("valid", json.dumps(evaluate(model, valid, device, a.valid_limit)), flush=True)
+    model.eval()
+    print("train spans", json.dumps(span_fit(model, train[:200], device)), flush=True)
     os.makedirs(a.out, exist_ok=True)
     torch.save(model.state_dict(), os.path.join(a.out, "reader.pt"))
     tok.save_pretrained(a.out)
