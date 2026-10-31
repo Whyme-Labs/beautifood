@@ -18,10 +18,10 @@ import type { Dish } from "../../src/server/ai/brain/understand";
 import { rng, typo } from "../brain/data";
 import { loadCases } from "../../bench/run";
 
-type Lang = "en" | "manglish" | "ms" | "zh";
-interface Opt { name: string; price: number; en: string[]; ms: string[]; zh: string[] }
+export type Lang = "en" | "manglish" | "ms" | "zh";
+export interface Opt { name: string; price: number; en: string[]; ms: string[]; zh: string[] }
 interface Group { name: string; min: number; max: number; options: Opt[] }
-type Kind = "drink" | "main" | "side" | "dessert";
+export type Kind = "drink" | "main" | "side" | "dessert";
 export interface Span { start: number; end: number; label: "DISH" | "COUNT" | "OPTION" | "SPLIT" | "UNMATCHED"; line?: number; ref?: string }
 export type MenuOut = { key: string; name: string; zh?: string; groups: { name: string; min: number; max: number; options: { name: string; price: number }[] }[] }[];
 /** One example; its menu is `menus[menu]` (each menu is written once, beside the examples). */
@@ -77,7 +77,7 @@ const DESSERT_ADDS: Opt[] = [
 ];
 const N_ZH = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
 const level = (n: number, price: number) => o(`Level ${n}`, price, [`level ${n}`, `lvl ${n}`, `spicy level ${n}`], [`level ${n}`, `tahap ${n}`], [`${n}级辣`, `${N_ZH[n]}级辣`]);
-const sample = <T,>(r: () => number, xs: T[], n: number) => [...xs].sort(() => r() - 0.5).slice(0, n);
+export const sample = <T,>(r: () => number, xs: T[], n: number) => [...xs].sort(() => r() - 0.5).slice(0, n);
 const priced = (r: () => number, x: Opt) => ({ ...x, price: x.price ? x.price + pick(r, [-50, 0, 0, 50, 100]) : 0 });
 const GROUPS: Record<Kind, (r: () => number) => Group[]> = {
   drink: (r) => [
@@ -106,17 +106,17 @@ const GROUPS: Record<Kind, (r: () => number) => Group[]> = {
   ],
   dessert: (r) => [{ name: pick(r, ["Add", "Toppings"]), min: 0, max: 3, options: sample(r, DESSERT_ADDS, 3 + Math.floor(r() * 3)).map((x) => priced(r, x)) }],
 };
-const pick = <T,>(r: () => number, xs: T[]): T => xs[Math.floor(r() * xs.length)];
+export const pick = <T,>(r: () => number, xs: T[]): T => xs[Math.floor(r() * xs.length)];
 const kindOf = (name: string): Kind =>
   /\b(tea|teh|kopi|coffee|latte|juice|soda|milo|milk|smoothie|lemonade|water|cham|yuzu|soy bean|barley|shake|frappe|mocha|cappuccino|americano|macchiato|cold brew|flat white|bandung|sirap|chocolate|matcha|beer|lager|wine|cocktail|kombucha)\b/i.test(name) ? "drink"
   : /\b(cendol|ice cream|cake|pudding|kuih|ais kacang|tart|bingsu|waffle|sago|mochi|brownie|jelly|tong sui|bubur|pancake|cheesecake|tiramisu|churros|sundae)\b/i.test(name) ? "dessert"
   : /\b(dumpling|gyoza|wonton|wantan|spring roll|fries|karaage|satay|edamame|siu mai|har gow|popiah|otak|keropok|salad|bun|pau|croquette|chips|wings|nuggets|tofu|lor bak|cucur)\b/i.test(name) ? "side" : "main";
 const title = (s: string) => s.replace(/\b[a-z]/g, (c) => c.toUpperCase());
 
-const POOL = Object.entries(DISH_NAMES_ZH).map(([en, zh]) => ({ name: title(en), zh: zh[0], kind: kindOf(en) }));
+export const POOL = Object.entries(DISH_NAMES_ZH).map(([en, zh]) => ({ name: title(en), zh: zh[0], kind: kindOf(en) }));
 
 /** A menu of 12 to 35 dishes, each kind's dishes with a few of its add-on groups. */
-function menu(r: () => number): (Dish & { kind: Kind })[] {
+export function menu(r: () => number): (Dish & { kind: Kind })[] {
   const n = 12 + Math.floor(r() * 24);
   const chosen = new Map<string, (typeof POOL)[number]>();
   while (chosen.size < n) {
@@ -153,13 +153,13 @@ function menu(r: () => number): (Dish & { kind: Kind })[] {
 const COMMON = new Set(["rice", "noodle", "noodles", "soup", "tea", "coffee", "milk", "juice", "cake", "fried", "chicken", "beef", "pork", "fish", "with", "special", "set", "spicy", "sweet", "iced", "small", "large", "mixed", "steamed", "roast", "grilled", "curry",
   "three", "black", "white", "green", "yellow", "double", "layer", "paste", "sauce", "style", "house", "mixed", "plain", "kung", "salted", "baked", "cheese", "golden", "crispy", "honey", "butter", "cereal", "paper", "stone"]);
 const OPTION_WORDS = new Set([...ADD_ONS, ...FREE_PREFS, ...DRINK_ADDS, ...DESSERT_ADDS, ...Object.values(GROUPS).flatMap((g) => g(() => 0.5)).flatMap((g) => g.options)].flatMap((x) => [...x.en, ...x.ms].join(" ").split(/\s+/)).filter((w) => w.length >= 3));
-const NUM_EN = ["", "one", "two", "three", "four", "five", "six"];
-const NUM_MS = ["", "satu", "dua", "tiga", "empat", "lima", "enam"];
-const NUM_ZH = ["", "一", "两", "三", "四", "五", "六"];
-const MEASURE: Record<Kind, string[]> = { drink: ["杯"], main: ["份", "碗", "碟"], side: ["份", "盘"], dessert: ["份", "碗"] };
+export const NUM_EN = ["", "one", "two", "three", "four", "five", "six"];
+export const NUM_MS = ["", "satu", "dua", "tiga", "empat", "lima", "enam"];
+export const NUM_ZH = ["", "一", "两", "三", "四", "五", "六"];
+export const MEASURE: Record<Kind, string[]> = { drink: ["杯"], main: ["份", "碗", "碟"], side: ["份", "盘"], dessert: ["份", "碗"] };
 
 /** How a guest types a dish's name here: whole, lower case, a word only it has on this menu, with a typo, or in Chinese. */
-function surface(d: Dish, all: Dish[], lang: Lang, r: () => number): string {
+export function surface(d: Dish, all: Dish[], lang: Lang, r: () => number): string {
   const zh = d.translations?.zh?.name;
   if (lang === "zh" && zh) return zh;
   const words = d.name.toLowerCase().split(/\s+/);
@@ -170,11 +170,11 @@ function surface(d: Dish, all: Dish[], lang: Lang, r: () => number): string {
   return own[0];
 }
 
-interface Piece { text: string; label?: Span["label"]; line?: number; ref?: string }
-interface Line { dish: Dish; count: number; options: string[] }
+export interface Piece { text: string; label?: Span["label"]; line?: number; ref?: string }
+export interface Line { dish: Dish; count: number; options: string[] }
 
-const optsOf = (d: Dish, names: string[]) => names.map((name) => (d.modifiers ?? []).flatMap((g) => g.options).find((x) => x.name === name) as unknown as { said: Opt });
-const sayOpt = (x: { said: Opt }, lang: Lang, r: () => number) => (lang === "zh" ? pick(r, x.said.zh) : lang === "ms" ? pick(r, x.said.ms.length ? x.said.ms : x.said.en) : lang === "manglish" ? pick(r, [...x.said.ms, ...x.said.en]) : pick(r, x.said.en));
+export const optsOf = (d: Dish, names: string[]) => names.map((name) => (d.modifiers ?? []).flatMap((g) => g.options).find((x) => x.name === name) as unknown as { said: Opt });
+export const sayOpt = (x: { said: Opt }, lang: Lang, r: () => number) => (lang === "zh" ? pick(r, x.said.zh) : lang === "ms" ? pick(r, x.said.ms.length ? x.said.ms : x.said.en) : lang === "manglish" ? pick(r, [...x.said.ms, ...x.said.en]) : pick(r, x.said.en));
 /** A line's add-ons as pieces, with what joins them ("large, extra egg and no chilli", "大份加菜"). */
 function optionPieces(d: Dish, names: string[], k: number, lang: Lang, r: () => number): Piece[] {
   return optsOf(d, names).flatMap((x, j, all): Piece[] => [
@@ -184,7 +184,7 @@ function optionPieces(d: Dish, names: string[], k: number, lang: Lang, r: () => 
 }
 
 /** One order line as pieces of text: its count, its dish, its add-ons, in the language's own order. */
-function linePieces(l: Line, k: number, all: Dish[], lang: Lang, r: () => number): Piece[] {
+export function linePieces(l: Line, k: number, all: Dish[], lang: Lang, r: () => number): Piece[] {
   const d = l.dish as Dish & { kind: Kind };
   const opts = optsOf(d, l.options);
   const dish: Piece = { text: surface(d, all, lang, r), label: "DISH", line: k, ref: d.id };
@@ -210,7 +210,7 @@ function linePieces(l: Line, k: number, all: Dish[], lang: Lang, r: () => number
 }
 
 /** "2 nasi lemak, one with egg, the other large": a count of one dish split by its add-ons. */
-function splitPieces(d: Dish, a: Line, b: Line, k: number, all: Dish[], lang: Lang, r: () => number): Piece[] {
+export function splitPieces(d: Dish, a: Line, b: Line, k: number, all: Dish[], lang: Lang, r: () => number): Piece[] {
   const head = linePieces({ dish: d, count: 2, options: [] }, k, all, lang, r).map((p) => (p.label === "COUNT" || p.label === "DISH" ? { ...p, line: k } : p));
   const optText = (l: Line, kk: number) => optionPieces(d, l.options, kk, lang, r);
   const [one, other] = lang === "zh" ? [pick(r, ["一份", "其中一份", "一个"]), pick(r, ["另一份", "一份", "另外一个"])] : lang === "ms" ? ["satu", pick(r, ["satu lagi", "lagi satu"])] : [pick(r, ["one", "1"]), pick(r, ["the other", "the other one", "another one"])];
@@ -220,19 +220,19 @@ function splitPieces(d: Dish, a: Line, b: Line, k: number, all: Dish[], lang: La
 
 // what a guest says around an order ("hi", "can pay by card?", "ada promosi hari ni?"): the reader's
 // own service and small-talk templates (scripts/brain/reader-templates.json), none of it a dish
-const CHAT = (() => {
+export const CHAT = (() => {
   const t = JSON.parse(readFileSync(new URL("../brain/reader-templates.json", import.meta.url), "utf8")) as Record<string, string[]>;
   return [...t.service, ...t.smalltalk].filter((x) => !x.includes("{") && x.length < 60);
 })();
-const TAIL: Record<Lang, string[]> = {
+export const TAIL: Record<Lang, string[]> = {
   en: ["total?", "how much?", "how much altogether?", "total how much", "what's the total"],
   manglish: ["total how much ah", "berapa ah", "how much ah", "total?"],
   ms: ["berapa?", "semua berapa?", "jumlah berapa", "berapa semua"],
   zh: ["多少钱？", "一共多少？", "总共多少钱", "一共几多钱"],
 };
 const EACH: Record<Lang, string[]> = { en: ["split 3, how much each?", "each pay how much?"], manglish: ["split 2 how much each ah"], ms: ["seorang berapa?", "bayar asing, seorang berapa"], zh: ["每人多少？", "平分，每人几多"] };
-const JOIN: Record<Lang, string[]> = { en: [", ", " and ", " + ", ", and ", " n "], manglish: [", ", " n ", " + ", " and "], ms: [", ", " dan ", " + "], zh: ["，", "、", "，还有", "，再来"] };
-const LEAD: Record<Lang, string[]> = { en: ["", "", "can i get ", "i want ", "hi, ", "boss, ", "we'll have "], manglish: ["", "boss ", "uncle ", "", "nak "], ms: ["", "nak ", "saya nak ", "bagi "], zh: ["", "我要", "老板，", "要"] };
+export const JOIN: Record<Lang, string[]> = { en: [", ", " and ", " + ", ", and ", " n "], manglish: [", ", " n ", " + ", " and "], ms: [", ", " dan ", " + "], zh: ["，", "、", "，还有", "，再来"] };
+export const LEAD: Record<Lang, string[]> = { en: ["", "", "can i get ", "i want ", "hi, ", "boss, ", "we'll have "], manglish: ["", "boss ", "uncle ", "", "nak "], ms: ["", "nak ", "saya nak ", "bagi "], zh: ["", "我要", "老板，", "要"] };
 
 /** One example on `m`: an order (or a question about a dish, or no dish at all) with its reading. */
 function example(m: (Dish & { kind: Kind })[], menuId: string, id: string, r: () => number): Example | null {

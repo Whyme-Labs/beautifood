@@ -4,6 +4,8 @@
 #
 #   python launch.py --bucket <bucket> --role <role arn> --data <dir with train.jsonl, valid.jsonl, *.menus.json>
 #                    [--prefix beautifood-reader] [--instance ml.g5.xlarge] [--hours 3] [--epochs 3]
+#   python launch.py ... --program train_conv.py --hp max-minutes=90 --hp tokens=8000   (the conversation reader;
+#                    every file in --data is uploaded, and --hp passes the program's own flags)
 #   python launch.py --status <job name>     python launch.py --logs <job name>
 import argparse, io, os, tarfile, time
 
@@ -15,10 +17,10 @@ import boto3
 IMAGE = "763104351884.dkr.ecr.{region}.amazonaws.com/pytorch-training:2.10.0-gpu-py313-cu130-ubuntu22.04-sagemaker"
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-def source_tar():
+def source_tar(program):
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz") as t:
-        for f in ("train.py", "requirements.txt"):
+        for f in (program, "requirements.txt"):
             t.add(os.path.join(HERE, f), arcname=f)
     return buf.getvalue()
 
@@ -28,17 +30,22 @@ def launch(a):
     sm = boto3.client("sagemaker")
     job = f"beautifood-reader-{time.strftime('%Y%m%d-%H%M%S')}"
     base = f"{a.prefix}/{job}"
-    for f in ("train.jsonl", "train.menus.json", "valid.jsonl", "valid.menus.json"):
-        s3.upload_file(os.path.join(a.data, f), a.bucket, f"{base}/data/{f}")
-    s3.put_object(Bucket=a.bucket, Key=f"{base}/source/sourcedir.tar.gz", Body=source_tar())
+    for f in sorted(os.listdir(a.data)):
+        if f.endswith((".jsonl", ".json")):
+            s3.upload_file(os.path.join(a.data, f), a.bucket, f"{base}/data/{f}")
+    s3.put_object(Bucket=a.bucket, Key=f"{base}/source/sourcedir.tar.gz", Body=source_tar(a.program))
+    hp = {"epochs": str(a.epochs), "lr": str(a.lr)}
+    if a.program == "train.py":
+        hp.update({"batch": str(a.batch), "eval-every": "1000", "valid-limit": "0"})
+    hp.update(dict(x.split("=", 1) for x in a.hp))
     sm.create_training_job(
         TrainingJobName=job,
         RoleArn=a.role,
         AlgorithmSpecification={"TrainingImage": IMAGE.format(region=region), "TrainingInputMode": "File"},
         HyperParameters={
-            "sagemaker_program": "train.py",
+            "sagemaker_program": a.program,
             "sagemaker_submit_directory": f"s3://{a.bucket}/{base}/source/sourcedir.tar.gz",
-            "epochs": str(a.epochs), "batch": str(a.batch), "lr": str(a.lr), "eval-every": "1000", "valid-limit": "0",
+            **hp,
         },
         InputDataConfig=[{"ChannelName": "data", "DataSource": {"S3DataSource": {"S3DataType": "S3Prefix", "S3Uri": f"s3://{a.bucket}/{base}/data/", "S3DataDistributionType": "FullyReplicated"}}}],
         OutputDataConfig={"S3OutputPath": f"s3://{a.bucket}/{base}/output/"},
@@ -67,9 +74,11 @@ if __name__ == "__main__":
     p.add_argument("--prefix", default="beautifood-reader")
     p.add_argument("--instance", default="ml.g5.xlarge")
     p.add_argument("--hours", type=float, default=3)
-    p.add_argument("--epochs", type=int, default=3)
+    p.add_argument("--epochs", type=float, default=3)
     p.add_argument("--batch", type=int, default=32)
     p.add_argument("--lr", type=float, default=3e-5)
+    p.add_argument("--program", default="train.py")
+    p.add_argument("--hp", action="append", default=[], help="key=value, passed to the program as --key value")
     p.add_argument("--status")
     p.add_argument("--logs")
     a = p.parse_args()
