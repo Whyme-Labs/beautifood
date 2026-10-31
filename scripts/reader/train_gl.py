@@ -308,8 +308,10 @@ def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5, allowed=None)
         acts = t(heads(S[:0], S[:0], cls)[2]).float()
     pa = torch.sigmoid(acts).tolist()
     acts = [a for a, p in zip(ACTS, pa) if p > 0.5]
-    sure += [max(p, 1 - p) for p in pa]
-    # (how sure the least sure decision was: a reading can be refused below some level)
+    # (how sure the least sure decision about the order was: the spans, what goes with what, each change;
+    # not the acts, which don't change the order. No change at all: how sure no span was a dish.)
+    if not sure:
+        sure = [1 - max([P[s_, l].item() for s_, l in cand if is_dish(l)] or [0.0])]
     return {"acts": acts, "items": [items[k] for k in dishes], "sure": min(sure)}
 
 
