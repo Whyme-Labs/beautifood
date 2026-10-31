@@ -5,7 +5,7 @@
 // was. Prints the rules alone, each policy (fixed, broke, unsafe), the best of them case by case, the
 // whole set's unsafe count under each, and the reader's time a turn.
 //
-//   npx tsx scripts/reader/gl-replay.ts --url http://127.0.0.1:8084 [--set v11] [--split all] [--tags bill,modifier,followup] [--cache <file.json>]
+//   npx tsx scripts/reader/gl-replay.ts --url http://127.0.0.1:8084 [--set v11] [--split all] [--tags bill,modifier,followup] [--cache <file.json>] [--min-sure 0.9]
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { loadCases, loadMenu, readable, runEngine } from "../../bench/run";
 import { readTurn, type GlCall } from "../../src/server/ai/brain/glReader";
@@ -21,6 +21,8 @@ const set = arg("set", "v11");
 const split = arg("split", "all");
 const tags = arg("tags", "bill,modifier,followup").split(",");
 const cachePath = arg("cache");
+// (the reader's own sureness below which a turn is left to the rules: fixed before a held-out set is scored)
+const minSure = Number(arg("min-sure", "0"));
 
 type Cached = { order: OrderLineT[]; changed: boolean; ms: number[]; read: number; turns: number };
 const call: GlCall = async (text, menu, order) => {
@@ -46,7 +48,7 @@ void (async () => {
     const ms: number[] = [];
     for (const t of turns) {
       const t0 = performance.now();
-      const r = await readTurn(call, dishes, order, reply, t.user);
+      const r = await readTurn(call, dishes, order, reply, t.user, minSure);
       ms.push(Math.round(performance.now() - t0));
       if (r) read++;
       const next = r ? r.order : order;

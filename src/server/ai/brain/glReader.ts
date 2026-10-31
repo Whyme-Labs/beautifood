@@ -22,6 +22,8 @@ export interface GlItem {
 export interface GlReading {
   acts: string[];
   items: GlItem[];
+  /** How sure the model was of its least sure decision (0.5-1). */
+  sure?: number;
 }
 /** Sends a message (with the menu and the dishes on the order) to the reader; resolves to its reading. */
 export type GlCall = (text: string, menu: { name: string; zh?: string; groups: { name: string; options: string[] }[] }[], order: string[]) => Promise<GlReading>;
@@ -92,9 +94,12 @@ export function toTurnReading(r: GlReading, reply: string, order: OrderLineT[], 
 export const readerMenu = (dishes: Dish[]) => dishes.map((d) => ({ name: d.name, zh: d.translations?.zh?.name, groups: (d.modifiers ?? []).map((g) => ({ name: g.name, options: g.options.map((o) => o.name) })) }));
 
 /** The order after `message` as the browser reader reads it, or null (it failed, or a change didn't fit: the rules answer). */
-export async function readTurn(call: GlCall, dishes: Dish[], order: OrderLineT[], reply: string, message: string): Promise<{ order: OrderLineT[]; reading: TurnReading } | null> {
+export async function readTurn(call: GlCall, dishes: Dish[], order: OrderLineT[], reply: string, message: string, minSure = 0): Promise<{ order: OrderLineT[]; reading: TurnReading } | null> {
   try {
-    const reading = toTurnReading(await call(message, readerMenu(dishes), order.map((l) => l.dish)), reply, order, dishes);
+    const raw = await call(message, readerMenu(dishes), order.map((l) => l.dish));
+    // (unsure: the rules answer)
+    if ((raw.sure ?? 1) < minSure) return null;
+    const reading = toTurnReading(raw, reply, order, dishes);
     const r = applyTurn(order, reading, dishes);
     return r.errors.length ? null : { order: r.order, reading };
   } catch {

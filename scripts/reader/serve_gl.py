@@ -49,7 +49,7 @@ def read(tok, model, text, menu, order):
             elif label.startswith("add-on: "):
                 (out["removeOptions"] if kind == "off" else out["options"]).append(label[len("add-on: "):])
         items.append(out)
-    return {"acts": r["acts"], "items": items}
+    return {"acts": r["acts"], "items": items, "sure": round(r["sure"], 4)}
 
 
 def main():

@@ -265,6 +265,7 @@ def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5, allowed=None)
     is_dish = lambda l: labels[l].startswith("dish: ") or labels[l] == "pointer"
     dishes = [k for k, sp in enumerate(spans) if is_dish(sp[2])]
     parts = [k for k, sp in enumerate(spans) if not is_dish(sp[2])]
+    sure = []
     items = {k: {"label": labels[spans[k][2]], "span": spans[k][:2], "parts": []} for k in dishes}
     if dishes:
         dish_S = S[[spans[k][3] for k in dishes]]
@@ -286,14 +287,19 @@ def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5, allowed=None)
                 score = prob(spans[k]) * float(1 - probs[best, j, 0])
                 if key not in chosen or score > chosen[key][0]:
                     chosen[key] = (score, k, "off" if probs[best, j, 2] > probs[best, j, 1] else "on")
-        for (best, _), (_, k, kind) in sorted(chosen.items(), key=lambda kv: spans[kv[1][1]][0]):
+        for (best, _), (score, k, kind) in sorted(chosen.items(), key=lambda kv: spans[kv[1][1]][0]):
             items[dishes[best]]["parts"].append((labels[spans[k][2]], spans[k][:2], kind))
+            sure.append(score)
         for j, k in enumerate(dishes):
             items[k]["change"] = CHANGES[int(torch.argmax(change[j]))]
+            sure += [prob(spans[k]), float(F.softmax(change[j], -1).max())]
     else:
         acts = t(heads(S[:0], S[:0], cls)[2]).float()
-    acts = [a for a, p in zip(ACTS, torch.sigmoid(acts).tolist()) if p > 0.5]
-    return {"acts": acts, "items": [items[k] for k in dishes]}
+    pa = torch.sigmoid(acts).tolist()
+    acts = [a for a, p in zip(ACTS, pa) if p > 0.5]
+    sure += [max(p, 1 - p) for p in pa]
+    # (how sure the least sure decision was: a reading can be refused below some level)
+    return {"acts": acts, "items": [items[k] for k in dishes], "sure": min(sure)}
 
 
 def gold_view(x):
