@@ -1196,3 +1196,39 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
 - It now says only what it knows: no certificate is declared, dishes with pork or alcohol aren't
   halal, and the staff can tell them about the kitchen's certification. Dev: 21 answers changed,
   none passing or failing differently.
+
+## The browser reader (GLiNER2.5-multi encoder): what it must show (written before any score)
+
+- **Why this, after the decoder runs.** Reading a guest turn is choosing from a small set the menu
+  fixes: which words name which of this menu's dishes and add-ons, what each does to the order, and
+  what the turn is. That's extraction, not text generation. A small encoder does it in one pass,
+  with no malformed output, and fast on a phone CPU. The earlier runs failed on their data (our own
+  templates) and on a comparison with rules fitted to the very cases.
+- **The reader.**
+  - GLiNER2.5-multi's encoder (fastino/gliner2.5-multi-v1: mDeBERTa-v3-base, 287M, Apache-2.0)
+    with our own heads. The menu goes in the input as labels: spans are matched to this menu's
+    dish and add-on names, and each dish mention gets its change (new, more, set_count, remove,
+    swap, modify, split_off, assign), its count, add-ons and owner. The turn gets its acts.
+  - Decoding is deterministic. The brain applies the result with `applyTurn`, which refuses what
+    doesn't fit, and anything refused or unread falls back to the rules.
+  - It runs in the guest's browser (one ONNX graph).
+- **The data.**
+  - An open teacher (Qwen3.8-27B, Apache-2.0, on our own SageMaker GPU, never talking to guests)
+    writes menus and guest conversations with each guest turn labelled.
+  - `teacher/check.ts` keeps a turn only if every quote is the guest's words, every name is the
+    menu's, and its changes, made by `applyTurn`, give the order the teacher says.
+  - No benchmark question is used.
+- **The test: v11.**
+  - Written for this: 4 new menus by 2 new authors who never saw the engine, then a reviewer. Its
+    cases aren't read one by one.
+  - Scored as before: each case's turns replayed from an empty order, the reader's order feeding
+    the next turn; the brain bills it ("replace": whenever the money is asked or the order changed;
+    "edits": only on turns that build on an earlier one).
+- **The bar**, on the v11 cases tagged bill, modifier or followup:
+  - some policy beats the rules alone by at least 3 points;
+  - it fixes at least twice what it breaks;
+  - 0 unsafe on the whole of v11;
+  - the reader takes at most 300 ms a turn (median) on 4 CPU threads in onnxruntime (WASM in the
+    browser runs a similar budget).
+  - Scored once. If it misses, the reader stays off, and v11 stays usable as a held-out set for the
+    rules.
