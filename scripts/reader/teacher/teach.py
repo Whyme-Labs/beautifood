@@ -96,6 +96,33 @@ def parse_json(text):
         return None
 
 
+def turns_of(c):
+    """The chat's turns, however the answer wraps them ({"turns": [...]}, {"": {"turns": [...]}}, {"chat": [...]})."""
+    if isinstance(c, dict):
+        if isinstance(c.get("turns"), list):
+            return c["turns"]
+        for v in c.values():
+            if isinstance(v, list) and v and all(isinstance(t, dict) and "guest" in t for t in v):
+                return v
+            t = turns_of(v) if isinstance(v, dict) else None
+            if t:
+                return t
+    if isinstance(c, list) and c and all(isinstance(t, dict) and "guest" in t for t in c):
+        return c
+    return None
+
+
+def menu_of(m):
+    """The menu, however the answer wraps it."""
+    if isinstance(m, dict):
+        if isinstance(m.get("dishes"), list):
+            return m
+        for v in m.values():
+            if isinstance(v, dict) and isinstance(v.get("dishes"), list):
+                return v
+    return None
+
+
 def weighted(r, pairs):
     total = sum(w for _, w in pairs)
     x = r.random() * total
@@ -154,21 +181,25 @@ def main():
         return [o.text for o in outs]
     print(f"model loaded in {time.time() - t0:.0f}s", flush=True)
 
-    # 1. menus
+    # 1. menus (or an earlier run's, given as the data channel: then they keep their ids)
     menus = []
-    while len(menus) < a.menus and time.time() - t0 < a.minutes * 60 * 0.3:
+    given = os.path.join(os.environ.get("SM_CHANNEL_DATA", "/nonexistent"), "menus.jsonl")
+    if os.path.exists(given):
+        menus = [json.loads(l) for l in open(given, encoding="utf-8") if l.strip()]
+        print(f"menus {len(menus)} given", flush=True)
+    while not os.path.exists(given) and len(menus) < a.menus and time.time() - t0 < a.minutes * 60 * 0.3:
         # (a small first batch: if something's wrong, it shows within minutes)
         batch = [MENU_PROMPT.format(cuisine=r.choice(CUISINES), n=r.randint(14, 24)) for _ in range(min(16 if not menus else 128, a.menus - len(menus)))]
         for text in chat(batch, "menus"):
-            m = parse_json(text)
-            if m and isinstance(m.get("dishes"), list) and len(m["dishes"]) >= 8:
+            m = menu_of(parse_json(text))
+            if m and len(m["dishes"]) >= 8:
                 menus.append(m)
         print(f"menus {len(menus)} ({time.time() - t0:.0f}s)", flush=True)
         if not menus:
             sys.exit("no menu parsed from the first batch: stopping")
     with open(os.path.join(a.out, "menus.jsonl"), "w", encoding="utf-8") as f:
         for i, m in enumerate(menus):
-            f.write(json.dumps({"id": f"{a.tag}tm{i}", **m}, ensure_ascii=False) + "\n")
+            f.write(json.dumps({**m, "id": m.get("id", f"{a.tag}tm{i}")}, ensure_ascii=False) + "\n")
 
     # 2. conversations on them, labelled turn by turn
     done = 0
@@ -187,12 +218,17 @@ def main():
                 people = "The guest is ordering for a group and says who has what." if any(p.startswith("whose") for p in plan) else ""
                 lang = weighted(r, LANGS)
                 batch.append(CONV_PROMPT.format(menu=menu_text(menus[k]), turns=turns, lang=lang, plan="; then ".join(f"({i + 1}) {p}" for i, p in enumerate(plan)), people=people))
-                meta.append({"menu": f"{a.tag}tm{k}", "lang": lang.split(" ")[0], "plan": plan})
+                meta.append({"menu": menus[k].get("id", f"{a.tag}tm{k}"), "lang": lang.split(" ")[0], "plan": plan})
+            rejected = None
             for m, text in zip(meta, chat(batch, "convs")):
-                c = parse_json(text)
-                if c and isinstance(c.get("turns"), list):
-                    f.write(json.dumps({**m, **c}, ensure_ascii=False) + "\n")
+                turns = turns_of(parse_json(text))
+                if turns:
+                    f.write(json.dumps({**m, "turns": turns}, ensure_ascii=False) + "\n")
                     done += 1
+                elif rejected is None and parse_json(text) is not None:
+                    rejected = text
+            if rejected:
+                print("  e.g. parsed but no turns:", repr(rejected[:300]), flush=True)
             f.flush()
             print(f"convs {done} ({time.time() - t0:.0f}s)", flush=True)
     print(f"done: {len(menus)} menus, {done} conversations in {time.time() - t0:.0f}s", flush=True)
