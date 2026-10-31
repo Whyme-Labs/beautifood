@@ -158,6 +158,31 @@ Benchmark it with `bench/run.ts --reader-url <OpenAI-style endpoint> --reader-po
 --reader-cache <file>` (readings are cached by prompt and message; `--tags bill,modifier` for the
 cases it is meant for).
 
+### The conversation reader
+
+Half the bill failures are edits across turns ("remove the extra patty", "make it 2 only, one of
+them iced", "I only had the X"), which a reader of the latest message can't see. The conversation
+reader (`src/server/ai/brain/convReader.ts`) reads one turn at a time. It is given the order so
+far (as it last gave it), the assistant's last reply and the message. It returns the order as it
+now stands, with whose each line is when the guest says.
+
+```
+order so far + last reply + message ─► short menu (dishes the turn could mean) ─► model ─► lines
+   "2 x D3: Large; Extra egg @me" ─► checkBasket (as checkReading, named anywhere in the conversation)
+   ─► the bill, when the money is asked or the order changed ("replace"; "edits": only on a turn
+      that builds on an earlier one), its owners splitting it
+```
+
+- **Off by default.** With no `basket` in the context, every answer is the rules'.
+- **The model.** Qwen3-0.6B (Apache-2.0), fine-tuned on synthetic conversations from
+  `scripts/reader/conv-gen.ts` (`train_conv.py`), served by llama.cpp at 8-bit (`llama-server -m
+  reader.gguf`, `llamaBasketCall`).
+- **The score.** `scripts/reader/conv-replay.ts --url <llama-server>` replays each benchmark
+  conversation through it and scores it as pre-registered in bench/CHANGES.md.
+- **Open data.** Some English orders in the training data are said as guests said them in
+  Google's Taskmaster-1 and Taskmaster-2 ordering dialogues (Byrne et al., Google LLC, CC BY 4.0),
+  with their items replaced (`scripts/reader/taskmaster-carriers.json`).
+
 ## Learning across restaurants
 
 Each dish maps to shared concepts (`src/server/ai/brain/concepts.ts`): curry noodles, coconut rice,
