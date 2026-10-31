@@ -80,7 +80,9 @@ Answer with compact JSON only (no indentation, no comments): {{"turns": [{{"assi
 def menu_text(m):
     rows = []
     for d in m["dishes"]:
-        groups = "; ".join(f"{g['name']} (min {g.get('min', 0)}, max {g.get('max', 1)}): " + ", ".join(f"{o['name']}" + (f" +{o['price']}" if o.get("price") else "") for o in g.get("options", [])) for g in d.get("groups", []))
+        if not isinstance(d, dict) or not d.get("name"):
+            continue  # (a dish the menu's writer left unnamed)
+        groups = "; ".join(f"{g['name']} (min {g.get('min', 0)}, max {g.get('max', 1)}): " + ", ".join(f"{o['name']}" + (f" +{o['price']}" if o.get("price") else "") for o in g.get("options", [])) for g in d.get("groups") or [] if isinstance(g, dict) and g.get("name"))
         rows.append(f"{d['name']} | {d.get('zh') or ''} | {d.get('price')} | {groups}")
     return "\n".join(rows)
 
