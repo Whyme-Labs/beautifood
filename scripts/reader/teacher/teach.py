@@ -171,8 +171,11 @@ def main():
     with open(os.path.join(a.out, "convs.jsonl"), "w", encoding="utf-8") as f:
         while done < a.convs and time.time() - t0 < a.minutes * 60:
             batch, meta = [], []
-            for _ in range(min(256, a.convs - done)):
-                k = r.randrange(len(menus))
+            # (a batch on 32 menus, 8 chats each, in menu order: the menu is most of a prompt, and the
+            # prefix cache reads it once instead of 8 times)
+            picks = sorted(r.randrange(len(menus)) for _ in range(min(32, len(menus))))
+            for j in range(min(256, a.convs - done)):
+                k = picks[j * len(picks) // min(256, a.convs - done)]
                 turns = r.choice([1, 2, 2, 3, 3, 4])
                 plan = [weighted(r, TURN_KINDS) for _ in range(turns)]
                 # (a chat opens with an order, or a question whose answer lists dishes it can point at later)
