@@ -204,31 +204,49 @@ def decode(model, x, device, threshold=0.5):
     hs = model.states(ids, torch.ones_like(ids))[0]
     idx, S = model.span_reps(hs, x["start"], x["valid"])
     L = model.label(hs[torch.tensor(x["markers"], device=device)])
-    P = torch.sigmoid(S @ L.T)
+
+    def heads(dish, part, cls):
+        n, k = dish.shape[0], part.shape[0]
+        d, p = dish.unsqueeze(1).expand(n, k, -1), part.unsqueeze(0).expand(n, k, -1)
+        attach = model.attach(torch.cat([d, p, d * p], -1)) if k else torch.zeros(n, 0, 3, device=device)
+        return attach, model.change(torch.cat([dish, cls.unsqueeze(0).expand(n, -1)], -1)), model.acts(cls)
+    return decode_from(idx, S @ L.T, S, hs[0], heads, x["labels"], threshold)
+
+
+def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5):
+    """The reading from the encoder's outputs (span x label logits, span states, [CLS] state) and the
+    heads (dish states, part states, cls) -> (attach [n, k, 3], change [n, changes], acts): the same
+    decoding for PyTorch and for the exported graphs (export_gl.py)."""
+    t = lambda v: v if torch.is_tensor(v) else torch.from_numpy(v)
+    logits, S, cls = t(logits).float(), t(S).float(), t(cls).float()
+    P = torch.sigmoid(logits)
     cand = [(P[s, l].item(), s, l) for s, l in (P > threshold).nonzero().tolist()]
     taken, spans = set(), []
     for p, s, l in sorted(cand, reverse=True):
         a, b = idx[s]
-        if any(t in taken for t in range(a, b + 1)):
+        if any(q in taken for q in range(a, b + 1)):
             continue
         taken.update(range(a, b + 1))
         spans.append((a, b, l, s))
     spans.sort()
-    labels = x["labels"]
     is_dish = lambda l: labels[l].startswith("dish: ") or labels[l] == "pointer"
     dishes = [k for k, sp in enumerate(spans) if is_dish(sp[2])]
+    parts = [k for k, sp in enumerate(spans) if not is_dish(sp[2])]
     items = {k: {"label": labels[spans[k][2]], "span": spans[k][:2], "parts": []} for k in dishes}
-    for k, sp in enumerate(spans):
-        if is_dish(sp[2]) or not dishes:
-            continue
-        A = torch.stack([torch.cat([S[spans[d][3]], S[sp[3]], S[spans[d][3]] * S[sp[3]]]) for d in dishes])
-        probs = F.softmax(model.attach(A), -1)
-        best = int(torch.argmax(1 - probs[:, 0]))
-        if probs[best, 0] < 0.5:
-            items[dishes[best]]["parts"].append((labels[sp[2]], sp[:2], "off" if probs[best, 2] > probs[best, 1] else "on"))
-    for k in dishes:
-        items[k]["change"] = CHANGES[int(torch.argmax(model.change(torch.cat([S[spans[k][3]], hs[0]]))))]
-    acts = [a for a, p in zip(ACTS, torch.sigmoid(model.acts(hs[0])).tolist()) if p > 0.5]
+    if dishes:
+        dish_S = S[[spans[k][3] for k in dishes]]
+        part_S = S[[spans[k][3] for k in parts]] if parts else S[:0]
+        attach, change, acts = (t(v).float() for v in heads(dish_S, part_S, cls))
+        probs = F.softmax(attach, -1)  # [dishes, parts, 3]
+        for j, k in enumerate(parts):
+            best = int(torch.argmax(1 - probs[:, j, 0]))
+            if probs[best, j, 0] < 0.5:
+                items[dishes[best]]["parts"].append((labels[spans[k][2]], spans[k][:2], "off" if probs[best, j, 2] > probs[best, j, 1] else "on"))
+        for j, k in enumerate(dishes):
+            items[k]["change"] = CHANGES[int(torch.argmax(change[j]))]
+    else:
+        acts = t(heads(S[:0], S[:0], cls)[2]).float()
+    acts = [a for a, p in zip(ACTS, torch.sigmoid(acts).tolist()) if p > 0.5]
     return {"acts": acts, "items": [items[k] for k in dishes]}
 
 

@@ -50,10 +50,77 @@ def spans_of(valid, start):
     return idx, np.array([start + i for i, _ in idx]), np.array([start + j for _, j in idx]), np.array([j - i for i, j in idx])
 
 
+def compress(src, dst, kind):
+    """Weights stored small, computed in fp32: each large float weight becomes fp16 (kind "fp16") or
+    int8 with one scale per row/column (kind "int8w"), turned back to fp32 by a Cast/DequantizeLinear
+    node when the session loads. Halves (or quarters) the download without quantising activations,
+    which is what moved the dynamic int8 graph's decisions."""
+    import onnx
+    from onnx import helper, numpy_helper
+    g = onnx.load(src)
+    users = {}
+    for n in g.graph.node:
+        for k, i in enumerate(n.input):
+            users.setdefault(i, []).append((n, k))
+    keep, nodes = [], []
+    for init in g.graph.initializer:
+        w = numpy_helper.to_array(init)
+        if w.dtype != np.float32 or w.ndim != 2 or w.size < 4096:
+            keep.append(init)
+            continue
+        name = init.name
+        if kind == "fp16":
+            keep.append(numpy_helper.from_array(w.astype(np.float16), name + "_h"))
+            nodes.append(helper.make_node("Cast", [name + "_h"], [name], to=onnx.TensorProto.FLOAT))
+            continue
+        # the output channel: rows for a gathered table or a Gemm with transB, columns for a MatMul's B
+        axis = 1 if any(n.op_type == "MatMul" and k == 1 for n, k in users.get(name, [])) else 0
+        scale = np.abs(w).max(axis=1 - axis) / 127.0
+        scale[scale == 0] = 1.0
+        q = np.clip(np.round(w / (scale[None, :] if axis == 1 else scale[:, None])), -127, 127).astype(np.int8)
+        keep += [numpy_helper.from_array(q, name + "_q"), numpy_helper.from_array(scale.astype(np.float32), name + "_s"), numpy_helper.from_array(np.zeros(len(scale), np.int8), name + "_z")]
+        nodes.append(helper.make_node("DequantizeLinear", [name + "_q", name + "_s", name + "_z"], [name], axis=axis))
+    del g.graph.initializer[:]
+    g.graph.initializer.extend(keep)
+    old = list(g.graph.node)
+    del g.graph.node[:]
+    g.graph.node.extend(nodes + old)
+    onnx.save(g, dst, save_as_external_data=True, location=os.path.basename(dst) + ".data", size_threshold=1024)
+
+
+def session(path, threads=4):
+    import onnxruntime as ort
+    o = ort.SessionOptions()
+    o.intra_op_num_threads = threads
+    return ort.InferenceSession(path, o)
+
+
+def onnx_decode(reader, heads, x):
+    """decode() on the exported graphs."""
+    idx, sa, sb, sw = spans_of(x["valid"], x["start"])
+    ids = np.array([x["ids"]])
+    logits, S, cls = reader.run(None, {"ids": ids, "mask": np.ones_like(ids), "markers": np.array(x["markers"]), "span_a": sa, "span_b": sb, "span_w": sw})
+
+    def run_heads(dish, part, c):
+        d, p = np.asarray(dish, np.float32), np.asarray(part, np.float32)
+        nd, np_ = len(d), len(p)
+        # (the graph wants at least one of each: pad, then cut back)
+        a, ch, acts = heads.run(None, {"dish": d if nd else np.zeros((1, S.shape[1]), np.float32), "part": p if np_ else np.zeros((1, S.shape[1]), np.float32), "cls": np.asarray(c, np.float32)})
+        return a[:nd, :np_], ch[:nd], acts
+    return T.decode_from(idx, logits, S, cls, run_heads, x["labels"])
+
+
+def same(r):
+    return sorted((i["label"], tuple(i["span"]), i["change"], tuple(sorted((l, tuple(s), k) for l, s, k in i["parts"]))) for i in r["items"]), sorted(r["acts"])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("model")
-    ap.add_argument("--quantize", action="store_true")
+    ap.add_argument("--quantize", action="store_true", help="also the dynamic int8 graph (activations quantised too)")
+    ap.add_argument("--check", help="validation examples (train.valid.jsonl): decisions of each graph vs PyTorch, and vs gold")
+    ap.add_argument("--menus", help="train.menus.json, with --check")
+    ap.add_argument("--n", type=int, default=300)
     a = ap.parse_args()
     from transformers import AutoTokenizer
     import onnxruntime as ort
@@ -111,6 +178,30 @@ def main():
     for _ in range(20):
         t = time.time(); sess.run(None, feed); times.append(1000 * (time.time() - t))
     print(f"{os.path.basename(path)}: {os.path.getsize(path) / 1e6:.0f} MB; {len(ids)} tokens, {len(idx)} spans, {len(markers)} labels; median {statistics.median(times[5:]):.0f} ms on 4 threads")
+    variants = {"fp32": f"{out}/reader.onnx"} | ({"int8dyn": path} if a.quantize else {})
+    for kind in ("fp16", "int8w"):
+        compress(f"{out}/reader.onnx", f"{out}/reader.{kind}.onnx", kind)
+        variants[kind] = f"{out}/reader.{kind}.onnx"
+    for kind, p in variants.items():
+        size = sum(os.path.getsize(os.path.join(out, f)) for f in os.listdir(out) if f.startswith(os.path.basename(p)))
+        r = session(p)
+        times = []
+        for _ in range(15):
+            t = time.time(); r.run(None, feed); times.append(1000 * (time.time() - t))
+        print(f"{kind}: {size / 1e6:.0f} MB, median {statistics.median(times[5:]):.0f} ms, max |diff| in logits {float(np.abs(r.run(None, feed)[0] - logits.numpy()).max()):.4f}")
+    if a.check:
+        menus = json.load(open(a.menus, encoding="utf-8"))
+        rows = [json.loads(l) for l in open(a.check, encoding="utf-8") if l.strip()][: a.n]
+        xs = [T.example_targets(e, menus[e["menu"]], tok) for e in rows]
+        heads = session(f"{out}/heads.onnx")
+        with torch.no_grad():
+            ref = [same(T.decode(m, x, "cpu")) for x in xs]
+        gold = [(T.gold_view(x)[0], T.gold_view(x)[1]) for x in xs]
+        print(f"PyTorch: {sum(r == g for r, g in zip(ref, gold))}/{len(xs)} exact")
+        for kind, p in variants.items():
+            r = session(p)
+            got = [same(onnx_decode(r, heads, x)) for x in xs]
+            print(f"{kind}: same reading as PyTorch {sum(g == f for g, f in zip(got, ref))}/{len(xs)}, exact {sum(g == w for g, w in zip(got, gold))}/{len(xs)}")
     json.dump({"labels_max": T.MAX_LEN, "max_w": T.MAX_W, "changes": T.CHANGES, "acts": T.ACTS, "generic": T.GENERIC}, open(f"{out}/reader.json", "w"))
 
 
