@@ -1106,3 +1106,43 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   Chinese, with typos. English carrier phrases for orders come from Google's Taskmaster-1/2 (CC BY
   4.0) ordering dialogues, with their items replaced by menu dishes.
 - If it misses the bar: no second run. The reader stays off, and the integration and the tooling stay.
+
+## The conversation reader: the result (the bar not met; no second run)
+
+- The run: Qwen3-0.6B, fully fine-tuned for 2 epochs (2,472 steps, 48 minutes of training) on 39,922
+  synthetic turns from conv-gen.ts, on one ml.g5.xlarge, 3,288 billed seconds. (A first launch ran
+  out of GPU memory on its first step, before any training, and was relaunched with activations
+  recomputed; it billed a few minutes.) Never trained on a benchmark question.
+- Synthetic valid set (1,000 turns, exact order after the turn): 99.3%. Every kind of turn is at
+  97% or more except "each" (88.9%) and "same again" (90%).
+- On the 465 v10 dev bill/modifier cases, replayed from an empty order as pre-registered:
+
+| | Pass | Unsafe | Fixed | Broke |
+|---|---|---|---|---|
+| rules alone | 353 (75.9%) | 0 | | |
+| replace | 263 (56.6%) | 0 | 20 | 110 |
+| edits | 304 (65.4%) | 0 | 10 | 59 |
+
+- **Against the bar:**
+  - upper bound 373/465 (80.2%, +4.3 points): **met** (at least 367);
+  - a policy fixing at least twice what it breaks: **not met** (20 against 110, 10 against 59);
+  - 0 unsafe: met;
+  - time a turn: median 471 ms, p90 1,047 ms on 4 CPU cores at 8-bit, so met.
+  So the bar is **not met**, and as written there is no second run. The reader stays off, and the
+  integration, the generator, the trainer and the replay stay.
+- **Why it breaks cases the rules pass** (dev, read after scoring, not acted on):
+  - It writes add-ons by the synthetic menus' names, not this menu's: "Extra egg" where the menu
+    has "Hard-boiled Egg", "Extra Udon" for "tambah udang". The checks then drop them, and the bill
+    is short.
+  - It miscounts and carries lines twice ("1 curry laksa" plus "1 curry laksa regular bihun").
+  - It names only some lines' owners, or none ("I only had the curry laksa and one barley" billed
+    whole).
+  - It loses a dish the grounding check can't see ("asam laksa" for Penang Asam Laksa).
+  - Of the 110 it broke under "replace", 49 were single-turn orders the rules already read right.
+  The 99.3% on its own data against 56.6% on real menus is the same gap as the span reader's: its
+  synthetic menus reuse one pool of add-on names, so it learnt those names rather than to copy
+  this menu's.
+- What would change this, for the record: menus whose add-ons and wording are as varied as real
+  ones (an LLM writing the menus and guest turns, or real menus and turns from the log), and add-on
+  names copied from the prompt by construction (constrained decoding to the short menu's options).
+  Each would need its own pre-registered run.
