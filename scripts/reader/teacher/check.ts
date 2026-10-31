@@ -110,6 +110,31 @@ function find(text: string, quote: string | undefined, near?: [number, number] |
   return all.sort((a, b) => gap(a) - gap(b))[0];
 }
 
+/** A menu name as a guest may write it: whole, without its bracketed part, or just the bracketed part
+ * ("Kurang Minyak (Less Oil)": "Kurang Minyak", "Less Oil"); and the Chinese name. */
+const nameForms = (name: string, zh?: string) => {
+  const inner = [...name.matchAll(/\(([^)]+)\)/g)].map((m) => m[1]);
+  return [name, name.replace(/\s*\([^)]*\)/g, "").trim(), ...inner, ...(zh ? [zh] : [])].filter((x) => x && x.length >= 2);
+};
+const EN = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+const MS = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "lapan", "sembilan", "sepuluh"];
+const ZH = ["", "一", "两|二", "三", "四", "五", "六", "七", "八", "九", "十"];
+/** How a count may be written: "2", "2x", "x2", "two", "dua", "两". */
+const countForms = (n: number) => [`${n}x`, `x${n}`, `${n}`, ...(n <= 10 ? [EN[n], MS[n], ...ZH[n].split("|")] : [])].filter(Boolean);
+/** The first form found as a whole word (any form, for Chinese), nearest `near`. */
+function firstFound(text: string, forms: string[], near?: [number, number] | null): [number, number] | null {
+  for (const f of forms) {
+    const cjk = /[\u3400-\u9fff]/.test(f);
+    // (Latin words end at anything but a Latin letter or digit: "2份", "dua碗" still count)
+    const re = new RegExp((cjk ? "" : "(?<![A-Za-z0-9])") + f.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+") + (cjk ? "" : "(?![A-Za-z0-9])"), "giu");
+    const all = [...text.matchAll(re)].map((m) => [m.index!, m.index! + m[0].length] as [number, number]);
+    if (!all.length) continue;
+    const gap = (sp: [number, number]) => (near ? Math.min(Math.abs(sp[0] - near[1]), Math.abs(near[0] - sp[1])) : 0);
+    return all.sort((a, b) => gap(a) - gap(b))[0];
+  }
+  return null;
+}
+
 const flat = (q: string) => q.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 const sets = ["v1", "heldout", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11"] as const;
 const bench = new Set(sets.flatMap((s) => { try { return loadCases("all", s as never); } catch { return []; } }).flatMap((c) => [c.question, ...(c.before ?? []).map((b) => b.user)]).map(flat));
@@ -144,21 +169,33 @@ for (const [ci, c] of lines(`${dir}/convs.jsonl`).entries()) {
         return "the changes don't give the order it says";
       }
       // the training example: each part where it is in the message
-      examples.push({
-        id: `t${ci}-${ti}`, lang: c.lang, menu: c.menu, text, assistant: t.assistant_before ?? "", before: order, acts,
-        items: items.map((i) => {
-          const q = i.quotes ?? {};
-          const dishSpan = find(text, q.dish);
-          const d = dishes.find((x) => x.name === i.dish)!;
-          return {
-            change: i.change, dish: i.dish, count: i.count, options: i.options ?? [], removeOptions: i.removeOptions ?? [], owner: i.owner,
-            dishSpan, dishKind: dishSpan && !grounded(d, text.slice(dishSpan[0], dishSpan[1]), dishes) ? "pointer" : "name",
-            countSpan: find(text, q.count, dishSpan), ownerSpan: find(text, q.owner, dishSpan),
-            optionSpans: Object.fromEntries(Object.entries(q.options ?? {}).map(([k, v]) => [k, find(text, v, dishSpan)]).filter(([, s]) => s)),
-          };
-        }),
-        after: r.order,
+      // the training example: each part where it is in the message. A part the teacher applied but didn't
+      // quote is looked for by its menu name (or the count by its number); a turn with a part still not
+      // found isn't trained on (its words would be taught as nothing), though the chat goes on.
+      let missing = "";
+      const located = items.map((i) => {
+        const q = i.quotes ?? {};
+        const d = dishes.find((x) => x.name === i.dish)!;
+        const dishSpan = find(text, q.dish) ?? firstFound(text, nameForms(d.name, d.translations?.zh?.name));
+        if (!dishSpan) missing ||= "dish";
+        const optionSpans: Record<string, [number, number]> = {};
+        for (const o of [...(i.options ?? []), ...(i.removeOptions ?? [])]) {
+          const sp = find(text, q.options?.[o], dishSpan) ?? firstFound(text, nameForms(o), dishSpan);
+          if (sp) optionSpans[o] = sp;
+          else missing ||= "add-on";
+        }
+        const countSpan = find(text, q.count, dishSpan) ?? (i.count !== undefined ? firstFound(text, countForms(i.count), dishSpan) : null);
+        if (!countSpan && i.count !== undefined && i.count !== 1) missing ||= "count";
+        const ownerSpan = find(text, q.owner, dishSpan) ?? (i.owner ? firstFound(text, i.owner === "me" ? ["I", "me", "saya", "aku", "我"] : [i.owner], dishSpan) : null);
+        if (!ownerSpan && i.owner) missing ||= "owner";
+        return {
+          change: i.change, dish: i.dish, count: i.count, options: i.options ?? [], removeOptions: i.removeOptions ?? [], owner: i.owner,
+          dishSpan, dishKind: dishSpan && !grounded(d, text.slice(dishSpan[0], dishSpan[1]), dishes) ? "pointer" : "name",
+          countSpan, ownerSpan, optionSpans,
+        };
       });
+      if (missing) bump(`not trained on: ${missing} not found in the message`);
+      else examples.push({ id: `t${ci}-${ti}`, lang: c.lang, menu: c.menu, text, assistant: t.assistant_before ?? "", before: order, acts, items: located, after: r.order });
       order = r.order;
       return null;
     })();

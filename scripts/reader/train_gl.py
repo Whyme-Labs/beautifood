@@ -229,6 +229,17 @@ def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5):
         taken.update(range(a, b + 1))
         spans.append((a, b, l, s))
     spans.sort()
+    # a name split in two ("黑糖珍珠 鲜奶", "2 x"): side by side with the same label is one span
+    where = {sp: k for k, sp in enumerate(idx)}
+    merged = []
+    for sp in spans:
+        if merged and merged[-1][2] == sp[2] and sp[0] == merged[-1][1] + 1 and (merged[-1][0], sp[1]) in where:
+            a = merged[-1][0]
+            merged[-1] = (a, sp[1], sp[2], where[(a, sp[1])])
+        else:
+            merged.append(sp)
+    spans = merged
+    prob = lambda sp: P[sp[3], sp[2]].item()
     is_dish = lambda l: labels[l].startswith("dish: ") or labels[l] == "pointer"
     dishes = [k for k, sp in enumerate(spans) if is_dish(sp[2])]
     parts = [k for k, sp in enumerate(spans) if not is_dish(sp[2])]
@@ -238,10 +249,18 @@ def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5):
         part_S = S[[spans[k][3] for k in parts]] if parts else S[:0]
         attach, change, acts = (t(v).float() for v in heads(dish_S, part_S, cls))
         probs = F.softmax(attach, -1)  # [dishes, parts, 3]
+        # each part to the dish it goes with; an item has one of each (one count, one owner, an add-on once):
+        # of two with the same label, the likelier
+        chosen = {}
         for j, k in enumerate(parts):
             best = int(torch.argmax(1 - probs[:, j, 0]))
             if probs[best, j, 0] < 0.5:
-                items[dishes[best]]["parts"].append((labels[spans[k][2]], spans[k][:2], "off" if probs[best, j, 2] > probs[best, j, 1] else "on"))
+                key = (best, spans[k][2])
+                score = prob(spans[k]) * float(1 - probs[best, j, 0])
+                if key not in chosen or score > chosen[key][0]:
+                    chosen[key] = (score, k, "off" if probs[best, j, 2] > probs[best, j, 1] else "on")
+        for (best, _), (_, k, kind) in sorted(chosen.items(), key=lambda kv: spans[kv[1][1]][0]):
+            items[dishes[best]]["parts"].append((labels[spans[k][2]], spans[k][:2], kind))
         for j, k in enumerate(dishes):
             items[k]["change"] = CHANGES[int(torch.argmax(change[j]))]
     else:
