@@ -17,11 +17,11 @@ import boto3
 IMAGE = "763104351884.dkr.ecr.{region}.amazonaws.com/pytorch-training:2.10.0-gpu-py313-cu130-ubuntu22.04-sagemaker"
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-def source_tar(program):
+def source_tar(program, source=HERE):
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz") as t:
         for f in (program, "requirements.txt"):
-            t.add(os.path.join(HERE, f), arcname=f)
+            t.add(os.path.join(source, f), arcname=f)
     return buf.getvalue()
 
 def launch(a):
@@ -30,11 +30,12 @@ def launch(a):
     sm = boto3.client("sagemaker")
     job = f"beautifood-reader-{time.strftime('%Y%m%d-%H%M%S')}"
     base = f"{a.prefix}/{job}"
-    for f in sorted(os.listdir(a.data)):
+    for f in sorted(os.listdir(a.data)) if a.data else []:
         if f.endswith((".jsonl", ".json")):
             s3.upload_file(os.path.join(a.data, f), a.bucket, f"{base}/data/{f}")
-    s3.put_object(Bucket=a.bucket, Key=f"{base}/source/sourcedir.tar.gz", Body=source_tar(a.program))
-    hp = {"epochs": str(a.epochs), "lr": str(a.lr)}
+    s3.put_object(Bucket=a.bucket, Key=f"{base}/source/sourcedir.tar.gz", Body=source_tar(a.program, a.source or HERE))
+    # (a trainer's epochs and learning rate; a program of another kind takes only its --hp)
+    hp = {"epochs": str(a.epochs), "lr": str(a.lr)} if a.program.startswith("train") else {}
     if a.program == "train.py":
         hp.update({"batch": str(a.batch), "eval-every": "1000", "valid-limit": "0"})
     hp.update(dict(x.split("=", 1) for x in a.hp))
@@ -47,9 +48,9 @@ def launch(a):
             "sagemaker_submit_directory": f"s3://{a.bucket}/{base}/source/sourcedir.tar.gz",
             **hp,
         },
-        InputDataConfig=[{"ChannelName": "data", "DataSource": {"S3DataSource": {"S3DataType": "S3Prefix", "S3Uri": f"s3://{a.bucket}/{base}/data/", "S3DataDistributionType": "FullyReplicated"}}}],
+        **({"InputDataConfig": [{"ChannelName": "data", "DataSource": {"S3DataSource": {"S3DataType": "S3Prefix", "S3Uri": f"s3://{a.bucket}/{base}/data/", "S3DataDistributionType": "FullyReplicated"}}}]} if a.data else {}),
         OutputDataConfig={"S3OutputPath": f"s3://{a.bucket}/{base}/output/"},
-        ResourceConfig={"InstanceType": a.instance, "InstanceCount": 1, "VolumeSizeInGB": 50},
+        ResourceConfig={"InstanceType": a.instance, "InstanceCount": 1, "VolumeSizeInGB": a.volume},
         StoppingCondition={"MaxRuntimeInSeconds": int(a.hours * 3600)},
         Tags=[{"Key": "project", "Value": "beautifood-reader"}],
     )
@@ -78,6 +79,8 @@ if __name__ == "__main__":
     p.add_argument("--batch", type=int, default=32)
     p.add_argument("--lr", type=float, default=3e-5)
     p.add_argument("--program", default="train.py")
+    p.add_argument("--source", help="folder holding the program and its requirements.txt (default: this one)")
+    p.add_argument("--volume", type=int, default=50, help="GB of disk")
     p.add_argument("--hp", action="append", default=[], help="key=value, passed to the program as --key value")
     p.add_argument("--status")
     p.add_argument("--logs")
