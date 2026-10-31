@@ -29,6 +29,73 @@ const toDishes = (m: TeacherMenu): Dish[] =>
     translations: d.zh ? { zh: { name: String(d.zh) } } : undefined,
     modifiers: (d.groups ?? []).filter((g) => g?.options?.length).map((g) => ({ name: String(g.name), min: Number(g.min ?? 0), max: Math.max(1, Number(g.max ?? 1)), options: g.options.map((o) => ({ name: String(o.name).trim(), price: cents(o.price) })) })),
   }) as unknown as Dish);
+/** A list of names however the teacher wrote it (a list, one string, null). */
+const list = (x: unknown): string[] => (Array.isArray(x) ? x : typeof x === "string" && x.trim() ? [x] : []).filter((v) => typeof v === "string" || typeof v === "number").map((v) => String(v).trim());
+const num = (x: unknown) => (x === null || x === undefined || x === "" || !Number.isFinite(Number(x)) ? undefined : Number(x));
+/** An option as the menu names it: the teacher sometimes copies the menu's display ("Extra Egg +1.5",
+ * "Size: Large"). Only ever mapped to a name this dish has; anything else is left as written (and fails). */
+const canonOption = (d: Dish | undefined, name: string): string => {
+  const names = (d?.modifiers ?? []).flatMap((g) => g.options.map((o) => o.name));
+  if (!d || names.includes(name)) return name;
+  const bare = name.replace(/\s*\(?[+]\s*(RM\s*)?\d+(\.\d+)?\)?\s*$/i, "").trim();
+  for (const c of [bare, bare.replace(/^[^:]+:\s*/, "")]) {
+    const hit = names.find((n) => n.toLowerCase() === c.toLowerCase());
+    if (hit) return hit;
+  }
+  return name;
+};
+/** The option names the teacher meant, however it wrote them: a list of names; or a map, group -> option
+ * name(s), or option name -> anything. Each is mapped to a name this dish has where one matches. Also,
+ * for a map keyed by group, the option each group key stands for (to read quotes keyed by group). */
+function optionsOf(x: unknown, d: Dish | undefined): { names: string[]; byGroup: Record<string, string> } {
+  const known = new Set((d?.modifiers ?? []).flatMap((g) => g.options.map((o) => o.name)));
+  const names: string[] = [];
+  const byGroup: Record<string, string> = {};
+  const add = (v: unknown, group?: string) => {
+    for (const n of list(v)) {
+      const c = canonOption(d, n);
+      names.push(c);
+      if (group) byGroup[group] = c;
+    }
+  };
+  if (Array.isArray(x) || typeof x === "string") add(x);
+  else if (x && typeof x === "object")
+    for (const [k, v] of Object.entries(x)) {
+      if (known.has(canonOption(d, k))) names.push(canonOption(d, k));
+      else add(v, k);
+    }
+  return { names: [...new Set(names)], byGroup };
+}
+/** One of the teacher's items in the shape applyTurn takes (null if it isn't one). */
+const asItem = (i: unknown, dishes: Dish[]): TeacherItem | null => {
+  if (!i || typeof i !== "object") return null;
+  const x = i as Record<string, unknown>;
+  if (!(CHANGES as readonly string[]).includes(String(x.change)) || typeof x.dish !== "string") return null;
+  const dish = x.dish.trim();
+  const d = dishes.find((y) => y.name === dish);
+  const q = (x.quotes && typeof x.quotes === "object" ? x.quotes : {}) as Record<string, unknown>;
+  const str = (v: unknown) => (typeof v === "string" || typeof v === "number" ? String(v) : undefined);
+  const on = optionsOf(x.options, d);
+  const off = optionsOf(x.removeOptions, d);
+  const groups = { ...on.byGroup, ...off.byGroup };
+  const known = new Set((d?.modifiers ?? []).flatMap((g) => g.options.map((o) => o.name)));
+  // quotes: keyed by option name, or by group (the option that group stands for)
+  const quoteOpts: Record<string, string> = {};
+  for (const [k, v] of Object.entries(q.options && typeof q.options === "object" ? q.options : {})) {
+    if (typeof v !== "string") continue;
+    const name = known.has(canonOption(d, k)) ? canonOption(d, k) : groups[k];
+    if (name) quoteOpts[name] = v;
+  }
+  // (options left out but quoted: the quoted ones)
+  const names = on.names.length || !["new", "more", "modify", "split_off"].includes(String(x.change)) ? on.names : Object.keys(quoteOpts);
+  return {
+    change: x.change as TurnItem["change"], dish,
+    ...(num(x.count) !== undefined ? { count: num(x.count) } : {}),
+    options: names, removeOptions: off.names,
+    ...(owner(str(x.owner)) ? { owner: owner(str(x.owner)) } : {}),
+    quotes: { dish: str(q.dish), count: str(q.count), owner: str(q.owner), options: quoteOpts },
+  };
+};
 const owner = (o?: string) => {
   const x = (o ?? "").trim().toLowerCase();
   return !x ? undefined : /^(i|me|myself|mine|saya|aku|我|我的)$/.test(x) ? "me" : x.slice(0, 20);
@@ -61,17 +128,21 @@ for (const [ci, c] of lines(`${dir}/convs.jsonl`).entries()) {
     const why = (() => {
       if (!text.trim()) return "empty message";
       if (bench.has(flat(text)) && flat(text).split(" ").length > 2) return "reads like a benchmark question";
-      const acts = (t.acts ?? []).filter((a) => (TURN_ACTS as readonly string[]).includes(a));
-      const items: TeacherItem[] = (t.items ?? []).filter((i) => i && (CHANGES as readonly string[]).includes(i.change)).map((i) => ({ ...i, owner: owner(i.owner) }));
-      if (items.length !== (t.items ?? []).length) return "a change of no known kind";
+      const acts = list(t.acts).filter((a) => (TURN_ACTS as readonly string[]).includes(a));
+      const raw = Array.isArray(t.items) ? t.items : [];
+      const items = raw.map((i) => asItem(i, dishes)).filter((i): i is TeacherItem => !!i);
+      if (items.length !== raw.length) return "a change of no known kind";
       for (const i of items) {
         const q = i.quotes ?? {};
         for (const x of [q.dish, q.count, q.owner, ...Object.values(q.options ?? {})]) if (x && !quoted(x, text)) return "a quote isn't the guest's words";
       }
       const r = applyTurn(order, { acts: acts as never, items }, dishes);
-      if (r.errors.length) return `the changes don't fit: ${r.errors[0].replace(/".*"/, "…")}`;
-      const after = (t.order_after ?? []).map((l) => ({ dish: String(l.dish), count: Number(l.count), options: (l.options ?? []).map(String), ...(owner(l.owner) ? { owner: owner(l.owner) } : {}) }));
-      if (!sameOrder(r.order, after)) return "the changes don't give the order it says";
+      if (r.errors.length) return `the changes don't fit: ${r.errors[0].replace(/".*"/, "…").replace(/^.*?(has no add-on|isn't on the order|no dish)/, "$1").replace(/^(no dish) .*/, "$1")}`;
+      const after = (Array.isArray(t.order_after) ? t.order_after : []).filter((l) => l && typeof l === "object").map((l) => ({ dish: String(l.dish), count: Number(l.count ?? 1), options: optionsOf(l.options, dishes.find((x) => x.name === String(l.dish))).names, ...(owner(typeof l.owner === "string" ? l.owner : undefined) ? { owner: owner(l.owner) } : {}) }));
+      if (!sameOrder(r.order, after)) {
+        if (process.env.CHECK_DEBUG && Math.random() < Number(process.env.CHECK_DEBUG)) console.error(JSON.stringify({ text, before: order, items: items.map(({ quotes, ...i }) => i), got: r.order, said: after }));
+        return "the changes don't give the order it says";
+      }
       // the training example: each part where it is in the message
       examples.push({
         id: `t${ci}-${ti}`, lang: c.lang, menu: c.menu, text, assistant: t.assistant_before ?? "", before: order, acts,
