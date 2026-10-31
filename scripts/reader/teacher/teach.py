@@ -45,7 +45,7 @@ Prices in ringgit as numbers (e.g. 12.9). Give MANY items choices the way real m
 hot or iced, sugar levels, add-ons with prices (e.g. extra egg 1.5), free preferences (no onion, less oil). Each group has a name, the
 fewest and most choices a guest may pick (min, max), and options with their extra price (0 if free). Use the restaurant's own wording
 for options (e.g. "Telur Mata", "Hard-boiled Egg", "Tau Pok", "Kurang Manis", "Level 3"), not generic ones.
-Answer with JSON only, in exactly this shape:
+Answer with compact JSON only (no indentation, no comments), in exactly this shape:
 {{"name": "...", "dishes": [{{"name": "...", "zh": "..." or null, "category": "...", "price": 12.9, "groups": [{{"name": "...", "min": 0, "max": 1, "options": [{{"name": "...", "price": 0}}]}}]}}]}}"""
 
 CONV_PROMPT = """You write realistic chats between a guest and a restaurant's ordering assistant, and label each guest message exactly.
@@ -74,7 +74,7 @@ Label EACH guest message:
 A message that changes nothing has "items": [] and the same order_after as before. Never invent a dish or option the menu doesn't have;
 if the guest asks for one, leave it out of items.
 
-Answer with JSON only: {{"turns": [{{"assistant_before": "..." or null, "guest": "...", "acts": [...], "items": [...], "order_after": [...]}}]}}"""
+Answer with compact JSON only (no indentation, no comments): {{"turns": [{{"assistant_before": "..." or null, "guest": "...", "acts": [...], "items": [...], "order_after": [...]}}]}}"""
 
 
 def menu_text(m):
@@ -124,20 +124,34 @@ def main():
     from vllm import LLM, SamplingParams
 
     # (text only: the model can read images too, which this doesn't need)
-    llm = LLM(model=a.model, max_model_len=8192, gpu_memory_utilization=0.92, max_num_seqs=128, enable_prefix_caching=True, limit_mm_per_prompt={"image": 0, "video": 0})
-    params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=3000)
-    chat = lambda prompts: [o.outputs[0].text for o in llm.chat([[{"role": "user", "content": p}] for p in prompts], params, chat_template_kwargs={"enable_thinking": False}, use_tqdm=False)]
+    llm = LLM(model=a.model, max_model_len=12288, gpu_memory_utilization=0.92, max_num_seqs=128, enable_prefix_caching=True, limit_mm_per_prompt={"image": 0, "video": 0})
+    params = SamplingParams(temperature=0.8, top_p=0.95, max_tokens=5500)
+
+    def chat(prompts, what):
+        """The model's answers, and what happened to them: how many ran out of room, didn't parse, tokens a second."""
+        t = time.time()
+        outs = [o.outputs[0] for o in llm.chat([[{"role": "user", "content": p}] for p in prompts], params, chat_template_kwargs={"enable_thinking": False}, use_tqdm=False)]
+        cut = sum(o.finish_reason == "length" for o in outs)
+        bad = [o.text for o in outs if parse_json(o.text) is None]
+        toks = sum(len(o.token_ids) for o in outs)
+        print(f"{what}: {len(outs)} answers, {cut} cut off, {len(bad)} unparsed, {toks / len(outs):.0f} tokens each, {toks / (time.time() - t):.0f} tokens/s", flush=True)
+        if bad:
+            print("  e.g. unparsed:", repr(bad[0][:300]), "...", repr(bad[0][-200:]), flush=True)
+        return [o.text for o in outs]
     print(f"model loaded in {time.time() - t0:.0f}s", flush=True)
 
     # 1. menus
     menus = []
     while len(menus) < a.menus and time.time() - t0 < a.minutes * 60 * 0.3:
-        batch = [MENU_PROMPT.format(cuisine=r.choice(CUISINES), n=r.randint(18, 36)) for _ in range(min(100, a.menus - len(menus)))]
-        for text in chat(batch):
+        # (a small first batch: if something's wrong, it shows within minutes)
+        batch = [MENU_PROMPT.format(cuisine=r.choice(CUISINES), n=r.randint(14, 24)) for _ in range(min(16 if not menus else 128, a.menus - len(menus)))]
+        for text in chat(batch, "menus"):
             m = parse_json(text)
             if m and isinstance(m.get("dishes"), list) and len(m["dishes"]) >= 8:
                 menus.append(m)
         print(f"menus {len(menus)} ({time.time() - t0:.0f}s)", flush=True)
+        if not menus:
+            sys.exit("no menu parsed from the first batch: stopping")
     with open(os.path.join(a.out, "menus.jsonl"), "w", encoding="utf-8") as f:
         for i, m in enumerate(menus):
             f.write(json.dumps({"id": f"tm{i}", **m}, ensure_ascii=False) + "\n")
@@ -147,7 +161,7 @@ def main():
     with open(os.path.join(a.out, "convs.jsonl"), "w", encoding="utf-8") as f:
         while done < a.convs and time.time() - t0 < a.minutes * 60:
             batch, meta = [], []
-            for _ in range(min(400, a.convs - done)):
+            for _ in range(min(256, a.convs - done)):
                 k = r.randrange(len(menus))
                 turns = r.choice([1, 2, 2, 3, 3, 4])
                 plan = [weighted(r, TURN_KINDS) for _ in range(turns)]
@@ -157,7 +171,7 @@ def main():
                 lang = weighted(r, LANGS)
                 batch.append(CONV_PROMPT.format(menu=menu_text(menus[k]), turns=turns, lang=lang, plan="; then ".join(f"({i + 1}) {p}" for i, p in enumerate(plan)), people=people))
                 meta.append({"menu": f"tm{k}", "lang": lang.split(" ")[0], "plan": plan})
-            for m, text in zip(meta, chat(batch)):
+            for m, text in zip(meta, chat(batch, "convs")):
                 c = parse_json(text)
                 if c and isinstance(c.get("turns"), list):
                     f.write(json.dumps({**m, **c}, ensure_ascii=False) + "\n")
