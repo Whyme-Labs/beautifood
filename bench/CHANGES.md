@@ -1249,3 +1249,7 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   - The browser graph's format (fp32, fp16, or int8) is picked the same way: decisions identical to
     PyTorch on the validation turns (`export_gl.py --check`). Its time a turn is what the bar's
     300 ms applies to.
+- **The vocabulary pick (teacher validation only, v11 untouched).** On teacher run a (2,962 turns
+  checked, 174 validation turns on held-out menus), full and trimmed to 90,000 pieces train to the same
+  validation: exact items 29.3% each, all exact 22.4% (full) and 23.6% (trimmed). The trimmed one is
+  kept: 69M embedding parameters for 192M.
