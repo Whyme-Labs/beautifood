@@ -1241,3 +1241,26 @@ describe("what an add-on costs, and whether a dish has it", () => {
     expect(ask("how many add-ons can i put on one beef burger?")).not.toMatch(/isn't an option/);
   });
 });
+
+describe("a burger stall's meals, and 'same again'", () => {
+  const meal = { name: "Meal", min: 0, max: 1, options: [{ name: "Meal: fries + teh o ais", price: 350 }] };
+  const egg = { name: "Add-ons", min: 0, max: 2, options: [{ name: "Egg", price: 100 }] };
+  const dishes = asItems([
+    { id: "r1", name: "Ramly Beef Burger", category: "Burgers", description: "beef patty in a soft bun", price: 550, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "r2", name: "Ramly Chicken Burger", category: "Burgers", description: "chicken patty in a soft bun", price: 500, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "r3", name: "Burger Special Daging", category: "Burgers", description: "beef patty wrapped in a thin fried egg", price: 700, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "r4", name: "Teh O Ais", category: "Drinks", description: "iced black tea", price: 200, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "r5", name: "Teh Tarik", category: "Drinks", description: "pulled milk tea", price: 250, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id <= "r3" ? { ...i, modifiers: [egg, meal] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads 'beef burger' as the dish named so, and a meal only when a meal is said", () => {
+    expect(ask("beef burger and teh tarik, how much?")).toMatch(/Ramly Beef Burger \(RM5\.50\) \+ Teh Tarik \(RM2\.50\) = Total RM8\.00/);
+    expect(ask("beef burger, make it a meal with teh o ais. how much")).toMatch(/Ramly Beef Burger with Meal: fries \+ teh o ais: RM9\.00/);
+  });
+  it("orders the same again with the meat swapped, and totals both", () => {
+    const a = ask("my friend wants beef burger add egg, make it a meal with teh o ais", "Ramly Beef Burger with egg (+RM1.00) as a meal with fries and Teh O Ais (+RM3.50): RM10.00.", "I also same, but chicken. total for both?");
+    expect(a).toMatch(/Ramly Chicken Burger with Egg, Meal: fries \+ teh o ais \(RM9\.50\)/);
+    expect(a).toMatch(/Total RM19\.50/);
+  });
+});

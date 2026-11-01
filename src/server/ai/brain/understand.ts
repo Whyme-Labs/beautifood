@@ -509,6 +509,10 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const desc = normalize(`${m.dish.name} ${m.dish.description ?? ""}`).split(" ");
       // (only one of them keeps the words, so the guest's words decide it outright)
       if (rest.some((t) => desc.some((w) => same(t, w)))) m.score += 1;
+      // (the dish whose name has the very words said, over one they name only through another language: "beef
+      // burger" is the Ramly Beef Burger, not the Burger Special Daging)
+      const own = normalize(m.dish.name).split(" ");
+      if (m.covered.every((i) => own.includes(toks[i]) || own.includes(toks[i].replace(/s$/, ""))) && !same_.every((o) => o.covered.every((i) => normalize(o.dish.name).split(" ").includes(toks[i])))) m.score += 0.3;
       if (/\b(vegetarian|vegan|veggie)\b/i.test(m.dish.name) && !toks.some((t) => /^(vegetarian|vegan|veggie|vege|veg)$/.test(t)) && !/素/.test(raw)) m.score -= 1;
     }
   }

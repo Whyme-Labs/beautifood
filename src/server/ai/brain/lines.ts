@@ -128,7 +128,9 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     // (its own words must be the option's: "large berry blast" isn't the bowl's Large; "the avocado one" is a dish)
     if (/^(one|tu|itu|ni|ini)$/.test(toks[x.to] ?? "")) continue;
     // (or taken off: "remove the egg" is the pan mee's Extra Egg)
-    if (hosts.some((d) => { const r = optionsSaid(said, d, true); return [...r.add, ...r.off].some((o) => optionsSaid(phrase(words), { ...d, modifiers: [{ name: "", options: [o] }] }, true, true).add.length); })) out.add(spot);
+    // ("make it a meal with teh o ais": the meal said just before is the burger's Meal: fries + teh o ais)
+    const own = phrase([...lead.filter((w) => /^(meal|meals|set|sets|combo)$/.test(w)), ...words]);
+    if (hosts.some((d) => { const r = optionsSaid(said, d, true); return [...r.add, ...r.off].some((o) => optionsSaid(own, { ...d, modifiers: [{ name: "", options: [o] }] }, true, true).add.length); })) out.add(spot);
   }
   return out;
 }

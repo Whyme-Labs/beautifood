@@ -1692,7 +1692,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const ownersNow = { ...state.owners, ...ownersOf(u.text, mentioned) };
   // "same again for my friend", "一样的再来一份", "tambah satu lagi yang sama": what they last ordered, again;
   // "one more of that", "再来一个": one more of the last thing
-  const sameAgain = /\b(same again|the same|same thing|same one|same order|same for (him|her|them|my)|yang sama|sama lagi|macam tadi)\b/.test(nt1) || /一样的|同样的|照样|一模一样/.test(u.text);
+  const sameAgain = /\b(same again|the same|same thing|same one|same order|same for (him|her|them|my)|yang sama|sama lagi|macam tadi|(i|me|we) (also |too )?same|same but|same as (him|her|his|hers|them|my friend|my wife|my husband))\b/.test(nt1) || /一样的|同样的|照样|一模一样/.test(u.text);
   const oneMore = !sameAgain && (/\b(one more of (that|those|it|them)|another of (that|those))\b/.test(nt1) && !mentioned.some((i) => state.order.some((o) => o.item.id === i.id)) || (!mentioned.length && (/\b(one more|another one|satu lagi|lagi satu|tambah satu)\b/.test(nt1) || /再来一[个份杯碗包]|再加一[个份杯碗包]|多一[个份杯碗包]/.test(u.text))));
   const again = (sameAgain || oneMore) && state.last.length > 0;
   // "if I pay with RM50, how much change?", "bayar RM50, baki berapa?": the till's total and the change
@@ -1742,6 +1742,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // ("那个再来一份" after a slice and a sprite: the food, said first)
       const main = state.last.find((o) => !isDrink(o.item)) ?? state.last[state.last.length - 1];
       const copies = (oneMore ? [{ ...(state.last.length > 1 && /那个|that|tu|itu/.test(`${u.text} ${nt1}`) ? main : state.last[state.last.length - 1]), count: 1 }] : state.last.map((o) => ({ ...o })));
+      // ("I also same, but chicken" of a Ramly Beef Burger: the Ramly Chicken Burger, with what it can keep)
+      const MEAT = ["beef", "chicken", "lamb", "mutton", "fish", "pork", "prawn", "daging", "ayam", "kambing", "ikan", "udang"];
+      for (const c of copies) {
+        const own = normalize(c.item.name).split(" ");
+        const was = own.find((w) => MEAT.includes(w));
+        const now = MEAT.find((m) => m !== was && ` ${nt1} `.includes(` ${m} `));
+        const swap = was && now ? live.find((i) => normalize(i.name) === own.map((w) => (w === was ? now : w)).join(" ")) : undefined;
+        if (!swap) continue;
+        const keeps = (c.options ?? []).flatMap((o) => (swap.modifiers ?? []).flatMap((g) => g.options).filter((x) => x.name === o.name));
+        Object.assign(c, { item: swap, options: keeps.length ? keeps : undefined });
+      }
       // ("same again but with soy garlic": the add-on said takes the place of its group's)
       for (const c of copies) {
         const said = optionsSaid(u.text, c.item, true).add;
@@ -1754,7 +1765,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
     // "I'll take the second one": the dish of the last answer it points at
     // ("2 of the second one, how much?", "ok the first one then, and a latte")
-    if (!readBill) for (const p of pointed) if (!bill.some((o) => o.item.id === p.item.id) && !mentioned.includes(p.item)) bill.push({ item: p.item, count: p.count });
+    // (not with "same again": "I also same, total for both?" is both orders, not the two dishes it last named)
+    if (!readBill && !(sameAgain && again)) for (const p of pointed) if (!bill.some((o) => o.item.id === p.item.id) && !mentioned.includes(p.item)) bill.push({ item: p.item, count: p.count });
     // ("那就汤板面" after "换一个没有虾的面吧": the one they asked to change goes)
     if (!readBill && state.swapOut && bill.length > existing.length) {
       const k = bill.findIndex((o) => o.item.id === state.swapOut!.item.id && sameOptions(o.options, state.swapOut!.options));
@@ -1792,7 +1804,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (!readBill && adding && !state.order.length && state.shown.length && state.shown.length <= 2 && !state.shown.some((i) => mentioned.includes(i))) for (const item of [...state.shown].reverse()) if (!bill.some((o) => o.item.id === item.id) && allowed(item, { ...c, maxSpice: null, minSpice: null, budget: null })) bill.unshift({ item, count: 1 });
     // "total for both?" with nothing ordered: the dishes just talked about
     // (not when this message ordered something of its own: "then one large milk tea with pudding, total?")
-    if (!readBill && totalWord && !billSoFar && !edited && !pointed.length && bill.reduce((n, o) => n + o.count, 0) < 2 && (bill.length === existing.length || /\b(both|those|them|these|all|semua|kedua)\b/.test(nt1) || /这两|两个都|都/.test(u.text))) for (const item of state.shown) if (!bill.some((o) => o.item.id === item.id)) bill.push({ item, count: 1 });
+    // (not one the bill has as a line's add-on: the Teh O Ais of its "Meal: fries + teh o ais")
+    if (!readBill && totalWord && !billSoFar && !edited && !pointed.length && bill.reduce((n, o) => n + o.count, 0) < 2 && (bill.length === existing.length || /\b(both|those|them|these|all|semua|kedua)\b/.test(nt1) || /这两|两个都|都/.test(u.text))) for (const item of state.shown) if (!bill.some((o) => o.item.id === item.id || o.options?.some((x) => ` ${normalize(x.name)} `.includes(` ${normalize(item.name)} `)))) bill.push({ item, count: 1 });
     // "one nasi lemak each" for three: three of it
     if (!readBill && oneEach && party && party >= 2) for (const o of bill) if (mentioned.includes(o.item) && o.count === 1) o.count = party;
     // "just the food", "without the drinks", "minus the satay", "not counting the kopi": what they leave out

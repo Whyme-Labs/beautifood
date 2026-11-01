@@ -191,7 +191,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     if (!free && !(o.price > 0)) continue;
     if (phraseOf(o)) continue;
     // ("Set: mushroom soup + iced lemon tea" is asked for as a set or combo, not by "mushrooms")
-    if (/^(set|combo|make it a set)\b/i.test(o.name) && !/\b(set|sets|combo|combos|meal)\b/.test(t) && !/套餐|配套|套/.test(raw)) continue;
+    // ("Meal: fries + teh o ais" likewise: "teh tarik" isn't it)
+    if (/^(set|combo|meal|make it a set|make it a meal)\b/i.test(o.name) && !/\b(set|sets|combo|combos|meal|meals)\b/.test(t) && !/套餐|配套|套/.test(raw)) continue;
     // (a count in brackets describes it, "Sui kow (2 pcs)": its words name it, not the number)
     const counted = /\(\s*\d+\s*(pcs|pc|pieces?|ketul|biji)?\s*\)/i.test(o.name);
     const ks = keyWords(o).filter((k) => !counted || (!/^\d+$/.test(k) && !/^(pcs|pc|pieces?|ketul|biji)$/.test(k)));
