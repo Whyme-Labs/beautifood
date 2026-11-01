@@ -311,7 +311,7 @@ def decode_from(idx, logits, S, cls, heads, labels, threshold=0.5, allowed=None)
     # (how sure the least sure decision about the order was: the spans, what goes with what, each change;
     # not the acts, which don't change the order. No change at all: how sure no span was a dish.)
     if not sure:
-        sure = [1 - max([P[s_, l].item() for s_, l in cand if is_dish(l)] or [0.0])]
+        sure = [1 - max([p for p, _, l in cand if is_dish(l)] or [0.0])]
     return {"acts": acts, "items": [items[k] for k in dishes], "sure": min(sure)}
 
 
