@@ -253,6 +253,14 @@ test.describe("menu brain lab (browser)", () => {
     await page.locator("#brain-time").fill("09:00");
     await expect(page.getByTestId("brain-input").locator("code")).toHaveText(key!);
     await expect(page.getByTestId("brain-input")).toContainText("NOW time Wed 09:00");
+    // a bill is the order card guests get, editable here too (nothing is kept)
+    await page.getByRole("button", { name: "Sat breakfast" }).click();
+    await page.getByRole("button", { name: "2 kaya butter toast set and 1 nasi lemak bungkus, how much?" }).click();
+    const card = chat.getByTestId("order-card");
+    await expect(card.getByTestId("order-line")).toHaveCount(2);
+    await expect(card).toContainText("Kaya Butter Toast Set");
+    await card.getByRole("button", { name: "One more Nasi Lemak Bungkus" }).click();
+    await expect(chat).toContainText("here nothing is kept");
     if (process.env.SHOTS) {
       await page.getByRole("button", { name: "Wed happy hour" }).click();
       await page.getByRole("button", { name: "happy hour drinks?" }).click();

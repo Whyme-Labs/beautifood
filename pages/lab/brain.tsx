@@ -2,9 +2,12 @@
 // moment of the week. Everything runs in this browser: the same schedule code the app uses decides
 // what's served and what's on a deal at the chosen time, and the brain answers (no model, no
 // tokens). "What a model would get" shows the three-layer input a language model is sent when one
-// answers instead (docs/ai-menu-input.md), with its estimated size and cache key.
+// answers instead (docs/ai-menu-input.md), with its estimated size and cache key. A bill comes back as
+// the order card guests get, editable here too (in the app, an edit is kept as a labelled turn; here
+// nothing is kept).
 import { useMemo, useState } from "react";
 import { GuestBar } from "../../src/ui/guest";
+import { OrderCard } from "../../src/ui/orderCard";
 import { answerGuest } from "../../src/server/ai/brain";
 import { catalog, catalogKey, GUIDE, now as nowText } from "../../src/server/ai/menuInput";
 import { contextAt, DEMO_MENUS } from "../../src/server/ai/demoMenus";
@@ -28,8 +31,8 @@ interface Moment {
 /** Moments worth trying on each menu, with questions that show what changes with the time. */
 const MOMENTS: Record<string, Moment[]> = {
   "kopi-kaki": [
-    { label: "Sat breakfast", date: "2026-10-24", time: "09:15", questions: { en: ["Morning! What's good for breakfast?", "any promo today?", "Can I get the claypot chicken rice set?", "I'm allergic to peanuts, what breakfast can I have?", "anything seasonal?"], zh: ["早餐吃什么好？", "今天有什么优惠？", "我对花生过敏，早餐可以吃什么？"] } },
-    { label: "Wed lunch promo", date: "2026-10-21", time: "12:10", questions: { en: ["what lunch sets do you have?", "any vegetarian one?", "is the curry laksa set spicy?", "durian cendol ada susu tak? sy alergi susu"], zh: ["今天有什么优惠？", "我对海鲜过敏，午餐套餐推荐哪个？"] } },
+    { label: "Sat breakfast", date: "2026-10-24", time: "09:15", questions: { en: ["Morning! What's good for breakfast?", "2 kaya butter toast set and 1 nasi lemak bungkus, how much?", "any promo today?", "Can I get the claypot chicken rice set?", "I'm allergic to peanuts, what breakfast can I have?", "anything seasonal?"], zh: ["早餐吃什么好？", "两个咖椰牛油吐司套餐，一个椰浆饭包，多少钱？", "今天有什么优惠？", "我对花生过敏，早餐可以吃什么？"] } },
+    { label: "Wed lunch promo", date: "2026-10-21", time: "12:10", questions: { en: ["what lunch sets do you have?", "me the curry laksa set, my friend the claypot chicken rice set. how much each?", "any vegetarian one?", "is the curry laksa set spicy?", "durian cendol ada susu tak? sy alergi susu"], zh: ["今天有什么优惠？", "我对海鲜过敏，午餐套餐推荐哪个？"] } },
     { label: "Wed happy hour", date: "2026-10-21", time: "16:20", questions: { en: ["happy hour drinks?", "just one drink, not too sweet, under RM5", "Can I still order breakfast?", "3 of us, RM60 budget, what should we order?"], zh: ["有什么饮料特价？", "还可以点早餐吗？"] } },
     { label: "Sat durian weekend", date: "2026-10-24", time: "14:00", questions: { en: ["any durian promo?", "what's in the durian crepe cake?", "no dairy please, any durian dessert?"], zh: ["榴莲有优惠吗？", "我不吃奶制品，有什么榴莲甜品？"] } },
     { label: "After the season (Dec)", date: "2026-12-05", time: "14:00", questions: { en: ["anything seasonal?", "do you have durian cendol?"], zh: ["有季节限定吗？"] } },
@@ -55,6 +58,7 @@ export default function BrainLab() {
   const [time, setTime] = useState(MOMENTS[DEMO_MENUS[0].id][0].time);
   const [lang, setLang] = useState<"en" | "zh">("en");
   const [turns, setTurns] = useState<Turn[]>([]);
+  const [edited, setEdited] = useState(new Set<number>());
   const [draft, setDraft] = useState("");
   const [showInput, setShowInput] = useState(false);
 
@@ -162,8 +166,16 @@ export default function BrainLab() {
                 <div key={n} className="bubble user">{t.content}</div>
               ) : (
                 <div key={n} className="bubble bot col tight" style={{ whiteSpace: "normal" }}>
-                  <span style={{ whiteSpace: "pre-wrap" }}>{t.content}</span>
-                  {!!t.reply?.items.length && (
+                  {t.reply?.order ? (
+                    <>
+                      {t.reply.order.notes?.map((x) => <div key={x}>{x}</div>)}
+                      <OrderCard order={t.reply.order} currency="MYR" onEdit={() => setEdited((e) => new Set(e).add(n))} />
+                      {edited.has(n) && <span className="hint">Edited. In the app this edit is kept beside what the brain read, as a labelled turn; here nothing is kept.</span>}
+                    </>
+                  ) : (
+                    <span style={{ whiteSpace: "pre-wrap" }}>{t.content}</span>
+                  )}
+                  {!t.reply?.order && !!t.reply?.items.length && (
                     <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
                       {t.reply.items.map((i) => {
                         const d = ctx.items.find((x) => x.id === i.id);
@@ -199,7 +211,7 @@ export default function BrainLab() {
               Ask
             </button>
             {!!turns.length && (
-              <button className="btn ghost" type="button" onClick={() => setTurns([])}>
+              <button className="btn ghost" type="button" onClick={() => (setTurns([]), setEdited(new Set()))}>
                 Clear
               </button>
             )}
