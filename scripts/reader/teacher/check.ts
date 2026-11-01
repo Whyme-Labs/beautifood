@@ -146,7 +146,10 @@ const examples: unknown[] = [];
 for (const [ci, c] of lines(`${dir}/convs.jsonl`).entries()) {
   const dishes = menus.get(c.menu);
   if (!dishes || !Array.isArray(c.turns)) { bump("conversation unreadable"); continue; }
-  let order: OrderLineT[] = [];
+  // (a chat starts from nothing, or, for a guest's correction (reader/corrections.ts), the order before it)
+  let order: OrderLineT[] = Array.isArray(c.before)
+    ? c.before.map((l: OrderLineT) => ({ dish: String(l.dish), count: Number(l.count), options: (l.options ?? []).map(String), ...(l.owner ? { owner: l.owner } : {}) }))
+    : [];
   for (const [ti, t] of (c.turns as TeacherTurn[]).entries()) {
     bump("turns");
     if (!t || typeof t !== "object") { bump("dropped: a turn that isn't one"); break; }
@@ -183,7 +186,8 @@ for (const [ci, c] of lines(`${dir}/convs.jsonl`).entries()) {
         for (const o of [...(i.options ?? []), ...(i.removeOptions ?? [])]) {
           const sp = find(text, q.options?.[o], dishSpan) ?? firstFound(text, nameForms(o), dishSpan);
           if (sp) optionSpans[o] = sp;
-          else missing ||= "add-on";
+          // (on more, remove, set_count, assign or swap_out, add-ons only say which line: often unsaid)
+          else if (!["more", "remove", "set_count", "assign", "swap_out"].includes(i.change)) missing ||= "add-on";
         }
         const countSpan = find(text, q.count, dishSpan) ?? (i.count !== undefined ? firstFound(text, countForms(i.count), dishSpan) : null);
         if (!countSpan && i.count !== undefined && i.count !== 1) missing ||= "count";

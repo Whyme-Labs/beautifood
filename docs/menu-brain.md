@@ -212,6 +212,12 @@ that guests elsewhere have shown work, and its own data takes over as it comes i
      line's add-ons from the dish's own choices. Their order is kept beside the one it read
      (`order_final`; the chat posts to `/assistant/corrected` once they stop changing it). That
      makes a labelled turn: what was said, what it read, what they meant.
+   - **Corrected turns, in full.** Only for a turn the guest corrected, the chat also sends the
+     message as they typed it (`said`), the few messages before it (`said_context`) and the order
+     before it (`order_before`: the previous card as they left it), with emails and phone numbers
+     removed. That is what the order reader (`scripts/reader/`) learns from: real messages the
+     rules misread, labelled by the guest. Turns nobody corrects keep only the delexicalised
+     question. Same 90 days.
 2. **Harvest.** `scripts/brain/harvest.ts` picks out the questions worth teaching. Bills a guest
    fixed come first, with both orders. Then come ones the brain was unsure of, called off-topic,
    or answered with dishes nobody added. Within each, the most-asked come first, and eval

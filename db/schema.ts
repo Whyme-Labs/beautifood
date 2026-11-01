@@ -765,6 +765,11 @@ export const assistantTurns = sqliteTable(
     /** A bill it worked out, as JSON lines (dish id, count, add-ons), and the guest's own edit of it in the order card. */
     orderRead: text("order_read"),
     orderFinal: text("order_final"),
+    /** Only for a turn the guest corrected (a labelled turn for the order reader): the message as they
+     * typed it, the chat just before it, and the order before it (emails and phone numbers removed). */
+    said: text("said"),
+    saidContext: text("said_context"),
+    orderBefore: text("order_before"),
   },
   (t) => [index("assistant_turns_branch").on(t.branchId, t.createdAt), index("assistant_turns_created").on(t.createdAt)],
 );

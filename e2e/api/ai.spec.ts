@@ -74,6 +74,11 @@ test.describe("AI for guests and merchants", () => {
     const corrected = async (turn: string, lines: unknown) => json((await guestClient()).post(`/api/public/branches/${s.klcc.ref}/assistant/corrected`, { data: { turn, lines } }));
     const ckt = bill.order.lines[0].id;
     expect((await corrected(bill.turn, [{ id: ckt, count: 1, options: [] }])).kept).toBe(true);
+    // (with the message as typed, the chat before it and the order before it, for the order reader)
+    const full = await json((await guestClient()).post(`/api/public/branches/${s.klcc.ref}/assistant/corrected`, {
+      data: { turn: bill.turn, lines: [{ id: ckt, count: 1, options: [] }], said: "2 char kway teow, total with service and tax?", context: [{ role: "user", content: "hi, mail me at a@b.co" }], before: [] },
+    }));
+    expect(full.kept).toBe(true);
     // (not for a turn without a bill, nor a dish off this menu)
     expect((await corrected(cheapest.turn, [{ id: ckt, count: 1, options: [] }])).kept).toBe(false);
     expect((await corrected(bill.turn, [{ id: "mi_not_on_menu", count: 1, options: [] }])).kept).toBe(false);

@@ -25,15 +25,24 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
-  // (a guest's edit of an order card, kept against its turn once they stop changing it: the learning loop's labelled turns)
+  // (a guest's edit of an order card, kept against its turn once they stop changing it: the learning loop's
+  // labelled turns. With it, what the order reader learns from: the message as typed, the few messages
+  // before it, and the order before it, the previous card as the guest left it.)
   const edits = useRef(new Map<string, ReturnType<typeof setTimeout>>());
-  const corrected = (turn: string | undefined, lines: OrderCardData["lines"]) => {
+  const edited = useRef(new Map<string, OrderCardData["lines"]>());
+  const asLines = (lines: OrderCardData["lines"]) => lines.map((l) => ({ id: l.id, count: l.count, options: l.options.map((o) => ({ group: o.group, name: o.name })), ...(l.owner ? { owner: l.owner } : {}) }));
+  const corrected = (at: number, turn: string | undefined, lines: OrderCardData["lines"]) => {
     if (!turn) return;
+    edited.current.set(turn, lines);
     clearTimeout(edits.current.get(turn));
     edits.current.set(
       turn,
       setTimeout(() => {
-        void api(`/api/public/branches/${branch}/assistant/corrected`, { body: { turn, lines: lines.map((l) => ({ id: l.id, count: l.count, options: l.options.map((o) => ({ group: o.group, name: o.name })), ...(l.owner ? { owner: l.owner } : {}) })) } }).catch(() => {});
+        const said = msgs[at - 1]?.role === "user" ? msgs[at - 1].content : undefined;
+        const context = msgs.slice(Math.max(0, at - 7), Math.max(0, at - 1)).map(({ role, content }) => ({ role, content }));
+        const prev = msgs.slice(0, at).reverse().find((m) => m.reply?.order);
+        const before = prev?.reply?.order ? (prev.reply.turn && edited.current.get(prev.reply.turn)) || prev.reply.order.lines : [];
+        void api(`/api/public/branches/${branch}/assistant/corrected`, { body: { turn, lines: asLines(lines), said, context, before: asLines(before) } }).catch(() => {});
       }, 2000),
     );
   };
@@ -71,7 +80,7 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
                 <OrderCard
                   order={m.reply.order}
                   currency={currency}
-                  onEdit={(lines) => corrected(m.reply?.turn, lines)}
+                  onEdit={(lines) => corrected(i, m.reply?.turn, lines)}
                   onAddAll={
                     onAddLines &&
                     ((lines) => {

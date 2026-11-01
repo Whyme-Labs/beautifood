@@ -2,18 +2,19 @@
 // read as, what the brain decided, what it showed, and what the guest added from the chat; and for a
 // bill, the order it read and the guest's own edit of it in the order card (a labelled turn). It keeps
 // the question only as the intent model read it, with dish names as §dish, and with emails and
-// phone numbers removed, for 90 days.
+// phone numbers removed, for 90 days. A turn the guest corrected also keeps their message as typed,
+// the chat just before it and the order before it (emails and phone numbers removed), for the order reader.
 import { z } from "zod";
 import { newId } from "../../ids";
 
 const KEEP_DAYS = 90;
 
 /** Removes what could identify a guest: email addresses, phone numbers, long digit runs. */
-export function scrub(text: string): string {
+export function scrub(text: string, max = 200): string {
   return text
     .replace(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g, "§email")
     .replace(/\+?\d[\d\s-]{6,}\d/g, "§phone")
-    .slice(0, 200)
+    .slice(0, max)
     .trim();
 }
 
@@ -64,10 +65,33 @@ export async function recordAdd(db: D1Database, branchId: string, turnId: string
  * The guest changed the order card of a bill this turn worked out: their order, kept beside the one
  * it read (only for a turn that had one, and only dishes of this branch's menu).
  */
-export async function recordCorrection(db: D1Database, branchId: string, turnId: string, final: OrderLines, menuIds: Set<string>): Promise<boolean> {
+/** What a corrected turn keeps for the order reader: the guest's message as typed, the few messages
+ * before it, and the order before it. Only ever stored with a correction. */
+export interface CorrectionContext {
+  said?: string;
+  context?: { role: "user" | "assistant"; content: string }[];
+  before?: OrderLines;
+}
+export const CorrectionContextSchema = z.object({
+  said: z.string().max(1000).optional(),
+  context: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000) })).max(6).optional(),
+  before: OrderLinesSchema.optional(),
+});
+
+export async function recordCorrection(db: D1Database, branchId: string, turnId: string, final: OrderLines, menuIds: Set<string>, ctx: CorrectionContext = {}): Promise<boolean> {
   const row = await db.prepare("SELECT order_read FROM assistant_turns WHERE id = ? AND branch_id = ?").bind(turnId, branchId).first<{ order_read: string | null }>();
   if (!row?.order_read || final.some((l) => !menuIds.has(l.id))) return false;
-  await db.prepare("UPDATE assistant_turns SET order_final = ? WHERE id = ?").bind(JSON.stringify(final), turnId).run();
+  const before = ctx.before?.filter((l) => menuIds.has(l.id));
+  await db
+    .prepare("UPDATE assistant_turns SET order_final = ?, said = ?, said_context = ?, order_before = ? WHERE id = ?")
+    .bind(
+      JSON.stringify(final),
+      ctx.said?.trim() ? scrub(ctx.said, 500) : null,
+      ctx.context?.length ? JSON.stringify(ctx.context.slice(-6).map((m) => ({ role: m.role, content: scrub(m.content, 600) }))) : null,
+      before ? JSON.stringify(before.slice(0, 20)) : null,
+      turnId,
+    )
+    .run();
   return true;
 }
 

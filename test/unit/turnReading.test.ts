@@ -52,3 +52,18 @@ describe("the browser reader's output, made a turn reading", () => {
     expect(r.items).toEqual([{ change: "assign", dish: "Teh Tarik", count: 1, owner: "friend" }]);
   });
 });
+
+describe("a guest's correction, as the turn's changes", () => {
+  it("works out new, more, fewer, other add-ons and taken off from the order before and after", async () => {
+    const { changesOf } = await import("../../scripts/reader/corrections");
+    const before = [{ dish: "Curry Laksa", count: 2, options: ["Regular"] }, { dish: "Teh Tarik", count: 2, options: ["Iced"] }, { dish: "Penang Asam Laksa", count: 1, options: [] }];
+    const after = [{ dish: "Curry Laksa", count: 2, options: ["Large"] }, { dish: "Teh Tarik", count: 3, options: ["Iced"] }, { dish: "Kopi O", count: 1, options: [] }];
+    const items = changesOf(before, after);
+    expect(items).toEqual([
+      { change: "modify", dish: "Curry Laksa", options: ["Large"], removeOptions: ["Regular"] },
+      { change: "more", dish: "Teh Tarik", count: 1, options: ["Iced"] },
+      { change: "new", dish: "Kopi O", count: 1, options: [] },
+      { change: "remove", dish: "Penang Asam Laksa", options: [] },
+    ]);
+  });
+});
