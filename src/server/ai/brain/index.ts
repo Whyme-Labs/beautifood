@@ -155,7 +155,8 @@ export function ownDishes(u: { dishes: Dish[]; toks: string[]; spots: Spot[]; br
 function orderedLines(u: { dishes: Dish[]; toks: string[]; spots: Spot[]; breaks: number[] }, own: Item[], order: OrderLine[] = []): OrderLine[] {
   // ("add sour plum to the lime juice": the lime juice ordered, not another)
   return linesOf(u.toks, u.spots.filter((s) => own.includes(s.dish as Item) && orderable(s.dish as Item)), u.breaks)
-    .filter((l) => !(l.ref && order.some((o) => o.item.id === l.dish.id)))
+    // (but "one more of that fish ball", "another of those": more of it)
+    .filter((l) => !(l.ref && order.some((o) => o.item.id === l.dish.id) && !/\b((one|two|three|1|2|3) more|another|(satu|dua) lagi|lagi (satu|dua))\b/.test(u.toks.join(" "))))
     .map((l) => ({ item: l.dish as Item, count: l.count, options: l.options.length ? l.options : undefined }));
 }
 /**
@@ -383,7 +384,9 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
 }
 
 const NUMBER_OF: Record<string, number> = { two: 2, three: 3, four: 4, five: 5, six: 6, dua: 2, tiga: 3, empat: 4, lima: 5 };
-const REMOVE = /\b(cancel|remove|drop|scratch|delete|don ?t want|no more|skip the|take out|take off|batal|buang|keluarkan|tak nak|tak jadi)\b|取消|不要了|不要那|删掉|拿掉|去掉/;
+const REMOVE = /\b(cancel|remove|drop|scratch|delete|don ?t want|no more|skip the|take out|take off|batal|buang|keluarkan|tak nak|tak jadi|no need|dont need|don t need|tak payah|tak mahu|tak mau|taknak|takmau|tak perlu)\b|取消|不要了|不要那|删掉|拿掉|去掉|不用了/;
+// "kopi ais 2 only", "barley 2 je", "只要两杯": the count it is now
+const ONLY_N = /\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s*(only|je|jer|sahaja|saja|sudah|cukup)\b|只要([一两二三四五\d])\s*[杯份个碗碟盘]/;
 const SWAP = /\b(instead|change|swap|replace|switch|make it|make that|make the|rather have|tukar|ganti|jadikan)\b|换成|换|改成|改/;
 const COUNT_SAID = /\b(\d+|one|two|three|four|five|six|satu|dua|tiga|empat|lima)\b|[一两二三四五六][杯份个碗包碟盘]/;
 
@@ -393,6 +396,32 @@ const COUNT_SAID = /\b(\d+|one|two|three|four|five|six|satu|dua|tiga|empat|lima)
  * dishes the message names, in the order it names them.
  */
 export function editOrder(order: OrderLine[], text: string, named: Item[]): boolean {
+  // "make the kopi ais 2 only, then add 1 milo ais", "cancel the kai lan, and barley make it 2 only":
+  // each clause its own change, with the dishes it names (what a clause adds is the caller's to add)
+  const parts = text.split(/[;；。]|,|，|\b(?:then|lepas tu|pastu|and then)\b|然后/i).map((c) => c.trim()).filter(Boolean);
+  const editing = (c: string) => REMOVE.test(normalize(c)) || REMOVE.test(c) || ONLY_N.test(normalize(c)) || ONLY_N.test(c) || SWAP.test(normalize(c)) || SWAP.test(c);
+  if (parts.length >= 2 && order.length && parts.filter(editing).length >= 1 && named.length >= 2) {
+    // (by its own words, not the ones it shares with another dish named: "kopi" of the Kopi Ais beside a Milo Ais)
+    const ownWords = (i: Item) => {
+      const ws = normalize(i.name).split(" ").filter((w) => w.length > 2);
+      const own = ws.filter((w) => !named.some((o) => o.id !== i.id && normalize(o.name).split(" ").includes(w)));
+      return own.length ? own : ws;
+    };
+    const inClause = (i: Item, c: string) => ownWords(i).some((w) => ` ${normalize(c)} `.includes(` ${w} `) || ` ${normalize(c)} `.includes(` ${w}s `)) || Object.values(i.translations ?? {}).some((x) => !!x?.name && x.name.length > 1 && c.includes(x.name));
+    // (only when each dish named is in one clause: otherwise it's one change said across them)
+    // (and only when each change is to a dish ordered: "remove the iced lemon tea, make it braised
+    // tauhu" is one swap said across two clauses)
+    const ordered = (i: Item) => order.some((o) => o.item.id === i.id);
+    if (named.every((i) => parts.filter((c) => inClause(i, c)).length <= 1) && parts.filter(editing).every((c) => named.some((i) => inClause(i, c) && ordered(i)) && !named.some((i) => inClause(i, c) && !ordered(i)))) {
+      let any = false;
+      for (const c of parts.filter(editing)) any = editOne(order, c, named.filter((i) => inClause(i, c))) || any;
+      if (any) return true;
+    }
+  }
+  return editOne(order, text, named);
+}
+
+function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
   // (a size's or a portion's number isn't a count: "change the pizza to 12 inch")
   text = text.replace(/\b\d+\s?-?\s?(inch|inches|in|pcs|pc|pieces|ketul)\b|\d+\s*(寸|吋)/gi, " ");
   const t = normalize(text);
@@ -425,13 +454,21 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
     const said = new Set(t.split(" ").filter((w) => w.length > 3).flatMap((w) => [w, w.replace(/(es|s)$/, "")]));
     const byWords = order.filter((o) => normalize(o.item.name).split(" ").some((w) => said.has(w) || said.has(w.replace(/(es|s)$/, ""))));
     if (byWords.length === 1) named = [byWords[0].item, ...named.filter((i) => !ordered(i))];
-    else if (!named.length && swap && (COUNT_SAID.test(t) || COUNT_SAID.test(text)) && /\b(it|that|them|those)\b/.test(t)) {
+    // (not "change one of them to medium": one of them changed, not the count)
+    else if (!named.length && swap && (COUNT_SAID.test(t) || COUNT_SAID.test(text)) && /\b(it|that|them|those)\b/.test(t) && !/\b(one of (the|them|those)|satu daripada|salah satu)\b/.test(t) && !/其中一/.test(text)) {
       const last = order[order.length - 1];
       last.count = countsOf(text.replace(/\b(it|that|them|those)\b/i, last.item.name).split(/[,;]/)[0], [last.item as Dish]).get(last.item as Dish) ?? last.count;
       return true;
     }
   }
   if (!named.length) return false;
+  // "kopi ais 2 only", "barley 2 je": the count it is now
+  const only = normalize(text).match(ONLY_N) ?? text.match(ONLY_N);
+  if (only && named.length === 1 && ordered(named[0]) && !removing) {
+    const w = only[1] ?? only[3];
+    order.find((o) => o.item.id === named[0].id)!.count = ({ one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5, 一: 1, 两: 2, 二: 2, 三: 3, 四: 4, 五: 5 } as Record<string, number>)[w] ?? Number(w);
+    return true;
+  }
   // "make that 3 roti telur", "jadikan dua": the count it is now, not more of it
   // (not "one of the teh tarik iced": one of them changed, not the count)
   if (swap && named.length === 1 && ordered(named[0]) && (COUNT_SAID.test(t) || COUNT_SAID.test(text)) && !/\b(one of (the|them|those)|satu daripada|salah satu)\b/.test(t) && !/其中一/.test(text)) {
@@ -574,6 +611,8 @@ export function pointedAt(text: string, shown: Item[]): { item: Item; count: num
       if (hits.length === 1) push(hits[0], 0);
     }
   }
+  // "要两份刚才那个", "那个要两个", "这个来三杯": the one dish just shown, that many
+  if (!out.length && can.length === 1 && /(?:刚才|之前|上面|刚刚)?(?:那个|那款|那样|这个|这款|这样)(?![\u4e00-\u9fff]{1,3}的)/.test(text) && /[一两二三四五六\d]\s*[个份杯碗碟盘包块粒只罐瓶]/.test(text)) push(can[0], 0);
   // how many of the one pointed at: "2 of the last one", "第二个来两份", "yang last tu dua", "bagi dua"
   if (out.length === 1 && !out[0].count) {
     const left = t.replace(/\b(the|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|last|pertama|kedua|ketiga|terakhir)\b/g, " ");
@@ -1258,7 +1297,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const evenly = /\b(split|splitting|share the bill|bahagi)\b/.test(nt1) || /平分|分摊/.test(u.text);
   const shares = ways ?? ((perPerson || evenly) && party && party >= 2 ? party : null);
   // "including tax", "after service charge", "nett": the bill as the till will total it
-  const withCharges = /\b(tax|taxes|sst|gst|service charge|service|nett|after tax|incl|including tax|including service|plus tax|with tax|all in|final (amount|bill|total|price)|pay at the (counter|cashier)|servis|cukai|caj perkhidmatan|semua sekali|grand total|with everything)\b/.test(nt1) || /税|服务费|最后要付|一共要付|埋单|买单|结账/.test(u.text);
+  const withCharges = /\b(tax|taxes|sst|gst|service charge|service|(?<!extra |additional |any )charges|nett|after tax|incl|including tax|including service|plus tax|with tax|all in|final (amount|bill|total|price)|pay at the (counter|cashier)|servis|cukai|caj perkhidmatan|semua sekali|grand total|with everything)\b/.test(nt1) || /税|服务费|最后要付|一共要付|埋单|买单|结账/.test(u.text);
   // ("what's the bill?" with an order open is its total; "bill please" asks the staff for it)
   const billSoFar = state.order.length > 0 && (/\b(whats|what s|what is|how much is|hows|how s) (the|my|our) (bill|damage)\b|\bbill (so far|now|come to)\b|\bwhat did (i|we) order\b|\b(my|our) order so far\b|\bapa (saya|kami) (order|pesan)\b/.test(nt1) || /我(们)?点了什么|点了哪些/.test(u.text));
   const totalWord = !!shares || billSoFar || /\b(final (amount|bill|total)|how much (do|should|will) (i|we) pay|pay at the (counter|cashier))\b/.test(nt1) || /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(mentioned.reduce((t, i) => t.replace(normalize(i.name), " "), nt1)) || /一共|总共|加起来|合计|算钱|埋单|买单|结账|算一下/.test(u.text);
@@ -1656,6 +1695,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const mineSaid = !readBill && state.order.length > 0 && mentioned.length > 0 && !editing && (/\b(i only had|i had|i just had|i ate|i got|mine|my share|my part|my portion|for me|i ll pay for|i will pay for|i pay for|i m paying for|saya (makan|ambil|order|minum|bayar)|aku (makan|ambil|minum|bayar))\b/.test(nt1) || /我只(吃|喝|点|要)了?|我(吃|喝|点)了|我的那|我付/.test(u.text)) && mentioned.every((i) => state.order.some((o) => o.item.id === i.id));
     if (!readBill && mentioned.length && !edited && !mineSaid && (ordering || totalWord || howMuch || changing || priceClaimed))
       addLines(bill, turnLines(ctx, orderedLines(u, mentioned, existing)).filter((l) => (ordering || !existing.some((o) => o.item.id === l.item.id)) && !((REMOVE.test(nt1) || REMOVE.test(u.text)) && !ORDERING.test(nt1))));
+    // ("cancel the kai lan, add one milo ais": the edit made, and the new dish said with "add" comes on too)
+    else if (!readBill && edited && (ORDERING.test(nt1) || ORDERING_ZH.test(u.text))) {
+      const fresh = mentioned.filter((i) => orderable(i) && !existing.some((o) => o.item.id === i.id) && !state.order.some((o) => o.item.id === i.id));
+      if (fresh.length) addLines(bill, turnLines(ctx, orderedLines(u, fresh, existing)).filter((l) => fresh.some((i) => i.id === l.item.id)));
+    }
     if (again && !readBill) {
       // ("那个再来一份" after a slice and a sprite: the food, said first)
       const main = state.last.find((o) => !isDrink(o.item)) ?? state.last[state.last.length - 1];
@@ -1741,7 +1785,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       });
       return { ...reply("recommend", `${parts.join(t("assistantReply.itemSep"))}${stop}`, bill.map((o) => o.item)), order: orderCard(bill, { people: people_ }, (o) => who(ownerOf(o)!)) };
     }
-    if (mineOnly) {
+    // ("my friend had the kuey teow, I had the rest": theirs is everything but what's named for others)
+    const restMine = /\b(i|saya|aku)( had| ate| got| makan| ambil)? (the rest|the others|everything else|semua yang lain|yang lain|selebihnya|bakinya)\b|\b(the rest|everything else|selebihnya|bakinya|yang lain) (is |are |tu |itu )?(mine|saya|aku)\b/.test(nt1) || /其余|其他的?都?是我|剩下的?都?是?我/.test(u.text);
+    if (mineOnly && restMine) {
+      bill.splice(0, bill.length, ...bill.filter((o) => !mentioned.some((i) => i.id === o.item.id)));
+    } else if (mineOnly) {
       // (as many of each as they said they had: "the avocado toast and one matcha")
       const said = countsOf(u.text, mentioned);
       const part: OrderLine[] = [];

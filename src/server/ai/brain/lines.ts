@@ -54,7 +54,9 @@ function numberAfter(toks: string[], from: number): { n: number; end: number } |
 /** A dish's option numbers ("12" of "12 pcs", "10" of "10 pcs"): said before the dish, they name the option, not a count. */
 // (not a count in brackets that describes an add-on: "Sui kow (2 pcs)" leaves "2 dry wantan mee" a count)
 // (nor a level's: "Level 2" leaves "2 chicken katsu curry" a count)
-const optionNumbers = (d: Dish) => new Set((d.modifiers ?? []).flatMap((g) => g.options.filter((o) => !/\(\s*\d/.test(o.name) && !/\b(level|tahap|lvl|no|number)\s*\d/i.test(o.name)).flatMap((o) => optionWords(o).filter((w) => /^\d+$/.test(w)))));
+// (not a range or a party size: "1-2 pax", "3-4 person" is a size, and "2 claypot rice" is still two)
+const optionNumbers = (d: Dish) =>
+  new Set((d.modifiers ?? []).flatMap((g) => g.options.filter((o) => !/\(\s*\d/.test(o.name) && !/\b(level|tahap|lvl|no|number)\s*\d/i.test(o.name) && !/\d\s*[-–~]\s*\d|\d\s*(pax|person|persons|people|orang|人)\b/i.test(o.name)).flatMap((o) => optionWords(o).filter((w) => /^\d+$/.test(w)))));
 
 /** The words as a phrase, Chinese characters joined again. */
 export const phrase = (toks: string[]) => toks.join(" ").replace(/(?<=[㐀-鿿]) (?=[㐀-鿿])/g, "");

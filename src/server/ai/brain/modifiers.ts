@@ -11,6 +11,7 @@ const ALSO: Record<string, string[]> = {
   ais: ["ice", "iced", "cold", "peng", "sejuk"], iced: ["ice", "ais", "cold", "peng", "sejuk"],
   panas: ["hot", "warm"], hot: ["panas", "warm"], suam: ["warm"],
   besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger"],
+  small: ["kecil", "kecik"], kecil: ["small"], medium: ["sederhana", "mid"], sederhana: ["medium"],
   telur: ["egg", "eggs"], egg: ["telur", "eggs"], fried: ["goreng"], vegetables: ["sayur", "veg", "veggie", "veggies", "greens"], bawang: ["onion"], onion: ["bawang"],
   mata: ["fried egg", "sunny side"], rebus: ["boiled egg", "hard boiled"],
   oat: ["oat", "oatmilk"], almond: ["badam", "almond"], shot: ["shot", "double"],
@@ -37,7 +38,9 @@ const ALSO: Record<string, string[]> = {
 const ALSO_ZH: Record<string, RegExp> = {
   ais: /冰|凍|冻/, iced: /冰|凍|冻/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)/, suam: /温/,
   besar: /大杯|大份|加大|大的|大碗|大包|大号/, large: /大杯|大份|加大|大的|大碗|大包|大号/,
-  telur: /加蛋|蛋/, egg: /加蛋|鸡蛋|蛋/, mata: /荷包蛋|煎蛋|太阳蛋/, rebus: /水煮蛋|白煮蛋|煮蛋/, bawang: /洋葱/, onion: /洋葱/,
+  small: /小碗|小的|小份|小杯|小碟|小号|小包/, kecil: /小碗|小的|小份|小杯|小碟|小号|小包/,
+  medium: /中碗|(?<!其)中的|中份|中杯|中碟|中号/, sederhana: /中碗|(?<!其)中的|中份|中杯|中碟|中号/,
+  telur: /加蛋|蛋|卵/, egg: /加蛋|鸡蛋|蛋|卵/, mata: /荷包蛋|煎蛋|太阳蛋/, rebus: /水煮蛋|白煮蛋|煮蛋/, bawang: /洋葱/, onion: /洋葱/,
   oat: /燕麦/, almond: /杏仁(?!酱)/, shot: /加浓|浓缩|多一份咖啡/, laksa: /叻沙|咖喱汤/, curry: /咖喱/, chilli: /辣椒酱|辣椒碎|辣椒干|辣椒/, kuah: /花生酱|沙爹酱|花生酱汁/,
   salmon: /三文鱼|烟熏三文鱼/, bacon: /培根/, poached: /水波蛋/, dry: /干捞|干的/, soup: /汤的|汤底/,
   balls: /鱼丸/, minced: /肉碎|肉末|肉燥/, bilis: /江鱼仔|小鱼干/, hoon: /米粉/, prawns: /(?<!濑尿|螳螂|琵琶)虾(?!蛄)/,
@@ -57,7 +60,7 @@ const ALSO_ZH: Record<string, RegExp> = {
 // count's unit ("12 pcs", "12 inch": the number is what names it)
 const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "susu", "fresh", "tambah", "lebih", "more", "pcs", "pc", "inch", "inches", "make", "it", "combo", "upgrade", "level", "style", "x"]);
 // "no ice", "without ice", "tak nak ais", "走冰": an option taken off ("less ice" is still ice)
-const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|take out(?: the)?|keluarkan)\s+(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
+const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|take out(?: the)?|keluarkan)\s+(?:(?:need|perlu|payah|mau|nak)\s+(?:the\s+)?)?(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
 const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰|(?:去掉|拿掉|取消|不要)(?:加的|那个)?([\u4e00-\u9fff]{1,4})/g;
 // an option that is itself taken off or less of something ("Less ice", "No sugar", "Tanpa Kacang",
 // "Kurang Manis", "Kosong"): said as the guest says it, it's chosen (free), never "ice taken off"
@@ -224,7 +227,7 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
       const forms = [need[0], `${need[0]}s`, ...(ALSO[need[0]] ?? []).filter((x) => !x.includes(" "))];
       const at = toks.findIndex((x) => forms.includes(x));
       const near = [toks[at + 1], toks[at - 1]];
-      const food = (x: string | undefined) => !!x && x.length > 2 && !named.includes(x) && !LEAD.test(x) && !GENERIC.has(x) && !SIZE_TEMP.test(x) && !/^(on|top|please|pls|and|or|to|in|for|with|inside|dalam|lah|la|ah|ok|boleh|too|also|one|the|how|berapa|not|tak|can|plus|then|extra|more|instead|nak|mau|want|add|put|letak|tambah|large|besar|cup|hot|iced|ais|panas)$/.test(x);
+      const food = (x: string | undefined) => !!x && x.length > 2 && !named.includes(x) && !LEAD.test(x) && !GENERIC.has(x) && !SIZE_TEMP.test(x) && !/^(need|perlu|payah|mau|nak|want|on|top|please|pls|and|or|to|in|for|with|inside|dalam|lah|la|ah|ok|boleh|too|also|one|the|how|berapa|not|tak|can|plus|then|extra|more|instead|nak|mau|want|add|put|letak|tambah|large|besar|cup|hot|iced|ais|panas)$/.test(x);
       if (at >= 0 && near.some(food)) continue;
     }
     // ("no taugeh" of a "No taugeh" choice: that choice, made)

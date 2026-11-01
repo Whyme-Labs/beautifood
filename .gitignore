@@ -34,3 +34,4 @@ crates/core/target/
 
 # Python bytecode (scripts/reader)
 __pycache__/
+/bench/results/zz-*
