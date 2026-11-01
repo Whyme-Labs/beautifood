@@ -1399,7 +1399,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const fully = (i: Item) => u.spots.some((sp_) => sp_.dish.id === i.id && (sp_.covered.length >= normalize(i.name).split(" ").filter((w) => w.length > 1).length || /[\u3400-\u9fff]/.test(u.toks[sp_.from] ?? "")));
   const earlierHost = pointed[0]?.item ?? (state.order.length ? state.order[state.order.length - 1].item : state.focus);
   // what they ask to add, in their words ("almond butter", "mentega badam", "肉丸")
-  const thingAsked = nt1.match(/\b(?:add|tambah|put|letak|top with)\s+(?:some |extra |a |an )?([a-z]+(?: [a-z]+){0,2}?)(?=\s+(?:on top|in it|inside|dalam|to it|to the|to my|on the|on my|in my|or not|boleh|please|pls|ah|lah|la|how|berapa|ke|tak)\b|\s*$)/)?.[1] ?? u.text.match(/加(?!钱|价|多少|几)([\u4e00-\u9fff]{1,5}?)(?:吗|可以|行|呢|[?？]|$)/)?.[1];
+  const thingAsked = nt1.match(/\b(?:add(?! ons?\b)|tambah|put|letak|top with|extra(?! charge| cost| caj))\s+(?:some |extra |a |an )?([a-z]+(?: [a-z]+){0,2}?)(?=\s+(?:on top|in it|inside|dalam|to it|to the|to my|on the|on my|in my|for the|for my|or not|boleh|please|pls|ah|lah|la|how|berapa|ke|tak|can)\b|\s*$)/)?.[1] ?? u.text.match(/加(?!钱|价|多少|几)([\u4e00-\u9fff]{1,5}?)(?:吗|可以|行|呢|[?？]|$)/)?.[1];
   // (or, asked of a kind of dish, "smoothies with no sugar?", "奶昔最多可以加几种营养粉？": the first of that kind with choices)
   const ofKind = !mentioned.length && !earlierHost && u.categories.length ? live.find((i) => u.categories.includes(i.category ?? "") && i.modifiers?.length) : undefined;
   const optHost = (earlierHost && mentioned.length && !mentioned.some(fully) ? earlierHost : null) ?? mentioned.find((i) => i.modifiers?.length) ?? mentioned[0] ?? earlierHost ?? ofKind;
@@ -1407,24 +1407,32 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const editsLine = state.order.some((o) => o.item.id === optHost?.id) && !/\b(can|could|may|boleh|bole|leh)\b/.test(nt1) && !/可以|能不能|可不可以/.test(u.text) && (REMOVE.test(nt1) || /\b(add|tambah)\b/.test(nt1));
   // (a conversation reader's order, when the bill uses it: "replace" always, "edits" on a turn that builds on an earlier one)
   const byBasket = !!ctx.basket?.lines.length && (ctx.basketPolicy === "replace" || (ctx.basketPolicy === "edits" && (state.order.length > 0 || state.shown.length > 0)));
+  // ("can add beef bacon to it?", "add char siu to my loh mee", "extra patty for the burger ikan can?"): a word of
+  // what's asked that none of the dish's add-ons has, nor its own name, isn't on it (not a "Yes" with its other add-ons)
+  const notOn = (optHost: Item, thingAsked: string) => {
+    const nameWords = new Set(normalize(optHost.name).split(" "));
+    const unknown = thingAsked.split(" ").filter((w) => w.length > 2 && !/^(it|them|more|one|two|the|some|also|too|again|lagi|sikit|sedikit|and|with|this|that|any|got|can|boleh|please|pls|extra|charge|cost|caj|how|much|price|free|all|everything|those|these|first|second|third|fourth|last|other|another|normal|same)$/.test(w) && !nameWords.has(w) && !nameWords.has(w.replace(/s$/, "")) && !optionsSaid(w, optHost, true).add.length && !optionsSaid(`add ${w}`, optHost, true, true).add.length);
+    if (unknown.length) {
+      const own_ = (optHost.modifiers ?? []).flatMap((g) => g.options.filter((o) => o.price > 0));
+      const tail = own_.length ? `${sp}${t("assistantReply.itsAddOns", { dish: name(optHost), list: list(own_.map((o) => `${optionLabel(o)} (+${money(o.price)})`)) })}` : "";
+      // (on other dishes, it says which: "Lap cheong isn't an option on X; it comes on Y")
+      const elsewhere = optionsAsked(thingAsked, live.filter((i) => i.id !== optHost.id)).filter((x) => normalize(x.option.name).split(" ").some((w) => unknown.includes(w)));
+      if (elsewhere.length) return reply("dish_info", `${t("assistantReply.optionNotOn", { option: optionLabel(elsewhere[0].option), dish: name(optHost), list: list(elsewhere[0].dishes.slice(0, 3).map(name)) })}${tail}`, [optHost]);
+      const shown_ = en ? thingAsked.charAt(0).toUpperCase() + thingAsked.slice(1) : thingAsked;
+      return reply("dish_info", `${t("assistantReply.optionNotOnNone", { option: shown_, dish: name(optHost) })}${tail}`, [optHost]);
+    }
+    return null;
+  };
+  // ("add char siu to my loh mee", with nothing ordered: told it's not on it, when it isn't)
+  if (!asksOption && thingAsked && optHost && orderable(optHost) && !state.order.some((o) => o.item.id === optHost.id) && (nt1.match(/\b(?:to|for|on|in|into) (?:my|the) ([a-z ]+)/)?.[1] ?? "").split(" ").some((w) => w.length > 2 && normalize(optHost.name).split(" ").includes(w))) {
+    const off = notOn(optHost, thingAsked);
+    if (off) return off;
+  }
   // ("2 of them, one with mushroom sauce, both with egg, how much?" with an order read: its bill, not the add-on's price)
   if (asksOption && optHost && orderable(optHost) && !editsLine && !(byBasket && (howMuch || totalWord || withCharges)) && !u.budget && !(mentioned.length >= 2 && mentioned.every((i) => !optionsSaid(u.text, i, true).add.length) && !mentioned.slice(1).some((i) => optionsAsked(name(i), live).length))) {
     const said = optionsSaid(u.text, optHost, true).add;
-    // ("can add beef bacon to it?", "can add lap cheong to the chicken mushroom claypot?"): a word of what's
-    // asked that none of its add-ons has, nor its own name, isn't on it (not a "Yes" with its other add-ons)
-    if (thingAsked) {
-      const nameWords = new Set(normalize(optHost.name).split(" "));
-      const unknown = thingAsked.split(" ").filter((w) => w.length > 2 && !/^(it|them|more|one|two|the|some|also|too|again|lagi|sikit|sedikit|and|with|this|that|any|got|can|boleh|please|pls)$/.test(w) && !nameWords.has(w) && !nameWords.has(w.replace(/s$/, "")) && !optionsSaid(w, optHost, true).add.length && !optionsSaid(`add ${w}`, optHost, true, true).add.length);
-      if (unknown.length) {
-        const own_ = (optHost.modifiers ?? []).flatMap((g) => g.options.filter((o) => o.price > 0));
-        const tail = own_.length ? `${sp}${t("assistantReply.itsAddOns", { dish: name(optHost), list: list(own_.map((o) => `${optionLabel(o)} (+${money(o.price)})`)) })}` : "";
-        // (on other dishes, it says which: "Lap cheong isn't an option on X; it comes on Y")
-        const elsewhere = optionsAsked(thingAsked, live.filter((i) => i.id !== optHost.id)).filter((x) => normalize(x.option.name).split(" ").some((w) => unknown.includes(w)));
-        if (elsewhere.length) return reply("dish_info", `${t("assistantReply.optionNotOn", { option: optionLabel(elsewhere[0].option), dish: name(optHost), list: list(elsewhere[0].dishes.slice(0, 3).map(name)) })}${tail}`, [optHost]);
-        const shown_ = en ? thingAsked.charAt(0).toUpperCase() + thingAsked.slice(1) : thingAsked;
-        return reply("dish_info", `${t("assistantReply.optionNotOnNone", { option: shown_, dish: name(optHost) })}${tail}`, [optHost]);
-      }
-    }
+    const off = thingAsked ? notOn(optHost, thingAsked) : null;
+    if (off) return off;
     // (more than its group takes: "ALL the toppings ... can?")
     const over = (optHost.modifiers ?? []).filter((g) => (g.max ?? 1) > 1 && said.filter((o) => g.options.includes(o)).length > (g.max ?? 1));
     if (over.length) return reply("dish_info", over.map((g) => t("assistantReply.maxChoices", { dish: name(optHost), group: g.name.toLowerCase(), max: g.max ?? 1, count: said.filter((o) => g.options.includes(o)).length })).join(sp), [optHost]);

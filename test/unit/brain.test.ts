@@ -1235,4 +1235,9 @@ describe("what an add-on costs, and whether a dish has it", () => {
     expect(a).not.toMatch(/^Yes/);
     expect(a).toMatch(/Beef bacon isn't an option on Beef Burger/);
   });
+  it("says so when told to add what the dish hasn't, and not of 'add-ons' or 'the second one'", () => {
+    expect(ask("add char siu to my beef burger")).toMatch(/Char siu isn't an option on Beef Burger/);
+    expect(ask("extra patty for the chicken burger can?")).toMatch(/Patty isn't an option on Chicken Burger/);
+    expect(ask("how many add-ons can i put on one beef burger?")).not.toMatch(/isn't an option/);
+  });
 });
