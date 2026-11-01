@@ -1268,3 +1268,14 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     server (PyTorch, 640 tokens, with the HTTP round trip).
   - So the reader is rarely right where the rules are wrong, and v11 stays unscored: there's no reason
     to spend its one scoring on this. The rules stay; the reader stays off.
+- **Pre-registration: the reader as suggested edits on the order card** (owner's choice, after the
+  dev result above; written before the pooled model is measured).
+  - The rules still read the order and make the card. The browser reader reads the same turn; where
+    its order differs, the card offers its change as a suggestion the guest can take with one tap.
+  - Retrained first on teacher runs a, b and c pooled (3,941 fully labelled turns, 213 validation
+    turns on held-out menus).
+  - The sureness level is picked on teacher validation alone: the lowest level where at most 10% of
+    the turns it reads give a wrong order.
+  - On: on v10 dev (the 544 cases tagged bill/modifier/followup), at that level, the reader's edits
+    ("edits" policy, as if every suggestion were taken) fix at least as many cases as they break, and
+    at least 10. Otherwise suggestions stay off. v11 isn't used for this.
