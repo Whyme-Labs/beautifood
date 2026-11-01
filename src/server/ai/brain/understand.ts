@@ -463,7 +463,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       // "claypot chicken rice or ginger chicken rice": its words side by side, all but one it shares
       // with the other dish, name it
       const run = [...covered].sort((a, b) => a - b).reduce<number[][]>((runs, i) => (runs.length && i === runs[runs.length - 1].at(-1)! + 1 ? (runs[runs.length - 1].push(i), runs) : [...runs, [i]]), []).sort((a, b) => b.length - a.length)[0];
-      if (run.length >= 2 && run.length >= name.length - 1 && run.some((i) => !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))
+      // (three of them in a row are it too, generic or not: "penang prawn mee" far from the "hokkien" of another)
+      if (run.length >= 2 && run.length >= name.length - 1 && (run.length >= 3 || run.some((i) => !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i]))))
         return void found.push({ dish, at: run[0], covered: run, score: run.reduce((sum, i) => sum + 1 / df(toks[i]) * (GENERIC.has(toks[i]) ? 0.3 : 1), 0) / total + run.length * 0.01 });
       if (!unique || !own.length || Math.max(...own) - Math.min(...own) + 1 > name.length + 2) return;
       const w = own.reduce((sum, i) => sum + 1 / df(toks[i]), 0);

@@ -605,6 +605,7 @@ const en = {
     optionNotVegan: " It isn't vegan.",
     basketTotal: "Total {total}.",
     allIn: "{total} with service and tax",
+    allInTax: "{total} with tax",
     personTotal: ", total {total}",
     withServiceTaxIn: "With {service} service charge (prices already include {tax} tax), {total}.",
     taxInPrices: "Prices already include {tax} tax and there is no service charge, so it is {total}.",

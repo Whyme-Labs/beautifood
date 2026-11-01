@@ -121,7 +121,9 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
       if ([...spots.filter((y) => y !== spot && y.from >= 0).map((y) => y.dish), ...others].some((d) => d.id !== x.dish.id && optionsSaid(phrase(words), d, true, true).add.length)) out.add(spot);
       continue;
     }
-    const hosts = [...spots.filter((y) => y !== spot && y.from >= 0 && y.from < x.from).map((y) => y.dish), ...(cued ? spots.filter((y) => y !== spot && y.from > x.to).map((y) => y.dish) : []), ...others].filter((d) => d.id !== x.dish.id && d.modifiers?.length);
+    // (not one before a break with someone else's name after it: "Siti burger ayam special, me double chicken")
+    const owner = /^(me|i|saya|aku|my|for)$/.test(toks[x.from - 1] ?? "") || /^[A-Z][a-z]+$/.test(toks[x.from - 1] ?? "");
+    const hosts = [...spots.filter((y) => y !== spot && y.from >= 0 && y.from < x.from && !(owner && breaks.some((b) => b > y.from && b <= x.from))).map((y) => y.dish), ...(cued ? spots.filter((y) => y !== spot && y.from > x.to).map((y) => y.dish) : []), ...others].filter((d) => d.id !== x.dish.id && d.modifiers?.length);
     // (with the words just before it: "extra chili sauce" asks for the Extra chilli sauce)
     const lead = [x.from - 2, x.from - 1].filter((i) => i >= 0 && !spots.some((y) => y !== spot && y.covered.includes(i))).map((i) => toks[i]);
     const said = phrase([...lead, ...words]);

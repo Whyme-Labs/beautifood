@@ -21,7 +21,7 @@ import type { TasteHint } from "../../taste/bridge";
 import { conceptsOf, conceptTerms, dishConceptLift, type ConceptId } from "./concepts";
 import { kindOf } from "./reader";
 import { alcoholWord, notHalalWord, withBranchHalal } from "../halal";
-import { courseDishes, courseOfWord, dishWord, intentModel, isDessert, isDrink, MEAT_WORDS, modelTokens, read, understand, type Course, type Diet, type Dish, type Meat, type Spot, type Understanding } from "./understand";
+import { courseDishes, courseOfWord, dishWord, intentModel, isDessert, isDrink, MEAT_WORDS, modelTokens, read, same as sameWord, understand, type Course, type Diet, type Dish, type Meat, type Spot, type Understanding } from "./understand";
 
 type Item = AssistantContext["items"][number];
 
@@ -75,24 +75,36 @@ export function ownersOf(text: string, named: Item[]): Record<string, string> {
   if (named.length < 2) return out;
   const words = (i: Item) => normalize(i.name).split(" ").filter((w) => w.length > 2);
   // a dish by the words only it has among those named ("6" and "8" for the two sets)
-  const all = (i: Item) => normalize(i.name).split(" ").filter((w) => w.length > 2 || /\d/.test(w));
+  // ("kl" of KL Hokkien Mee counts: two letters, not a joining word)
+  const all = (i: Item) => normalize(i.name).split(" ").filter((w) => w.length > 2 || /\d/.test(w) || (w.length === 2 && !/^(of|in|on|at|to|or|an|la|de|di|ke|se|n)$/.test(w)));
+  // (none of its own: its whole name)
   const own = (i: Item) => {
     const mine = all(i).filter((w) => !named.some((o) => o.id !== i.id && all(o).includes(w)));
-    return mine.length ? mine : all(i);
+    return mine.length ? mine : [normalize(i.name)];
   };
   const SELF = /^(me|i|i ll|i will|i m|my|mine|for me|saya|aku|sy|me the|myself)$/i;
   const OTHER = /^(my friend|my frend|my fren|my gf|my bf|my wife|my husband|my son|my daughter|my mum|my mom|my dad|kawan saya|kawan aku|isteri saya|suami saya|anak saya|dia|he|she|friend)$/i;
-  for (const seg of text.split(/[,;:，；：]|\.\s/)) {
+  // (who's said goes on to the next part until someone else is: "Ali: loh mee + kopi. Mei: ...")
+  let current: string | null = null;
+  const parts: { n: string; whose: string }[] = [];
+  for (const seg of text.split(/[,;:，；：?？!！]|\.\s/)) {
     const raw = seg.trim().replace(/^(and|dan|then|so|ok|okay|also|plus)\s+/i, "");
     const two = raw.split(/\s+/).slice(0, 2).join(" ");
     const one = raw.split(/\s+/)[0] ?? "";
     // ("my friend" is the friend, though "my" alone would be the guest)
-    const who = OTHER.test(two) ? two.toLowerCase().replace(/\bfrend\b|\bfren\b/, "friend") : SELF.test(two) || SELF.test(one) ? "me" : /^[A-Z][a-z]+$/.test(one) && !/^(Separate|Bill|Bills|Please|Total|Actually|Then|So|Ok|Okay|Also|Plus|And|The|One|Two|Can|Could|How|What|Split)$/.test(one) && !named.some((i) => words(i).includes(one.toLowerCase())) ? one : null;
-    if (!who) continue;
+    const who = OTHER.test(two) ? two.toLowerCase().replace(/\bfrend\b|\bfren\b/, "friend") : SELF.test(two) || SELF.test(one) ? "me" : /^[A-Z][a-z]+$/.test(one) && !/^(Separate|Bill|Bills|Please|Total|Actually|Then|So|Ok|Okay|Also|Plus|And|The|One|Two|Can|Could|How|What|Split|We|Us|Our|Kami|Kita|Semua|Bahagi|Bayar|Berapa|Tolong|Boleh)$/.test(one) && !named.some((i) => words(i).includes(one.toLowerCase())) ? one : null;
+    if (who) current = who;
+    const whose = who ?? current;
+    if (!whose) continue;
     const n = ` ${normalize(raw).replace(/\b(ketul|pcs|pieces)\b/g, "piece").replace(/\b(six|enam)\b/g, "6").replace(/\b(eight|lapan)\b/g, "8")} `;
-    for (const i of named) if (own(i).some((w) => n.includes(` ${w} `) || n.includes(` ${w}s `))) out[i.id] ??= who;
+    parts.push({ n, whose });
+    for (const i of named) if (own(i).some((w) => n.includes(` ${w} `) || n.includes(` ${w}s `))) out[i.id] ??= whose;
   }
-  return Object.keys(out).length >= 2 ? out : {};
+  // (then, a dish no part names by its words, by the guest's word for it: "mee udang" is the Prawn Mee)
+  for (const { n, whose } of parts)
+    for (const i of named) if (!out[i.id] && own(i).some((w) => !w.includes(" ") && w.length > 3 && n.trim().split(" ").some((x) => x !== w && sameWord(x, w)))) out[i.id] = whose;
+  // (two people at least: "Kami 5 orang. 2 ekor ayam…" is everyone's)
+  return new Set(Object.values(out)).size >= 2 ? out : {};
 }
 
 /** A line of the order: the dish, how many, and the priced add-ons and sizes asked for with it. */
@@ -1688,7 +1700,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "what's my share?", "how much does each person pay?", "saya kena bayar berapa?"
   const mineAsked = /\b(my share|my part|my portion|mine|how much (do|should) i pay|what do i pay|saya kena bayar|saya bayar berapa|bahagian saya)\b/.test(nt1) || /我要付多少|我的部分|我付多少/.test(u.text);
-  const eachAsked = /\b((each|each person|each one of us) (pay|pays|owe|kena bayar)|how much (does|do) each|how much each|each of us|who pays what|everyone pays|separate bills?|separately|pay separately|masing masing|seorang berapa|berapa seorang|bayar asing|asing asing|berasingan|kira asing)\b/.test(nt1) || /各自|每个人付|每人付|分开算|分开付|各付/.test(u.text);
+  const eachAsked = /\b((each|each person|each one of us) (pay|pays|owe|kena bayar)|how much (does|do) each|how much each|each (one |person )?how much|each of us|who pays what|everyone pays|separate bills?|separately|pay separately|masing masing|seorang berapa|berapa seorang|bayar asing|asing asing|berasingan|kira asing)\b/.test(nt1) || /各自|每个人付|每人付|分开算|分开付|各付/.test(u.text);
   const ownersNow = { ...state.owners, ...ownersOf(u.text, mentioned) };
   // "same again for my friend", "一样的再来一份", "tambah satu lagi yang sama": what they last ordered, again;
   // "one more of that", "再来一个": one more of the last thing
@@ -1828,7 +1840,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const parts = people.map((p) => {
         const mine = bill.filter((o) => ownerOf(o) === p);
         const sum = mine.reduce((n, o) => n + unitPrice(o) * o.count, 0);
-        return `${who(p)}: ${mine.map((o) => `${o.count > 1 ? `${o.count} × ` : ""}${lineName(o)}`).join(" + ")}${t("assistantReply.personTotal", { total: money(sum) })}${withCharges ? ` (${t("assistantReply.allIn", { total: money(till(sum).due) })})` : ""}`;
+        return `${who(p)}: ${mine.map((o) => `${o.count > 1 ? `${o.count} × ` : ""}${lineName(o)}`).join(" + ")}${t("assistantReply.personTotal", { total: money(sum) })}${withCharges ? ` (${t(till(sum).service ? "assistantReply.allIn" : "assistantReply.allInTax", { total: money(till(sum).due) })})` : ""}`;
       });
       const people_ = people.map((p) => {
         const sum = bill.filter((o) => ownerOf(o) === p).reduce((n, o) => n + unitPrice(o) * o.count, 0);

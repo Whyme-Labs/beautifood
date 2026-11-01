@@ -603,6 +603,7 @@ const zh = {
     optionNotVegan: "不是全素的，不适合全素。",
     basketTotal: "合计 {total}。",
     allIn: "含服务费和税 {total}",
+    allInTax: "含税 {total}",
     personTotal: "，合计 {total}",
     withServiceTaxIn: "加{service}服务费（价格已含{tax}税），共 {total}。",
     taxInPrices: "价格已含{tax}税，没有服务费，所以是 {total}。",

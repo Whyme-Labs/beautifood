@@ -1258,6 +1258,11 @@ describe("a burger stall's meals, and 'same again'", () => {
     expect(ask("beef burger and teh tarik, how much?")).toMatch(/Ramly Beef Burger \(RM5\.50\) \+ Teh Tarik \(RM2\.50\) = Total RM8\.00/);
     expect(ask("beef burger, make it a meal with teh o ais. how much")).toMatch(/Ramly Beef Burger with Meal: fries \+ teh o ais: RM9\.00/);
   });
+  it("splits one message's orders by who has what, carried to the next name", () => {
+    const a = ask("Ali: beef burger + teh o ais. Mei: chicken burger + teh tarik. each how much?");
+    expect(a).toMatch(/Ali: Ramly Beef Burger \+ Teh O Ais, total RM7\.50/);
+    expect(a).toMatch(/Mei: Ramly Chicken Burger \+ Teh Tarik, total RM7\.50/);
+  });
   it("orders the same again with the meat swapped, and totals both", () => {
     const a = ask("my friend wants beef burger add egg, make it a meal with teh o ais", "Ramly Beef Burger with egg (+RM1.00) as a meal with fries and Teh O Ais (+RM3.50): RM10.00.", "I also same, but chicken. total for both?");
     expect(a).toMatch(/Ramly Chicken Burger with Egg, Meal: fries \+ teh o ais \(RM9\.50\)/);
