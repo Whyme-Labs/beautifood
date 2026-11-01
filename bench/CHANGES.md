@@ -1301,3 +1301,23 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
 - **v11 made a dev set (owner's choice), after its one scoring above.** Its 492 cases are relabelled
   `dev` so its bill and add-on failures can be worked on; it no longer measures held-out
   performance. The next held-out read needs a new set.
+- **Bills and add-ons on the dev sets (v8–v11 dev; v11 now dev).** Rules only, the reader still off.
+  All dev 2803 → 2860 of 3194 (87.8% → 89.5%): fixed 57, broke 0, unsafe 0 throughout.
+  - By set: v1 505 → 505 of 509; v8 428 → 429 of 491; v9 722 → 723 of 746; v10 798 → 807 of 956;
+    v11 350 → 396 of 492 (71.1% → 80.5%). Cases tagged bill or modifier: v10 353 → 362 of 465,
+    v11 149 → 195 of 250.
+  - What it now does: small/medium and 卵 in Chinese and Malay; a party size isn't a count; "I had
+    the rest"; an edit per clause ("make the kopi ais 2 only, then add 1 milo ais"); "N only"; "no
+    need"/"tak payah" take off; an add-on a dish hasn't is said so ("add char siu to my loh mee",
+    "extra patty for the burger ikan can?"), not "Yes" with its other add-ons; charge questions with
+    no dish ("cheese sauce extra charge?", "mayo kena bayar ke?", "芝士酱要加钱吗？"); "beef burger" is
+    the dish named so, not one named through Malay; a Meal/Set add-on only when a meal is said;
+    "I also same, but chicken / large, total for both?"; one message's orders split by who has what
+    ("Ali: … Mei: … me: …", "Saya …, kawan saya …"); 大碌面, 福建面 and 走猪油渣 read; a set
+    against its parts ("cheaper if I take the set?", "is the platter cheaper than ordering the same
+    things separately?"), at the day's prices.
+  - Claim checker: a "+" inside a menu add-on's own name ("Meal: fries + teh o ais") no longer ends
+    the line it reads a price from. Checked: no case's verdict changed by the checker alone (the same
+    answer, scored before and after).
+  - These are dev numbers only. v11 was made dev after its one held-out scoring, so there is no
+    held-out figure for this work; the next one needs a new set.
