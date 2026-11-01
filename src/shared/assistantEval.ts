@@ -1,6 +1,6 @@
 // What we promise guests from the menu assistant, as checkable cases. The same set scores every
 // engine: the menu brain (unit tests), a cloud model (test/eval), and models
-// running on the guest's own device (the /lab/on-device page). A case passes on facts only: the
+// running on the guest's own device (the on-device lab, since removed). A case passes on facts only: the
 // dishes it suggests and what they contain, never on wording.
 
 import { parseMenuText } from "./menuParser";

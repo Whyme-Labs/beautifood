@@ -170,52 +170,6 @@ test.describe("QR, receipts and role-aware console (browser)", () => {
   });
 });
 
-test.describe("on-device AI lab (browser)", () => {
-  test("shows what the device supports and downloads nothing until asked", async ({ page }) => {
-    const external: string[] = [];
-    page.on("request", (r) => {
-      const host = new URL(r.url()).hostname;
-      if (/(^|\.)(esm\.run|jsdelivr\.net|huggingface\.co|hf\.co|githubusercontent\.com)$/.test(host)) external.push(r.url());
-    });
-    await open(page, "/lab/on-device");
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
-    const caps = page.getByTestId("lab-caps");
-    await expect(caps).toContainText("WebGPU");
-    await expect(caps).toContainText("Cross-origin isolated");
-    await expect(caps).toContainText("SIMD");
-    await expect(caps.getByText("checking…")).toHaveCount(0);
-    await expect(page.getByTestId("lab-verdict").locator(".badge")).toHaveCount(3);
-    // the smallest model is picked, and its size is shown before anything downloads
-    await expect(page.getByRole("radio", { name: /SmolLM2 135M/ })).toBeChecked();
-    await expect(page.getByTestId("lab-size")).toContainText("MB");
-    await expect(page.getByTestId("lab-download")).toContainText("Download & test");
-    await page.waitForLoadState("networkidle");
-    expect(external).toEqual([]);
-    if (process.env.SHOTS) {
-      await page.setViewportSize({ width: 390, height: 844 });
-      await page.screenshot({ path: `${process.env.SHOTS}/lab-phone.png`, fullPage: true });
-      await page.setViewportSize({ width: 1280, height: 720 });
-    }
-  });
-
-  test("after the browser kills the page mid-run, it says where the run stopped and keeps it", async ({ page }) => {
-    // what the page writes down before each step, as a killed tab leaves it
-    await page.addInitScript(() => {
-      if (sessionStorage.getItem("seeded")) return;
-      sessionStorage.setItem("seeded", "1");
-      const run = { at: new Date().toISOString(), engine: "transformers", library: "t", device: "webgpu", model: { choice: "LFM2.5-350M", label: "Liquid LFM2.5 350M", expectedMB: 287 }, load: null, weightsFromCache: null, firstTokenMedianMs: null, tokensPerSec: null, totalMs: 0, peakJsHeapMB: null, stopped: false, error: null, score: null, cases: [] };
-      localStorage.setItem("bf-lab-last-run", JSON.stringify({ run, stage: "loading — Downloading model: 120 / 287 MB", at: new Date().toISOString() }));
-    });
-    await open(page, "/lab/on-device");
-    await expect(page.getByTestId("lab-crashed")).toContainText("Downloading model: 120 / 287 MB");
-    await expect(page.getByTestId("lab-crashed")).toContainText("Liquid LFM2.5 350M");
-    // kept for "Copy results", and still there after a reload
-    await page.reload();
-    await expect(page.getByText("1 run kept on this device.")).toBeVisible();
-    expect(await page.evaluate(() => JSON.parse(localStorage.getItem("bf-lab-runs") ?? "[]")[0]?.crashed)).toBe(true);
-  });
-});
-
 test.describe("taste insights (browser)", () => {
   test("the owner's Taste page shows things to try, each with its reason and Qloo source", async ({ page }) => {
     const s = await seed();
@@ -235,9 +189,9 @@ test.describe("taste insights (browser)", () => {
   });
 });
 
-test.describe("menu brain lab (browser)", () => {
+test.describe("lab (browser)", () => {
   test("answers on a demo menu at a chosen moment: deals now, a menu not served yet, no model", async ({ page }) => {
-    await open(page, "/lab/brain");
+    await open(page, "/lab");
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
     // Wednesday 4:20pm at the kopitiam: happy hour is on
     await page.getByRole("button", { name: "Wed happy hour" }).click();
@@ -261,6 +215,13 @@ test.describe("menu brain lab (browser)", () => {
     await expect(card).toContainText("Kaya Butter Toast Set");
     await card.getByRole("button", { name: "One more Nasi Lemak Bungkus" }).click();
     await expect(chat).toContainText("here nothing is kept");
+  });
+  test("the old lab addresses lead to /lab", async ({ page }) => {
+    for (const old of ["/lab/brain", "/lab/on-device"]) {
+      await open(page, old);
+      await expect(page).toHaveURL(/\/lab$/);
+      await expect(page.getByTestId("brain-chat")).toBeVisible();
+    }
     if (process.env.SHOTS) {
       await page.getByRole("button", { name: "Wed happy hour" }).click();
       await page.getByRole("button", { name: "happy hour drinks?" }).click();

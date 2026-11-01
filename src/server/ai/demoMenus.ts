@@ -1,4 +1,4 @@
-// Two all-day demo menus for the menu brain (the /lab/brain page, demo/brain, the tests): timed
+// Two all-day demo menus for the menu brain (the /lab page, demo/brain, the tests): timed
 // menus (breakfast, weekday lunch sets, dinner, late night), dated seasons, happy hours and promos.
 // Written the way a merchant pastes a menu at onboarding; the parser reads allergens, diet and
 // spice from the descriptions, as it does for a real merchant (who then reviews them).

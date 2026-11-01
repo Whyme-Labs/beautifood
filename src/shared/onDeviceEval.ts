@@ -1,4 +1,4 @@
-// How the /lab/on-device page asks a model on the guest's own device our guest cases, and how it
+// How a model on the guest's own device was asked our guest cases (the on-device lab, since removed), and how it
 // turns the model's free text back into a reply the shared cases can score (src/shared/assistantEval.ts).
 // Kept apart from the page so the prompt and the safety-note rule are plain, testable functions.
 

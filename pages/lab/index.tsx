@@ -1,4 +1,4 @@
-// Menu brain lab (/lab/brain): the guest assistant's menu brain on two all-day demo menus, at any
+// The lab (/lab): the guest assistant's menu brain on two all-day demo menus, at any
 // moment of the week. Everything runs in this browser: the same schedule code the app uses decides
 // what's served and what's on a deal at the chosen time, and the brain answers (no model, no
 // tokens). "What a model would get" shows the three-layer input a language model is sent when one
@@ -90,7 +90,7 @@ export default function BrainLab() {
 
   return (
     <>
-      <GuestBar>Menu brain lab</GuestBar>
+      <GuestBar>Lab</GuestBar>
       <main className="narrow col" style={{ gap: 18 }}>
         <section>
           <h1 style={{ marginBottom: 6 }}>Ask a restaurant's menu, at any hour</h1>
