@@ -149,6 +149,7 @@ for (const [ci, c] of lines(`${dir}/convs.jsonl`).entries()) {
   let order: OrderLineT[] = [];
   for (const [ti, t] of (c.turns as TeacherTurn[]).entries()) {
     bump("turns");
+    if (!t || typeof t !== "object") { bump("dropped: a turn that isn't one"); break; }
     const text = String(t.guest ?? "");
     const why = (() => {
       if (!text.trim()) return "empty message";
