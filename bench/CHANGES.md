@@ -1279,3 +1279,11 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   - On: on v10 dev (the 544 cases tagged bill/modifier/followup), at that level, the reader's edits
     ("edits" policy, as if every suggestion were taken) fix at least as many cases as they break, and
     at least 10. Otherwise suggestions stay off. v11 isn't used for this.
+- **Result: the reader's suggested edits stay off.**
+  - Pooled model (teacher runs a+b+c, 3,941 turns): teacher validation (213 turns) right 133, refused
+    11, wrong 69. Wrong at most 10% of the turns read first holds at sureness 0.996 (right 86, refused
+    120, wrong 7); 0.995 gives 11 wrong of 99.
+  - v10 dev at 0.996, the 544 tagged cases: edits 394 against the rules' 418, fixed 1, broke 25
+    (replace: 1 / 27). Unsafe 0. The bar asked fixed >= broke and >= 10: missed.
+  - Even its surest readings are mostly right where the rules already are; where the two differ on dev,
+    the rules are right 25 times to its 1.
