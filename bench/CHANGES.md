@@ -1287,3 +1287,14 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     (replace: 1 / 27). Unsafe 0. The bar asked fixed >= broke and >= 10: missed.
   - Even its surest readings are mostly right where the rules already are; where the two differ on dev,
     the rules are right 25 times to its 1.
+- **v11 scored once: the deployed brain (rules; the reader off), on its 492 cases.** 71.1%, unsafe 0,
+  8 ms a question (p99 49 ms).
+  - By language: English 73.3%, Malay 75.4%, Chinese 73.3%, Manglish 56.3%. By menu: 68%, 68%,
+    72%, 77%.
+  - The weakest kinds of case: modifier 57%, bill 63%, followup 66%. The strongest: service,
+    signature 100%, spice 88%, recommend 86%, allergy 83%.
+  - Failing stage: decision rules 98, answer wording/ranking 35, dish finding 5, follow-up reference
+    3, a claim 1.
+  - In line with the last held-out scores (v8 test 74.1%, v10 67.6%), against 90.8% on dev. v11 has
+    now been scored: fixing against its cases would make it dev, so the next held-out read needs a
+    fresh set.
