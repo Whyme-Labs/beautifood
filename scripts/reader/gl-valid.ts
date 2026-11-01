@@ -53,7 +53,7 @@ void (async () => {
     const n = v.right + v.refused + v.wrong;
     console.log(`${lang.padEnd(10)} ${n} turns: right ${v.right} (${((100 * v.right) / n).toFixed(1)}%), refused ${v.refused}, wrong ${v.wrong}`);
   }
-  for (const t of [0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 0.98]) {
+  for (const t of [0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 0.98, 0.99, 0.995, 0.996, 0.997, 0.998, 0.999]) {
     const g = seen.map((x) => (x.sure < t ? "refused" : x.verdict));
     console.log(`refused below ${t}: right ${g.filter((x) => x === "right").length}, refused ${g.filter((x) => x === "refused").length}, wrong ${g.filter((x) => x === "wrong").length}`);
   }
