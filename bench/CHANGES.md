@@ -1298,3 +1298,6 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   - In line with the last held-out scores (v8 test 74.1%, v10 67.6%), against 90.8% on dev. v11 has
     now been scored: fixing against its cases would make it dev, so the next held-out read needs a
     fresh set.
+- **v11 made a dev set (owner's choice), after its one scoring above.** Its 492 cases are relabelled
+  `dev` so its bill and add-on failures can be worked on; it no longer measures held-out
+  performance. The next held-out read needs a new set.

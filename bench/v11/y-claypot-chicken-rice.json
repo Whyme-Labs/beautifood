@@ -2,7 +2,7 @@
   {
     "id": "v11y-claypot-chicken-rice-001",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "recommend",
@@ -25,7 +25,7 @@
   {
     "id": "v11y-claypot-chicken-rice-002",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "signature",
@@ -47,7 +47,7 @@
   {
     "id": "v11y-claypot-chicken-rice-003",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -74,7 +74,7 @@
   {
     "id": "v11y-claypot-chicken-rice-004",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -94,7 +94,7 @@
   {
     "id": "v11y-claypot-chicken-rice-005",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -121,7 +121,7 @@
   {
     "id": "v11y-claypot-chicken-rice-006",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -154,7 +154,7 @@
   {
     "id": "v11y-claypot-chicken-rice-007",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -181,7 +181,7 @@
   {
     "id": "v11y-claypot-chicken-rice-008",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -215,7 +215,7 @@
   {
     "id": "v11y-claypot-chicken-rice-009",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -242,7 +242,7 @@
   {
     "id": "v11y-claypot-chicken-rice-010",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -272,7 +272,7 @@
   {
     "id": "v11y-claypot-chicken-rice-011",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -293,7 +293,7 @@
   {
     "id": "v11y-claypot-chicken-rice-012",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -326,7 +326,7 @@
   {
     "id": "v11y-claypot-chicken-rice-013",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill"
@@ -346,7 +346,7 @@
   {
     "id": "v11y-claypot-chicken-rice-014",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -372,7 +372,7 @@
   {
     "id": "v11y-claypot-chicken-rice-015",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -398,7 +398,7 @@
   {
     "id": "v11y-claypot-chicken-rice-016",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -418,7 +418,7 @@
   {
     "id": "v11y-claypot-chicken-rice-017",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -452,7 +452,7 @@
   {
     "id": "v11y-claypot-chicken-rice-018",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -475,7 +475,7 @@
   {
     "id": "v11y-claypot-chicken-rice-019",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -502,7 +502,7 @@
   {
     "id": "v11y-claypot-chicken-rice-020",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -529,7 +529,7 @@
   {
     "id": "v11y-claypot-chicken-rice-021",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -550,7 +550,7 @@
   {
     "id": "v11y-claypot-chicken-rice-022",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -578,7 +578,7 @@
   {
     "id": "v11y-claypot-chicken-rice-023",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -604,7 +604,7 @@
   {
     "id": "v11y-claypot-chicken-rice-024",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -632,7 +632,7 @@
   {
     "id": "v11y-claypot-chicken-rice-025",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -656,7 +656,7 @@
   {
     "id": "v11y-claypot-chicken-rice-026",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -684,7 +684,7 @@
   {
     "id": "v11y-claypot-chicken-rice-027",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -711,7 +711,7 @@
   {
     "id": "v11y-claypot-chicken-rice-028",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -745,7 +745,7 @@
   {
     "id": "v11y-claypot-chicken-rice-029",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -779,7 +779,7 @@
   {
     "id": "v11y-claypot-chicken-rice-030",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -799,7 +799,7 @@
   {
     "id": "v11y-claypot-chicken-rice-031",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -820,7 +820,7 @@
   {
     "id": "v11y-claypot-chicken-rice-032",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -840,7 +840,7 @@
   {
     "id": "v11y-claypot-chicken-rice-033",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "bill",
@@ -861,7 +861,7 @@
   {
     "id": "v11y-claypot-chicken-rice-034",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "bill",
@@ -889,7 +889,7 @@
   {
     "id": "v11y-claypot-chicken-rice-035",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -919,7 +919,7 @@
   {
     "id": "v11y-claypot-chicken-rice-036",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -940,7 +940,7 @@
   {
     "id": "v11y-claypot-chicken-rice-037",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "modifier",
@@ -968,7 +968,7 @@
   {
     "id": "v11y-claypot-chicken-rice-038",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -989,7 +989,7 @@
   {
     "id": "v11y-claypot-chicken-rice-039",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1008,7 +1008,7 @@
   {
     "id": "v11y-claypot-chicken-rice-040",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier"
@@ -1034,7 +1034,7 @@
   {
     "id": "v11y-claypot-chicken-rice-041",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1055,7 +1055,7 @@
   {
     "id": "v11y-claypot-chicken-rice-042",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1082,7 +1082,7 @@
   {
     "id": "v11y-claypot-chicken-rice-043",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1102,7 +1102,7 @@
   {
     "id": "v11y-claypot-chicken-rice-044",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "modifier",
@@ -1121,7 +1121,7 @@
   {
     "id": "v11y-claypot-chicken-rice-045",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1143,7 +1143,7 @@
   {
     "id": "v11y-claypot-chicken-rice-046",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1171,7 +1171,7 @@
   {
     "id": "v11y-claypot-chicken-rice-047",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1198,7 +1198,7 @@
   {
     "id": "v11y-claypot-chicken-rice-048",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1225,7 +1225,7 @@
   {
     "id": "v11y-claypot-chicken-rice-049",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "modifier",
@@ -1247,7 +1247,7 @@
   {
     "id": "v11y-claypot-chicken-rice-050",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier",
@@ -1269,7 +1269,7 @@
   {
     "id": "v11y-claypot-chicken-rice-051",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "modifier"
@@ -1288,7 +1288,7 @@
   {
     "id": "v11y-claypot-chicken-rice-052",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "availability",
@@ -1307,7 +1307,7 @@
   {
     "id": "v11y-claypot-chicken-rice-053",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1333,7 +1333,7 @@
   {
     "id": "v11y-claypot-chicken-rice-054",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "availability",
@@ -1353,7 +1353,7 @@
   {
     "id": "v11y-claypot-chicken-rice-055",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1379,7 +1379,7 @@
   {
     "id": "v11y-claypot-chicken-rice-056",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability"
@@ -1403,7 +1403,7 @@
   {
     "id": "v11y-claypot-chicken-rice-057",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "availability",
@@ -1426,7 +1426,7 @@
   {
     "id": "v11y-claypot-chicken-rice-058",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "deal",
@@ -1452,7 +1452,7 @@
   {
     "id": "v11y-claypot-chicken-rice-059",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "deal",
@@ -1479,7 +1479,7 @@
   {
     "id": "v11y-claypot-chicken-rice-060",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal",
@@ -1512,7 +1512,7 @@
   {
     "id": "v11y-claypot-chicken-rice-061",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal"
@@ -1535,7 +1535,7 @@
   {
     "id": "v11y-claypot-chicken-rice-062",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal"
@@ -1553,7 +1553,7 @@
   {
     "id": "v11y-claypot-chicken-rice-063",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "deal"
@@ -1572,7 +1572,7 @@
   {
     "id": "v11y-claypot-chicken-rice-064",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "allergy",
@@ -1607,7 +1607,7 @@
   {
     "id": "v11y-claypot-chicken-rice-065",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -1633,7 +1633,7 @@
   {
     "id": "v11y-claypot-chicken-rice-066",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -1670,7 +1670,7 @@
   {
     "id": "v11y-claypot-chicken-rice-067",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "spice",
@@ -1697,7 +1697,7 @@
   {
     "id": "v11y-claypot-chicken-rice-068",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "dish_info",
@@ -1717,7 +1717,7 @@
   {
     "id": "v11y-claypot-chicken-rice-069",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "dish_allergen",
@@ -1739,7 +1739,7 @@
   {
     "id": "v11y-claypot-chicken-rice-070",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "dish_info",
@@ -1761,7 +1761,7 @@
   {
     "id": "v11y-claypot-chicken-rice-071",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "allergy",
@@ -1793,7 +1793,7 @@
   {
     "id": "v11y-claypot-chicken-rice-072",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "diet",
@@ -1813,7 +1813,7 @@
   {
     "id": "v11y-claypot-chicken-rice-073",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "search",
@@ -1845,7 +1845,7 @@
   {
     "id": "v11y-claypot-chicken-rice-074",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "allergy",
@@ -1869,7 +1869,7 @@
   {
     "id": "v11y-claypot-chicken-rice-075",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1906,7 +1906,7 @@
   {
     "id": "v11y-claypot-chicken-rice-076",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1946,7 +1946,7 @@
   {
     "id": "v11y-claypot-chicken-rice-077",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -1963,7 +1963,7 @@
   {
     "id": "v11y-claypot-chicken-rice-078",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_info",
@@ -1983,7 +1983,7 @@
   {
     "id": "v11y-claypot-chicken-rice-079",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2004,7 +2004,7 @@
   {
     "id": "v11y-claypot-chicken-rice-080",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2039,7 +2039,7 @@
   {
     "id": "v11y-claypot-chicken-rice-081",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2070,7 +2070,7 @@
   {
     "id": "v11y-claypot-chicken-rice-082",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2101,7 +2101,7 @@
   {
     "id": "v11y-claypot-chicken-rice-083",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "diet",
@@ -2130,7 +2130,7 @@
   {
     "id": "v11y-claypot-chicken-rice-084",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_allergen"
@@ -2158,7 +2158,7 @@
   {
     "id": "v11y-claypot-chicken-rice-085",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "adversarial",
@@ -2190,7 +2190,7 @@
   {
     "id": "v11y-claypot-chicken-rice-086",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy",
@@ -2214,7 +2214,7 @@
   {
     "id": "v11y-claypot-chicken-rice-087",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "search",
@@ -2254,7 +2254,7 @@
   {
     "id": "v11y-claypot-chicken-rice-088",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "allergy"
@@ -2272,7 +2272,7 @@
   {
     "id": "v11y-claypot-chicken-rice-089",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2303,7 +2303,7 @@
   {
     "id": "v11y-claypot-chicken-rice-090",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2330,7 +2330,7 @@
   {
     "id": "v11y-claypot-chicken-rice-091",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2365,7 +2365,7 @@
   {
     "id": "v11y-claypot-chicken-rice-092",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2395,7 +2395,7 @@
   {
     "id": "v11y-claypot-chicken-rice-093",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2422,7 +2422,7 @@
   {
     "id": "v11y-claypot-chicken-rice-094",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2452,7 +2452,7 @@
   {
     "id": "v11y-claypot-chicken-rice-095",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2482,7 +2482,7 @@
   {
     "id": "v11y-claypot-chicken-rice-096",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2508,7 +2508,7 @@
   {
     "id": "v11y-claypot-chicken-rice-097",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2542,7 +2542,7 @@
   {
     "id": "v11y-claypot-chicken-rice-098",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2581,7 +2581,7 @@
   {
     "id": "v11y-claypot-chicken-rice-099",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2606,7 +2606,7 @@
   {
     "id": "v11y-claypot-chicken-rice-100",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2634,7 +2634,7 @@
   {
     "id": "v11y-claypot-chicken-rice-101",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2666,7 +2666,7 @@
   {
     "id": "v11y-claypot-chicken-rice-102",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2692,7 +2692,7 @@
   {
     "id": "v11y-claypot-chicken-rice-103",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2726,7 +2726,7 @@
   {
     "id": "v11y-claypot-chicken-rice-104",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2753,7 +2753,7 @@
   {
     "id": "v11y-claypot-chicken-rice-105",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2783,7 +2783,7 @@
   {
     "id": "v11y-claypot-chicken-rice-106",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "followup",
@@ -2816,7 +2816,7 @@
   {
     "id": "v11y-claypot-chicken-rice-107",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "followup",
@@ -2843,7 +2843,7 @@
   {
     "id": "v11y-claypot-chicken-rice-108",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2878,7 +2878,7 @@
   {
     "id": "v11y-claypot-chicken-rice-109",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2909,7 +2909,7 @@
   {
     "id": "v11y-claypot-chicken-rice-110",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "followup",
@@ -2936,7 +2936,7 @@
   {
     "id": "v11y-claypot-chicken-rice-111",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "dish_info"
@@ -2957,7 +2957,7 @@
   {
     "id": "v11y-claypot-chicken-rice-112",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "compare",
@@ -2977,7 +2977,7 @@
   {
     "id": "v11y-claypot-chicken-rice-113",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "not_on_menu",
@@ -3001,7 +3001,7 @@
   {
     "id": "v11y-claypot-chicken-rice-114",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "not_on_menu",
@@ -3019,7 +3019,7 @@
   {
     "id": "v11y-claypot-chicken-rice-115",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "service"
@@ -3036,7 +3036,7 @@
   {
     "id": "v11y-claypot-chicken-rice-116",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "zh",
     "tags": [
       "service",
@@ -3050,7 +3050,7 @@
   {
     "id": "v11y-claypot-chicken-rice-117",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "off_topic"
@@ -3067,7 +3067,7 @@
   {
     "id": "v11y-claypot-chicken-rice-118",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "adversarial"
@@ -3080,7 +3080,7 @@
   {
     "id": "v11y-claypot-chicken-rice-119",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "smalltalk",
@@ -3100,7 +3100,7 @@
   {
     "id": "v11y-claypot-chicken-rice-120",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "compare",
@@ -3127,7 +3127,7 @@
   {
     "id": "v11y-claypot-chicken-rice-121",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -3156,7 +3156,7 @@
   {
     "id": "v11y-claypot-chicken-rice-122",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
@@ -3178,7 +3178,7 @@
   {
     "id": "v11y-claypot-chicken-rice-123",
     "menu": "claypot-chicken-rice",
-    "split": "test",
+    "split": "dev",
     "lang": "en",
     "tags": [
       "spice",
