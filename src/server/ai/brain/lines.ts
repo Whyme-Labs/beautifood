@@ -132,7 +132,12 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     // (or taken off: "remove the egg" is the pan mee's Extra Egg)
     // ("make it a meal with teh o ais": the meal said just before is the burger's Meal: fries + teh o ais)
     const own = phrase([...lead.filter((w) => /^(meal|meals|set|sets|combo)$/.test(w)), ...words]);
-    if (hosts.some((d) => { const r = optionsSaid(said, d, true); return [...r.add, ...r.off].some((o) => optionsSaid(own, { ...d, modifiers: [{ name: "", options: [o] }] }, true, true).add.length); })) out.add(spot);
+    // (each word of it the add-on's: "fish ball" isn't the Fish cake, it's the Fried Fish Ball)
+    const alone_ = (d: Dish, o: { name: string; price: number }) => ({ ...d, modifiers: [{ name: "", options: [o] }] });
+    // (only of words said side by side: "extra wantan and a fried egg" is the Extra wantan, its "fried" the egg's)
+    const sideBySide = x.covered.length >= 2 && [...x.covered].sort((a, b) => a - b).every((c, k, all) => !k || c === all[k - 1] + 1);
+    const allOf = (d: Dish, o: { name: string; price: number }) => !sideBySide || words.filter((w) => w.length > 2 && !DESCRIBES.test(w)).every((w) => normalize(o.name).split(" ").some((y) => y === w || y === w.replace(/s$/, "") || `${y}s` === w) || optionsSaid(w, alone_(d, o), true, true).add.length > 0 || optionsSaid(`add ${w}`, alone_(d, o), true, true).add.length > 0);
+    if (hosts.some((d) => { const r = optionsSaid(said, d, true); return [...r.add, ...r.off].some((o) => optionsSaid(own, alone_(d, o), true, true).add.length && allOf(d, o)); })) out.add(spot);
   }
   return out;
 }

@@ -1269,3 +1269,22 @@ describe("a burger stall's meals, and 'same again'", () => {
     expect(a).toMatch(/Total RM19\.50/);
   });
 });
+
+describe("a set against its parts", () => {
+  const dishes = asItems([
+    { id: "h1", name: "KL Hokkien Mee", category: "Noodles", description: "thick noodles fried in dark soy sauce", price: 1200, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "h2", name: "Fried Fish Ball", category: "Sides", description: "8 deep-fried fish balls", price: 700, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "h3", name: "Kopi Ais", category: "Drinks", description: "iced local coffee", price: 280, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "h4", name: "Hokkien Mee Set", category: "Sets", description: "small KL Hokkien Mee with a plate of Fried Fish Ball and a Kopi Ais", price: 1950, allergens: ["gluten", "fish", "milk"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "h1" ? { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 2, options: [{ name: "Fish cake", price: 200 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (q: string) => answerGuest(shop, [{ role: "user", content: q }]).answer;
+  it("prices the set and the same things one by one, and says which is cheaper", () => {
+    expect(ask("I want hokkien mee + fish ball + kopi ais. cheaper if I take the set?")).toMatch(/Hokkien Mee Set: RM19\.50\. Separately, KL Hokkien Mee \(RM12\.00\), Fried Fish Ball \(RM7\.00\), Kopi Ais \(RM2\.80\) come to RM21\.80, so the set saves you RM2\.30/);
+    expect(ask("is the hokkien mee set cheaper than ordering the same things separately?")).toMatch(/so the set saves you RM2\.30/);
+  });
+  it("reads a plain list as the dishes, not the set, and 'pay separately' as paying apart", () => {
+    expect(ask("hokkien mee + fish ball + kopi ais. how much?")).toMatch(/KL Hokkien Mee \(RM12\.00\) \+ Fried Fish Ball \(RM7\.00\) \+ Kopi Ais \(RM2\.80\) = Total RM21\.80/);
+    expect(ask("we pay separately. me the hokkien mee set, my friend kopi ais. how much each?")).not.toMatch(/Separately,/);
+  });
+});

@@ -1216,7 +1216,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const coveredBy = (i: Item) => (askedRule ? askedRule.items.includes(i.id) || askedRule.categories.includes(i.categoryId) : (i.menuIds ?? []).includes(askedMenu?.id ?? ""));
   // "does the Tuesday deal apply to the pitaya bowl too?": the deal, and that it doesn't cover that dish
   // ("monday got sugarcane promo right? 3 large sugarcane + 1 fried mee, total?": a bill, with the deal in it)
-  const billWithDeal = mentioned.some(coveredBy) && (/\b(how much|berapa|total)\b/.test(nt0) || /多少|几钱|一共|总共/.test(u.text));
+  // (and "happy hour now right? ... set or separate cheaper?": the set against its parts, at the deal's prices)
+  const billWithDeal = mentioned.some(coveredBy) && (/\b(how much|berapa|total)\b/.test(nt0) || /多少|几钱|一共|总共/.test(u.text) || (/\b(set|combo|meal|platter)\b/.test(nt0) && /\b(cheaper|separate|separately)\b/.test(nt0)));
   if (askedRule && mentioned.length && mentioned.some((i) => !coveredBy(i)) && !billWithDeal) {
     const outside = mentioned.filter((i) => !coveredBy(i));
     return reply("recommend", t("assistantReply.dealNotOn", { deal: scheduleName(askedRule, locale), dish: list(outside.map(name)), value: dealValue(askedRule), window: windowText(askedRule.windows) }), mentioned.filter(coveredBy));
@@ -1530,7 +1531,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("how many dips can i pick with the karaage?": a group of the dish's, by its name)
   // (its name in the plural, asked which or how many: not "what goes well with the chilli pan mee")
   const namesGroup = mentioned.length === 1 && /\b(what|which|how many)\b/.test(nt0) && !/\b(go|goes|going|pair|pairs|match)\b/.test(nt0) && (mentioned[0].modifiers ?? []).some((g) => normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(level|size|rice|portion)$/.test(w) && new RegExp(`\\b${w.replace(/s$/, "")}(s|es)\\b`).test(nt0)));
-  const asksChoices = namesGroup || !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|flavou?rs?|perisa|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (\w+ )?(can|could) (i|we) (add|put|get|have|change)( or (add|change|remove|swap))? (on|to|with|in|onto|for)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && (!/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) || /\b(and how much|how much each|each how much|berapa satu|berapa setiap)\b/.test(nt0)) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text));
+  const asksChoices = namesGroup || !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|flavou?rs?|perisa|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (?!(?:sides?|drinks?|desserts?|dish|dishes) )(\w+ )?(can|could) (i|we) (add|put|get|have|change)( or (add|change|remove|swap))? (on|to|with|in|onto|for)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && (!/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) || /\b(and how much|how much each|each how much|berapa satu|berapa setiap)\b/.test(nt0)) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text));
   if (asksChoices) {
     const groupWord = (g: { name: string }) => normalize(g.name).split(" ").some((w) => w.length > 2 && ` ${nt0} `.includes(` ${w.replace(/s$/, "")}`));
     const of = mentioned.filter((i) => i.modifiers?.length).length ? mentioned.filter((i) => i.modifiers?.length) : [...(state.order.length ? [state.order[state.order.length - 1].item] : []), ...(state.focus ? [state.focus] : [])].filter((i) => i.modifiers?.some(groupWord)).slice(0, 1);
@@ -1660,6 +1661,50 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const text = [t("assistantReply.cheapestWay", { lines: list(shown), total: money(way.total) })];
     if (apart && apart.total > way.total) text.push(t("assistantReply.cheaperThanApart", { apart: money(apart.total), saved: money(apart.total - way.total) }));
     return reply("order_help", text.join(sp), [...new Set(lines.map((o) => o.item))]);
+  }
+  // "small hokkien mee + fish ball + kopi ais, cheaper if I take the set?", "burger ayam + fries + sirap ais, take
+  // the meal or order separately?", "is the platter cheaper than ordering the same things separately?": the set (or
+  // a dish's meal add-on) against its parts one by one, as they listed them or as its description lists them
+  const setWord = /\b(set|sets|combo|meal|platter|package|pakej)\b/.test(nt1) || /套餐|配套/.test(u.text);
+  // (ordering them one by one, not paying apart, "bayar asing-asing"; nor "anything cheaper?", something else)
+  const vsWord = (/\b(separate|separately|ala carte|one by one|individually)\b/.test(nt1) && !/\b(pay|paying|bayar|bill|bills|bil)\s+(separate|separately)\b/.test(nt1)) || /\b(cheaper|worth|save|jimat|murah)\b.*\b(if|to)\s+(i |we )?(take|get|order|ambil|beli)\b/.test(nt1) || /单点|单叫|分开点|分开叫/.test(u.text);
+  if (setWord && vsWord && u.budget === null && !/\b(anything|something|other|else|another|budget)\b/.test(nt1)) {
+    const SETLIKE = /\b(set|combo|platter|package|pakej)\b/i;
+    const MEAL = /^(meal|set|combo)\b/i;
+    const asLines = (text: string, skip: Item[]) => {
+      const v = reanchor(read(ctx.items as Dish[], text), ctx.items);
+      const own = ownDishes(v).filter((i) => orderable(i) && !skip.some((x) => x.id === i.id) && !SETLIKE.test(i.name));
+      const ls = own.length ? turnLines(ctx, orderedLines(v, own, [])) : [];
+      // ("+ 2 rice": the menu's plain rice)
+      const rice = plainRice(text, v.delexicalized.join(" "), ctx.items as Dish[]);
+      if (rice && orderable(rice.dish as Item) && !ls.some((o) => o.item.id === rice.dish.id)) ls.push({ item: rice.dish as Item, count: rice.count });
+      return ls;
+    };
+    const sum = (ls: OrderLine[]) => ls.reduce((n, o) => n + unitPrice(o) * o.count, 0);
+    const shownLines = (ls: OrderLine[]) => list(ls.map((o) => `${o.count > 1 ? `${o.count} × ` : ""}${lineName(o)} (${money(unitPrice(o))})`));
+    const verdict = (label: string, price: number, parts: OrderLine[], kept: Item[]) => {
+      const apart = sum(parts);
+      const key = apart > price ? "assistantReply.setSaves" : apart < price ? "assistantReply.setDearer" : "assistantReply.setEven";
+      return reply("order_help", t(key, { set: label, price: money(price), lines: shownLines(parts), apart: money(apart), diff: money(Math.abs(apart - price)) }), kept);
+    };
+    const others = mentioned.filter((i) => !SETLIKE.test(i.name));
+    // a set: named, or the one whose description names most of what they listed
+    const set = mentioned.find((i) => SETLIKE.test(i.name) && orderable(i)) ??
+      (others.length >= 2 ? live.filter((i) => SETLIKE.test(i.name)).map((i) => ({ i, n: others.filter((d) => ` ${normalize(i.description ?? "")} `.includes(` ${normalize(d.name)} `)).length })).filter((x) => x.n >= 2).sort((a, b) => b.n - a.n)[0]?.i : undefined);
+    if (set) {
+      const parts = others.length >= 2 ? asLines(u.text, [set]) : asLines(set.description ?? "", [set]);
+      if (parts.length >= 2) return verdict(name(set), set.price, parts, [set, ...parts.map((o) => o.item)]);
+    }
+    // a dish's meal add-on ("Meal: fries + sirap ais"): the one whose parts they said
+    const host = others.find((i) => i.modifiers?.some((g) => g.options.some((o) => MEAL.test(o.name))));
+    if (!set && host) {
+      const meals = (host.modifiers ?? []).flatMap((g) => g.options.filter((o) => MEAL.test(o.name)));
+      const words = (o: ModifierOption) => normalize(o.name.replace(MEAL, "")).split(" ").filter((w) => w.length > 2);
+      const meal = [...meals].sort((a, b) => words(b).filter((w) => ` ${nt1} `.includes(` ${w} `)).length - words(a).filter((w) => ` ${nt1} `.includes(` ${w} `)).length)[0];
+      const listed = others.filter((i) => i.id !== host.id);
+      const extras = listed.length ? asLines(u.text, [host]) : asLines(meal.name.replace(MEAL, "").replace(/^[\s:]+/, ""), [host]);
+      if (meal && extras.length) return verdict(t("assistantReply.withOptions", { dish: name(host), options: optionLabel(meal) }), host.price + meal.price, [{ item: host, count: 1 }, ...extras], [host, ...extras.map((o) => o.item)]);
+    }
   }
   // "ckt with duck egg, big prawns and extra cockles: cheaper to take the special or add all that on the
   // normal one?": the dish built up with its add-ons, against its fuller version that comes with them

@@ -285,7 +285,8 @@ const spotOf = (m: Mention, toks: string[]): Spot => {
 function clauseBreaks(question: string, n: number): number[] {
   const out: number[] = [];
   let k = 0;
-  for (const chunk of question.split(/[,;，；。、!?！？()（）\n]+|\.(?!\d)|\s[-–]\s/)) {
+  // ("pari medium + siakap small": a "+" between them too)
+  for (const chunk of question.split(/[,;，；。、!?！？()（）\n+＋]+|\.(?!\d)|\s[-–]\s/)) {
     out.push(k);
     k += normalize(chunk).split(" ").filter(Boolean).length;
   }
@@ -522,6 +523,9 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const own = normalize(m.dish.name).split(" ");
       if (m.covered.every((i) => own.includes(toks[i]) || own.includes(toks[i].replace(/s$/, ""))) && !same_.every((o) => o.covered.every((i) => normalize(o.dish.name).split(" ").includes(toks[i])))) m.score += 0.3;
       if (/\b(vegetarian|vegan|veggie)\b/i.test(m.dish.name) && !toks.some((t) => /^(vegetarian|vegan|veggie|vege|veg)$/.test(t)) && !/素/.test(raw)) m.score -= 1;
+      // (nor a set unasked for: "small hokkien mee + fish ball + kopi ais" is the dishes, not the Hokkien Mee Set
+      // whose description has them)
+      if (SET_NAME.test(m.dish.name) && !toks.some((t) => /^(set|sets|combo|meal|meals)$/.test(t)) && !/套餐|配套/.test(raw)) m.score -= 1;
     }
   }
   // "a classic acai with peanut butter topping": the Classic Acai Bowl with its topping, not the Peanut

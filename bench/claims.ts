@@ -107,7 +107,9 @@ export function claims(answer: string, items: Item[], labels: { id: string; labe
       // ("Nasi Lemak Biasa with Ayam Goreng (RM8.00)": an add-on that is also a dish names the line's
       // dish's add-on, so the price is the dish's before it, with nothing summed between)
       const line = [s.i];
-      for (let j = k - 1; j >= 0 && !/[+=;]|RM/i.test(sentence.slice(here[j].to, here[j + 1].from)); j--) line.push(here[j].i);
+      // (a "+" inside an add-on's own name, "with Egg, Meal: fries + teh o ais", doesn't end the line)
+      const ends = (between: string) => /[=;]|RM/i.test(between) || (/\+/.test(between) && !/\bwith\b[^+()]*\+\s*$/i.test(between));
+      for (let j = k - 1; j >= 0 && !ends(sentence.slice(here[j].to, here[j + 1].from)); j--) line.push(here[j].i);
       readCount++;
       if (!line.some(fits)) failed.push(`claims RM${(said / 100).toFixed(2)} for ${s.i.name} (menu: RM${(s.i.price / 100).toFixed(2)})`);
     }
