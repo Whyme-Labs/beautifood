@@ -8,7 +8,7 @@ type WithOptions = { name: string; translations?: Record<string, { name?: string
 
 // a guest's words for an option's own words (as menus name them: "Ais (iced)", "Oat milk", "Besar (large)")
 const ALSO: Record<string, string[]> = {
-  ais: ["ice", "iced", "cold", "peng", "sejuk"], iced: ["ice", "ais", "cold", "peng", "sejuk"],
+  ais: ["ice", "iced", "cold", "peng", "sejuk"], iced: ["ice", "ais", "cold", "peng", "sejuk"], cold: ["ice", "iced", "ais", "peng", "sejuk"],
   panas: ["hot", "warm"], hot: ["panas", "warm"], suam: ["warm"],
   besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger"],
   small: ["kecil", "kecik"], kecil: ["small"], medium: ["sederhana", "mid"], sederhana: ["medium"],
@@ -29,14 +29,14 @@ const ALSO: Record<string, string[]> = {
   kaya: ["kaya"], sambal: ["sambal"], rendang: ["rendang"], sotong: ["squid", "sotong"], udang: ["prawn", "prawns", "shrimp"],
   ayam: ["chicken"], goreng: ["fried"], lime: ["limau", "lemon"], plum: ["asam boi", "assam boi", "sour plum", "plum"], sour: ["asam", "assam", "masam"],
   peanut: ["pb", "kacang", "nut"], milo: ["milo"], noodles: ["noodle", "extra mee", "tambah mee", "more mee", "mee lagi"], peanuts: ["peanut", "kacang"], tofu: ["tauhu", "taufu"],
-  strawberries: ["strawberry"], chocolate: ["choc", "coklat", "chocolate"], mayo: ["mayonnaise"],
+  strawberries: ["strawberry"], chocolate: ["choc", "coklat", "chocolate"], mayo: ["mayonnaise"], mayonnaise: ["mayo"],
   seaweed: ["nori"], spicy: ["spicy", "pedas", "hot"], yuja: ["yuzu", "citron"], cola: ["coke", "cola"], cider: ["cider", "chilsung"],
   bucket: ["bucket", "baldi"], crust: ["crust"], thin: ["thin"], stuffed: ["stuffed", "cheese crust"],
   chicken: ["ayam"], beef: ["daging"], duck: ["itik"], corn: ["jagung"], spinach: ["bayam"], cockles: ["kerang", "cockle"], taugeh: ["tauge", "bean sprouts", "beansprouts", "sprouts"], cheong: ["lap cheong", "lapcheong", "chinese sausage", "sausage"],
 };
 // ...and in Chinese, as a guest writes it
 const ALSO_ZH: Record<string, RegExp> = {
-  ais: /冰|凍|冻/, iced: /冰|凍|冻/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)/, suam: /温/,
+  ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)/, suam: /温/,
   besar: /大杯|大份|加大|大的|大碗|大包|大号/, large: /大杯|大份|加大|大的|大碗|大包|大号/,
   small: /小碗|小的|小份|小杯|小碟|小号|小包/, kecil: /小碗|小的|小份|小杯|小碟|小号|小包/,
   medium: /中碗|(?<!其)中的|中份|中杯|中碟|中号/, sederhana: /中碗|(?<!其)中的|中份|中杯|中碟|中号/,
@@ -52,7 +52,7 @@ const ALSO_ZH: Record<string, RegExp> = {
   pineapple: /菠萝|黄梨/, pepperoni: /意大利辣香肠|辣香肠/, parmesan: /帕玛森|帕马森/, cream: /冰淇淋|雪糕/, whey: /乳清/, plant: /植物蛋白/,
   chia: /奇亚籽/, peanut: /花生/, granola: /燕麦脆片|格兰诺拉|燕麦片/, flakes: /椰子片|椰丝/, nuts: /坚果/, cacao: /可可/, spirulina: /螺旋藻/,
   avocado: /牛油果|鳄梨/, feta: /菲达/, kaya: /咖椰|加椰/, sambal: /参巴|叁巴/, rendang: /仁当/, sotong: /苏东|鱿鱼/, udang: /(?<!濑尿|螳螂|琵琶)虾(?!蛄)/,
-  ayam: /炸鸡|鸡肉|鸡(?!蛋)/, lime: /酸柑|桔子|桔仔|青柠/, plum: /酸梅/, strawberries: /草莓/, chocolate: /巧克力/, mayo: /美乃滋|蛋黄酱/,
+  ayam: /炸鸡|鸡肉|鸡(?!蛋)/, lime: /酸柑|桔子|桔仔|青柠/, plum: /酸梅/, strawberries: /草莓/, chocolate: /巧克力/, mayo: /美乃滋|蛋黄酱/, mayonnaise: /美乃滋|蛋黄酱/,
   seaweed: /海苔/, matcha: /抹茶/, spicy: /加辣|特辣|很辣/, yuja: /柚子/, cola: /可乐/, cider: /七星|雪碧/, bucket: /一桶|桶/,
   thin: /薄底|薄饼底|薄脆/, penne: /笔管面|通心粉|长通粉/, spaghetti: /意大利面|意面|细面/, stuffed: /芝心/, teh: /奶茶|茶/, kopi: /咖啡/, chicken: /鸡肉|鸡(?!蛋|翅)/, beef: /牛肉/,
 };

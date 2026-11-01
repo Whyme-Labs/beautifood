@@ -1209,3 +1209,30 @@ describe("what an add-on or the cooking brings", () => {
     expect(r.items.map((i) => i.name)).not.toContain("Kids Curry Plate");
   });
 });
+
+describe("what an add-on costs, and whether a dish has it", () => {
+  const dishes = asItems([
+    { id: "b1", name: "Beef Burger", category: "Burgers", description: "beef patty in a soft bun", price: 550, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "b2", name: "Chicken Burger", category: "Burgers", description: "chicken patty in a soft bun", price: 500, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "b3", name: "Barley Water", category: "Drinks", description: "pearl barley, lightly sweet, hot or cold", price: 400, allergens: ["gluten"], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "b1" || i.id === "b2" ? { ...i, modifiers: [
+    { name: "Sauce", min: 0, max: 2, options: [{ name: "Mayonnaise", price: 0 }, { name: "Cheese sauce", price: 100 }] },
+    { name: "Add-ons", min: 0, max: 2, options: [{ name: "Cheese slice", price: 100 }, { name: "Egg", price: 100 }] },
+  ] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (q: string) => answerGuest(shop, [{ role: "user", content: q }]).answer;
+  it("prices the add-on named in full, not every add-on sharing a word", () => {
+    expect(ask("cheese sauce extra charge or not?")).toMatch(/Cheese sauce is RM1\.00 more/);
+  });
+  it("says a free add-on is free, by its short name", () => {
+    expect(ask("mayo kena bayar ke?")).toMatch(/Mayonnaise is free/);
+  });
+  it("gives a choice the dish's own words offer at its price", () => {
+    expect(ask("barley water sejuk boleh?")).toMatch(/Cold is free, no extra charge: Barley Water stays RM4\.00/);
+  });
+  it("doesn't say yes to an add-on the dish hasn't", () => {
+    const a = ask("can add beef bacon to the beef burger?");
+    expect(a).not.toMatch(/^Yes/);
+    expect(a).toMatch(/Beef bacon isn't an option on Beef Burger/);
+  });
+});
