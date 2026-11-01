@@ -315,6 +315,7 @@ const ZH_DIGIT: Record<string, string> = { 一: "1", 二: "2", 两: "2", 三: "3
 // ("cheesecake", "creampuff", "eggtart": a baked or sweet thing named for it; not "milkshake", a kind of drink)
 const allergenWord = (w: string) => mentionedAllergens(w).length > 0 && !/^(cheese|cream|butter|egg|peanut|nut)(cakes?|tarts?|pies?|buns?|rolls?|toasts?|breads?|cookies?|puffs?|puddings?)$/.test(w);
 
+const SET_NAME = /\b(set|combo|meal)\b/i;
 export function findDishes(items: Dish[], raw: string, toks: string[], skip = new Set<number>()): Mention[] {
   const ix = dishIndex(items);
   const found: Mention[] = [];
@@ -486,13 +487,19 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     if (!m.zh || m.score >= 2) continue;
     // (a vegetarian version stays when the guest asks for one: "素食者可以吃泰式炒河粉吗？")
     const variant = /\b(vegetarian|vegan|veggie)\b/i.test(m.dish.name) && /素/.test(raw);
-    if (usual.filter((x) => x.zh === m.zh).length >= 3 || (!variant && own.some((x) => x.dish !== m.dish && x.zh!.includes(m.zh!)))) found.splice(k, 1);
+    // (unless, sets aside, one is plainly it: 福建面 is the KL Hokkien Mee, not the Seafood one or the Hokkien Mee
+    // Set; 云吞面 of Wantan Mee Dry, Wantan Mee Soup and the set stays a kind)
+    const alike = usual.filter((x) => x.zh === m.zh);
+    const dishes_ = alike.filter((x) => !SET_NAME.test(x.dish.name)).map((x) => normalize(x.dish.name).split(" ").length).sort((a, b) => a - b);
+    const plainly = dishes_.length >= 1 && dishes_.length <= 2 && (dishes_.length === 1 || dishes_[0] < dishes_[1]);
+    if ((alike.length >= 3 && !plainly) || (!variant && own.some((x) => x.dish !== m.dish && x.zh!.includes(m.zh!)))) found.splice(k, 1);
   }
   // a Chinese name two dishes share (鸡翅 of the Chicken Wings and the Fire Chicken Wings, 年糕): the plain one
   for (let k = found.length - 1; k >= 0; k--) {
     const m = found[k];
     if (!m.zh) continue;
-    const words = (d: Dish) => normalize(d.name).split(" ").length;
+    // (a set loses to the dish itself)
+    const words = (d: Dish) => normalize(d.name).split(" ").length + (SET_NAME.test(d.name) ? 10 : 0);
     if (found.some((b) => b !== m && b.zh === m.zh && words(b.dish) < words(m.dish))) found.splice(k, 1);
   }
   // 海南鸡饭 is the Hainanese Chicken Rice, not also the plain Chicken Rice (鸡饭) inside it

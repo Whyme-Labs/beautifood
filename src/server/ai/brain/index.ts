@@ -1057,7 +1057,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
 
   // "第二个是猪油炒的吗？", "is the fried mee cooked in lard?": the fat it's cooked in, as the menu says
   // (not "got pork or lard?": the meat answer covers both)
-  if (focus.length === 1 && (/\b(lard|pork fat|minyak babi)\b/.test(nt0) || /猪油/.test(u.text)) && !/\b(pork|babi)\b(?! fat)/.test(nt0.replace(/minyak babi/g, " ")) && !/猪肉/.test(u.text)) {
+  // (nor "走猪油渣, 几多钱?": its lard crisps taken off, an order)
+  const lardOff = focus.length === 1 && optionsSaid(u.text, focus[0], true).off.some((o) => /lard|猪油/i.test(o.name)) || /(走|不要|免)猪油/.test(u.text) && (/\b(how much|berapa|price)\b/.test(nt0) || /几多钱|多少钱|几钱/.test(u.text));
+  if (focus.length === 1 && !lardOff && (/\b(lard|pork fat|minyak babi)\b/.test(nt0) || /猪油/.test(u.text)) && !/\b(pork|babi)\b(?! fat)/.test(nt0.replace(/minyak babi/g, " ")) && !/猪肉/.test(u.text)) {
     const d = focus[0];
     const words = `${d.name} ${d.description ?? ""}`;
     const oil = words.match(/\b(vegetable oil|palm oil|peanut oil|sesame oil|canola oil|olive oil|butter|ghee)\b/i)?.[1];
