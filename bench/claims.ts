@@ -82,6 +82,8 @@ export function claims(answer: string, items: Item[], labels: { id: string; labe
   let masked = text;
   for (const s of spans) masked = masked.slice(0, s.from) + blank(masked.slice(s.from, s.to)) + masked.slice(s.to);
 
+  // the menu's add-ons with a "+" in their name, up to it ("meal: fries +")
+  const plusOptions = items.flatMap((i) => (i.modifiers ?? []).flatMap((g) => g.options.map((o) => o.name))).filter((n) => n.includes("+")).map((n) => n.slice(0, n.indexOf("+") + 1).toLowerCase());
   for (const sm of masked.matchAll(SENTENCE)) {
     const from = sm.index!, to = from + sm[0].length;
     const sentence = sm[0];
@@ -107,8 +109,8 @@ export function claims(answer: string, items: Item[], labels: { id: string; labe
       // ("Nasi Lemak Biasa with Ayam Goreng (RM8.00)": an add-on that is also a dish names the line's
       // dish's add-on, so the price is the dish's before it, with nothing summed between)
       const line = [s.i];
-      // (a "+" inside an add-on's own name, "with Egg, Meal: fries + teh o ais", doesn't end the line)
-      const ends = (between: string) => /[=;]|RM/i.test(between) || (/\+/.test(between) && !/\bwith\b[^+()]*\+\s*$/i.test(between));
+      // (a "+" inside a menu add-on's own name, "with Egg, Meal: fries + teh o ais", doesn't end the line)
+      const ends = (between: string) => /[=;]|RM/i.test(between) || (/\+/.test(between) && !plusOptions.some((o) => between.toLowerCase().trimEnd().endsWith(o)));
       for (let j = k - 1; j >= 0 && !ends(sentence.slice(here[j].to, here[j + 1].from)); j--) line.push(here[j].i);
       readCount++;
       if (!line.some(fits)) failed.push(`claims RM${(said / 100).toFixed(2)} for ${s.i.name} (menu: RM${(s.i.price / 100).toFixed(2)})`);

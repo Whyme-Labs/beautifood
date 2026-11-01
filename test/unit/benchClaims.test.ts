@@ -42,6 +42,8 @@ describe("the claim checker", () => {
     const burger = [dish("Ramly Burger", { price: 500, modifiers: [{ name: "Meal", min: 0, max: 1, options: [{ name: "Meal: fries + teh tarik", price: 350 }] }] }), dish("Teh Tarik", { price: 280 })];
     expect(claims("Ramly Burger with Meal: fries + teh tarik (RM8.50) = Total RM8.50.", burger).failed).toEqual([]);
     expect(claims("Ramly Burger (RM5.00) + Teh Tarik (RM8.50) = Total RM13.50.", burger).failed).toEqual(["claims RM8.50 for Teh Tarik (menu: RM2.80)"]);
+    // (a "+" after an add-on that has none in its name still ends the line)
+    expect(claims("Ramly Burger with sambal + Teh Tarik (RM8.50)", burger).failed).toEqual(["claims RM8.50 for Teh Tarik (menu: RM2.80)"]);
   });
   it("fails a wrong price for a dish", () => {
     expect(claims("Nasi Lemak (RM7.50) is our favourite.", menu).failed).toEqual(["claims RM7.50 for Nasi Lemak (menu: RM6.50)"]);
