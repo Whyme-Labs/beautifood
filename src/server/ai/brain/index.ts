@@ -159,7 +159,8 @@ export function ownDishes(u: { dishes: Dish[]; toks: string[]; spots: Spot[]; br
   const swapping = /\b(change|swap|switch|tukar|ganti|replace|instead)\b|换成|改成/.test(normalize(u.toks.join(" "))) && u.dishes.some((d) => ordered.some((o) => o.id === d.id));
   const wholeNamed = (d: Dish) => u.spots.some((s) => s.dish === d && s.covered.length >= normalize(d.name).split(" ").length);
   if (swapping) for (const s of u.spots) if (wholeNamed(s.dish)) asOption.delete(s);
-  const phrased = (d: Dish) => u.spots.some((s) => s.dish === d && s.from > 0 && /^(less|no|extra|more|kurang|tanpa|lebih|without|tak|takde)$/.test(u.toks[s.from - 1]) && s.to - s.from < normalize(d.name).split(" ").length);
+  // (not with a count before it: "10 more ayam" is ten more of the Satay Ayam)
+  const phrased = (d: Dish) => u.spots.some((s) => s.dish === d && s.from > 0 && /^(less|no|extra|more|kurang|tanpa|lebih|without|tak|takde)$/.test(u.toks[s.from - 1]) && !/^(\d+|one|two|three|four|five|six|seven|eight|nine|ten|satu|dua|tiga|empat|lima)$/.test(u.toks[s.from - 2] ?? "") && s.to - s.from < normalize(d.name).split(" ").length);
   return (u.dishes as Item[]).filter((d) => (ordered.some((o) => o.id === d.id) && !phrased(d)) || !u.spots.some((s) => s.dish === d && asOption.has(s)) && !(ordered.some((o) => o.id === d.id) && phrased(d)));
 }
 
@@ -442,8 +443,11 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
     if (k >= 0) order.splice(k, 1);
     return k >= 0;
   };
-  const add = (i: Item) => (order.some((o) => o.item.id === i.id) ? undefined : order.push({ item: i, count: 1 }));
+  const add = (i: Item, n = 1) => (order.some((o) => o.item.id === i.id) ? undefined : order.push({ item: i, count: n }));
   if (!order.length) return false;
+  // how many of a dish the text says ("2 mee rebus instead", "same 20 sticks"), else `n`
+  const sameN = normalize(text).match(/\bsame (\d{1,3})\b/)?.[1];
+  const countFor = (i: Item, n: number) => (sameN ? Number(sameN) : COUNT_SAID.test(normalize(text)) || COUNT_SAID.test(text) ? (countsOf(text, [i as Dish]).get(i as Dish) ?? n) : n);
   // ("make it two, and add one hot teh o": the count of what's ordered, in its own clause, whatever comes after)
   const makeIt = text.split(/[,;，；]|\band\b|\bdan\b/i)[0];
   // ("改成两份": the same in Chinese)
@@ -493,8 +497,9 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
   // "remove the milo, make it a kopi o": the ordered ones go, the new ones come
   if ((REMOVE.test(t) || REMOVE.test(text)) && swap && named.some(ordered) && named.some((i) => !ordered(i))) {
     const [out, inn] = [named.filter(ordered), named.filter((i) => !ordered(i))];
+    const was = out.length === 1 ? order.find((o) => o.item.id === out[0].id)?.count ?? 1 : 1;
     for (const i of out) drop(i);
-    for (const i of inn) add(i);
+    for (const i of inn) add(i, countFor(i, inn.length === 1 ? was : 1));
     return true;
   }
   // "no more the kopi" drops it; "remove one teh tarik" of two takes one off; "no kopi, a teh
@@ -516,7 +521,7 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
       return drop(i);
     };
     const done = (outs.length ? outs : named).map(less).some(Boolean);
-    for (const i of ins) add(i);
+    for (const i of ins) add(i, countFor(i, 1));
     return done || ins.length > 0;
   }
   if (!swap) return false;
@@ -535,10 +540,14 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
     const out = at >= 0 ? (named.find((i) => where(i) > at) ?? named[named.length - 1]) : onOrder[0];
     // ("change one cappuccino to a matcha latte" of two: one of them)
     const line = order.find((o) => o.item.id === out.id);
-    const n = (COUNT_SAID.test(t) || COUNT_SAID.test(text)) ? countsOf(text, [out as Dish]).get(out as Dish) : undefined;
-    if (line && n !== undefined && n < line.count) line.count -= n;
+    // ("same 20 sticks": all of it)
+    const n = !sameN && (COUNT_SAID.test(t) || COUNT_SAID.test(text)) ? countsOf(text, [out as Dish]).get(out as Dish) : undefined;
+    // (the whole line swapped: the new one as many, "change the beef to chicken, same 20 sticks")
+    const whole = !(line && n !== undefined && n < line.count);
+    if (!whole) line!.count -= n!;
     else drop(out);
-    for (const i of named) if (i !== out) add(i);
+    const fresh = named.filter((i) => i !== out);
+    for (const i of fresh) add(i, whole && fresh.length === 1 ? countFor(i, line?.count ?? 1) : n ?? 1);
     return true;
   }
   // "make it a teh instead", "change to the iced one, and a kuih": the first new dish in place of the
@@ -546,9 +555,10 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
   const [next, ...more] = named;
   if (onOrder.length) return false;
   const was = replaced(next);
-  if (was.count > 1 && /\b(one of (them|those|the)|one|satu)\b/.test(t)) was.count -= 1;
+  const part = was.count > 1 && /\b(one of (them|those|the)|one|satu)\b/.test(t);
+  if (part) was.count -= 1;
   else drop(was.item);
-  add(next);
+  add(next, part ? 1 : countFor(next, was.count));
   for (const i of more) add(i);
   return true;
 }
@@ -1903,8 +1913,12 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // (as many of each as they said they had: "the avocado toast and one matcha")
       const said = countsOf(u.text, mentioned);
       const part: OrderLine[] = [];
+      // (named with no count, "the kambing", in English or Malay: all of that line)
+      const counted = (i: Item) => u.spots.some((sp_) => sp_.dish.id === i.id && /^(\d+|a|an|one|two|three|four|five|six|seven|eight|nine|ten|satu|dua|tiga|empat|lima|sebiji|secawan|segelas)$/.test(u.toks[sp_.from - 1] ?? ""));
+      const latinOnly = !/[\u3400-\u9fff]/.test(u.text);
       for (const i of mentioned) {
-        let left = said.get(i as Dish) ?? 1;
+        // (of a line of many, satay sticks and the like; one of two murtabak is one)
+        let left = latinOnly && !counted(i) && bill.some((x) => x.item.id === i.id && x.count > 3) ? Infinity : said.get(i as Dish) ?? 1;
         for (const o of bill.filter((x) => x.item.id === i.id)) {
           if (left <= 0) break;
           part.push({ ...o, count: Math.min(o.count, left) });

@@ -327,6 +327,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   toks = toks.map((t) => (NUMBER_WORD[t] && nameWords.has(NUMBER_WORD[t]) && !nameWords.has(t) ? NUMBER_WORD[t] : /^(ketul|pcs|pc|pieces|keping)$/.test(t) && nameWords.has("piece") ? "piece" : skewer && /^(cucuk|stick|sticks|batang)$/.test(t) ? skewer : t));
   // a word many dishes share ("mee", "ramen" on a ramen menu, "Sarawak"): it doesn't tell them apart
   const common = (i: number) => GENERIC.has(toks[i]) || ORIGIN.has(toks[i]) || (ix.df.get(toks[i]) ?? 0) >= 2;
+  const qBreaks = clauseBreaks(raw, toks.length);
+  const clauseOf = (i: number) => Math.max(0, ...qBreaks.filter((b) => b <= i));
   items.forEach((dish, n) => {
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
@@ -442,6 +444,14 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       if (df(w) === 1 && !GENERIC.has(w) && !ORIGIN.has(w) && ((!ix.courseWords.has(w) && !ix.courseWords.has(w.replace(/s$/, ""))) || pointed) && w.length >= 4 && w !== "kacang" && (!allergenWord(w) || pointed)) unique = true;
     }
     if (!covered.length) return;
+    // (its shared words from its own word's clause only: in "30 sticks chicken, 20 beef" the beef's
+    // satay isn't the chicken's "sticks")
+    const ownAt = covered.filter((i) => (ix.df.get(toks[i]) ?? 0) < 2);
+    if (covered.length >= 2 && ownAt.length === 1 && /^(\d+|one|two|three|four|five|six|seven|eight|nine|ten|satu|dua|tiga|empat|lima|enam|tujuh|lapan|sembilan|sepuluh)$/.test(toks[ownAt[0] - 1] ?? "") && ownAt.every((i) => clauseOf(i) === clauseOf(ownAt[0])) && covered.some((i) => clauseOf(i) !== clauseOf(ownAt[0]))) {
+      const kept_ = covered.filter((i) => clauseOf(i) === clauseOf(ownAt[0]));
+      covered.splice(0, covered.length, ...kept_);
+      weight = kept_.reduce((n, i) => n + (1 / df(toks[i])) * (GENERIC.has(toks[i]) ? 0.3 : 1), 0);
+    }
     // a number alone ("those two") is a count, not the Two-Meat Rice
     if (covered.every((i) => /^(\d+|one|two|three|four|five|six|seven|eight|nine|ten|satu|dua|tiga|empat|lima)$/.test(toks[i]))) return;
     // only the course's own words ("breakfast" of The Big Breakfast in "vegetarian breakfast?") don't name it
@@ -458,7 +468,16 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a long name needs its words close together, not scattered across the question
     const spread = Math.max(...covered) - Math.min(...covered) + 1;
     // a partial match needs a word that names this dish, not just "ais" or an allergen like "kacang"
-    if (!(all || ((coverage >= 0.6 || unique || adjacentNamed) && strong))) return;
+    // ("10 ayam, 10 daging", "20 beef" at a satay stall): a count and the one word that only this dish has
+    // (of those with that word, the one of a family the menu has several of, "Satay …", not the Ayam Percik)
+    const COUNT_W = /^(\d+|one|two|three|four|five|six|seven|eight|nine|ten|satu|dua|tiga|empat|lima|enam|tujuh|lapan|sembilan|sepuluh)$/;
+    // (or pointed at: "I only had the kambing")
+    const counted_ = covered.length === 1 && toks[covered[0]].length >= 3 && !/^(one|tu|itu|ni|ini)$/.test(toks[covered[0] + 1] ?? "") &&
+      (COUNT_W.test(toks[covered[0] - 1] ?? "") || /^(the|that|those|my)$/.test(toks[covered[0] - 1] ?? "") || (/^(more|lagi|extra)$/.test(toks[covered[0] - 1] ?? "") && COUNT_W.test(toks[covered[0] - 2] ?? "")));
+    const withWord = counted_ ? items.filter((o) => normalize(o.name).split(" ").some((x) => same(toks[covered[0]], x))) : [];
+    const ofFamily = withWord.filter((o) => { const ws = normalize(o.name).split(" "); return ws.length === 2 && ws.some((x) => !same(toks[covered[0]], x) && (ix.df.get(x) ?? 0) >= 3); });
+    const countedOnly = counted_ && ofFamily.length === 1 && ofFamily[0] === dish;
+    if (!(all || countedOnly || ((coverage >= 0.6 || unique || adjacentNamed) && strong))) return;
     if (spread > name.length + 2) {
       // "tonkotsu vs shoyu chicken ramen": its own word names it; the "ramen" far off is the other's
       const own = covered.filter((i) => !common(i));

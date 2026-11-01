@@ -1288,3 +1288,24 @@ describe("a set against its parts", () => {
     expect(ask("we pay separately. me the hokkien mee set, my friend kopi ais. how much each?")).not.toMatch(/Separately,/);
   });
 });
+
+describe("a satay stall's counts", () => {
+  const sat = (id: string, name: string, price: number) => ({ id, name, category: "Satay", description: "grilled skewers with peanut sauce", price, allergens: ["peanuts"], dietary: [], spiceLevel: 0, isSignature: false });
+  const dishes = asItems([
+    sat("s1", "Satay Ayam", 130), sat("s2", "Satay Daging", 140), sat("s3", "Satay Kambing", 180),
+    { id: "s4", name: "Ayam Percik", category: "Mains", description: "grilled chicken in spiced coconut gravy", price: 1290, allergens: [], dietary: [], spiceLevel: 1, isSignature: false },
+    { id: "s5", name: "Teh Tarik", category: "Drinks", description: "pulled milk tea", price: 320, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "s6", name: "Mee Rebus", category: "Mains", description: "noodles in sweet potato gravy", price: 890, allergens: ["gluten"], dietary: [], spiceLevel: 1, isSignature: false },
+  ]);
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads '10 ayam, 20 beef' as sticks of satay, not the Ayam Percik", () => {
+    expect(ask("30 sticks chicken, 20 beef and 2 teh tarik. how much?")).toMatch(/30 × Satay Ayam \(RM1\.30\) \+ 20 × Satay Daging \(RM1\.40\) \+ 2 × Teh Tarik \(RM3\.20\) = Total RM73\.40/);
+    expect(ask("10 ayam, 10 kambing and 2 teh tarik please", "Got it.", "add 10 more ayam. new total?")).toMatch(/20 × Satay Ayam/);
+  });
+  it("swaps a line keeping its count, and gives 'my share' of a line of many", () => {
+    expect(ask("20 satay daging and 1 teh tarik", "Got it.", "actually change the beef to chicken, same 20 sticks. how much now?")).toMatch(/20 × Satay Ayam \(RM1\.30\)/);
+    expect(ask("20 satay daging please", "Got it.", "remove the satay, we'll have 2 mee rebus instead. total?")).toMatch(/2 × Mee Rebus \(RM8\.90\) = Total RM17\.80/);
+    expect(ask("10 ayam, 10 kambing, 3 teh tarik", "Got it.", "I only had the kambing and one teh tarik. What's my share?")).toMatch(/10 × Satay Kambing \(RM1\.80\) \+ Teh Tarik \(RM3\.20\) = Total RM21\.20/);
+  });
+});
