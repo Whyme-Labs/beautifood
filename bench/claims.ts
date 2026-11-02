@@ -96,6 +96,8 @@ export function claims(answer: string, items: Item[], labels: { id: string; labe
       // (not "+RM2.00": an add-on's own price)
       const m = /(?<!\+\s?)RM\s?(\d+(?:\.\d{1,2})?)/i.exec(win);
       if (!m || m.index > 60 || NOT_A_PRICE.test(sentence.slice(0, s.to + m.index))) continue;
+      // ("Nasi uduk is RM1.00 more": what it adds, not its price)
+      if (/^\s*(more|extra|lebih|cheaper|less)\b|^\s*(多|贵)/i.test(win.slice(m.index + m[0].length))) continue;
       // "2 × Teh Tarik (RM3.50)" gives the unit price; "Teh Tarik x2 RM7.00" the line's
       const said = Math.round(Number(m[1]) * 100);
       // with add-ons: any one option of each group, or none ("large iced" is both)

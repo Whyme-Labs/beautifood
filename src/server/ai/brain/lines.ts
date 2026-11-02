@@ -260,6 +260,8 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
     const first = numberAfter(words, lead);
     if (first && (first.end === words.length || COUNTER.test(words[first.end] ?? "") || /^(of|daripadanya|with|w|less|no|extra|large|besar|tambah|add|加|换|要|走|少|冰|热|大)$/.test(words[first.end] ?? "") || /[㐀-鿿]/.test(words[first.end] ?? ""))) n = first.n;
     if (/^(both|all|semua|kedua|dua dua|全部|都)$/.test(words[0])) n = null;
+    // ("tambah tahu satu": one, said after the add-on, as Malay does)
+    if (n === null && words.length >= 2 && /^(satu|one|sebiji|seketul|sekeping)$/.test(words[words.length - 1])) n = 1;
     const targets = lastClause.filter((l) => optionsSaid(text, l.dish, true).add.length || optionsSaid(text, l.dish, true).off.length);
     // ("kirin? 2 bottles how much": the count of the one dish just named, said on its own)
     // (only the count and its unit: not "2 bowls of rice")

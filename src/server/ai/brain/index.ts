@@ -82,8 +82,8 @@ export function ownersOf(text: string, named: Item[]): Record<string, string> {
     const mine = all(i).filter((w) => !named.some((o) => o.id !== i.id && all(o).includes(w)));
     return mine.length ? mine : [normalize(i.name)];
   };
-  const SELF = /^(me|i|i ll|i will|i m|my|mine|for me|saya|aku|sy|me the|myself)$/i;
-  const OTHER = /^(my friend|my frend|my fren|my gf|my bf|my wife|my husband|my son|my daughter|my mum|my mom|my dad|kawan saya|kawan aku|isteri saya|suami saya|anak saya|dia|he|she|friend)$/i;
+  const SELF = /^(me|i|i ll|i will|i m|i'm|im|i am|my|mine|for me|saya|aku|sy|me the|myself)$/i;
+  const OTHER = /^(my friend|my frend|my fren|my gf|my bf|my wife|my husband|my son|my daughter|my mum|my mom|my dad|kawan saya|kawan aku|isteri saya|suami saya|anak saya|dia|he|she|he's|she's|hes|shes|friend)$/i;
   // (who's said goes on to the next part until someone else is: "Ali: loh mee + kopi. Mei: ...")
   let current: string | null = null;
   const parts: { n: string; whose: string }[] = [];
@@ -92,7 +92,7 @@ export function ownersOf(text: string, named: Item[]): Record<string, string> {
     const two = raw.split(/\s+/).slice(0, 2).join(" ");
     const one = raw.split(/\s+/)[0] ?? "";
     // ("my friend" is the friend, though "my" alone would be the guest)
-    const who = OTHER.test(two) ? two.toLowerCase().replace(/\bfrend\b|\bfren\b/, "friend") : SELF.test(two) || SELF.test(one) ? "me" : /^[A-Z][a-z]+$/.test(one) && !/^(Separate|Bill|Bills|Please|Total|Actually|Then|So|Ok|Okay|Also|Plus|And|The|One|Two|Can|Could|How|What|Split|We|Us|Our|Kami|Kita|Semua|Bahagi|Bayar|Berapa|Tolong|Boleh)$/.test(one) && !named.some((i) => words(i).includes(one.toLowerCase())) ? one : null;
+    const who = OTHER.test(two) ? two.toLowerCase().replace(/\bfrend\b|\bfren\b/, "friend") : /^(she|she's|shes)$/i.test(one) ? "she" : /^(he|he's|hes)$/i.test(one) ? "he" : SELF.test(two) || SELF.test(one) ? "me" : /^[A-Z][a-z]+$/.test(one) && !/^(Separate|Bill|Bills|Please|Total|Actually|Then|So|Ok|Okay|Also|Plus|And|The|One|Two|Can|Could|How|What|Split|We|Us|Our|Kami|Kita|Semua|Bahagi|Bayar|Berapa|Tolong|Boleh)$/.test(one) && !named.some((i) => words(i).includes(one.toLowerCase())) ? one : null;
     if (who) current = who;
     const whose = who ?? current;
     if (!whose) continue;
@@ -169,7 +169,9 @@ export function ownDishes(u: { dishes: Dish[]; toks: string[]; spots: Spot[]; br
   if (swapping) for (const s of u.spots) if (wholeNamed(s.dish)) asOption.delete(s);
   // (not with a count before it: "10 more ayam" is ten more of the Satay Ayam)
   const phrased = (d: Dish) => u.spots.some((s) => s.dish === d && s.from > 0 && /^(less|no|extra|more|kurang|tanpa|lebih|without|tak|takde)$/.test(u.toks[s.from - 1]) && !/^(\d+|one|two|three|four|five|six|seven|eight|nine|ten|satu|dua|tiga|empat|lima)$/.test(u.toks[s.from - 2] ?? "") && s.to - s.from < normalize(d.name).split(" ").length);
-  return (u.dishes as Item[]).filter((d) => (ordered.some((o) => o.id === d.id) && !phrased(d)) || !u.spots.some((s) => s.dish === d && asOption.has(s)) && !(ordered.some((o) => o.id === d.id) && phrased(d)));
+  // ("2 es jeruk kurang manis": "kurang manis" is the jeruk's choice, not the Es Teh Manis)
+  const anotherChoice = (d: Dish) => u.spots.some((s) => s.dish === d && s.covered.some((i) => i > 0 && /^(less|no|extra|more|kurang|tanpa|lebih|without)$/.test(u.toks[i - 1]) && u.dishes.some((o) => o.id !== d.id && (o.modifiers ?? []).some((g) => g.options.some((x) => normalize(x.name) === `${u.toks[i - 1]} ${u.toks[i]}`)))));
+  return (u.dishes as Item[]).filter((d) => !anotherChoice(d) && ((ordered.some((o) => o.id === d.id) && !phrased(d)) || !u.spots.some((s) => s.dish === d && asOption.has(s)) && !(ordered.some((o) => o.id === d.id) && phrased(d))));
 }
 
 /** The lines a message orders ("2 large iced teh, one less sweet"), of the dishes it names that can be had. */
@@ -1599,7 +1601,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "what bases can I choose for the set?", "what milk do you have for the latte?", "可以加什么？": a dish's choices
   // (not "so many choice, which one confirm sedap?": that's asking for the best)
   // "got mentaiko mayo as a topping?": an add-on asked after by name, that no dish has
-  const asTopping = nt0.match(/\b(?:got|have|ada|any|you have|can i get|can i add|boleh tambah)\s+(?:the |some )?([a-z]+(?: [a-z]+){0,2}?)\s+(?:as|for)\s+(?:a |an |the )?(?:topping|toppings|add on|add ons|addon|extra|side)\b/)?.[1];
+  const asTopping = nt0.match(/\b(?:got|have|ada|any|you have|can i get|can i add|boleh tambah)\s+(?:the |some )?([a-z]+(?: [a-z]+){0,2}?)\s+(?:as|for)\s+(?:a |an |the )?(?:topping|toppings|add on|add ons|addon|extra|side)\b/)?.[1] ??
+    // ("got kerupuk to add?")
+    nt0.match(/^(?:got|ada|any|do you have|you have)\s+(?:the |some )?([a-z]+(?: [a-z]+){0,1}?)\s+(?:to add|to add on|for adding|nak tambah|untuk tambah)\b/)?.[1];
   if (asTopping && !optionsAsked(asTopping, live).length && !live.some((i) => ` ${normalize(i.name)} `.includes(` ${asTopping} `)))
     return reply("dish_info", t("assistantReply.addOnNone", { option: en ? asTopping.charAt(0).toUpperCase() + asTopping.slice(1) : asTopping }), []);
   // ("how many dips can i pick with the karaage?": a group of the dish's, by its name)
@@ -1675,6 +1679,16 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const freeOnes = optionsSaid(u.text, d, true).add.filter((o) => !o.price);
     if (freeOnes.length) return reply("dish_info", t("assistantReply.freeChoice", { dish: name(d), option: list(freeOnes.map(optionLabel)), price: money(d.price) }), [d]);
   }
+  // "level 5 extra charge ah?" of a line ordered: what that choice costs on it
+  if (!mentioned.length && state.order.length && (/\b(extra charge|charge|caj|kena bayar|bayar lebih|cost more|more money|tambah duit)\b/.test(nt1) || /加钱|要钱|另收|收费/.test(u.text))) {
+    const line = [...state.order].reverse().find((o) => optionsSaid(u.text, o.item, true).add.length);
+    if (line) {
+      const chosen = optionsSaid(u.text, line.item, true).add;
+      const priced_ = chosen.filter((o) => o.price > 0);
+      if (!priced_.length) return reply("dish_info", t("assistantReply.freeChoice", { dish: name(line.item), option: list(chosen.map(optionLabel)), price: money(line.item.price) }), [line.item]);
+      return reply("dish_info", t("assistantReply.moreFor", { option: list(priced_.map(optionLabel)), more: money(priced_.reduce((n, o) => n + o.price, 0)), dish: t("assistantReply.withOptions", { dish: name(line.item), options: list(priced_.map(optionLabel)) }), price: money(line.item.price + priced_.reduce((n, o) => n + o.price, 0)) }), [line.item]);
+    }
+  }
   // "ada susu badam? berapa tambah?": an add-on asked about on its own
   // (asked as a price, not "allergic to egg, which roti?" or "what's acar bawang?")
   if (!mentioned.length && !pointed.length && !state.order.length && (/\b(how much|berapa|price|harga|cost|extra charge|charge for|more for|tambah berapa|got charge|any charge|ada caj|kena caj|charge|kena bayar|bayar lebih|percuma|(?<!(?:gluten|dairy|sugar|nut|egg|msg|pork|lard|meat|alcohol|lactose|caffeine|halal) )free)\b/.test(nt1) || /多少钱|加多少|几钱|加钱|要钱|另外收费|收费|免费/.test(u.text)) && !/\b(allerg\w*|alergi|alah|alahan|intolerant)\b|过敏/.test(u.text.toLowerCase())) {
@@ -1741,7 +1755,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // a dish's meal add-on) against its parts one by one, as they listed them or as its description lists them
   const setWord = /\b(set|sets|combo|meal|platter|package|pakej)\b/.test(nt1) || /套餐|配套/.test(u.text);
   // (ordering them one by one, not paying apart, "bayar asing-asing"; nor "anything cheaper?", something else)
-  const vsWord = (/\b(separate|separately|ala carte|one by one|individually)\b/.test(nt1) && !/\b(pay|paying|bayar|bill|bills|bil)\s+(separate|separately)\b/.test(nt1)) || /\b(cheaper|worth|save|jimat|murah)\b.*\b(if|to)\s+(i |we )?(take|get|order|ambil|beli)\b/.test(nt1) || /单点|单叫|分开点|分开叫/.test(u.text);
+  // ("ayam penyet and es teh, combo cheaper or not?")
+  const vsWord = /\b(set|combo|meal|platter)s? (cheaper|lagi murah|murah|worth it)\b/.test(nt1) || (/\b(separate|separately|ala carte|one by one|individually)\b/.test(nt1) && !/\b(pay|paying|bayar|bill|bills|bil)\s+(separate|separately)\b/.test(nt1)) || /\b(cheaper|worth|save|jimat|murah)\b.*\b(if|to)\s+(i |we )?(take|get|order|ambil|beli)\b/.test(nt1) || /单点|单叫|分开点|分开叫/.test(u.text);
   if (setWord && vsWord && u.budget === null && !/\b(anything|something|other|else|another|budget)\b/.test(nt1)) {
     const SETLIKE = /\b(set|combo|platter|package|pakej)\b/i;
     const MEAL = /^(meal|set|combo)\b/i;

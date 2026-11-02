@@ -1367,3 +1367,23 @@ describe("a western stall's sides and sauces", () => {
     expect(ask("1 beef burger with cheesy fries", "Beef Burger with Cheesy Fries RM22.40.", "change cheesy fries to normal fries. total?")).toMatch(/^Beef Burger \(RM18\.90\) = Total RM18\.90/);
   });
 });
+
+describe("an ayam penyet stall's choices", () => {
+  const dishes = asItems([
+    { id: "p1", name: "Ayam Penyet", category: "Mains", description: "smashed fried chicken with sambal", price: 1490, allergens: ["crustaceans"], dietary: [], spiceLevel: 3, isSignature: true },
+    { id: "p2", name: "Es Jeruk", category: "Drinks", description: "iced orange", price: 450, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "p3", name: "Es Teh Manis", category: "Drinks", description: "sweet iced tea", price: 350, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "p1" ? { ...i, modifiers: [{ name: "Sambal level", min: 1, max: 1, options: [{ name: "Level 4", price: 0 }, { name: "Level 5", price: 0 }] }, { name: "Add-ons", min: 0, max: 5, options: [{ name: "Tahu", price: 300 }] }] }
+    : i.id === "p2" ? { ...i, modifiers: [{ name: "Sweetness", min: 1, max: 1, options: [{ name: "Normal", price: 0 }, { name: "Kurang manis", price: 0 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads 'tambah tahu satu' as on one of them, and 'kurang manis' as the drink's choice", () => {
+    expect(ask("boss 2 ayam penyet level 4, tambah tahu satu, 2 es jeruk kurang manis. total brapa")).toMatch(/Ayam Penyet \(RM14\.90\) \+ Ayam Penyet with Tahu \(RM17\.90\) \+ 2 × Es Jeruk \(RM4\.50\) = Total RM41\.80/);
+  });
+  it("says what a choice costs on the line ordered", () => {
+    expect(ask("1 ayam penyet", "One Ayam Penyet, RM14.90.", "level 5 extra charge ah?")).toMatch(/Level 5 is free, no extra charge: Ayam Penyet stays RM14\.90/);
+  });
+  it("says it hasn't what's asked to be added", () => {
+    expect(ask("got kerupuk to add?")).toMatch(/Kerupuk isn't available as an add-on/);
+  });
+});
