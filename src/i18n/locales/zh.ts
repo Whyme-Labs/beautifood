@@ -581,6 +581,7 @@ const zh = {
     lardNoChoice: "{dish}是用猪油做的，没有不加猪油的选项。",
     lardFreeAlt: "不用猪油的有：{list}。",
     onlyLessSpicy: "{dish}本身是辣的，没办法完全走辣，但可以要少辣（{option}，免费）。",
+    veganChoices: "要让{dish}保持全素，可以选{ok}；{bad}含蛋，不是全素。",
     mealDrinkNot: "{dish}的套餐饮料不包括{drink}。可选：{list}。",
     addOnPork: "是的，加的{option}是猪肉做的。",
     addOnHas: "加的{option}{what}含有{list}。",

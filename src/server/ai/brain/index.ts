@@ -148,6 +148,8 @@ export function optionAllergens(o: ModifierOption, dish?: { description?: string
   }
   if (/\bglutinous\b|\bpulut\b/.test(n)) out.delete("gluten");
   if (/\b(mayo|mayonnaise)\b/.test(n)) out.add("egg");
+  // (yellow and egg noodles are made with egg)
+  if (/\b(yellow mee|yellow noodles?|egg noodles?|mee kuning|wantan mee|wonton noodles?)\b/.test(n)) out.add("egg");
   if (/\b(mee sua|mee|yellow noodles?|egg noodles?|bread|roti|bun|croutons?|batter)\b/.test(n) && !/\b(bihun|bee hoon|mee hoon|meehoon|mihun|rice noodles?|kuey teow|kway teow)\b/.test(n)) out.add("gluten");
   if (/\b(sambal|belacan|terasi|hae ko)\b/.test(n) && (/\b(belacan|terasi|hae ko)\b/.test(n) || /\b(belacan|terasi|shrimp paste|hae ko|dried shrimp|prawn paste)\b/i.test(dish?.description ?? ""))) out.add("crustaceans");
   return [...out];
@@ -1399,6 +1401,40 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const m = ctx.menus?.find((x) => x.id === n.menuId);
     return t("assistantReply.notNow", { dish: name(i), menu: m ? menuName(m) : n.menu, when: when(n) });
   };
+  // ("for the laksa which noodle should i take? yellow mee can?" of a vegan guest): the choices that keep it vegan
+  const veganNow = [...state.diet, ...u.diet].includes("vegan");
+  const shownNamed = state.shown.filter((i) => normalize(i.name).split(" ").some((w) => w.length > 3 && ` ${nt0} `.includes(` ${w} `)));
+  const veganHost = mentioned.length === 1 ? mentioned[0] : state.shown.length === 1 ? state.shown[0] : shownNamed.length === 1 ? shownNamed[0] : state.focus;
+  if (veganNow && veganHost && (/\b(which|what)\b/.test(nt0) || /哪|什么/.test(u.text))) {
+    const g = (veganHost.modifiers ?? []).find((x) => (x.min ?? 0) >= 1 && (x.max ?? 1) <= 1 && normalize(x.name).split(" ").some((w) => w.length > 2 && ` ${nt0} `.includes(` ${w.replace(/s$/, "")}`)));
+    if (g) {
+      const notVegan = (o: ModifierOption) => optionAllergens(o, veganHost, ctx.items).some((a) => a === "egg" || a === "milk");
+      const ok = g.options.filter((o) => !notVegan(o) && !/mixed|\+/i.test(o.name) || (!notVegan(o) && !g.options.some((x) => notVegan(x) && o.name.toLowerCase().includes(x.name.toLowerCase()))));
+      const bad = g.options.filter(notVegan);
+      if (bad.length) return reply("dish_info", t("assistantReply.veganChoices", { dish: name(veganHost), ok: list(ok.map(optionLabel)), bad: list(bad.map(optionLabel)) }), [veganHost]);
+    }
+  }
+  // ("what drinks can I pick with the lunch combo?"): the combo's own drink choices, with what each adds
+  if (u.budget === null && (/\b(what|which) (drinks?|beverages?)\b|\bdrinks? (can|could|do) (i|we)\b|\bdrink (options?|choices?)\b|\bair apa\b/.test(nt0) && /\b(combo|set|meal|package|pakej)\b/.test(nt0) || /什么饮料|哪些饮料|饮料.{0,4}(选|有什么)/.test(u.text) && /套餐/.test(u.text))) {
+    const inMenu = (ctx.menus ?? []).filter((m) => ` ${normalize(u.text)} `.includes(` ${normalize(m.name)} `)).map((m) => m.id);
+    const pool_ = (mentioned.length ? mentioned : live.filter((i) => (i.menuIds ?? []).some((id) => inMenu.includes(id)) || (!inMenu.length && /\b(combo|set)\b/i.test(i.name)))).filter((i) => (i.modifiers ?? []).some((g) => /drink|minuman|beverage|饮料/i.test(g.name)));
+    if (pool_.length) {
+      const g = pool_[0].modifiers!.find((x) => /drink|minuman|beverage|饮料/i.test(x.name))!;
+      const same_ = pool_.filter((i) => i.modifiers!.some((x) => /drink|minuman|beverage|饮料/i.test(x.name) && x.options.map((o) => o.name).join() === g.options.map((o) => o.name).join()));
+      return reply("dish_info", `${list(same_.slice(0, 3).map(name))}: ${choicesText({ ...pool_[0], modifiers: [g] }, money, !en)}.`, same_.slice(0, 3));
+    }
+  }
+  // ("Can I put all of those on one nasi lemak?" of the lauk just listed): more than its group takes
+  if (/\ball (of )?(those|these|them)\b|\bsemua (tu|itu|ni|ini)\b/.test(nt0) || /全部|都加/.test(u.text)) {
+    // (or the kind it's put on, its plainest first: "on one nasi lemak" is the Nasi Lemak Biasa)
+    const onKind = nt0.match(/\b(?:on|onto|in|dalam) (?:one|a|an|the|my|1|satu) ([a-z]+(?: [a-z]+)?)/)?.[1];
+    const kindHosts = onKind ? live.filter((i) => ` ${normalize(i.name)} `.includes(` ${onKind} `)).sort((a, b) => a.name.length - b.name.length) : [];
+    const hosts_ = (mentioned.length ? mentioned : state.focus ? [state.focus] : kindHosts).filter((i) => i.modifiers?.length);
+    for (const d of hosts_) for (const g of d.modifiers ?? []) {
+      const n_ = state.shown.filter((i) => g.options.some((o) => normalize(o.name) === normalize(i.name) || ` ${normalize(o.name)} `.includes(` ${normalize(i.name)} `))).length;
+      if (n_ >= 2 && n_ > (g.max ?? 1)) return reply("dish_info", t("assistantReply.maxChoices", { dish: name(d), group: g.name.toLowerCase(), max: g.max ?? 1, count: n_ }), [d]);
+    }
+  }
   // "any promo?", "happy hour?", "优惠": the dishes on a deal now, or when the next one starts
   // "when does tea time start?", "satay from what time until what time?", "is the pastry happy hour on
   // weekends too?", "现在还有早午餐吗？": a deal or timed menu by its name, its days and hours

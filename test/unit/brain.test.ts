@@ -1890,3 +1890,25 @@ describe("less spicy, no lard, and an allergy said with a choice", () => {
     expect(ask("coeliac. sliced fish bee hoon with mee hoon instead ok?")).not.toMatch(/Mee Hoon add-on has Gluten/);
   });
 });
+
+describe("a combo's drinks, a group's limit, and vegan-safe noodles", () => {
+  const dishes = asItems([
+    { id: "k1", name: "Lunch Wing Combo", category: "Lunch", description: "wings with rice and a drink", price: 2190, allergens: ["gluten"], dietary: [], spiceLevel: 1, isSignature: false },
+    { id: "k2", name: "Nasi Lemak Biasa", category: "Nasi Lemak", description: "coconut rice with sambal", price: 350, allergens: ["peanuts", "fish"], dietary: [], spiceLevel: 1, isSignature: true },
+    { id: "k3", name: "Ayam Goreng", category: "Lauk", description: "fried chicken", price: 450, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "k4", name: "Rendang Daging", category: "Lauk", description: "beef rendang", price: 550, allergens: [], dietary: [], spiceLevel: 1, isSignature: false },
+    { id: "k5", name: "Telur Mata", category: "Lauk", description: "fried egg", price: 150, allergens: ["egg"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "k6", name: "Vegetarian Curry Laksa", category: "Laksa", description: "curry broth without shrimp, with bihun", price: 1090, allergens: ["soy"], dietary: ["vegan"], spiceLevel: 2, isSignature: false },
+  ]).map((i) => (i.id === "k1" ? { ...i, modifiers: [{ name: "Drink", min: 1, max: 1, options: [{ name: "Coca-Cola", price: 0 }, { name: "Milkis", price: 100 }] }] } : i.id === "k2" ? { ...i, modifiers: [{ name: "Tambah Lauk", min: 0, max: 2, options: [{ name: "Ayam Goreng", price: 450 }, { name: "Rendang Daging", price: 550 }, { name: "Telur Mata", price: 150 }] }] } : i.id === "k6" ? { ...i, modifiers: [{ name: "Noodles", min: 1, max: 1, options: [{ name: "Bihun", price: 0 }, { name: "Yellow Mee", price: 0 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("lists the drinks a combo comes with and what each adds", () => {
+    expect(ask("what drinks can I pick with the wing combo?")).toMatch(/Drink: Coca-Cola, Milkis \(\+RM1\.00\)/);
+  });
+  it("says a nasi lemak takes only so many of the lauk just listed", () => {
+    expect(ask("what lauk do you have?", "Ayam Goreng (RM4.50), Rendang Daging (RM5.50), Telur Mata (RM1.50).", "can I put all of those on one nasi lemak?")).toMatch(/takes up to 2 tambah lauk, and that's 3/);
+  });
+  it("says which noodles keep a laksa vegan", () => {
+    expect(ask("i'm vegan", "Our Vegetarian Curry Laksa is vegan.", "for the laksa which noodle should i take? yellow mee can?")).toMatch(/take Bihun; Yellow Mee has egg/);
+  });
+});

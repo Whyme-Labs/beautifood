@@ -583,6 +583,7 @@ const en = {
     lardNoChoice: "{dish} is cooked with lard, and there's no no-lard choice for it.",
     lardFreeAlt: "Made without lard: {list}.",
     onlyLessSpicy: "{dish} is spicy as it's made and can't be made without chilli, but you can ask for it less spicy ({option}, free).",
+    veganChoices: "To keep {dish} vegan, take {ok}; {bad} has egg, so it isn't vegan.",
     mealDrinkNot: "{drink} isn't an option as the meal drink for {dish}. Its meals: {list}.",
     addOnPork: "Yes, the {option} add-on is made from pork.",
     addOnHas: "The {option} add-on{what} has {list}.",
