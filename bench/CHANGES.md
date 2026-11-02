@@ -1371,3 +1371,27 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     changed verdict with the same answer (v10v-ayam-penyet-cafe-003).
   - Dev numbers only. With ~45 commits of rules fitted on dev, the overfitting risk is higher still;
     only a fresh held-out set can say how much carries over.
+- **Bills and add-ons, fourth wave (owner: "keep going on the 26, then deploy").** The 26 cases triaged
+  as rule-fixable, all fixed. All dev 2803 → 3022 of 3194 (87.8% → 94.6%) since the start of this
+  work: fixed 219, broke 0, unsafe 0.
+  - By set: v8 428 → 441 of 491; v9 722 → 730 of 746; v10 798 → 895 of 956; v11 350 → 451 of 492.
+    Cases tagged bill or modifier: v8 99 → 110 of 110, v9 445 → 453 of 456, v10 353 → 448 of 465,
+    v11 149 → 249 of 250. The 21 still failing need features the brain doesn't have (time-of-day and
+    tomorrow prices, group budgets with charges, advice on choices, what an add-on is made of, add-on
+    names in Chinese, group limits, a combo's drink list with surcharges).
+  - What this wave added: add-ons said with a dish asked about are kept when it's picked ("roti canai
+    with egg add-on or roti telur … the cheaper one"); "add-on" and "can add?" aren't orders; the
+    cheapest way ignores what a description says a dish hasn't ("no egg in the dough") and what's
+    made from a food ("corn starch"); the plain one of a family ("two lattes" → Cafe Latte); a
+    swapped-out dish for an allergy leaves the bill; "the set" pointed at as mine; "add more chicken
+    to the carbonara"; "the first protein added"; a combo's or set's drink choices when another
+    drink is asked; one-size dishes; "the cheaper one pls, with es jeruk"; "one more of that (X)";
+    "2 fish ball noodle dry 1 soup, add tofu for the 2 dry one"; "the bitter gourd one x2 and the
+    first one x1"; "with extra fish" of Extra Fish Slices; a dish named by two side-by-side words
+    beside another's; the cheapest meal of a kind for a party; a beer's price and halal standing;
+    two dishes asked about a discount; typos (mcuh, mta, popiya, "ice watr"); 冷萃, 那我要一个; "bills"
+    isn't Ikan Bilis.
+  - The claim checker did not change. Still one case changed verdict with the same answer from the
+    start of this work (v10v-ayam-penyet-cafe-003).
+  - Dev numbers only, with ~55 commits of rules fitted on dev; only a fresh held-out set can say how
+    much carries over.

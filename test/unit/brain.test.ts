@@ -1797,3 +1797,26 @@ describe("the cheapest way, by what's really in a dish", () => {
     expect(ask("cheapest burger meal for 2 people?")).toMatch(/2 × Burger Telur with Meal: fries \+ sirap ais \(RM7\.00\)\. Total RM14\.00/);
   });
 });
+
+describe("a wantan stall's beer, discounts and a typo'd drink", () => {
+  const dishes = asItems([
+    { id: "w1", name: "Tiger Beer", category: "Drinks", description: "lager, contains alcohol", price: 1600, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "w2", name: "Char Siu Noodles", category: "Noodles", description: "egg noodles with char siu", price: 1050, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "w3", name: "Char Siu Rice", category: "Rice", description: "char siu over rice", price: 1000, allergens: ["soy"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "w4", name: "Plain Rice", category: "Rice", description: "steamed rice", price: 150, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "w5", name: "Ice Water", category: "Drinks", description: "iced water", price: 50, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]);
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("answers a beer's price and that it isn't halal, both asked", () => {
+    const a = ask("tiger beer how much? and halal?");
+    expect(a).toMatch(/not halal/);
+    expect(a).toMatch(/RM16\.00/);
+  });
+  it("bills two dishes asked about a discount, 'the rice' being the char siu rice", () => {
+    expect(ask("char siu noodles and char siu rice, the rice also got discount?")).toMatch(/Char Siu Noodles \(RM10\.50\) \+ Char Siu Rice \(RM10\.00\) = Total RM20\.50/);
+  });
+  it("reads 'ice watr' as the Ice Water", () => {
+    expect(ask("char siu rice + 1 ice watr, ttl")).toMatch(/Ice Water \(RM0\.50\)/);
+  });
+});

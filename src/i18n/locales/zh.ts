@@ -571,6 +571,7 @@ const zh = {
     drinkChoicesNot: "{dish}配的饮料没有{drink}，可以选：{list}。",
     oneSize: "{dish}只有一种分量。",
     oneSizeMore: "想多一点可以加{list}。",
+    priceIs: "{dish}是{price}。",
     mealDrinkNot: "{dish}的套餐饮料不包括{drink}。可选：{list}。",
     addOnPork: "是的，加的{option}是猪肉做的。",
     addOnHas: "加的{option}{what}含有{list}。",

@@ -530,6 +530,20 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     }
     found.push({ dish, at: Math.min(...covered), covered, score: (all ? 1 : coverage) + covered.length * 0.01 });
   });
+  // ("1 ice watr": a two-word name with one word said and the other typed a letter off beside it)
+  items.forEach((d) => {
+    const ws = normalize(d.name).split(" ");
+    if (ws.length !== 2 || found.some((m) => m.dish === d)) return;
+    toks.forEach((t, i) => {
+      const k = ws.indexOf(t);
+      if (k < 0 || skip.has(i)) return;
+      const j = k === 0 ? i + 1 : i - 1;
+      const o = toks[j];
+      const w = ws[1 - k];
+      if (!o || skip.has(j) || found.some((m) => m.covered.includes(i) || m.covered.includes(j)) || o === w || o.length < 4 || w.length < 4 || o[0] !== w[0] || editDistance(o, w, 1) > 1) return;
+      found.push({ dish: d, at: Math.min(i, j), covered: [i, j].sort((a, b) => a - b), score: 0.9 });
+    });
+  });
   // ("two lattes" where the lattes are Cafe, Spanish, Matcha …: the plain one, its other word only a cafe's)
   toks.forEach((t, i) => {
     if (skip.has(i) || found.some((m) => m.covered.includes(i)) || t.length < 4) return;
@@ -538,6 +552,12 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const plain = family.filter((d) => normalize(d.name).split(" ").slice(0, -1).every((w) => /^(cafe|caffe|classic|original|regular|house|plain|traditional|biasa)$/.test(w)));
     if (plain.length === 1) found.push({ dish: plain[0], at: i, covered: [i], score: 0.6 });
   });
+  // ("char siu noodles and char siu rice, the rice also got discount?": "the rice" is the char siu rice named, not the Plain Rice)
+  for (let k = found.length - 1; k >= 0; k--) {
+    const m = found[k];
+    const i = m.covered[0];
+    if (m.covered.length === 1 && toks[i - 1] === "the" && normalize(m.dish.name).split(" ").length >= 2 && found.some((o) => o !== m && o.covered.length >= 2 && !o.covered.includes(i) && normalize(o.dish.name).split(" ").includes(toks[i]))) found.splice(k, 1);
+  }
   // a match across a comma keeps the words of its own clause, when another dish names the other clause's
   // ("2 burger daging, 1 special ayam": the "special" is the ayam's, not the Burger Special Daging's)
   if (qBreaks.length) {

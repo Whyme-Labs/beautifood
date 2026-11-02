@@ -573,6 +573,7 @@ const en = {
     drinkChoicesNot: "{drink} isn't one of the drinks that come with {dish}: you can pick {list}.",
     oneSize: "{dish} comes in one size only.",
     oneSizeMore: "For more, you can add {list}.",
+    priceIs: "{dish} is {price}.",
     mealDrinkNot: "{drink} isn't an option as the meal drink for {dish}. Its meals: {list}.",
     addOnPork: "Yes, the {option} add-on is made from pork.",
     addOnHas: "The {option} add-on{what} has {list}.",

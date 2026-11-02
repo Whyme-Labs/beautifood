@@ -2106,8 +2106,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const readBill = byBasket && (asksMoney || !!ctx.basketChanged);
   const lineOwner = new Map<OrderLine, string>();
   // ("make it two, and one of them with extra ice cream" of the one dish just priced: an order)
+  // ("char siu noodles and char siu rice, the rice also got discount?": both, at the day's prices)
+  const dealsOfTwo = mentioned.length >= 2 && !state.order.length && /\b(discount|discounts|discounted|promo|diskaun)\b/.test(nt1);
   const makeIt = !mentioned.length && state.shown.length === 1 && /\b(?:make (?:it|that)|jadikan)\s+(\d|one|two|three|four|five|dua|tiga|empat|lima)\b/.test(nt1);
-  if (!difference && !u.budget && (readBill || changing || again || priceClaimed || totalWord || makeIt || choiceLines.length > 0 || ((mineAsked || eachAsked) && (state.order.length > 0 || mentioned.length > 1)) || (pointed.length > 0 && (howMuch || ordering || mentioned.length > 0 || pointed.some((p) => p.count > 1 || (optionsSaid(u.text, p.item, true).add.length && !(u.allergens.length && /[?？]|吗/.test(u.text)))) || (!/[?？]/.test(u.text) && !QUESTION.test(nt1)))) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
+  if (!difference && !u.budget && (readBill || changing || again || priceClaimed || totalWord || makeIt || dealsOfTwo || choiceLines.length > 0 || ((mineAsked || eachAsked) && (state.order.length > 0 || mentioned.length > 1)) || (pointed.length > 0 && (howMuch || ordering || mentioned.length > 0 || pointed.some((p) => p.count > 1 || (optionsSaid(u.text, p.item, true).add.length && !(u.allergens.length && /[?？]|吗/.test(u.text)))) || (!/[?？]/.test(u.text) && !QUESTION.test(nt1)))) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
     const bill: OrderLine[] = readBill ? [] : state.order.map((o) => ({ ...o }));
     if (readBill)
       for (const l of ctx.basket!.lines) {
@@ -2132,7 +2134,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // ("I only had the set and the lime juice": "the set" a line ordered, pointed at by its word)
     if (/\b(i only had|i had|i just had|i ate|i only ate)\b/.test(nt1)) for (const p of pointed) if (state.order.some((o) => o.item.id === p.item.id) && !mentioned.includes(p.item)) mentioned.push(p.item);
     const mineSaid = !readBill && state.order.length > 0 && mentioned.length > 0 && !editing && (/\b(i only had|i had|i just had|i ate|i got|mine|my share|my part|my portion|for me|i ll pay for|i will pay for|i pay for|i m paying for|saya (makan|ambil|order|minum|bayar)|aku (makan|ambil|minum|bayar))\b/.test(nt1) || /我只(吃|喝|点|要|付)了?|我(吃|喝|点)了|我的那|我付|付我的/.test(u.text)) && mentioned.every((i) => state.order.some((o) => o.item.id === i.id));
-    if (!readBill && mentioned.length && !edited && !mineSaid && (ordering || totalWord || howMuch || changing || priceClaimed || (eachAsked && withCharges) || (pointed.length > 0 && ORDERING_OK.test(nt1) && !/[?？]/.test(u.text))))
+    if (!readBill && mentioned.length && !edited && !mineSaid && (ordering || totalWord || howMuch || changing || priceClaimed || dealsOfTwo || (eachAsked && withCharges) || (pointed.length > 0 && ORDERING_OK.test(nt1) && !/[?？]/.test(u.text))))
       addLines(bill, turnLines(ctx, orderedLines(u, mentioned, existing)).filter((l) => (ordering || !existing.some((o) => o.item.id === l.item.id)) && !((REMOVE.test(nt1) || REMOVE.test(u.text)) && !ORDERING.test(nt1))));
     // ("cancel the kai lan, add one milo ais": the edit made, and the new dish said with "add" comes on too)
     else if (!readBill && edited && (ORDERING.test(nt1) || ORDERING_ZH.test(u.text))) {
@@ -2224,7 +2226,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (!readBill && choiceLines.length && !edited) bill.push(...choiceLines);
     // "2 bowls of rice", "satu nasi putih": the plain rice, when the menu has one
     const rice = plainRice(u.text, u.delexicalized.join(" "), live as Dish[]);
-    if (!readBill && rice && !edited && !bill.some((o) => o.item.id === rice.dish.id)) bill.push({ item: rice.dish as Item, count: rice.count });
+    // (not "the rice" of a rice dish just named: "char siu noodles and char siu rice, the rice also got discount?")
+    if (!readBill && rice && !edited && !bill.some((o) => o.item.id === rice.dish.id) && !(/\bthe rice\b/.test(nt1) && mentioned.some((i) => i.id !== rice.dish.id && /\brice\b/i.test(i.name)))) bill.push({ item: rice.dish as Item, count: rice.count });
     // "add a White Rice and a Tuak, what's the total?" after "try the Manok Pansoh with Midin": the
     // meal just suggested, and what they add to it
     // (never a dish that breaks what they said they avoid; "加巧克力酱" is an add-on, not "add")
@@ -2554,6 +2557,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     return reply("recommend", `${t("assistantReply.cheaperIntro", { price: money(cap) })}${sp}${picks.map(line).join(t("assistantReply.itemSep"))}${stop}`, picks);
   }
 
+  // ("tiger beer how much? and halal?"): its halal standing and its price, both asked
+  if (mentioned.length === 1 && u.diet.includes("halal") && howMuch && !state.order.length) {
+    const d = mentioned[0];
+    // (not shown as a pick when it isn't halal)
+    const ok_ = !notHalalWord(d) && (d.dietary.includes("halal") || d.dietary.includes("halal_friendly") || halalAt === "pork_free" || halalAt === "certified" || halalAt === "muslim_friendly");
+    return { ...reply("dish_info", `${dietVerdict(d)}${sp}${t("assistantReply.priceIs", { dish: name(d), price: money(d.price) })}`, ok_ ? [d] : []), safetyNote: allyNote(locale) };
+  }
   switch (intent) {
     case "greeting":
     case "out_of_scope":
