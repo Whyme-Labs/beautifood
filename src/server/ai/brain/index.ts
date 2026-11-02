@@ -266,10 +266,13 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     // ("make one of the nasi lemak large", "one of the teh tarik iced": one of that line, on a line of its own)
     // (and "make it two, one with extra scoop": one of them)
     const oneOf = /\b(one of (the|them|those)|satu daripada|salah satu)\b|^\s*(one|satu) (with|w|dengan|tambah|add)\b/.test(c) || /其中一|^\s*一(个|份|杯|碗)?(要|加)/.test(clause);
-    if (oneOf && targets.length === 1 && targets[0].count > 1) {
+    // ("2 of the teh tarik make it ais": two of them)
+    const nOfW = c.match(/\b(two|three|four|\d) of (the|them|those)\b/)?.[1];
+    const nOf = nOfW ? ({ two: 2, three: 3, four: 4 } as Record<string, number>)[nOfW] ?? Number(nOfW) : oneOf ? 1 : 0;
+    if (nOf && targets.length === 1 && targets[0].count > nOf) {
       const o = targets[0];
-      o.count -= 1;
-      const copy: OrderLine = { item: o.item, count: 1, options: o.options ? [...o.options] : undefined };
+      o.count -= nOf;
+      const copy: OrderLine = { item: o.item, count: nOf, options: o.options ? [...o.options] : undefined };
       order.splice(order.indexOf(o) + 1, 0, copy);
       targets.splice(0, 1, copy);
     }
@@ -432,7 +435,7 @@ const COUNT_SAID = /\b(\d+|one|two|three|four|five|six|satu|dua|tiga|empat|lima)
  * dishes the message names, in the order it names them.
  */
 /** "only 1 barley", "2 kopi only" in the "N only" form ONLY_N reads: "1 only", "2 only". */
-const onlyForm = (text: string) => normalize(text).replace(/\bonly (\d{1,2}|one|two|three|four|five)\b/, "$1 only").replace(/\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga)\s+(?:[a-z]+\s+){1,3}?(only|je|jer|sahaja|saja)\b/, "$1 $2");
+const onlyForm = (text: string) => normalize(text).replace(/\b(?:only|just|je) (\d{1,2}|one|two|three|four|five|satu|dua|tiga)\b/, "$1 only").replace(/\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga)\s+(?:[a-z]+\s+){1,3}?(only|je|jer|sahaja|saja)\b/, "$1 $2");
 export function editOrder(order: OrderLine[], text: string, named: Item[]): boolean {
   // "make the kopi ais 2 only, then add 1 milo ais", "cancel the kai lan, and barley make it 2 only":
   // each clause its own change, with the dishes it names (what a clause adds is the caller's to add)
@@ -466,7 +469,20 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
       if (any) return true;
     }
   }
-  return editOne(order, text, named);
+  const done = editOne(order, text, named);
+  // ("…, and nasi just 2": a count for a line ordered, by a word of its name, in a clause naming no dish)
+  let more = false;
+  for (const c of text.split(/[;；。]|\.(?!\d)\s|,|，/)) {
+    const m = onlyForm(c).match(/\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga) only\b/);
+    if (!m || named.some((i) => normalize(c).includes(normalize(i.name).split(" ")[0]))) continue;
+    const ws = normalize(c).split(" ").filter((w) => w.length > 2 && !/^(only|just|and|the|dan|then)$/.test(w));
+    const hits = order.filter((o) => normalize(o.item.name).split(" ").some((w) => ws.includes(w)));
+    if (hits.length === 1) {
+      hits[0].count = ({ one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3 } as Record<string, number>)[m[1]] ?? Number(m[1]);
+      more = true;
+    }
+  }
+  return done || more;
 }
 
 function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
@@ -541,14 +557,17 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
   // "kopi ais 2 only", "barley 2 je": the count it is now
   // ("only 1 barley": the same, the number after)
   const only = onlyForm(text).match(ONLY_N) ?? text.match(ONLY_N);
-  if (only && named.length === 1 && ordered(named[0]) && !removing) {
+  // (said of that dish: not "2 of the teh tarik make it ais, and nasi just 2" of the teh tarik)
+  const onlyClause = text.split(/[,;，；。]|\band\b|\bdan\b/i).find((c) => ONLY_N.test(onlyForm(c)) || ONLY_N.test(c)) ?? text;
+  const ofIt = named.length === 1 && (normalize(onlyClause).split(" ").some((w) => w.length > 2 && normalize(named[0].name).split(" ").includes(w)) || Object.values(named[0].translations ?? {}).some((x) => !!x?.name && onlyClause.includes(x.name)));
+  if (only && named.length === 1 && ordered(named[0]) && !removing && ofIt) {
     const w = only[1] ?? only[3];
     order.find((o) => o.item.id === named[0].id)!.count = ({ one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5, 一: 1, 两: 2, 二: 2, 三: 3, 四: 4, 五: 5 } as Record<string, number>)[w] ?? Number(w);
     return true;
   }
   // "make that 3 roti telur", "jadikan dua": the count it is now, not more of it
   // (not "one of the teh tarik iced": one of them changed, not the count)
-  if (swap && named.length === 1 && ordered(named[0]) && (COUNT_SAID.test(t) || COUNT_SAID.test(text)) && !/\b(one of (the|them|those)|satu daripada|salah satu)\b/.test(t) && !/其中一/.test(text)) {
+  if (swap && named.length === 1 && ordered(named[0]) && (COUNT_SAID.test(t) || COUNT_SAID.test(text)) && !/\b((one|two|three|four|\d) of (the|them|those)|satu daripada|salah satu)\b/.test(t) && !/其中一/.test(text)) {
     // (the number after the cue: "teh tarik pun jadikan dua", "make the kopi two")
     const after = t.match(/\b(?:make (?:it|that|them|the \w+)|jadikan|jadi|change (?:it )?to|tukar jadi)\s+(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\b/)?.[1];
     const n = after ? ({ one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5 } as Record<string, number>)[after] ?? Number(after) : countsOf(text, named as Dish[]).get(named[0] as Dish) ?? 1;

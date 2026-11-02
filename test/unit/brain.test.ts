@@ -1460,3 +1460,21 @@ describe("a claypot shop's pot sizes and per-person tea", () => {
     expect(ask("要一份三到四人的瓦煲鸡饭加咸鱼，四个人的中国茶，一共多少钱？")).toMatch(/with 3-4 pax, Salted fish \(RM33\.90\) \+ 4 × Chinese Tea/);
   });
 });
+
+describe("an ikan bakar stall's edits", () => {
+  const dishes = asItems([
+    { id: "i1", name: "Sotong Bakar", category: "Bakar", description: "grilled squid", price: 1800, allergens: ["molluscs"], dietary: [], spiceLevel: 1, isSignature: true },
+    { id: "i2", name: "Sambal Kicap", category: "Extras", description: "extra dip: kicap manis and chilli", price: 100, allergens: ["soy"], dietary: ["vegan"], spiceLevel: 1, isSignature: false },
+    { id: "i3", name: "Teh Tarik", category: "Drinks", description: "pulled milk tea", price: 300, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "i4", name: "Nasi Putih", category: "Rice", description: "plain rice", price: 200, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "i1" ? { ...i, modifiers: [{ name: "Dip", min: 0, max: 2, options: [{ name: "Sambal kicap", price: 0 }] }] } : i.id === "i3" ? { ...i, modifiers: [{ name: "Temperature", min: 1, max: 1, options: [{ name: "Hot", price: 0 }, { name: "Iced", price: 50 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const run = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content })));
+  it("reads 'sambal kicap for the sotong' as its free dip, not an allergy", () => {
+    const r = run("1 sotong bakar", "Sotong Bakar RM18.00.", "sambal kicap for the sotong", "Sambal kicap it is.", "add 2 teh tarik. total now?");
+    expect(r.answer).toMatch(/^Sotong Bakar \(RM18\.00\) \+ 2 × Teh Tarik \(RM3\.00\) = Total RM24\.00/);
+  });
+  it("makes two of four iced, and sets the rice by a word of its name", () => {
+    expect(run("4 teh tarik and 3 nasi putih", "Got it.", "2 of the teh tarik make it ais, and nasi just 2. total?").answer).toMatch(/2 × Teh Tarik \(RM3\.00\) \+ 2 × Teh Tarik with Iced \(RM3\.50\) \+ 2 × Nasi Putih \(RM2\.00\)|2 × Teh Tarik \(RM3\.00\).*2 × Nasi Putih/);
+  });
+});

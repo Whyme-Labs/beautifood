@@ -84,7 +84,8 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     const whole = /[㐀-鿿]/.test(text) ? !!zhName && text === zhName : words.length >= name.length;
     // ("upgrade to kimchi fries", "change it to the soy garlic")
     // ("a telur mata on the first one", "add sambal sotong on it", "加在面里")
-    const onto = /^(on|onto|to|in|into|dalam|atas|untuk)$/.test(toks[x.to] ?? "") && /^(the|my|it|that|this|top|one|nasi|roti)$/.test(toks[x.to + 1] ?? "");
+    // ("sambal kicap for the sotong": its dip, said for it)
+    const onto = /^(on|onto|to|in|into|dalam|atas|untuk|for)$/.test(toks[x.to] ?? "") && /^(the|my|it|that|this|top|one|nasi|roti)$/.test(toks[x.to + 1] ?? "");
     const cued = onto || toks.slice(Math.max(0, x.from - 2), x.from).some((t) => CUE.test(t)) || (toks[x.from - 1] === "to" && toks.slice(Math.max(0, x.from - 5), x.from - 1).some((t) => /^(upgrade|change|swap|switch|tukar|ganti|make)$/.test(t))) || (x.from > 0 && /^(and|dan|n|和)$/.test(toks[x.from - 1]) && toks.slice(Math.max(0, x.from - 6), x.from - 1).some((t) => CUE.test(t)));
     // (a count of its own before it makes it ordered: "two fish ball soup")
     let k = x.from - 1;
