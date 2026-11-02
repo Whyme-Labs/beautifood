@@ -1769,7 +1769,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "rice small can cheaper?" of a line ordered (or the dish just talked about): a choice at the same price
   // (asked, not pointed at: "ok the cheaper one" picks a dish)
-  const cheaperAsked = (/\b(cheaper|cheap|discount|murah|potong)\b/.test(nt1) || /便宜|少算|算便宜/.test(u.text)) && (/[?？吗]/.test(u.text) || /\b(can|boleh|ke|is it|will it)\b/.test(nt1)) && !/\b(the cheaper|cheaper one|cheapest|yang murah)\b/.test(nt1);
+  const cheaperAsked = (/\b(cheaper|cheap|discount|murah|potong)\b/.test(nt1) || /便宜|少算|算便宜/.test(u.text)) && (/[?？吗]/.test(u.text) || /\b(can|boleh|ke|is it|will it)\b/.test(nt1)) && !/\b(the cheaper|cheaper one|cheapest|yang murah)\b/.test(nt1) && !/\s(or|atau)\s|还是/.test(u.text);
   const sameOn = cheaperAsked && !mentioned.length ? ([...state.order].reverse().map((o) => o.item).find((i) => optionsSaid(u.text, i, true).add.some((x) => !x.price)) ?? (state.focus && optionsSaid(u.text, state.focus, true).add.some((x) => !x.price) ? state.focus : undefined)) : undefined;
   if (sameOn) {
     const free = optionsSaid(u.text, sameOn, true).add.filter((x) => !x.price);
@@ -2299,6 +2299,12 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return orderedLines(r, ownDishes(r, r.dishes as Item[]));
     };
     const priced = alts.map(linesOf_);
+    // ("the large plate or 2 small plates?" of the dish just talked about: both ways of it)
+    const focus_ = state.focus ?? (state.shown.length === 1 ? state.shown[0] : undefined);
+    if (!priced[0].length && !priced[1].length && focus_) {
+      const seg = (k: number) => (k === 0 ? alts[0].split(/[,，]/).pop() ?? "" : alts[1].split(/[,，?？]|\s[-–]\s/)[0]);
+      for (const k of [0, 1]) priced[k] = linesOf_(`${seg(k)} ${focus_.name}`);
+    }
     // ("oyster omelette medium or 2 small": the other way is of the same dish)
     for (const k of [0, 1]) if (!priced[k].length && priced[1 - k].length === 1) priced[k] = linesOf_(`${alts[k].replace(/[,?？，].*$/, "")} ${priced[1 - k][0].item.name}`);
     // (or a few dishes against one: "sandwich + hot milk tea, or the toast set?")
