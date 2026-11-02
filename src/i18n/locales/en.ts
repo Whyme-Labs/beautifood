@@ -579,6 +579,7 @@ const en = {
     tomorrowWord: "tomorrow",
     atTime: "at {time}",
     addOnNotHalal: "The {option} add-on has alcohol, so {dish} with it isn't halal.",
+    orSep: " or ",
     mealDrinkNot: "{drink} isn't an option as the meal drink for {dish}. Its meals: {list}.",
     addOnPork: "Yes, the {option} add-on is made from pork.",
     addOnHas: "The {option} add-on{what} has {list}.",

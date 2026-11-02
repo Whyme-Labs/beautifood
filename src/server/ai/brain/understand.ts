@@ -546,10 +546,13 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   });
   // ("two lattes" where the lattes are Cafe, Spanish, Matcha …: the plain one, its other word only a cafe's)
   toks.forEach((t, i) => {
-    if (skip.has(i) || found.some((m) => m.covered.includes(i)) || t.length < 4) return;
-    const family = items.filter((d) => { const ws = normalize(d.name).split(" "); return ws.length >= 2 && same(t, ws[ws.length - 1]); });
+    // (not the kind asked about: "which cendol?", "any lattes?")
+    if (skip.has(i) || found.some((m) => m.covered.includes(i)) || t.length < 4 || toks.slice(Math.max(0, i - 2), i).some((w) => /^(which|what|any|apa|mana|got|ada|other|another|types?|kinds?)$/.test(w))) return;
+    // (its word first or last: "the cendol itself" of Cendol Original, Cendol Pulut, Durian Cendol …)
+    const family = items.filter((d) => { const ws = normalize(d.name).split(" "); return ws.length >= 2 && (same(t, ws[ws.length - 1]) || same(t, ws[0])); });
     if (family.length < 2) return;
-    const plain = family.filter((d) => normalize(d.name).split(" ").slice(0, -1).every((w) => /^(cafe|caffe|classic|original|regular|house|plain|traditional|biasa)$/.test(w)));
+    const PLAIN = /^(cafe|caffe|classic|original|regular|house|plain|traditional|biasa|asli)$/;
+    const plain = family.filter((d) => normalize(d.name).split(" ").filter((w) => !same(t, w)).every((w) => PLAIN.test(w)));
     if (plain.length === 1) found.push({ dish: plain[0], at: i, covered: [i], score: 0.6 });
   });
   // ("char siu noodles and char siu rice, the rice also got discount?": "the rice" is the char siu rice named, not the Plain Rice)

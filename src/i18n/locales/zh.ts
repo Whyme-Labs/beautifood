@@ -577,6 +577,7 @@ const zh = {
     tomorrowWord: "明天",
     atTime: "{time}",
     addOnNotHalal: "加的{option}含酒精，加了的{dish}就不清真。",
+    orSep: "或",
     mealDrinkNot: "{dish}的套餐饮料不包括{drink}。可选：{list}。",
     addOnPork: "是的，加的{option}是猪肉做的。",
     addOnHas: "加的{option}{what}含有{list}。",

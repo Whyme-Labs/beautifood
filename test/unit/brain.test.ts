@@ -1846,3 +1846,24 @@ describe("prices at other times, dinner-only dishes, a free choice asked of none
     expect(ask("I'm Muslim, which soups can I have?", "Sliced Fish Bee Hoon Soup RM13.90.", "the sliced fish bee hoon soup with XO wine can?")).toMatch(/XO Wine add-on has alcohol/);
   });
 });
+
+describe("what an add-on is made of, the plain one of a kind, and choices in Chinese", () => {
+  const dishes = asItems([
+    { id: "m1", name: "Soup Pan Mee", category: "Noodles", description: "hand-torn noodles in anchovy broth", price: 1090, allergens: ["gluten", "fish"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "m2", name: "Dry Chilli Pan Mee", category: "Noodles", description: "noodles with house chilli flakes (dried chilli fried with dried shrimp and garlic)", price: 1290, allergens: ["gluten", "crustaceans"], dietary: [], spiceLevel: 2, isSignature: false },
+    { id: "m3", name: "Cendol Original", category: "Desserts", description: "pandan jelly with fresh coconut milk and gula melaka", price: 550, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: true },
+    { id: "m4", name: "Cendol Pulut", category: "Desserts", description: "cendol with glutinous rice", price: 650, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "m5", name: "Loh Mee", category: "Noodles", description: "thick noodles in braised gravy", price: 1100, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "m1" ? { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 3, options: [{ name: "Chilli Flakes", price: 50 }] }] } : i.id === "m5" ? { ...i, translations: { zh: { name: "卤面" } }, modifiers: [{ name: "Add-ons", min: 0, max: 3, options: [{ name: "Extra braised pork", price: 300 }, { name: "Fish cake", price: 200 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("says an add-on has shrimp, by what the menu says it's made of elsewhere", () => {
+    expect(ask("i'm allergic to shellfish", "Noted.", "soup pan mee, can I add chilli flakes?")).toMatch(/Chilli Flakes add-on \(chilli flakes: dried chilli fried with dried shrimp/);
+  });
+  it("reads 'the cendol itself' as the original", () => {
+    expect(ask("lactose intolerant. the cendol itself got milk or not?")).toMatch(/Cendol Original.*coconut milk/);
+  });
+  it("lists add-ons with their Chinese names when answering in Chinese", () => {
+    expect(answerGuest(shop, [{ role: "user", content: "卤面可以加什么料？" }], "zh").answer).toMatch(/加卤肉（Extra braised pork）.*鱼饼（Fish cake）/);
+  });
+});

@@ -326,10 +326,36 @@ export function optionsAsked<T extends WithOptions>(text: string, dishes: T[]): 
 /** An option's name as a guest reads it: "Ais (iced)" is "iced", "Oat milk" and "Sui kow (2 pcs)" stay. */
 export const optionLabel = (o: ModifierOption) => (/\(\s*\d/.test(o.name) ? o.name : (o.name.match(/\(([^)]+)\)/)?.[1] ?? o.name));
 
+// Common add-on words in Chinese, longest first, for answering in Chinese ("Extra braised pork" → 加卤肉)
+const OPTION_ZH: [RegExp, string][] = ([
+  ["hard boiled egg", "水煮蛋"], ["hard-boiled egg", "水煮蛋"], ["fried egg", "荷包蛋"], ["onsen egg", "温泉蛋"], ["salted egg", "咸蛋"], ["braised egg", "卤蛋"], ["century egg", "皮蛋"],
+  ["braised pork", "卤肉"], ["roast pork", "烧肉"], ["char siu", "叉烧"], ["pork belly", "五花肉"], ["minced pork", "肉碎"], ["pork ribs", "排骨"], ["lard crisps", "猪油渣"],
+  ["fish cake", "鱼饼"], ["fish balls", "鱼丸"], ["fish ball", "鱼丸"], ["fish paste", "鱼浆"], ["fish slices", "鱼片"], ["fried fish skin", "炸鱼皮"],
+  ["red bean", "红豆"], ["sweet corn", "玉米"], ["grass jelly", "仙草"], ["glutinous rice", "糯米"], ["ice cream", "雪糕"], ["evaporated milk", "淡奶"], ["coconut milk", "椰浆"],
+  ["chilli flakes", "辣椒碎"], ["chilli sauce", "辣椒酱"], ["black pepper sauce", "黑胡椒酱"], ["mushroom sauce", "蘑菇酱"], ["cheese sauce", "芝士酱"], ["cheese slice", "芝士片"],
+  ["less sweet", "少甜"], ["no sugar", "无糖"], ["less ice", "少冰"], ["no ice", "走冰"], ["less spicy", "少辣"], ["extra spicy", "加辣"], ["less oil", "少油"], ["no msg", "无味精"], ["no spring onion", "不要葱"],
+  ["vegetables", "青菜"], ["vegetable", "青菜"], ["noodles", "面"], ["mee sua", "面线"], ["bee hoon", "米粉"], ["kway teow", "粿条"], ["kuey teow", "粿条"], ["yellow mee", "黄面"],
+  ["prawns", "虾"], ["prawn", "虾"], ["squid", "苏东"], ["chicken", "鸡肉"], ["beef", "牛肉"], ["lamb", "羊肉"], ["mutton", "羊肉"], ["duck", "鸭"], ["tofu", "豆腐"], ["egg", "鸡蛋"],
+  ["mushrooms", "香菇"], ["mushroom", "香菇"], ["corn", "玉米"], ["yam", "芋头"], ["coconut", "椰子"], ["chocolate", "巧克力"], ["durian", "榴莲"], ["peanuts", "花生"], ["mango", "芒果"], ["cheese", "芝士"], ["rice", "饭"],
+  ["small", "小"], ["medium", "中"], ["large", "大"], ["regular", "普通"], ["hot", "热"], ["iced", "冰"], ["soup", "汤"], ["dry", "干"],
+] as [string, string][]).map(([en, zh]) => [new RegExp(`\\b${en.replace(/[-]/g, "[- ]")}\\b`, "i"), zh]);
+/** An add-on's name in Chinese, when its words are common ones ("Extra braised pork" → 加卤肉); else undefined. */
+export function optionZh(name: string): string | undefined {
+  let rest = name.replace(/\([^)]*\)/g, " ").trim();
+  const extra = /^(extra|add|more|tambah)\s+/i.test(rest);
+  rest = rest.replace(/^(extra|add|more|tambah)\s+/i, "");
+  let out = "";
+  for (const [re, zh] of OPTION_ZH) if (re.test(rest)) { out += zh; rest = rest.replace(re, " "); }
+  if (!out || /[a-z]{3,}/i.test(rest.replace(/\b(and|with|of|the|a)\b/gi, ""))) return undefined;
+  return `${extra ? "加" : ""}${out}`;
+}
+
 /** A dish's choices as a guest reads them: "Base: Soup, Dry, Curry Laksa (+RM2.00)". */
-export function choicesText(dish: WithOptions, money: (n: number) => string): string {
+export function choicesText(dish: WithOptions, money: (n: number) => string, zh = false): string {
   // (a group that takes several says how many: "Dip (up to 2)")
-  return (dish.modifiers ?? []).map((g) => `${g.name}${(g.max ?? 1) > 1 && (g.max ?? 1) < g.options.length ? ` (up to ${g.max})` : ""}: ${g.options.map((o) => `${optionLabel(o)}${o.price ? ` (+${money(o.price)})` : ""}`).join(", ")}`).join("; ");
+  // (in Chinese, each with its Chinese name when it has a common one: "加卤肉 (Extra braised pork)")
+  const label = (o: ModifierOption) => { const z = zh ? optionZh(o.name) : undefined; return z ? `${z}（${optionLabel(o)}）` : optionLabel(o); };
+  return (dish.modifiers ?? []).map((g) => `${g.name}${(g.max ?? 1) > 1 && (g.max ?? 1) < g.options.length ? ` (up to ${g.max})` : ""}: ${g.options.map((o) => `${label(o)}${o.price ? ` (+${money(o.price)})` : ""}`).join(", ")}`).join("; ");
 }
 /** The option words a text uses for any of `dishes`' options (to keep "extra chilli sauce" from naming a chilli dish). */
 export function optionWordsSaid(text: string, dishes: WithOptions[]): Set<string> {
