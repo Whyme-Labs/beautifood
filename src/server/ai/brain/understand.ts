@@ -558,6 +558,12 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       // (nor a set unasked for: "small hokkien mee + fish ball + kopi ais" is the dishes, not the Hokkien Mee Set
       // whose description has them)
       if (SET_NAME.test(m.dish.name) && !toks.some((t) => /^(set|sets|combo|meal|meals)$/.test(t)) && !/套餐|配套/.test(raw)) m.score -= 1;
+      // (nor a variant unasked for: "burger daging" is the plain beef burger, not the Burger Special Daging)
+      const VARIANT = /^(special|double|triple|mini|jumbo|deluxe|premium|super|biggie)$/;
+      // (said in its own clause: "2 burger daging, 1 special ayam" says special of the ayam only)
+      const clauseToks = toks.filter((_, i) => m.covered.length && clauseOf(i) === clauseOf(m.covered[0]));
+      const unsaid_ = (d: Dish) => normalize(d.name).split(" ").some((w) => VARIANT.test(w) && !clauseToks.includes(w));
+      if (unsaid_(m.dish) && same_.some((o) => o !== m && !unsaid_(o.dish))) m.score -= 0.6;
     }
   }
   // "a classic acai with peanut butter topping": the Classic Acai Bowl with its topping, not the Peanut

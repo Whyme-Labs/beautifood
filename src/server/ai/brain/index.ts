@@ -593,7 +593,7 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
   // (not "one of the teh tarik iced": one of them changed, not the count)
   if (swap && named.length === 1 && ordered(named[0]) && (COUNT_SAID.test(t) || COUNT_SAID.test(text)) && !/\b((one|two|three|four|\d) of (the|them|those)|satu daripada|salah satu)\b/.test(t) && !/其中一/.test(text)) {
     // (the number after the cue: "teh tarik pun jadikan dua", "make the kopi two")
-    const after = t.match(/\b(?:make (?:it|that|them|the \w+)|jadikan|jadi|change (?:it )?to|tukar jadi)\s+(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\b/)?.[1];
+    const after = t.match(/\b(?:make (?:it|that|them|the (?:\w+ ){0,2}\w+)|jadikan|jadi|change (?:it )?to|tukar jadi)\s+(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\b/)?.[1];
     const n = after ? ({ one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5 } as Record<string, number>)[after] ?? Number(after) : countsOf(text, named as Dish[]).get(named[0] as Dish) ?? 1;
     order.find((o) => o.item.id === named[0].id)!.count = n;
     return true;
@@ -1510,7 +1510,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const lineName = (o: OrderLine) => (o.options?.length ? t("assistantReply.withOptions", { dish: name(o.item), options: list(o.options.map(optionLabel)) }) : name(o.item));
   // "how much more for large?" of a line ordered: what the choice adds, and the line with it
   const moreAsked = /\bhow much (more|extra)\b|\bberapa (lagi|lebih|tambah)\b|\bextra how much\b/.test(nt1) || /贵多少|加多少|多多少/.test(u.text);
-  const moreOn = moreAsked && !mentioned.length ? [...state.order].reverse().find((o) => optionsSaid(u.text, o.item).add.some((x) => x.price > 0)) : undefined;
+  // (or the dish just talked about, named again only in part: "how much more for the big roti john?")
+  const moreOn = moreAsked && (!mentioned.length || (state.focus && mentioned.some((i) => i.id === state.focus!.id) && mentioned.length > 1)) ? [...state.order].reverse().find((o) => optionsSaid(u.text, o.item).add.some((x) => x.price > 0)) ?? (state.focus && optionsSaid(u.text, state.focus).add.some((x) => x.price > 0) ? { item: state.focus, count: 1 } : undefined) : undefined;
   if (moreOn) {
     const extra = optionsSaid(u.text, moreOn.item).add.filter((x) => x.price > 0 && !(moreOn.options ?? []).some((y) => y.name === x.name));
     if (extra.length) {

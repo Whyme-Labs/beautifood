@@ -1537,3 +1537,16 @@ describe("vegetarian dishes and add-ons", () => {
     expect(ask("veg claypot rice can add egg? i'm vegetarian not vegan")).toMatch(/^Yes\. Claypot Vegetarian Rice with Egg/);
   });
 });
+
+describe("plain dish over its variant, and a count made", () => {
+  const dishes = asItems([
+    { id: "r1", name: "Ramly Beef Burger", category: "Burgers", description: "beef patty, egg", price: 600, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "r2", name: "Burger Special Daging", category: "Burgers", description: "double beef patty, egg, cheese", price: 900, allergens: ["gluten", "egg", "milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "r3", name: "Teh O Ais", category: "Drinks", description: "iced black tea", price: 250, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]);
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("makes a drink's count what was said after 'make the X'", () => {
+    expect(ask("1 teh o ais", "Got it.", "make the teh o ais 3. how much?")).toMatch(/3 × Teh O Ais/);
+  });
+});
