@@ -1344,3 +1344,30 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   - Dev numbers only: no held-out figure exists for this work. It is ~30 commits of narrow rules
     fitted on dev, so the risk of overfitting has gone up; a fresh held-out set is the only way to
     know how much carries over.
+- **Bills and add-ons, third wave (same instruction).** Rules only. All dev 2803 → 2995 of 3194
+  (87.8% → 93.8%) since the start of this work: fixed 192, broke 0, unsafe 0.
+  - By set: v8 428 → 435 of 491; v9 722 → 725 of 746; v10 798 → 880 of 956; v11 350 → 450 of 492
+    (71.1% → 91.5%). Cases tagged bill or modifier: v8 99 → 105 of 110, v9 445 → 448 of 456, v10
+    353 → 433 of 465, v11 149 → 248 of 250. 47 tagged cases still fail.
+  - What this wave added: a dish's words stay in their own clause ("2 burger daging, 1 special
+    ayam"); a plain dish over a variant word not said (special, double, …); "make the X 3"; "ok
+    satu" takes the dish shown; "make it two" keeps the choices it was priced with; add-ons picked by
+    their place in the list just given ("add the second and the last one"); "the first dessert and
+    the second drink" from the lists that gave them; flavours counted ("3 of the yam and 2 of the
+    chocolate"); "each with service and tax"; meal drinks not offered; more sauces than a group
+    takes; a lone "air" as a drink in a planned order; Malay counts after the dish ("cendol satu");
+    add-ons listed after one "tambah"; "can add X?" questions don't order; a "no pork" choice doesn't
+    make a dish halal; lard can't go on a no-lard dish; an add-on that is pork; belacan named as
+    shrimp paste in an add-on warning; one-character and two-character Chinese names after a
+    counter (一杯茶, 三罐汽水, 啤酒); Chinese words for toppings and choices (榴莲, 花生, 椰糖, 奶白,
+    面线, 薯泥); Malay and spelling (bihun, campur, kasturi, jus, telur mata, tofu pok, "big" of
+    "Besar (long loaf)", swapped-letter typos); "fish soups today how much?" is no longer read as
+    avoiding fish.
+  - Narrow rules worth knowing about when judging overfitting: small fixed tables (`ONE_WORD`:
+    kentang goreng → fries, air mineral/kosong → water; `JOINED`: bihun/mihun for bee hoon), a
+    special case for "sos" as "sauce", and new answer strings for single situations (meal drink not
+    offered, lard can't be added, no-pork isn't halal, an add-on that is pork).
+  - The claim checker did not change in this wave. From the start of this work to now, one case
+    changed verdict with the same answer (v10v-ayam-penyet-cafe-003).
+  - Dev numbers only. With ~45 commits of rules fitted on dev, the overfitting risk is higher still;
+    only a fresh held-out set can say how much carries over.
