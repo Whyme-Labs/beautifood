@@ -1072,7 +1072,18 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
     }
     return answerGuest(ctx, [...turns, { role: "user", content: steps[steps.length - 1] }], locale, taste);
   }
-  const u = understand(ctx.items as Dish[], question);
+  // ("no need the egg, just the duck" with a Braised Egg ordered): a line taken off by one word of its name is that line,
+  // not an egg allergy
+  let asked = question;
+  const offWord = !/\b(allerg\w*|alergi|alah|intolerant)\b|过敏/i.test(question) ? normalize(question).match(/\b(?:no need(?: the)?|don t need(?: the)?|remove(?: the)?|cancel(?: the)?|drop(?: the)?|take out(?: the)?|tak nak|tak payah|buang)\s+([a-z]{3,})\b/)?.[1] : undefined;
+  if (offWord && state.order.length) {
+    const has = state.order.filter((o) => normalize(o.item.name).split(" ").some((w) => w === offWord || w === offWord.replace(/s$/, "")));
+    const whole = ctx.items.some((i) => normalize(i.name) === offWord);
+    const asOption = state.order.some((o) => (o.options ?? []).some((x) => normalize(x.name).split(" ").includes(offWord)));
+    // (only where the word would read as an allergy: "the egg", "the prawns"; "the perut" already finds its satay)
+    if (has.length === 1 && !whole && !asOption && mentionedAllergens(offWord).length) asked = question.replace(new RegExp(`\\b${offWord}\\b`, "i"), has[0].item.name);
+  }
+  const u = understand(ctx.items as Dish[], asked);
   return { ...respond(ctx, u, state, locale, taste ?? undefined), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
 }
 
