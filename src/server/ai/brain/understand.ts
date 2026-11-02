@@ -794,7 +794,8 @@ function spiceByClause(question: string, dishWords: Set<string>, raw: string) {
 /** Spice limits from the question, with the negation in front of a spice word taken into account. */
 function spiceOf(toks: string[], raw: string): { max: number | null; min: number | null } {
   // ("辣不辣？" asks whether it is, it doesn't say they want it mild)
-  if (/(?<!辣)不辣|不要辣|不吃辣|别辣|免辣|无辣|不能吃辣|怕辣|走辣|吃不了辣|不敢吃辣|受不了辣|不会吃辣/.test(raw)) return { max: 0, min: null };
+  // (and in Cantonese: "细路仔唔食得辣", "唔要辣", "食唔到辣")
+  if (/(?<!辣)不辣|不要辣|不吃辣|别辣|免辣|无辣|不能吃辣|怕辣|走辣|吃不了辣|不敢吃辣|受不了辣|不会吃辣|(?<!辣)唔辣|唔要辣|唔食(得)?辣|唔吃(得)?辣|食唔(到|得|了)辣|冇辣|无得食辣/.test(raw)) return { max: 0, min: null };
   if (/微辣|小辣|少辣|不太辣|一点点辣|中辣|不太能吃辣|不太吃辣|不怎么吃辣|不太会吃辣/.test(raw)) return { max: 1, min: null };
   if (/很辣|特辣|超辣|最辣|重辣|大辣|越辣越好/.test(raw)) return { max: null, min: 2 };
   let res: { max: number | null; min: number | null } = { max: null, min: null };
@@ -953,7 +954,7 @@ const CATEGORY_SYNONYMS: [RegExp, string[]][] = [
   [/^(soups?|sup)$/, ["soup"]],
 ];
 const CATEGORY_ZH: [RegExp, string[]][] = [
-  [/奶茶/, ["milk tea"]], [/果茶/, ["fruit tea"]], [/小吃|零食/, ["snack", "small plate", "side"]], [/海鲜/, ["seafood"]], [/肉类|肉菜/, ["meat"]],
+  [/奶茶/, ["milk tea"]], [/果茶/, ["fruit tea"]], [/卤嘢|卤味|卤水|卤的|卤料|卤菜/, ["braised"]], [/小吃|零食/, ["snack", "small plate", "side"]], [/海鲜/, ["seafood"]], [/肉类|肉菜/, ["meat"]],
   [/蔬菜|青菜|素菜/, ["vegetable"]], [/咖啡/, ["coffee"]], [/甜品|甜点|糖水/, ["dessert", "sweet"]], [/饮料|饮品|喝的/, ["drink", "beverage"]],
   [/串烧|烤串|串/, ["skewer", "yakitori"]], [/丼|盖饭/, ["donburi", "don"]], [/拉面|面/, ["noodle", "ramen"]], [/饭/, ["rice"]], [/咖喱/, ["curr"]],
   [/早餐|早午餐/, ["breakfast", "brunch"]], [/粥/, ["congee", "porridge", "bubur"]], [/锅底/, ["soup base", "broth", "soup"]], [/饭团/, ["onigiri", "rice ball"]], [/(?<![奶果擂骨凉])茶(?!饭|餐)/, ["tea"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]], [/炸/, ["fried"]], [/汉堡/, ["burger"]], [/披萨(?!片)|比萨(?!片)/, ["pizza"]], [/寿司/, ["sushi"]], [/塔可/, ["taco"]], [/卷饼/, ["wrap", "burrito"]], [/沙拉/, ["salad"]], [/意面|意大利面/, ["pasta"]], [/点心/, ["dim sum"]], [/蒸/, ["steamed"]], [/烧烤|烤肉/, ["grill", "bbq", "barbecue"]], [/酱|蘸料/, ["sauce", "dip"]],
@@ -1130,6 +1131,10 @@ export function read(items: Dish[], asked: string): Reading {
       if (mentionedAllergens(toks[j]).length || toks[j] === "kacang") skip.add(j);
       else break;
     }
+  });
+  // ("tak pedas langsung", "not spicy"): a spice word said negated is the spice, not the Assam Pedas
+  toks.forEach((t, i) => {
+    if (/^(pedas|spicy|hot|spice)$/.test(t) && /^(tak|tidak|x|bukan|kurang|not|no|non|less|without|tanpa)$/.test(toks[i - 1] ?? "")) skip.add(i);
   });
   // a dish found only by words they rule out ("I avoid garlic" isn't the Garlic Kailan) isn't named
   const noWords = wordsAvoided(items, question);
