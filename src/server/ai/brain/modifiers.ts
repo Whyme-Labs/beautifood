@@ -154,7 +154,9 @@ const withoutName = (text: string, dish: WithOptions) => {
 
 /** The options of `dish` that `text` asks for (priced only, unless `free`), and the ones it takes off ("no ice"). */
 export function optionsSaid(text: string, dish: WithOptions, free = false, loose = false): { add: ModifierOption[]; off: ModifierOption[] } {
-  const { t, raw } = withoutName(text, dish);
+  // ("large size", "big size", "saiz besar": the size itself)
+  const { t: t0, raw } = withoutName(text, dish);
+  const t = t0.replace(/\b(large|big|small|regular|medium|besar|kecil) (size|saiz|portion)\b|\b(size|saiz) (large|besar|small|kecil)\b/g, (m, a, _b, _c, d) => a ?? d);
   // ("change the telur mata to telur rebus": what's changed is taken off)
   const changed = t.match(/\b(?:change|swap|switch|tukar|ganti|replace)\s+(?:the |my |it |that )?((?:\w+ ){0,2}?\w+)\s+(?:to|for|with|kepada|jadi|dengan)\b/)?.[1]?.split(" ") ?? [];
   const changedZh = raw.match(/([\u4e00-\u9fff]{1,6}?)(?:可以|要)?(?:换成|改成|换做|改做)/)?.[1];
