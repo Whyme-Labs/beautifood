@@ -600,6 +600,7 @@ const zh = {
     youSave: "比平时便宜 {saved}。",
     restTotal: "其余的一共 {total}。",
     theirPart: "另一份一共 {total}。",
+    groupOn: "（{list}都有）。",
     cheaperThanApart: "分开点要 {apart}，这样省 {saved}。",
     waysCheaper: "{a}比较便宜：{aPrice}，{b}要 {bPrice}，省 {diff}。",
     waysSame: "{a}和{b}价钱一样：{price}。",

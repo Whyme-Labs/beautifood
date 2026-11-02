@@ -602,6 +602,7 @@ const en = {
     youSave: "That saves you {saved} against the usual prices.",
     restTotal: "The rest comes to {total}.",
     theirPart: "The other part comes to {total}.",
+    groupOn: " (on {list}).",
     cheaperThanApart: "Ordered one by one it would be {apart}, so that saves {saved}.",
     waysCheaper: "{a} is cheaper: {aPrice}, against {bPrice} for {b}, so you save {diff}.",
     waysSame: "{a} and {b} cost the same: {price}.",

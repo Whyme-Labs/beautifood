@@ -1380,6 +1380,10 @@ describe("an ayam penyet stall's choices", () => {
   it("reads 'tambah tahu satu' as on one of them, and 'kurang manis' as the drink's choice", () => {
     expect(ask("boss 2 ayam penyet level 4, tambah tahu satu, 2 es jeruk kurang manis. total brapa")).toMatch(/Ayam Penyet \(RM14\.90\) \+ Ayam Penyet with Tahu \(RM17\.90\) \+ 2 × Es Jeruk \(RM4\.50\) = Total RM41\.80/);
   });
+  it("lists a kind of choice asked with no dish, a run of levels said short", () => {
+    const lv = { ...shop, items: (shop.items as unknown as { id: string; modifiers?: unknown[] }[]).map((i) => (i.id === "p1" ? { ...i, modifiers: [{ name: "Sambal level", min: 1, max: 1, options: [1, 2, 3, 4, 5].map((n) => ({ name: `Level ${n}`, price: 0 })) }] } : i)) } as unknown as AssistantContext;
+    expect(answerGuest(lv, [{ role: "user", content: "what sambal levels got?" }]).answer).toMatch(/Sambal level: Level 1 to 5 \(on Ayam Penyet\)/);
+  });
   it("says what a choice costs on the line ordered", () => {
     expect(ask("1 ayam penyet", "One Ayam Penyet, RM14.90.", "level 5 extra charge ah?")).toMatch(/Level 5 is free, no extra charge: Ayam Penyet stays RM14\.90/);
   });

@@ -1689,6 +1689,24 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     nt0.match(/^(?:got|ada|any|do you have|you have)\s+(?:the |some )?([a-z]+(?: [a-z]+){0,1}?)\s+(?:to add|to add on|for adding|nak tambah|untuk tambah)\b/)?.[1];
   if (asTopping && !optionsAsked(asTopping, live).length && !live.some((i) => ` ${normalize(i.name)} `.includes(` ${asTopping} `)))
     return reply("dish_info", t("assistantReply.addOnNone", { option: en ? asTopping.charAt(0).toUpperCase() + asTopping.slice(1) : asTopping }), []);
+  // "spice level got what?", "what sambal levels got?", "the meal set comes with what?": a kind of choice the
+  // menu's dishes have, asked with no dish: its choices, on the dishes that have it
+  const groupWords = (g: { name: string }) => normalize(g.name).split(" ").filter((w) => w.length > 2 && !/^(the|and|your|pick|choose|choice|add|ons|extra|make|it)$/.test(w));
+  const asksGroup = !mentioned.length && !state.order.length && !u.budget && !u.superlative && !u.allergens.length && !u.diet.length && !u.party && (/\b(what|which|got what|ada apa|apa ada|comes with|come with|options?)\b/.test(nt0) || /有什么|有哪些|什么口味/.test(u.text));
+  if (asksGroup) {
+    // (a kind of choice by two words, "spice level", or a word only a choice is, "levels", "flavours": not "noodle", "drink")
+    const hits = live.flatMap((d) => (d.modifiers ?? []).filter((g) => { const ws = groupWords(g); return ws.length > 0 && (ws.length >= 2 || /^(level|size|flavou?r|topping|meal|set)$/.test(ws[0])) && ws.every((w) => new RegExp(`\\b${w}(s|es)?\\b`).test(nt0)); }).map((g) => ({ d, g })));
+    if (hits.length) {
+      const key = (g: { options: { name: string }[] }) => g.options.map((o) => o.name).join("|");
+      const top = [...new Map(hits.map((h) => [key(h.g), h])).values()].sort((a, b) => hits.filter((h) => key(h.g) === key(b.g)).length - hits.filter((h) => key(h.g) === key(a.g)).length)[0];
+      const on = hits.filter((h) => key(h.g) === key(top.g)).map((h) => h.d);
+      // ("Level 1" … "Level 5", all free: "Level 1 to 5")
+      const nums = top.g.options.map((o) => o.name.match(/^(.*?)\s*(\d+)$/));
+      const run = nums.every((m, k) => m && m[1] === nums[0]![1] && Number(m[2]) === Number(nums[0]![2]) + k) && top.g.options.every((o) => !o.price) && nums.length >= 3;
+      const body = run ? `${top.g.name}: ${nums[0]![1]} ${nums[0]![2]} ${en ? "to" : "到"} ${nums[nums.length - 1]![2]}` : choicesText({ ...top.d, modifiers: [top.g] }, money);
+      return reply("dish_info", `${body}${t("assistantReply.groupOn", { list: list(on.slice(0, 4).map(name)) })}`, on.slice(0, 4));
+    }
+  }
   // ("how many dips can i pick with the karaage?": a group of the dish's, by its name)
   // (its name in the plural, asked which or how many: not "what goes well with the chilli pan mee")
   const namesGroup = mentioned.length === 1 && /\b(what|which|how many)\b/.test(nt0) && !/\b(go|goes|going|pair|pairs|match)\b/.test(nt0) && (mentioned[0].modifiers ?? []).some((g) => normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(level|size|rice|portion)$/.test(w) && new RegExp(`\\b${w.replace(/s$/, "")}(s|es)\\b`).test(nt0)));
