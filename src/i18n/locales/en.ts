@@ -630,7 +630,7 @@ const en = {
     noIceChoice: "{dish} has no ice choice; it can't be changed.",
     upTo: "Yes: {dish} takes up to {max} ({group}).",
     onlyOne: "{dish} can't take two: it takes only one ({group}).",
-    addOnNone: "Sorry, {option} isn't available as an add-on.",
+    addOnNone: "Sorry, we don't have {option} as an add-on.",
     notAvailable: "Sorry, {thing} isn't available today.",
     changeFrom: "The bill comes to {total} with any service and tax, so from {paid} your change is {change}.",
     dealNotOn: "The {deal} doesn't apply to {dish}: it's {value}, {window}.",

@@ -1545,7 +1545,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "can I add pudding?", "can make less spicy?", "boleh tambah telur?", "可以加奶盖吗？", "can I get it hot?":
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
-    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many \w+ can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
+    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
     !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text) &&
     // ("can I have the second one with an iced lemon tea? total?": an order, its total asked)
     !(pointed.length && (/\b(total|altogether|semua|jumlah)\b/.test(nt1) || /一共|总共/.test(u.text)));
@@ -1553,12 +1553,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const fully = (i: Item) => u.spots.some((sp_) => sp_.dish.id === i.id && (sp_.covered.length >= normalize(i.name).split(" ").filter((w) => w.length > 1).length || /[\u3400-\u9fff]/.test(u.toks[sp_.from] ?? "")));
   const earlierHost = pointed[0]?.item ?? (state.order.length ? state.order[state.order.length - 1].item : state.focus);
   // what they ask to add, in their words ("almond butter", "mentega badam", "肉丸")
-  const thingAsked0 = nt1.match(/\b(?:add(?! ons?\b)|tambah|put|letak|top with|extra(?! charge| cost| caj))\s+(?:some |extra |a |an )?([a-z]+(?: [a-z]+){0,2}?)(?=\s+(?:on top|in it|inside|dalam|to it|to the|to my|on the|on my|in my|for the|for my|or not|boleh|please|pls|ah|lah|la|how|berapa|ke|tak|can)\b|\s*$)/)?.[1] ?? u.text.match(/加(?!钱|价|多少|几)([\u4e00-\u9fff]{1,5}?)(?:吗|可以|行|呢|[?？]|$)/)?.[1];
+  const thingAsked0 = nt1.match(/\b(?:add(?! ons?\b)|tambah|put|letak|top with|extra(?! charge| cost| caj)|with(?= [a-z]+(?: [a-z]+)? instead\b))\s+(?:some |extra |a |an )?([a-z]+(?: [a-z]+){0,2}?)(?=\s+(?:on top|in it|on it|inside|dalam|to it|to the|to my|on the|on my|in my|into my|into the|into it|for the|for my|or not|boleh|please|pls|ah|lah|la|how|berapa|ke|tak|can|instead)\b|\s*$)/)?.[1] ?? u.text.match(/加(?!钱|价|多少|几)([\u4e00-\u9fff]{1,5}?)(?:吗|可以|行|呢|[?？]|$)/)?.[1];
   // (not "can add how many things?": a question, not a thing)
   const thingAsked = thingAsked0 && /^(how|what|which|berapa|apa)\b/.test(thingAsked0) ? undefined : thingAsked0;
   // (or, asked of a kind of dish, "smoothies with no sugar?", "奶昔最多可以加几种营养粉？": the first of that kind with choices)
   const ofKind = !mentioned.length && !earlierHost && u.categories.length ? live.find((i) => u.categories.includes(i.category ?? "") && i.modifiers?.length) : undefined;
-  const optHost = (earlierHost && mentioned.length && !mentioned.some(fully) ? earlierHost : null) ?? mentioned.find((i) => i.modifiers?.length) ?? mentioned[0] ?? earlierHost ?? ofKind;
+  // ("can add char siu on it?": the dish talked about, not the Char Siu plate)
+  const optHost = (earlierHost && /\b(on|to|in|into) it\b/.test(nt1) && mentioned.every((i) => !state.order.some((o) => o.item.id === i.id)) ? earlierHost : null) ?? (earlierHost && mentioned.length && !mentioned.some(fully) ? earlierHost : null) ?? mentioned.find((i) => i.modifiers?.length) ?? mentioned[0] ?? earlierHost ?? ofKind;
   // ("remove the egg and add minced pork instead. how much?": a change to the line ordered, not a question of the choice)
   const editsLine = state.order.some((o) => o.item.id === optHost?.id) && !/\b(can|could|may|boleh|bole|leh)\b/.test(nt1) && !/可以|能不能|可不可以/.test(u.text) && (REMOVE.test(nt1) || /\b(add|tambah)\b/.test(nt1));
   // (a conversation reader's order, when the bill uses it: "replace" always, "edits" on a turn that builds on an earlier one)
@@ -1653,10 +1654,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // (not by the dish's own name: "toppings on one wantan mee" isn't its Wantan choice; "toppings" is its Add-ons)
     const askedText = ` ${nt1} `.replace(new RegExp(` (${normalize(optHost.name).split(" ").join("|")}) `, "g"), "  ");
     // ("can add how many things?": its add-ons)
-    const addOnsAsked = /\b(toppings?|add ?ons?|addons?|extras|tambahan)\b/.test(nt1) || /\b(add|tambah)\b.*\bhow many (things|items|stuff)\b|\bhow many (things|items) (can|to) (i |we )?add\b|\btambah berapa (benda|barang|jenis|banyak)\b/.test(nt1) || /配料|加料/.test(u.text);
+    const addOnsAsked = /\b(toppings?|add ?ons?|addons?|extras|tambahan)\b/.test(nt1) || /\b(add|tambah)\b.*\bhow many (things|items|stuff)\b|\bhow many (things|items) (can|to) (i |we )?add\b|\btambah berapa (benda|barang|jenis|banyak)\b|\bhow many can (i|we) (put|add|take|have|get)\b/.test(nt1) || /配料|加料/.test(u.text);
     const groups = (optHost.modifiers ?? []).filter((g) => (addOnsAsked && /add|topping|extra|tambah/i.test(g.name)) || normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(add|ons|extra|extras|pilihan|tambah|make|your|pick|choose|choice|upgrade)$/.test(w) && askedText.includes(` ${w.replace(/s$/, "")}`)) || GROUP_ZH.some(([en_, zh_]) => en_.test(g.name) && zh_.test(u.text)) || g.options.some((o) => normalize(o.name).split(" ").some((w) => w.length > 2 && /^(milk|size|sauce|topping|toppings)$/.test(w) && ` ${nt1} `.includes(` ${w} `))));
     // "can I have two sauces?", "可以要两种酱吗？": as many as it takes
-    const twoAsked = /\b(two|2|both|half half|half and half)\b/.test(nt1) || /两种|两样|两个酱|一半.{1,8}一半/.test(u.text);
+    const twoAsked = /\b(two|2|three|3|four|4|both|half half|half and half|mix|combine|campur)\b/.test(nt1) || /两种|两样|两个酱|一半.{1,8}一半/.test(u.text);
     if (groups.length && twoAsked) return reply("dish_info", t(groups[0].max && groups[0].max >= 2 ? "assistantReply.upTo" : "assistantReply.onlyOne", { dish: name(optHost), group: groups[0].name, max: groups[0].max ?? 1 }), [optHost]);
     // "how many toppings can I add?", "可以加几样配料？": as many as the group takes
     if (groups.length && (/\bhow many\b|\bberapa (banyak|jenis|macam)\b|\bup to\b|\bmaximum\b|\bmax\b/.test(nt1) || /几样|几种|几个|最多/.test(u.text))) return reply("dish_info", t("assistantReply.upTo", { dish: name(optHost), group: groups[0].name, max: groups[0].max ?? 1 }), [optHost]);
@@ -1686,7 +1687,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "got mentaiko mayo as a topping?": an add-on asked after by name, that no dish has
   const asTopping = nt0.match(/\b(?:got|have|ada|any|you have|can i get|can i add|boleh tambah)\s+(?:the |some )?([a-z]+(?: [a-z]+){0,2}?)\s+(?:as|for)\s+(?:a |an |the )?(?:topping|toppings|add on|add ons|addon|extra|side)\b/)?.[1] ??
     // ("got kerupuk to add?")
-    nt0.match(/^(?:got|ada|any|do you have|you have)\s+(?:the |some )?([a-z]+(?: [a-z]+){0,1}?)\s+(?:to add|to add on|for adding|nak tambah|untuk tambah)\b/)?.[1];
+    nt0.match(/^(?:got|ada|any|do you have|you have)\s+(?:the |some )?([a-z]+(?: [a-z]+){0,1}?)\s+(?:to add|to add on|for adding|nak tambah|untuk tambah)\b/)?.[1] ??
+    // ("ada topping oreo tak untuk cendol?")
+    nt0.match(/\b(?:ada|got|any)\s+(?:topping|toppings|add on)\s+([a-z]+(?: [a-z]+)??)\s+(?:tak|ke|or not|for|untuk)\b/)?.[1];
   if (asTopping && !optionsAsked(asTopping, live).length && !live.some((i) => ` ${normalize(i.name)} `.includes(` ${asTopping} `)))
     return reply("dish_info", t("assistantReply.addOnNone", { option: en ? asTopping.charAt(0).toUpperCase() + asTopping.slice(1) : asTopping }), []);
   // "spice level got what?", "what sambal levels got?", "the meal set comes with what?": a kind of choice the

@@ -1388,7 +1388,9 @@ describe("an ayam penyet stall's choices", () => {
     expect(ask("1 ayam penyet", "One Ayam Penyet, RM14.90.", "level 5 extra charge ah?")).toMatch(/Level 5 is free, no extra charge: Ayam Penyet stays RM14\.90/);
   });
   it("says it hasn't what's asked to be added", () => {
-    expect(ask("got kerupuk to add?")).toMatch(/Kerupuk isn't available as an add-on/);
+    expect(ask("got kerupuk to add?")).toMatch(/we don't have Kerupuk as an add-on/);
+    expect(ask("ada topping oreo tak untuk ayam penyet?")).toMatch(/we don't have Oreo as an add-on/);
+    expect(ask("can i get my ayam penyet with oat milk instead?")).toMatch(/Oat milk isn't an option on Ayam Penyet/);
   });
 });
 
