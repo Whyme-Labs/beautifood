@@ -1506,7 +1506,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const fully = (i: Item) => u.spots.some((sp_) => sp_.dish.id === i.id && (sp_.covered.length >= normalize(i.name).split(" ").filter((w) => w.length > 1).length || /[\u3400-\u9fff]/.test(u.toks[sp_.from] ?? "")));
   const earlierHost = pointed[0]?.item ?? (state.order.length ? state.order[state.order.length - 1].item : state.focus);
   // what they ask to add, in their words ("almond butter", "mentega badam", "肉丸")
-  const thingAsked = nt1.match(/\b(?:add(?! ons?\b)|tambah|put|letak|top with|extra(?! charge| cost| caj))\s+(?:some |extra |a |an )?([a-z]+(?: [a-z]+){0,2}?)(?=\s+(?:on top|in it|inside|dalam|to it|to the|to my|on the|on my|in my|for the|for my|or not|boleh|please|pls|ah|lah|la|how|berapa|ke|tak|can)\b|\s*$)/)?.[1] ?? u.text.match(/加(?!钱|价|多少|几)([\u4e00-\u9fff]{1,5}?)(?:吗|可以|行|呢|[?？]|$)/)?.[1];
+  const thingAsked0 = nt1.match(/\b(?:add(?! ons?\b)|tambah|put|letak|top with|extra(?! charge| cost| caj))\s+(?:some |extra |a |an )?([a-z]+(?: [a-z]+){0,2}?)(?=\s+(?:on top|in it|inside|dalam|to it|to the|to my|on the|on my|in my|for the|for my|or not|boleh|please|pls|ah|lah|la|how|berapa|ke|tak|can)\b|\s*$)/)?.[1] ?? u.text.match(/加(?!钱|价|多少|几)([\u4e00-\u9fff]{1,5}?)(?:吗|可以|行|呢|[?？]|$)/)?.[1];
+  // (not "can add how many things?": a question, not a thing)
+  const thingAsked = thingAsked0 && /^(how|what|which|berapa|apa)\b/.test(thingAsked0) ? undefined : thingAsked0;
   // (or, asked of a kind of dish, "smoothies with no sugar?", "奶昔最多可以加几种营养粉？": the first of that kind with choices)
   const ofKind = !mentioned.length && !earlierHost && u.categories.length ? live.find((i) => u.categories.includes(i.category ?? "") && i.modifiers?.length) : undefined;
   const optHost = (earlierHost && mentioned.length && !mentioned.some(fully) ? earlierHost : null) ?? mentioned.find((i) => i.modifiers?.length) ?? mentioned[0] ?? earlierHost ?? ofKind;
@@ -1517,6 +1519,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("can add beef bacon to it?", "add char siu to my loh mee", "extra patty for the burger ikan can?"): a word of
   // what's asked that none of the dish's add-ons has, nor its own name, isn't on it (not a "Yes" with its other add-ons)
   const notOn = (optHost: Item, thingAsked: string) => {
+    // (not "can add how many things?": a question, not a thing)
+    if (/^(how|what|which|berapa|apa)\b/.test(thingAsked)) return null;
     const nameWords = new Set(normalize(optHost.name).split(" "));
     const unknown = thingAsked.split(" ").filter((w) => w.length > 2 && !/^(it|them|more|one|two|the|some|also|too|again|lagi|sikit|sedikit|and|with|this|that|any|got|can|boleh|please|pls|extra|charge|cost|caj|how|much|price|free|all|everything|those|these|first|second|third|fourth|last|other|another|normal|same)$/.test(w) && !nameWords.has(w) && !nameWords.has(w.replace(/s$/, "")) && !optionsSaid(w, optHost, true).add.length && !optionsSaid(`add ${w}`, optHost, true, true).add.length);
     if (unknown.length) {
@@ -1595,7 +1599,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const GROUP_ZH: [RegExp, RegExp][] = [[/booster/i, /营养粉|蛋白粉|补充/], [/sauce/i, /酱/], [/size/i, /大小|尺寸|大杯|大份/], [/topping|add-on/i, /配料|加料/], [/milk/i, /奶(?!昔|茶|盖)/], [/flavou?r/i, /口味|味道/], [/sugar|sweet/i, /甜度|糖度/], [/spice|chilli/i, /辣度/]];
     // (not by the dish's own name: "toppings on one wantan mee" isn't its Wantan choice; "toppings" is its Add-ons)
     const askedText = ` ${nt1} `.replace(new RegExp(` (${normalize(optHost.name).split(" ").join("|")}) `, "g"), "  ");
-    const addOnsAsked = /\b(toppings?|add ?ons?|addons?|extras|tambahan)\b/.test(nt1) || /配料|加料/.test(u.text);
+    // ("can add how many things?": its add-ons)
+    const addOnsAsked = /\b(toppings?|add ?ons?|addons?|extras|tambahan)\b/.test(nt1) || /\b(add|tambah)\b.*\bhow many (things|items|stuff)\b|\bhow many (things|items) (can|to) (i |we )?add\b|\btambah berapa (benda|barang|jenis|banyak)\b/.test(nt1) || /配料|加料/.test(u.text);
     const groups = (optHost.modifiers ?? []).filter((g) => (addOnsAsked && /add|topping|extra|tambah/i.test(g.name)) || normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(add|ons|extra|extras|pilihan|tambah|make|your|pick|choose|choice|upgrade)$/.test(w) && askedText.includes(` ${w.replace(/s$/, "")}`)) || GROUP_ZH.some(([en_, zh_]) => en_.test(g.name) && zh_.test(u.text)) || g.options.some((o) => normalize(o.name).split(" ").some((w) => w.length > 2 && /^(milk|size|sauce|topping|toppings)$/.test(w) && ` ${nt1} `.includes(` ${w} `))));
     // "can I have two sauces?", "可以要两种酱吗？": as many as it takes
     const twoAsked = /\b(two|2|both|half half|half and half)\b/.test(nt1) || /两种|两样|两个酱|一半.{1,8}一半/.test(u.text);

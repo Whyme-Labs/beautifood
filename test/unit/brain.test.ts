@@ -1447,3 +1447,16 @@ describe("a kopitiam's 'only' and 'the rest'", () => {
     expect(ask("seafood soup, fish ball noodles and 2 lemon tea", "Got it.", "my friend had the seafood soup and one lemon tea, I had the rest. how much each?")).toMatch(/Your part: Fish Ball Noodles \(RM9\.90\) \+ Lemon Tea \(RM4\.00\) = Total RM13\.90.*The other part comes to RM23\.90/);
   });
 });
+
+describe("a claypot shop's pot sizes and per-person tea", () => {
+  const dishes = asItems([
+    { id: "y1", name: "Claypot Chicken Rice", category: "Claypot", description: "chicken and salted fish in a claypot", price: 1690, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "y2", name: "Chinese Tea", category: "Drinks", description: "a pot of hot tea per person", price: 250, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false, translations: { zh: { name: "中国茶" } } },
+  ] as never).map((i) => (i.id === "y1" ? { ...i, translations: { zh: { name: "瓦煲鸡饭" } }, modifiers: [{ name: "Size", min: 1, max: 1, options: [{ name: "1-2 pax", price: 0 }, { name: "3-4 pax", price: 1400 }] }, { name: "Add-ons", min: 0, max: 4, options: [{ name: "Salted fish", price: 300 }, { name: "Egg", price: 200 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (q: string) => answerGuest(shop, [{ role: "user", content: q }]).answer;
+  it("reads the pot size and tea for four", () => {
+    expect(ask("One claypot chicken rice, the 3-4 pax size, with extra salted fish and an egg, plus Chinese tea for 4. What's the total?")).toMatch(/Claypot Chicken Rice with 3-4 pax, Salted fish, Egg \(RM35\.90\) \+ 4 × Chinese Tea \(RM2\.50\) = Total RM45\.90/);
+    expect(ask("要一份三到四人的瓦煲鸡饭加咸鱼，四个人的中国茶，一共多少钱？")).toMatch(/with 3-4 pax, Salted fish \(RM33\.90\) \+ 4 × Chinese Tea/);
+  });
+});

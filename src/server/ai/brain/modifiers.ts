@@ -22,7 +22,7 @@ const ALSO: Record<string, string[]> = {
   grass: ["cincau"], coconut: ["kelapa", "nata"], bean: ["kacang merah"], foam: ["foam"],
   cheese: ["keju", "cheesy"], ramyeon: ["ramen", "ramyun", "ramyon", "noodle", "noodles", "maggi"], cake: ["cake"],
   fries: ["fry", "kentang", "kentang goreng", "chips"], soft: ["soda", "air", "minuman", "soft drink", "can drink"], drink: ["air", "minuman", "soda"], coleslaw: ["slaw"],
-  mushrooms: ["mushroom", "cendawan"], pineapple: ["nanas"], pepperoni: ["pepperoni"], parmesan: ["parmesan"],
+  mushrooms: ["mushroom", "cendawan"], mushroom: ["mushrooms", "cendawan"], pineapple: ["nanas"], pepperoni: ["pepperoni"], parmesan: ["parmesan"],
   cream: ["ice cream", "aiskrim", "icecream"], whey: ["whey"], plant: ["vegan protein"], chia: ["chia"],
   granola: ["granola"], flakes: ["flake"], honey: ["madu"], nuts: ["nut", "kacang"], cacao: ["cocoa", "cacao"],
   avocado: ["avo", "alpukat"], poached: ["poached"], salmon: ["salmon"], feta: ["feta"],
@@ -36,7 +36,7 @@ const ALSO: Record<string, string[]> = {
 };
 // ...and in Chinese, as a guest writes it
 const ALSO_ZH: Record<string, RegExp> = {
-  ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻/, sui: /水饺|水餃/, kow: /水饺|水餃/, pok: /豆卜|豆泡|豆腐泡/, uduk: /椰香饭|椰浆饭|椰饭/, fried: /荷包蛋|煎蛋/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)/, suam: /温/,
+  ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻/, sui: /水饺|水餃/, kow: /水饺|水餃/, pok: /豆卜|豆泡|豆腐泡/, uduk: /椰香饭|椰浆饭|椰饭/, fried: /荷包蛋|煎蛋/, petai: /臭豆/, mushroom: /香菇|蘑菇|冬菇/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)/, suam: /温/,
   besar: /大杯|大份|加大|大的|大碗|大包|大号/, large: /大杯|大份|加大|大的|大碗|大包|大号/,
   regular: /中碗|中份|(?<!其)中的|中杯|普通|正常份/, small: /小碗|小的|小份|小杯|小碟|小号|小包/, kecil: /小碗|小的|小份|小杯|小碟|小号|小包/,
   medium: /中碗|(?<!其)中的|中份|中杯|中碟|中号/, sederhana: /中碗|(?<!其)中的|中份|中杯|中碟|中号/,
@@ -78,6 +78,10 @@ const PHRASES: [RegExp, RegExp][] = [
   [/^extra hot$|^extra spicy$/, /\b(extra hot|extra spicy|more spicy|spicier|lebih pedas)\b|加辣|特辣|大辣/],
   [/^normal ice$/, /\b(normal ice|regular ice)\b|正常冰/],
   [/^sweet corn$/, /\b(sweet corn|corn|jagung)\b|玉米/],
+  [/^salted fish$/, /\b(salted fish|ikan masin)\b|咸鱼/],
+  [/^jug$/, /\b(jug|jag)\b|一壶|壶装|一扎/],
+  [/^3 4 (pax|people)$/, /\b(3 ?(-|to)? ?4 (pax|people|persons|orang)|big|bigger|besar)\b|三到四人|3到4人|三至四人|大煲/],
+  [/^1 2 (pax|people)$/, /\b(1 ?(-|to)? ?2 (pax|people|persons|orang))\b|一到两人|1到2人|小煲/],
   [/^glutinous rice$/, /\b(glutinous rice|pulut)\b|糯米/],
   [/^tanpa kacang$/, /\b(no peanuts?|without peanuts?|tanpa kacang|tak nak kacang|no nuts)\b|不要花生|走花生|去花生/],
   [/^tanpa ikan bilis$/, /\b(no (ikan )?bilis|no anchov\w*|tanpa (ikan )?bilis|without anchov\w*)\b|不要江鱼仔|走江鱼仔/],

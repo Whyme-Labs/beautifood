@@ -331,7 +331,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   const qBreaks = clauseBreaks(raw, toks.length);
   const clauseOf = (i: number) => Math.max(0, ...qBreaks.filter((b) => b <= i));
   // a name the menu gives a dish at the start of its description ("ABC: shaved ice, red beans…" of the Ais Kacang)
-  const aka = (d: Dish) => (d.description ?? "").match(/^\s*([A-Za-z][\w ]{1,20}?):\s/)?.[1];
+  // (a name, not a note: not "for 2:", "per piece:", "extra dip:", "the special bowl:")
+  const aka = (d: Dish) => {
+    const a = (d.description ?? "").match(/^\s*([A-Za-z][\w ]{1,20}?):\s/)?.[1];
+    return a && !/\d/.test(a) && !/^(for|per|one|two|three|four|five|six|extra|the|a|an|with|serves|each|note|tip|add|served|comes)\b/i.test(a) ? a : undefined;
+  };
   const akas = items.map(aka).filter((x): x is string => !!x).map((x) => normalize(x));
   items.forEach((dish, n) => {
     const a = aka(dish);

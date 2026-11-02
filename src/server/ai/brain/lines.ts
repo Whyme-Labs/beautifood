@@ -240,6 +240,13 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
           const ownNumber = normalize(s.dish.name).split(" ").some((w) => w === String(n?.n) || NUM[w] === n?.n);
           if (n && !nums.has(String(n.n)) && !ownNumber && toks[j - 1] !== "for" && (n.end >= to || COUNTER.test(toks[n.end] ?? "") || JOIN.test(toks[n.end] ?? "") || /^(please|pls|total|how|berapa|jumlah|lah|je|sahaja|多少|一共|总共)$/.test(toks[n.end] ?? ""))) count = n.n;
         }
+        // ("Chinese tea for 4", "四个人的中国茶": one each, of what's priced per person)
+        if (count === null && /\b(per (person|pax|head)|seorang|setiap orang)\b|每人|每位/i.test(s.dish.description ?? "")) {
+          const after_ = toks.slice(s.to, Math.min(to, s.to + 3)).join(" ").match(/^for (\d{1,2}|two|three|four|five|six)\b/)?.[1];
+          const zhBefore = toks.slice(Math.max(from, s.from - 5), s.from).join("").match(/([两二三四五六七八\d])个?人的?$/)?.[1];
+          const w = after_ ?? zhBefore;
+          if (w) count = NUM[w] ?? ({ 两: 2, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8 } as Record<string, number>)[w] ?? Number(w);
+        }
         // "another teh", "satu lagi": one more
         const options = optionsSaid(phrase([...toks.slice(from, s.from), ...toks.slice(s.to, to)]), s.dish).add;
         const ref = count === null && /^(the|my|our|that|this|tu|itu|ni)$/.test(toks[s.from - 1] ?? "") && !/^(add|another|more|plus|tambah|order|get|have)$/.test(toks[s.from - 2] ?? "");
