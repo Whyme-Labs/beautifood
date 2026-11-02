@@ -85,6 +85,7 @@ const PHRASES: [RegExp, RegExp][] = [
   [/^glutinous rice$/, /\b(glutinous rice|pulut)\b|糯米/],
   [/^tanpa kacang$/, /\b(no peanuts?|without peanuts?|tanpa kacang|tak nak kacang|no nuts)\b|不要花生|走花生|去花生/],
   [/^tanpa ikan bilis$/, /\b(no (ikan )?bilis|no anchov\w*|tanpa (ikan )?bilis|without anchov\w*)\b|不要江鱼仔|走江鱼仔/],
+  [/^(soup separate|separate soup|soup on the side|sup asing)$/, /\b(soup (come |comes |be |served |pack |packed )?(separate|separately|on the side)|separate soup|sup asing|kuah asing|asingkan sup)\b|汤分开|汤另外|分开装|汤另装/],
   [/^sambal asing$/, /\b(sambal asing|sambal (on the )?side|separate sambal|sambal separate)\b|参巴分开|叁巴另外|酱另外/],
   [/^tanpa mentega$/, /\b(no butter|without butter|tanpa mentega)\b|不要牛油|不要黄油/],
   [/^no bonito flakes$/, /\b(no bonito|without bonito|tanpa bonito|bonito off|hold the bonito)\b|不要柴鱼|走柴鱼/],

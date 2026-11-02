@@ -1820,3 +1820,29 @@ describe("a wantan stall's beer, discounts and a typo'd drink", () => {
     expect(ask("char siu rice + 1 ice watr, ttl")).toMatch(/Ice Water \(RM0\.50\)/);
   });
 });
+
+describe("prices at other times, dinner-only dishes, a free choice asked of none, and alcohol add-ons", () => {
+  const clock = { weekday: 2, minutes: 12 * 60, date: "2026-11-03" };
+  const dishes = asItems([
+    { id: "t1", name: "Bitter Gourd Fish Soup", category: "Soups", description: "fish with bitter gourd", price: 1390, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "t2", name: "Steamed Garoupa Fillet", category: "Fish", description: "steamed fillet", price: 3200, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "t3", name: "Steamed Rice", category: "Rice", description: "white rice", price: 150, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "t4", name: "Sliced Fish Bee Hoon Soup", category: "Soups", description: "fish slices in broth", price: 1390, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: true },
+  ]).map((i) => (i.id === "t1" ? { ...i, listPrice: 1490 } : i.id === "t2" ? { ...i, servedNow: false, menuIds: ["dinner"], nextServed: { weekday: 2, time: "17:00", today: true, menu: "Dinner", menuId: "dinner" } } : i.id === "t4" ? { ...i, modifiers: [{ name: "Wine", min: 0, max: 1, options: [{ name: "XO Wine", price: 300 }] }, { name: "Preferences", min: 0, max: 2, options: [{ name: "Soup Separate", price: 0 }] }] } : i));
+  const rules = [{ id: "r1", name: "Bitter gourd Tuesday", kind: "amount", value: 100, categories: [], items: ["t1"], windows: [{ days: [2], from: "00:00", to: "23:59" }], branches: ["*"], active: true }];
+  const menus = [{ id: "dinner", name: "Dinner", windows: [{ days: [0, 1, 2, 3, 4, 5, 6], from: "17:00", to: "21:30" }], branches: ["*"], active: true, sort: 0 }];
+  const shop = { ...ctx, items: dishes, rules, menus, clock } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("gives a dish's price today and tomorrow, by the deals on each day", () => {
+    expect(ask("bitter gourd fish soup how much today, and tomorrow?")).toMatch(/RM13\.90 now and RM14\.90 tomorrow/);
+  });
+  it("says a dinner-only dish comes later and bills the rest", () => {
+    expect(ask("1 steamed garoupa fillet and 1 rice, how much")).toMatch(/Dinner, served from 5:00 PM.*Steamed Rice \(RM1\.50\)/);
+  });
+  it("says a free choice is free, asked without a dish", () => {
+    expect(ask("can the soup come separate?")).toMatch(/Soup Separate is free/);
+  });
+  it("says an alcohol add-on isn't halal to a Muslim guest", () => {
+    expect(ask("I'm Muslim, which soups can I have?", "Sliced Fish Bee Hoon Soup RM13.90.", "the sliced fish bee hoon soup with XO wine can?")).toMatch(/XO Wine add-on has alcohol/);
+  });
+});
