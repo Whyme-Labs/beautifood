@@ -1455,7 +1455,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // through Grab?", "is your kitchen halal certified?", "hola amigo!"), unless it names a dish or
   // asks for something the menu answers (a course, a budget, an allergy)
   const kind = kindOf(modelTokens(u.delexicalized));
-  const notFood = kind.kind !== "food" && kind.p >= READER_SURE && kind.known >= 0.75 && !mentioned.length && !nth && !taste && !u.party && u.budget === null && !u.courses.length && !u.categories.length && !u.stated.length && !u.avoid.length;
+  const notFood = kind.kind !== "food" && kind.p >= READER_SURE && kind.known >= 0.75 && !mentioned.length && !nth && !pointedAt(u.text, state.shown).length && !taste && !u.party && u.budget === null && !u.courses.length && !u.categories.length && !u.stated.length && !u.avoid.length;
   if (notFood && FOOD_INTENTS.includes(intent))
     intent = kind.kind === "service" ? "order_help" : (u.guess.ranked.find((x) => ["greeting", "thanks", "out_of_scope"].includes(x.intent))?.intent ?? "out_of_scope");
 
@@ -1518,7 +1518,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const named = (x: { name: string; translations?: Record<string, { name?: string }> }) => {
     const n = normalize(x.name);
     const zh = Object.values(x.translations ?? {}).map((y) => y?.name ?? "").filter((y) => y.length >= 2);
-    const syn: Record<string, RegExp> = { brunch: /早午餐/, breakfast: /早餐|sarapan/, lunch: /午餐|tengah hari/, supper: /宵夜|夜宵/, "tea time": /下午茶|minum petang/, opening: /开张|开幕|开业|grand opening|pembukaan/i };
+    const syn: Record<string, RegExp> = { brunch: /早午餐/, breakfast: /早餐|sarapan/, lunch: /午餐|tengah hari/, supper: /宵夜|夜宵/, "tea time": /下午茶|minum petang/, kuih: /娘惹糕|糕点|糕粿|kueh/i, opening: /开张|开幕|开业|grand opening|pembukaan/i };
     // ("the Tuesday acai deal" is the Tuesday deal: its words, in any order)
     const ws = n.split(" ").filter((w) => w.length >= 3);
     // (or by what it takes off: "the 15% off drinks", "now got 10%?", "the RM1 off")
@@ -1543,7 +1543,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (askedRule && mentioned.length && mentioned.some((i) => !coveredBy(i)) && !billWithDeal) {
     const outside = mentioned.filter((i) => !coveredBy(i));
     // (with its price as it stands: "is the lassi in the set also RM1 off?" the set at RM27.90)
-    return reply("recommend", `${t("assistantReply.dealNotOn", { deal: scheduleName(askedRule, locale), dish: list(outside.map(name)), value: dealValue(askedRule), window: windowText(askedRule.windows) })}${sp}${outside.map(line).join(t("assistantReply.itemSep"))}${stop}`, [...outside, ...mentioned.filter(coveredBy)]);
+    // (with the add-ons said: "pork chop rice set with iced milk tea" at RM25.90)
+    const withSaid = (i: Item) => { const add = optionsSaid(u.text, i).add.filter((o) => o.price > 0); return add.length ? `${t("assistantReply.withOptions", { dish: name(i), options: list(add.map(optionLabel)) })} (${money(i.price + add.reduce((n, o) => n + o.price, 0))})` : line(i); };
+    return reply("recommend", `${t("assistantReply.dealNotOn", { deal: scheduleName(askedRule, locale), dish: list(outside.map(name)), value: dealValue(askedRule), window: windowText(askedRule.windows) })}${sp}${outside.map(withSaid).join(t("assistantReply.itemSep"))}${stop}`, [...outside, ...mentioned.filter(coveredBy)]);
   }
   // ("masala chai also got discount anot?": a dish no deal covers, its price, and what the deals cover)
   if (!askedRule && mentioned.length === 1 && dealWords && !state.order.length && (ctx.rules ?? []).length && !(ctx.rules ?? []).some((r) => r.items.includes(mentioned[0].id) || r.categories.includes(mentioned[0].categoryId)) && !/\b(how much|berapa|total)\b/.test(nt0) && !/多少钱|几钱|一共/.test(u.text)) {
