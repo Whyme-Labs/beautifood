@@ -1501,3 +1501,19 @@ performance, and the next held-out read needs a fresh set. Baseline as dev: 363/
   - A dish found only by a diet word ("2 pax, both vegetarian" spotted the Veg Thali) no longer takes
     the word from the diet, so the order is vegetarian.
   - v12 365/480, unsafe 0; other dev sets unchanged.
+- **v12 as dev: the fixes so far (rules only, the reader still off).** 363 → 428 of 480 (75.6% → 89.2%),
+  unsafe 2 → 0; on the other dev sets 15 more pass and none broke (all dev 3407 → 3479 of 3674,
+  92.7% → 94.7%). By theme:
+  - porridge/bubur/糜 as the plain bowl, and Chinese names for common Teochew and cha chaan teng dishes;
+  - "A + B + C, or the set, which cheaper?" priced side by side; deals asked by their value ("the 15%
+    off", "RM1 off"), their dates, and what they don't cover;
+  - several changes to an order in one message made step by step; add-ons taken off the line that
+    has them; "those two, 2 each"; a set's drink said without its style word;
+  - sizes in Chinese and Malay (大碟, 整只, satu ekor), "Large (shares 3-4)" said as large;
+  - "I only had 2 bowls of …" counted through the measure; a table's number isn't a count;
+  - Cantonese no-spice and how-much words; negated spice words aren't a dish; 卤嘢;
+  - Malay food words, and typos of the menu's own words;
+  - free choices asked about (茶走, salty, spicier) at the ordered line's price; a one-choice group
+    asked for twice; add-ons a dish's line names but doesn't offer;
+  - off-topic questions, injected instructions (no cards; the real halal standing), takeaway;
+  - two dishes pointed at and compared; "number 2".
