@@ -190,7 +190,6 @@
     },
     "expect": {
       "maxTotal": 6863,
-      "minDishes": 2,
       "excludes": [
         "Satay Beef Instant Noodles",
         "Ham Macaroni Breakfast Set",
@@ -199,7 +198,7 @@
         "Scrambled Egg Toast Set"
       ]
     },
-    "note": "Largest food subtotal whose rounded till fits RM80 is 68.62. E.g. 4 Tomato Egg Rice + 4 Lemon Tea = 76.40 is too much; 2 Curry Chicken Rice Set + 2 Tomato Egg Rice + 2 Lemon Tea = 78.00 too; a mix of sets fits, e.g. 2 Curry Chicken Rice Set + Tomato Egg Rice + Fresh Soy Milk = 58.10."
+    "note": "Largest food subtotal whose rounded till fits RM80 is 68.63 (80.02 -> 80.00). Four rices and four drinks cannot fit: the cheapest, 4 x (Tomato Egg Rice 13.90 + Fresh Soy Milk 4.40) = 73.20, tills to 85.35. Rule q: no dish required; anything shown stays within the budget. (Review: minDishes removed.)"
   },
   {
     "id": "v12z1-hk-cha-chaan-teng-008",
@@ -467,7 +466,7 @@
         "(^|[^0-9])(24\\.84|24\\.85)"
       ]
     },
-    "note": "Rest = 7.50 + 7.60 + 6.20 = 21.30 -> 24.83 / 24.85."
+    "note": "Rest = 7.50 + 7.60 + 6.20 = 21.30 -> 24.84 exact / 24.85 rounded."
   },
   {
     "id": "v12z1-hk-cha-chaan-teng-018",
@@ -780,7 +779,7 @@
         "Scrambled Egg Toast Set"
       ]
     },
-    "note": "Largest food subtotal whose rounded till fits RM120 is 102.92."
+    "note": "Largest food subtotal whose rounded till fits RM120 is 102.94 (120.02 -> 120.00)."
   },
   {
     "id": "v12z1-hk-cha-chaan-teng-030",
@@ -1258,7 +1257,7 @@
     "question": "the luncheon meat u can add, pork or chicken?",
     "expect": {
       "says": [
-        "(?<!not )(?<!no )(?<!n't )pork|babi|猪"
+        "(?<!not )(?<!no )(?<!n't )(?<!any )(?<!n't have )(?<!n't contain )(?<!n't made with )pork(?![- ]?free)|(?<!bukan )(?<!tiada )(?<!tak ada )babi|(?<![没不冇])(?<!没有)(?<!不是)猪"
       ]
     },
     "note": "The menu's luncheon meat is pork (Luncheon Meat Egg Instant Noodles line)."
@@ -1309,7 +1308,7 @@
         "Luncheon Meat Egg Instant Noodles"
       ],
       "says": [
-        "(?<!not )(?<!no )(?<!n't )pork|babi|猪肉"
+        "(?<!not )(?<!no )(?<!n't )(?<!any )(?<!n't have )(?<!n't contain )(?<!n't made with )pork(?![- ]?free)|(?<!bukan )(?<!tiada )(?<!tak ada )babi|(?<![没不冇])(?<!没有)(?<!不是)猪肉"
       ],
       "excludes": [
         "Satay Beef Instant Noodles"
@@ -1963,7 +1962,7 @@
     },
     "expect": {
       "says": [
-        "drinks only|only (the )?drinks|only (applies|apply) to (the )?drinks|just (the )?drinks|not (the )?egg tart|doesn't (include|cover|apply)|does not (include|cover|apply)|only for drinks|饮品|minuman sahaja|isn't (included|covered)|not (included|covered)"
+        "drinks only|only (the )?drinks|only (applies|apply) to (the )?drinks|just (the )?drinks|not (the )?egg tart|doesn't (include|cover|apply)|does not (include|cover|apply)|only for drinks|只限饮品|只有饮品|仅限饮品|饮品才|minuman sahaja|isn't (included|covered)|not (included|covered)"
       ]
     },
     "note": "Tea time covers DRINKS only."
@@ -2158,8 +2157,9 @@
     ],
     "question": "the curry chicken one is halal?",
     "expect": {
-      "includes": [
-        "Curry Chicken Rice"
+      "includesAny": [
+        "Curry Chicken Rice",
+        "Curry Chicken Rice Set"
       ],
       "excludes": [
         "Ham Macaroni Breakfast Set",
@@ -2178,7 +2178,7 @@
         "Satay Beef Instant Noodles"
       ]
     },
-    "note": "Halal by ingredients; no diet stated (v11 ruling 1).",
+    "note": "'The curry chicken one' fits both Curry Chicken Rice and the Curry Chicken Rice Set in the earlier list; either is accepted (review). Halal by ingredients; no diet stated (v11 ruling 1).",
     "at": {
       "day": "Sat",
       "time": "14:10",
@@ -2521,9 +2521,7 @@
         "Baked Pork Chop Rice Set",
         "Sweet and Sour Pork Rice Set",
         "Satay Beef Instant Noodles",
-        "Ham Macaroni Breakfast Set",
         "Chicken Macaroni Breakfast Set",
-        "Luncheon Meat Noodle Breakfast Set",
         "Scrambled Egg Toast Set"
       ]
     },
@@ -2968,7 +2966,7 @@
         "Luncheon Meat Egg Instant Noodles"
       ]
     },
-    "note": "餐蛋面 = Luncheon Meat Egg Instant Noodles at 13:00 (breakfast set off).",
+    "note": "餐蛋面 = Luncheon Meat Egg Instant Noodles (the breakfast set is off at 18:00).",
     "at": {
       "day": "Tue",
       "time": "18:00",
@@ -3242,7 +3240,7 @@
         "Ham Macaroni Soup"
       ],
       "says": [
-        "(?<!没)(?<!冇)有猪肉|火腿|ham|(?<!不)是猪|猪肉火腿"
+        "(?<!没)(?<!冇)(?<!不)有猪肉|猪肉火腿|火腿(系|是)猪|(?<!不)(?<!唔)(系|是)猪|pork ham|ham is pork|(?<!no )(?<!not )(?<!n't )(?<!any )(?<!n't have )(?<!n't contain )(?<!isn't )(?<!n't made with )(?<!n't have any )pork(?![- ]?free)"
       ],
       "excludes": [
         "Satay Beef Instant Noodles"

@@ -1442,3 +1442,14 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     a drinks deal; one dish sold out.
   - z2 `nyonya-kitchen`: halal certified with a certificate past its valid-until date; 5% service,
     6% tax; a Kuih counter timed menu; a deal; one dish sold out.
+
+## v12 held-out set: frozen (2026-11-02, before scoring)
+
+- Written blind by z1 (`hk-cha-chaan-teng` 120 cases, `teochew-porridge-stall` 121) and z2
+  (`punjabi-dhaba` 119, `nyonya-kitchen-kl` 120), then reviewed blind: 1 gold entry and 41 cases
+  fixed, none deleted (`bench/v12/REVIEW-z1z2.md`). 480 cases, all `test`.
+- z2's menu was written as `nyonya-kitchen`, which v3 already uses (the loader reads the first file
+  of that name), so it was renamed `nyonya-kitchen-kl` before review; `freeze.ts` now reports a menu
+  name used by two sets.
+- No change in `src/` since `d2a451b`.
+- Fingerprints (`npx tsx bench/freeze.ts`): `v12 480 4346a91a09fb5ef0`, `v12 menus 12 e4162f97d90a8ff8`.

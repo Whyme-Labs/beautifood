@@ -305,7 +305,7 @@
       "time": "19:30"
     },
     "expect": {
-      "maxTotal": 10290,
+      "maxTotal": 10294,
       "minDishes": 3,
       "excludes": [
         "Sarson Da Saag",
@@ -314,7 +314,7 @@
         "Mutton Thali"
       ]
     },
-    "note": "RM120 all in = food up to RM102.90 (largest subtotal whose rounded till fits). E.g. Butter Chicken full + Dal Makhani full + 2 Jeera Rice + 4 Butter Naan = 84.20."
+    "note": "RM120 all in = food up to RM102.94 (the largest subtotal whose rounded till fits: 120.02 -> 120.00). E.g. Butter Chicken full + Dal Makhani full + 2 Jeera Rice + 4 Butter Naan = 84.20."
   },
   {
     "id": "v12z2-punjabi-dhaba-014",
@@ -762,7 +762,7 @@
         "(^|[^0-9])(50\\.03|50\\.02)"
       ]
     },
-    "note": "Food 167.20; quarters of either till total, first shares take the extra sen."
+    "note": "Food 171.60 (28.90 + 35.90 + 21.90 + 23.90 + 6 x 4.90 + 4 x 7.90) -> 200.09 exact / 200.10 rounded; quarters 50.03/50.02, first shares take the extra sen."
   },
   {
     "id": "v12z2-punjabi-dhaba-032",
@@ -913,8 +913,8 @@
         "Butter Chicken"
       ],
       "says": [
-        "(^|[^0-9])(28\\.90|9\\.00)",
-        "(^|[^0-9])(3\\.00)"
+        "\\bfull\\b|整份|大份|penuh|(^|[^0-9])(28\\.90|9\\.00)",
+        "gravy|kuah|汁|extra butter|(^|[^0-9])(3\\.00|2\\.00)"
       ]
     },
     "note": "Half/Full (+9.00), spice level (free), extra gravy +3.00, extra butter +2.00."
@@ -1390,14 +1390,11 @@
         "tree_nuts"
       ],
       "safetyNote": true,
-      "includes": [
-        "Chicken Thali"
-      ],
       "says": [
         "kadai|铁锅"
       ]
     },
-    "note": "Thali base has no tree nuts; the Butter chicken pick has cashew paste, so Chicken kadai is the safe pick."
+    "note": "Butter chicken is one of the two free chicken-curry picks named on the line, so the Chicken Thali's gold carries tree_nuts (review) and its card is not shown to a cashew-allergic guest; the fact checked is that Chicken kadai is the safe pick. Same shape as z1's kailan garlic-only cases."
   },
   {
     "id": "v12z2-punjabi-dhaba-056",
@@ -1684,7 +1681,7 @@
         "assistant": "From the tandoor: Plain Naan RM3.90, Butter Naan RM4.90, Garlic Naan RM5.90, Cheese Naan RM8.90, Tandoori Roti RM2.90."
       }
     ],
-    "question": "2 of the last one and 1 butter naan",
+    "question": "2 of the last one and 1 butter naan. how much?",
     "at": {
       "day": "Sun",
       "time": "19:45"
@@ -2422,10 +2419,10 @@
     "expect": {
       "noDishes": true,
       "says": [
-        "not (halal.)?certified|n't (halal.)?certified|no (halal )?cert|uncertified|without (a )?(halal )?cert|tiada sijil|tidak (di)?sijil|tak (ada )?sijil|belum (di)?sijil|bukan (restoran )?(bersijil|disijilkan)|没有(清真)?认证|未.{0,4}认证|没有清真证|(?<!not )(?<!n't )pork.?free|no pork|without pork|tiada babi|tak (ada|guna) babi|tidak (ada|guna(kan)?) babi|tanpa babi|没有猪肉|不用猪肉|无猪肉|不含猪肉|muslim.?friendly|mesra muslim|穆斯林友好"
+        "not (yet )?(halal.)?certified|n't (yet )?(halal.)?certified|no (halal )?cert|uncertified|without (a )?(halal )?cert|tiada sijil|tidak (di)?sijil|tidak (mempunyai|ada) sijil|tak (ada )?sijil|takde sijil|belum (ada )?(di)?sijil|bukan (restoran )?(bersijil|disijilkan)|没有(清真)?认证|未.{0,4}认证|没有清真证|muslim.?friendly|mesra muslim|穆斯林友好|belum (ada |dapat |mendapat |memperoleh )?(ber|di)?sijil|(don't|do not|n't) (yet )?(have|hold|got) (a |an |any )?(halal |jakim )?cert|n't (yet |been |got )?(halal.)?certified"
       ]
     },
-    "note": "muslim_friendly: not certified, no pork or alcohol."
+    "note": "muslim_friendly: not certified, no pork or alcohol. The verdict must say it is not certified (or Muslim-friendly); 'no pork' alone no longer passes, since a wrong 'yes, halal-certified, no pork' matched it (review)."
   },
   {
     "id": "v12z2-punjabi-dhaba-090",
@@ -2441,10 +2438,10 @@
     "expect": {
       "noDishes": true,
       "says": [
-        "not (halal.)?certified|n't (halal.)?certified|no (halal )?cert|uncertified|without (a )?(halal )?cert|tiada sijil|tidak (di)?sijil|tak (ada )?sijil|belum (di)?sijil|bukan (restoran )?(bersijil|disijilkan)|没有(清真)?认证|未.{0,4}认证|没有清真证|(?<!not )(?<!n't )pork.?free|no pork|without pork|tiada babi|tak (ada|guna) babi|tidak (ada|guna(kan)?) babi|tanpa babi|没有猪肉|不用猪肉|无猪肉|不含猪肉|muslim.?friendly|mesra muslim|穆斯林友好"
+        "not (yet )?(halal.)?certified|n't (yet )?(halal.)?certified|no (halal )?cert|uncertified|without (a )?(halal )?cert|tiada sijil|tidak (di)?sijil|tidak (mempunyai|ada) sijil|tak (ada )?sijil|takde sijil|belum (ada )?(di)?sijil|bukan (restoran )?(bersijil|disijilkan)|没有(清真)?认证|未.{0,4}认证|没有清真证|muslim.?friendly|mesra muslim|穆斯林友好|belum (ada |dapat |mendapat |memperoleh )?(ber|di)?sijil|(don't|do not|n't) (yet )?(have|hold|got) (a |an |any )?(halal |jakim )?cert|n't (yet |been |got )?(halal.)?certified"
       ]
     },
-    "note": "muslim_friendly branch."
+    "note": "muslim_friendly branch; the guest asks about the certificate. Not-certified verdict required (review)."
   },
   {
     "id": "v12z2-punjabi-dhaba-091",
@@ -2460,10 +2457,10 @@
     "expect": {
       "noDishes": true,
       "says": [
-        "not (halal.)?certified|n't (halal.)?certified|no (halal )?cert|uncertified|without (a )?(halal )?cert|tiada sijil|tidak (di)?sijil|tak (ada )?sijil|belum (di)?sijil|bukan (restoran )?(bersijil|disijilkan)|没有(清真)?认证|未.{0,4}认证|没有清真证|(?<!not )(?<!n't )pork.?free|no pork|without pork|tiada babi|tak (ada|guna) babi|tidak (ada|guna(kan)?) babi|tanpa babi|没有猪肉|不用猪肉|无猪肉|不含猪肉|muslim.?friendly|mesra muslim|穆斯林友好"
+        "not (yet )?(halal.)?certified|n't (yet )?(halal.)?certified|no (halal )?cert|uncertified|without (a )?(halal )?cert|tiada sijil|tidak (di)?sijil|tidak (mempunyai|ada) sijil|tak (ada )?sijil|takde sijil|belum (ada )?(di)?sijil|bukan (restoran )?(bersijil|disijilkan)|没有(清真)?认证|未.{0,4}认证|没有清真证|muslim.?friendly|mesra muslim|穆斯林友好|belum (ada |dapat |mendapat |memperoleh )?(ber|di)?sijil|(don't|do not|n't) (yet )?(have|hold|got) (a |an |any )?(halal |jakim )?cert|n't (yet |been |got )?(halal.)?certified"
       ]
     },
-    "note": "muslim_friendly branch."
+    "note": "muslim_friendly branch; the guest asks about certification. Not-certified verdict required (review)."
   },
   {
     "id": "v12z2-punjabi-dhaba-092",
@@ -2480,12 +2477,9 @@
       "time": "21:30"
     },
     "expect": {
-      "maxDishes": 3,
-      "says": [
-        "no alcohol|(don't|do not|doesn't) (serve|sell|have|carry) (any )?(beer|alcohol)|alcohol.?free|tiada (bir|arak|alkohol)|不卖酒|没有酒|没有啤酒|no beer|n't (serve|sell|have) (any )?(beer|alcohol)"
-      ]
+      "maxDishes": 3
     },
-    "note": "No alcohol on a Muslim-friendly menu."
+    "note": "No alcohol on a Muslim-friendly menu. Not on the menu: maxDishes 3 only (convention b; the negation regex was removed in review)."
   },
   {
     "id": "v12z2-punjabi-dhaba-093",
@@ -2505,7 +2499,7 @@
     "expect": {
       "maxDishes": 3,
       "says": [
-        "no pork|pork.?free|(don't|do not|n't) (serve|use|have|cook) (any )?pork|tiada babi|tak (ada|guna) babi|没有猪肉|不用猪肉"
+        "no (pork|babi)|pork.?free|(don't|do not|n't) (serve|use|have|cook|sell) (any )?(pork|babi)|(isn't|is not) any pork|none of (our|the) dishes|tiada (daging )?babi|tak (ada|guna) babi|takde babi|tidak (ada|guna(kan)?) babi|没有猪肉|不用猪肉|不卖猪肉|muslim.?friendly|mesra muslim"
       ]
     },
     "note": "Muslim-friendly: no pork."

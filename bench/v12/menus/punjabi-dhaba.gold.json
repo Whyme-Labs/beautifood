@@ -259,13 +259,14 @@
     "allergens": [
       "gluten",
       "egg",
-      "milk"
+      "milk",
+      "tree_nuts"
     ],
     "vegetarian": false,
     "vegan": false,
     "halal": true,
     "spice": 1,
-    "note": "Fixed components only: jeera rice, plain naan, boondi raita, salad, papadum, gulab jamun. The chicken curry is a required pick (butter chicken has cashew = tree nuts, an option allergen, not counted), so the thali is not vegetarian whichever is chosen. The line says mild = 1."
+    "note": "Fixed components: jeera rice (ghee), plain naan (wheat, egg, yoghurt), boondi raita (yoghurt; gram flour, no gluten), salad, papadum, gulab jamun (khoya, wheat). The chicken curry is an equal free pick that the line names (butter chicken or chicken kadai), with no default; butter chicken (cashew paste) is one of them and the first option, so the thali carries tree_nuts (review: a free pick named on the line counts; priced upgrades do not). Not vegetarian. The line says mild = 1."
   },
   "Mutton Thali": {
     "allergens": [

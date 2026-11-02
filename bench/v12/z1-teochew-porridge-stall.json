@@ -1847,7 +1847,7 @@
     "question": "this tofu one pork or not ah?",
     "expect": {
       "says": [
-        "pork (belly )?pot|(?<!no )(?<!not )(?<!n't contain )(?<!n't have )pork|(?<!没有)(?<!冇)猪肉|(?<!tiada )(?<!tak ada )(?<!bukan )babi"
+        "pork (belly )?pot|same pot|(?<!no )(?<!not )(?<!any )(?<!without )(?<!n't contain )(?<!n't have )(?<!n't use )(?<!isn't )(?<!n't made with )pork(?![- ]?free)|猪肉锅|(?<![没不冇])(?<!没有)(?<!不含)(有|用|含|系|是)猪|(?<!tiada )(?<!tak ada )(?<!bukan )(?<!tanpa )babi"
       ],
       "excludes": [
         "Steamed Fish"
@@ -2299,7 +2299,7 @@
     "question": "the radish omelette is vegetarian right?",
     "expect": {
       "says": [
-        "(?<!no )(?<!without )lard|猪油|lemak babi|not vegetarian|isn't vegetarian|is not vegetarian"
+        "(?<!no )(?<!without )(?<!any )(?<!not fried in )(?<!not made with )lard|(?<!没有)(?<!冇)(?<!不含)(?<!没)(?<!不用)猪油|(?<!tiada )(?<!tanpa )(?<!tak ada )(?<!tidak )lemak babi|not vegetarian|isn't vegetarian|is not vegetarian"
       ],
       "excludes": [
         "Steamed Fish",
@@ -2328,7 +2328,7 @@
     "question": "fermented beancurd got alcohol?",
     "expect": {
       "says": [
-        "rice wine|米酒|\\byes\\b|(?<!no )(?<!without )(?<!n't )\\b(contains?|has|have|got|with|in) (some |a )?(rice wine|alcohol|wine)|arak beras|ada arak"
+        "\\byes\\b|(?<!no )(?<!without )(?<!n't )(?<!not made )\\b(contains?|has|have|got|with|in) (some |a )?(rice wine|alcohol|wine)|(?<!not )made (with|from|in) (a )?rice wine|(?<!no )rice wine (and chilli )?brine|(?<![没不])(?<!没有)(?<!不含)(有|含|用)米酒|米酒(卤|腌|泡|和|同)|(?<!tiada )(?<!tanpa )arak beras|(?<!tiada )(?<!tak )ada arak"
       ],
       "excludes": [
         "Steamed Fish",
@@ -2486,7 +2486,7 @@
         "Braised Duck"
       ],
       "says": [
-        "(?<!no )(?<!without )soy sauce|kicap|(?<!没有)(?<!不含)酱油|\\byes\\b"
+        "(?<!no )(?<!without )soy sauce|(?<!tiada )(?<!tanpa )(?<!tak ada )kicap|(?<!没有)(?<!不含)酱油|\\byes\\b"
       ],
       "excludes": [
         "Steamed Fish",
@@ -2848,7 +2848,7 @@
         "Barley Water"
       ],
       "says": [
-        "(?<!no )(?<!without )(?<!n't )(has|have|contains?|got) (some )?gluten|pearl barley|barley (is|has|contains)|大麦|\\byes\\b|not gluten.?free"
+        "(?<!no )(?<!without )(?<!n't )(has|have|contains?|got) (some )?gluten|barley (has|contains) gluten|barley is (a )?gluten|(?<![没不])(?<!没有)(?<!不含)(有|含)麸质|\\byes\\b|not gluten.?free|isn't gluten.?free"
       ],
       "excludes": [
         "Steamed Fish",
@@ -3096,7 +3096,7 @@
     "before": [
       {
         "user": "有什么喝的？",
-        "assistant": "饮料有：中国茶（每位RM1.00）、大麦水 RM2.50、豆奶 RM2.50、咖啡 RM2.20、咖啡乌 RM1.80、酸柑水 RM2.80，冰的加RM0.50；还有虎牌啤酒。"
+        "assistant": "饮料有：中国茶（每位RM1.00）、大麦水 RM2.50、豆奶 RM2.50、咖啡 RM2.20、咖啡乌 RM1.80（这四样要冰的加RM0.50）、酸柑水 RM2.80（冰的）；还有虎牌啤酒。"
       }
     ],
     "question": "啤酒几多钱一支？",
