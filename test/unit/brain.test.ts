@@ -1309,3 +1309,25 @@ describe("a satay stall's counts", () => {
     expect(ask("10 ayam, 10 kambing, 3 teh tarik", "Got it.", "I only had the kambing and one teh tarik. What's my share?")).toMatch(/10 × Satay Kambing \(RM1\.80\) \+ Teh Tarik \(RM3\.20\) = Total RM21\.20/);
   });
 });
+
+describe("a laksa shop's sizes and swaps", () => {
+  const sizes = { name: "Size", min: 1, max: 1, options: [{ name: "Small", price: 0 }, { name: "Regular", price: 200 }, { name: "Large", price: 400 }] };
+  const noodles = { name: "Noodles", min: 1, max: 1, options: [{ name: "Yellow Mee", price: 0 }, { name: "Bihun", price: 0 }] };
+  const dishes = asItems([
+    { id: "l1", name: "Curry Laksa", category: "Laksa", description: "coconut curry broth", price: 1190, allergens: ["crustaceans"], dietary: [], spiceLevel: 2, isSignature: true },
+    { id: "l2", name: "Penang Asam Laksa", category: "Laksa", description: "tamarind fish broth, thick rice laksa noodles", price: 1150, allergens: ["fish"], dietary: [], spiceLevel: 2, isSignature: true },
+    { id: "l3", name: "Teh Tarik", category: "Drinks", description: "pulled milk tea", price: 300, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "l1" ? { ...i, modifiers: [noodles, sizes] } : i.id === "l2" ? { ...i, modifiers: [sizes] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("prices an upsize as the difference from the size ordered", () => {
+    expect(ask("one curry laksa regular pls", "Sure.", "how much more if i upsize to large")).toMatch(/Large is RM2\.00 more: Curry Laksa with Large comes to RM15\.90/);
+  });
+  it("reads saiz biasa as Regular, and a swap of one of them with more added after", () => {
+    expect(ask("2 laksa kari saiz biasa dan 2 teh tarik, berapa?")).toMatch(/2 × Curry Laksa with Regular \(RM13\.90\)/);
+    expect(ask("3 curry laksa regular, 2 teh tarik", "Got it.", "one of the laksa change to asam laksa regular. and add one more teh tarik. total?")).toMatch(/2 × Curry Laksa with Regular \(RM13\.90\) \+ 3 × Teh Tarik \(RM3\.00\) \+ Penang Asam Laksa with Regular \(RM13\.50\) = Total RM50\.30/);
+  });
+  it("says a free choice of other dishes can't be had on this one", () => {
+    expect(ask("asam laksa can change to bihun?")).toMatch(/Penang Asam Laksa can't be changed to Bihun; that's a choice on Curry Laksa/);
+  });
+});
