@@ -257,7 +257,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
   hijau: ["green"], hitam: ["black"], putih: ["white"], merah: ["red"], vege: ["vegetable", "vegetables", "vegetarian"], veggie: ["vegetable", "vegetables", "vegetarian"], veg: ["vegetable", "vegetables", "vegetarian"],
-  hiris: ["sliced", "slice"], kuning: ["yellow"], campur: ["mixed", "mix"],
+  hiris: ["sliced", "slice"], kuning: ["yellow"], campur: ["mixed", "mix"], kasturi: ["calamansi"], jus: ["juice"],
 };
 
 const JOINED: Record<string, string[]> = { beehoon: ["bihun", "mihun", "bihoon"], meehoon: ["bihun", "mihun"], kuayteow: ["kueyteow", "kwayteow"], kweyteow: ["kueyteow", "kwayteow"] };
@@ -423,7 +423,9 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // two of its words typed as one ("kungpao" for Kung Pao): one word, as rare as the rarer
     const df = (w: string) => ix.df.get(w) ?? Math.min(...name.filter((x) => w.startsWith(x) || w.endsWith(x)).map((x) => ix.df.get(x) ?? 1), 1);
     // (or as it's spelt in Malay: "bihun" for Bee Hoon)
-    const joined = (t: string, k: number) => t === name[k] + name[k + 1] || (t.length >= 6 && same(t, name[k] + name[k + 1])) || (JOINED[name[k] + name[k + 1]] ?? []).includes(t);
+    // (not when its words are said apart: "mee hoon kueh" keeps its own "mee hoon")
+    const apart = (k: number) => toks.some((x, i) => x === name[k] && toks[i + 1] === name[k + 1]);
+    const joined = (t: string, k: number) => t === name[k] + name[k + 1] || (t.length >= 6 && same(t, name[k] + name[k + 1])) || (!apart(k) && (JOINED[name[k] + name[k + 1]] ?? []).includes(t));
     for (let k = 0; k + 1 < name.length; k++) if (toks.some((t) => joined(t, k))) name = [...name.slice(0, k), toks.find((t) => joined(t, k))!, ...name.slice(k + 2)];
     const covered: number[] = [];
     const placed: string[] = [];
@@ -549,7 +551,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   }
   // a match that covers more of the question wins over one inside it: "durian cendol" is the Musang
   // King Durian Cendol, not the plain Cendol whose one word it also contains
-  const inside =(a: Mention, b: Mention) => a.covered.length > 0 && b.covered.length > a.covered.length && a.covered.every((i) => b.covered.includes(i));
+  // (or one word between another's: "jus limau kasturi" is the Calamansi Juice, its "limau" not the Iced Lemon Tea)
+  const inside = (a: Mention, b: Mention) => a.covered.length > 0 && b.covered.length > a.covered.length && (a.covered.every((i) => b.covered.includes(i)) || (a.covered.length === 1 && b.covered.length >= 2 && a.covered[0] > Math.min(...b.covered) && a.covered[0] < Math.max(...b.covered) && Math.max(...b.covered) - Math.min(...b.covered) === b.covered.length && clauseOf(Math.min(...b.covered)) === clauseOf(Math.max(...b.covered))));
   for (let k = found.length - 1; k >= 0; k--) if (found.some((b) => inside(found[k], b))) found.splice(k, 1);
   // a usual Chinese name that fits three dishes or more is a kind of food (拉面, 卷饼), not one dish;
   // and the menu's own Chinese name wins over a usual one (its 卤肉饭 is the Braised Pork Rice, not
@@ -994,7 +997,9 @@ function requested(question: string, a: Allergen): boolean {
   if (a === "milk" && (/\bmilk\s?(tea|tee|teas|shakes?)\b/i.test(question) || /奶茶|奶昔/.test(question))) return true;
   // "egg dishes?", "seafood options", "any tofu stuff": the food asked for by its kind of dish
   const words = normalize(question).split(" ");
-  if (words.some((w, i) => /^(dish|dishes|options?|food|foods|items?|stuff|menu|selection)$/.test(w) && i > 0 && mentionedAllergens(words[i - 1]).includes(a))) return true;
+  // ("fish soups today how much?": a kind of food by its course, and its price asked)
+  if (words.some((w, i) => /^(dish|dishes|options?|food|foods|items?|stuff|menu|selection|soup|soups|noodle|noodles|porridge|curry|curries|burgers?|sets?)$/.test(w) && i > 0 && mentionedAllergens(words[i - 1]).includes(a))) return true;
+  if (/\b(how much|price|prices|berapa|harga)\b/.test(normalize(question)) && mentionedAllergens(question).includes(a) && !/\b(no|not|without|tanpa|tak|free|allerg\w*|avoid|can t)\b/.test(normalize(question))) return true;
   // ("with extra telur", "2 of the cheaper egg", "tambah telur", "a waffle with ice cream"): more of it, or a count of it
   if (question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && /\b(extra|add|tambah|plus|more|another|lebih|with|dengan|keep|kekal)\b|\b(\d|two|three|dua|tiga)\s+(of the\s+)?(\w+\s+)?(eggs?|telur|cheese|keju)\b/i.test(clause))) return true;
   // ("sambal kicap for the sotong": the sotong ordered, its dip asked for; an allergy said is still governed above)

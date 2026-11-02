@@ -1684,3 +1684,21 @@ describe("a dessert stall's flavours, serving choices and lists by kind", () => 
     expect(ask("cold dessert?", "Cendol Original RM5.50 and Ice Cream Potong RM2.50.", "and a drink?", "Limau Ais RM3.00, Air Mata Kucing RM3.50 or Kelapa Muda RM6.50.", "ok the first dessert and the second drink. total?")).toMatch(/Cendol Original \(RM5\.50\) \+ Air Mata Kucing \(RM3\.50\) = Total RM9\.00/);
   });
 });
+
+describe("a fish soup stall's Malay names and course words", () => {
+  const dishes = asItems([
+    { id: "f1", name: "Mee Hoon Kueh Fish Soup", category: "Soups", description: "hand-torn dough in fish broth", price: 1290, allergens: ["fish", "gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "f2", name: "Fried Fish Bee Hoon Soup", category: "Soups", description: "fried fish slices and bee hoon", price: 1490, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "f3", name: "Calamansi Juice", category: "Drinks", description: "fresh calamansi", price: 400, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "f4", name: "Iced Lemon Tea", category: "Drinks", description: "iced tea with lemon", price: 400, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "f5", name: "Vegetarian Tomato Tofu Soup", category: "Soups", description: "tomato and tofu", price: 1190, allergens: ["soy"], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]);
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("bills mee hoon kueh, sup ikan goreng bihun and jus limau kasturi as said", () => {
+    expect(ask("Berapa semua: 2 mee hoon kueh, 1 sup ikan goreng bihun, 3 jus limau kasturi?")).toMatch(/2 × Mee Hoon Kueh Fish Soup \(RM12\.90\) \+ Fried Fish Bee Hoon Soup \(RM14\.90\) \+ 3 × Calamansi Juice \(RM4\.00\) = Total RM52\.70/);
+  });
+  it("doesn't take 'fish soups, how much?' as avoiding fish", () => {
+    expect(ask("fish soups today how much?")).not.toMatch(/free of fish/);
+  });
+});
