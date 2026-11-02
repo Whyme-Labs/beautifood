@@ -1,0 +1,333 @@
+{
+  "Otak-Otak": {
+    "allergens": [
+      "fish",
+      "crustaceans",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Fish and prawn mousse = fish + crustaceans; belacan = crustaceans; egg. Coconut milk is not milk. Spicy = 2."
+  },
+  "Jiu Hu Char": {
+    "allergens": [
+      "molluscs",
+      "soy",
+      "gluten",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Dried cuttlefish = molluscs; light soy = soy + gluten; sambal belacan on the side = crustaceans and spice 1 (chilli condiment on the side, no heat word on this line). Vegetable oil, no lard."
+  },
+  "Pie Tee": {
+    "allergens": [
+      "gluten",
+      "crustaceans",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat-flour cups = gluten; prawn = crustaceans; egg strips. Chilli sauce with no heat word = 1."
+  },
+  "Kerabu Mangga": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Dried shrimp and sambal belacan = crustaceans. Spicy = 2."
+  },
+  "Kerabu Kacang Botol": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Stated no belacan or dried shrimp; kerisik is coconut, not a tree nut. Tagged vegan. Mild = 1."
+  },
+  "Ayam Pongteh": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Taucu = soy; dark soy sauce = soy + gluten. Chicken version, no pork. Not spicy = 0."
+  },
+  "Curry Kapitan": {
+    "allergens": [
+      "crustaceans",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan = crustaceans. Candlenut (buah keras) read as tree_nuts, the safe reading (not on the EU list, but a true nut; cf. v11 apricot kernels). Coconut milk is not milk. Spicy = 2."
+  },
+  "Ayam Buah Keluak": {
+    "allergens": [
+      "crustaceans",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan = crustaceans; candlenut = tree_nuts (safe reading). Buah keluak itself (Pangium edule seed) is not a regulated tree nut, but the dish carries tree_nuts anyway. Spicy = 2. SOLD OUT in extra.json."
+  },
+  "Assam Pedas Ikan": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Mackerel = fish; belacan = crustaceans. Very spicy = 3. Pomfret/stingray swaps are fish too."
+  },
+  "Udang Lemak Nenas": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Prawns = crustaceans. Coconut milk is not milk. No candlenut or belacan named. Fresh chilli, mild = 1."
+  },
+  "Sambal Terung": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Dried shrimp and belacan = crustaceans. Spicy = 2."
+  },
+  "Chap Chye": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Beancurd skin and taucu = soy (taucu = soy only, v3). Mung bean glass noodles, no gluten. Vegetable oil; tagged vegan. Not spicy = 0."
+  },
+  "Cincalok Omelette": {
+    "allergens": [
+      "crustaceans",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Cincalok (fermented baby shrimp) = crustaceans; egg. Chilli, mild = 1."
+  },
+  "Nyonya Laksa": {
+    "allergens": [
+      "crustaceans",
+      "tree_nuts",
+      "fish",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Belacan, dried shrimp, prawns = crustaceans; candlenut = tree_nuts (safe reading); fish cake = fish; tau pok = soy; egg. Thick rice vermicelli by default, no gluten (yellow mee is an option allergen, not counted). Cockles are named but out (in no group). Spicy = 2."
+  },
+  "Mee Siam": {
+    "allergens": [
+      "crustaceans",
+      "soy",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Dried shrimp chilli paste = crustaceans; taucu and tau pok = soy; egg. Rice vermicelli, no gluten. Spicy = 2."
+  },
+  "Nasi Ulam": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Salted fish = fish; dried shrimp floss = crustaceans. Toasted coconut is not a tree nut. Mild = 1."
+  },
+  "Nasi Pongteh Set": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "peanuts",
+      "sesame",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Default components: Ayam Pongteh (taucu, dark soy = soy + gluten), white rice, achar (peanuts, sesame), sambal belacan on the side (crustaceans; chilli condiment on the side = 1) and the first drink, limau ais. Teh tarik ais (milk) and nasi ulam (fish, crustaceans) are options, not counted."
+  },
+  "White Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Steamed jasmine rice."
+  },
+  "Butterfly Pea Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice cooked with butterfly pea flower and pandan; no coconut milk named. Tagged vegan."
+  },
+  "Sambal Belacan": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Belacan = crustaceans, so not vegetarian. Very spicy = 3."
+  },
+  "Kuih Lapis": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice and tapioca flour, coconut milk, sugar: no gluten. Tagged vegan."
+  },
+  "Onde-Onde": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice flour (no gluten), gula melaka, coconut. Tagged vegan."
+  },
+  "Kuih Talam": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice flour, pandan, coconut milk. Tagged vegan."
+  },
+  "Pulut Tai Tai": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Glutinous rice and coconut milk; kaya = eggs. Vegetarian, not vegan."
+  },
+  "Cendol": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pandan rice-flour jelly (no gluten), coconut milk, gula melaka, red beans. Tagged vegan. Ice cream topping (milk, egg) is an option, not counted."
+  },
+  "Bubur Cha Cha": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sweet potato, yam, sago, black-eyed beans, coconut milk. Tagged vegan."
+  },
+  "Sago Gula Melaka": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sago, coconut milk, palm sugar. Tagged vegan."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed and evaporated milk."
+  },
+  "Kopi O": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Kampung beans roasted with butter = milk (rule o). Vegetarian, not vegan."
+  },
+  "Limau Ais": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Calamansi juice. Asam boi add-on not counted."
+  },
+  "Barley Lemon": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Pearl barley = gluten. Tagged vegan."
+  },
+  "Air Bandung": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Evaporated milk."
+  },
+  "Coconut Water": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Young coconut; coconut is not a tree nut."
+  }
+}

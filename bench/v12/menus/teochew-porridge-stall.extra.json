@@ -1,0 +1,472 @@
+{
+  "soldOut": [
+    "Steamed Fish"
+  ],
+  "menus": [
+    {
+      "name": "Supper",
+      "dishes": [
+        "Braised Pork Intestines",
+        "Oyster Omelette",
+        "Steamed Minced Pork with Salted Egg"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "21:00",
+          "to": "01:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Opening month",
+      "kind": "amount",
+      "value": 100,
+      "categories": [],
+      "dishes": [
+        "Plain Teochew Porridge",
+        "Sweet Potato Porridge"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "00:00",
+          "to": "23:59",
+          "start": "2026-10-20",
+          "end": "2026-11-15"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Plain Teochew Porridge": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular bowl",
+            "price": 0
+          },
+          {
+            "name": "Large bowl",
+            "price": 80
+          }
+        ]
+      }
+    ],
+    "Sweet Potato Porridge": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular bowl",
+            "price": 0
+          },
+          {
+            "name": "Large bowl",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Steamed White Rice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Braised Duck": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small plate",
+            "price": 0
+          },
+          {
+            "name": "Large plate",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Braised egg",
+            "price": 150
+          },
+          {
+            "name": "Extra gravy",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Braised Pork Belly": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small plate",
+            "price": 0
+          },
+          {
+            "name": "Large plate",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Braised egg",
+            "price": 150
+          },
+          {
+            "name": "Braised tofu",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Fried Fish Cake": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small plate",
+            "price": 0
+          },
+          {
+            "name": "Large plate",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Preserved Radish Omelette": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small plate",
+            "price": 0
+          },
+          {
+            "name": "Large plate",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Steamed Egg": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Minced pork",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Bitter Gourd with Egg": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small plate",
+            "price": 0
+          },
+          {
+            "name": "Large plate",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Stir-fried Kailan": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small plate",
+            "price": 0
+          },
+          {
+            "name": "Large plate",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Oyster sauce",
+            "price": 0
+          },
+          {
+            "name": "Garlic only",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Braised Pork Intestines": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small plate",
+            "price": 0
+          },
+          {
+            "name": "Large plate",
+            "price": 500
+          }
+        ]
+      }
+    ],
+    "Oyster Omelette": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Small plate",
+            "price": 0
+          },
+          {
+            "name": "Large plate",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra oysters",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Chinese Tea": [
+      {
+        "name": "Tea",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tieguanyin",
+            "price": 0
+          },
+          {
+            "name": "Pu-erh",
+            "price": 0
+          },
+          {
+            "name": "Chrysanthemum",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Barley Water": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Soya Bean Milk": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 6,
+    "taxInclusive": true,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

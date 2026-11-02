@@ -1,0 +1,858 @@
+{
+  "soldOut": [
+    "Sarson Da Saag"
+  ],
+  "menus": [
+    {
+      "name": "Lunch thali",
+      "dishes": [
+        "Veg Thali",
+        "Chicken Thali",
+        "Mutton Thali"
+      ],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "11:30",
+          "to": "15:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Lassi hour",
+      "kind": "amount",
+      "value": 100,
+      "categories": [],
+      "dishes": [
+        "Sweet Lassi",
+        "Salted Lassi",
+        "Mango Lassi"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "15:00",
+          "to": "18:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Chicken Tikka": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Tandoori Chicken": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Half",
+            "price": 0
+          },
+          {
+            "name": "Full",
+            "price": 1800
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Butter Chicken": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Half",
+            "price": 0
+          },
+          {
+            "name": "Full",
+            "price": 900
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra gravy",
+            "price": 300
+          },
+          {
+            "name": "Extra butter",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Chicken Kadai": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Half",
+            "price": 0
+          },
+          {
+            "name": "Full",
+            "price": 800
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra gravy",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Mutton Rogan Josh": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Half",
+            "price": 0
+          },
+          {
+            "name": "Full",
+            "price": 1100
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra gravy",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Dal Makhani": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Half",
+            "price": 0
+          },
+          {
+            "name": "Full",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra butter",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Dal Tadka": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Chana Masala": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Palak Paneer": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Half",
+            "price": 0
+          },
+          {
+            "name": "Full",
+            "price": 700
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra paneer",
+            "price": 500
+          },
+          {
+            "name": "Extra gravy",
+            "price": 300
+          },
+          {
+            "name": "Extra butter",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Paneer Butter Masala": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Half",
+            "price": 0
+          },
+          {
+            "name": "Full",
+            "price": 700
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra paneer",
+            "price": 500
+          },
+          {
+            "name": "Extra gravy",
+            "price": 300
+          },
+          {
+            "name": "Extra butter",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Chicken Dum Biryani": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Boiled egg",
+            "price": 200
+          },
+          {
+            "name": "Extra raita",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Vegetable Biryani": [
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra paneer",
+            "price": 500
+          },
+          {
+            "name": "Extra raita",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Tandoori Roti": [
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Butter",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Butter Chicken Set": [
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Jeera rice",
+            "price": 0
+          },
+          {
+            "name": "Plain naan",
+            "price": 0
+          },
+          {
+            "name": "Butter naan",
+            "price": 100
+          },
+          {
+            "name": "Garlic naan",
+            "price": 200
+          },
+          {
+            "name": "Cheese naan",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sweet lassi",
+            "price": 0
+          },
+          {
+            "name": "Salted lassi",
+            "price": 0
+          },
+          {
+            "name": "Masala chai",
+            "price": 0
+          },
+          {
+            "name": "Mango lassi",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Veg Thali": [
+      {
+        "name": "Curries",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Dal makhani",
+            "price": 0
+          },
+          {
+            "name": "Dal tadka",
+            "price": 0
+          },
+          {
+            "name": "Chana masala",
+            "price": 0
+          },
+          {
+            "name": "Palak paneer",
+            "price": 200
+          },
+          {
+            "name": "Paneer butter masala",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Plain naan",
+            "price": 0
+          },
+          {
+            "name": "Tandoori roti",
+            "price": 0
+          },
+          {
+            "name": "Butter naan",
+            "price": 100
+          },
+          {
+            "name": "Garlic naan",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Chicken Thali": [
+      {
+        "name": "Chicken curry",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Butter chicken",
+            "price": 0
+          },
+          {
+            "name": "Chicken kadai",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Dal or chana",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Dal makhani",
+            "price": 0
+          },
+          {
+            "name": "Dal tadka",
+            "price": 0
+          },
+          {
+            "name": "Chana masala",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Plain naan",
+            "price": 0
+          },
+          {
+            "name": "Tandoori roti",
+            "price": 0
+          },
+          {
+            "name": "Butter naan",
+            "price": 100
+          },
+          {
+            "name": "Garlic naan",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Mutton Thali": [
+      {
+        "name": "Bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Butter naan",
+            "price": 0
+          },
+          {
+            "name": "Garlic naan",
+            "price": 100
+          },
+          {
+            "name": "Tandoori roti",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Gulab Jamun": [
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Vanilla ice cream",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Sweet Lassi": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Salted Lassi": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Mango Lassi": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Masala Chai": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fresh Lime Soda": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sweet",
+            "price": 0
+          },
+          {
+            "name": "Salted",
+            "price": 0
+          },
+          {
+            "name": "Sweet and salted",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "muslim_friendly"
+  }
+}

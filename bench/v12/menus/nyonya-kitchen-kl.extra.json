@@ -1,0 +1,564 @@
+{
+  "soldOut": [
+    "Ayam Buah Keluak"
+  ],
+  "menus": [
+    {
+      "name": "Kuih counter",
+      "dishes": [
+        "Kuih Lapis",
+        "Onde-Onde",
+        "Kuih Talam",
+        "Pulut Tai Tai"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "15:00",
+          "to": "18:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Weekday afternoon mains",
+      "kind": "percent",
+      "value": 10,
+      "categories": [
+        "MAINS",
+        "NOODLES & RICE PLATES"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "14:00",
+          "to": "17:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Pie Tee": [
+      {
+        "name": "Pieces",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "5 pieces",
+            "price": 0
+          },
+          {
+            "name": "10 pieces",
+            "price": 1100
+          }
+        ]
+      }
+    ],
+    "Ayam Pongteh": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large (shares 3-4)",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Add rice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 200
+          },
+          {
+            "name": "Butterfly pea rice",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Curry Kapitan": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large (shares 3-4)",
+            "price": 1200
+          }
+        ]
+      },
+      {
+        "name": "Spice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add rice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 200
+          },
+          {
+            "name": "Butterfly pea rice",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Ayam Buah Keluak": [
+      {
+        "name": "Add rice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 200
+          },
+          {
+            "name": "Butterfly pea rice",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Assam Pedas Ikan": [
+      {
+        "name": "Fish",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Spanish mackerel",
+            "price": 0
+          },
+          {
+            "name": "Stingray",
+            "price": 400
+          },
+          {
+            "name": "Pomfret",
+            "price": 800
+          }
+        ]
+      },
+      {
+        "name": "Add rice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 200
+          },
+          {
+            "name": "Butterfly pea rice",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Udang Lemak Nenas": [
+      {
+        "name": "Add rice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 200
+          },
+          {
+            "name": "Butterfly pea rice",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Sambal Terung": [
+      {
+        "name": "Add rice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 200
+          },
+          {
+            "name": "Butterfly pea rice",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Chap Chye": [
+      {
+        "name": "Add rice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 200
+          },
+          {
+            "name": "Butterfly pea rice",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Nyonya Laksa": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Thick bee hoon",
+            "price": 0
+          },
+          {
+            "name": "Yellow mee",
+            "price": 0
+          },
+          {
+            "name": "Half bee hoon, half mee",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra prawns",
+            "price": 500
+          },
+          {
+            "name": "Fish cake",
+            "price": 200
+          },
+          {
+            "name": "Boiled egg",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Mee Siam": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra prawns",
+            "price": 500
+          },
+          {
+            "name": "Boiled egg",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Nasi Ulam": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 250
+          },
+          {
+            "name": "Otak-otak",
+            "price": 990
+          }
+        ]
+      }
+    ],
+    "Nasi Pongteh Set": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Butterfly pea rice",
+            "price": 100
+          },
+          {
+            "name": "Nasi ulam",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Limau ais",
+            "price": 0
+          },
+          {
+            "name": "Teh O ais",
+            "price": 0
+          },
+          {
+            "name": "Teh tarik ais",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Cendol": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Durian",
+            "price": 500
+          },
+          {
+            "name": "Sweet corn",
+            "price": 100
+          },
+          {
+            "name": "Pulut",
+            "price": 150
+          },
+          {
+            "name": "Vanilla ice cream",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Bubur Cha Cha": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Warm",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Limau Ais": [
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Asam boi",
+            "price": 50
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 5,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "certified",
+    "certifier": "JAKIM",
+    "certNo": "JAKIM/(S)/22.00/492-2/1 NO. 07733",
+    "validUntil": "2026-09-30"
+  }
+}

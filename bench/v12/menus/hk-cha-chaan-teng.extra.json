@@ -1,0 +1,1299 @@
+{
+  "soldOut": [
+    "Satay Beef Instant Noodles"
+  ],
+  "menus": [
+    {
+      "name": "Breakfast",
+      "dishes": [
+        "Ham Macaroni Breakfast Set",
+        "Chicken Macaroni Breakfast Set",
+        "Luncheon Meat Noodle Breakfast Set",
+        "Scrambled Egg Toast Set"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "07:00",
+          "to": "11:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Tea time",
+      "kind": "percent",
+      "value": 15,
+      "categories": [
+        "DRINKS"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "14:30",
+          "to": "17:30"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Ham Macaroni Breakfast Set": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Macaroni",
+            "price": 0
+          },
+          {
+            "name": "Instant noodles",
+            "price": 0
+          },
+          {
+            "name": "Rice vermicelli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Eggs",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Scrambled",
+            "price": 0
+          },
+          {
+            "name": "Sunny side up",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot HK Milk Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot HK Coffee",
+            "price": 0
+          },
+          {
+            "name": "Hot Yuen Yeung",
+            "price": 0
+          },
+          {
+            "name": "Hot Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Iced HK Milk Tea",
+            "price": 100
+          },
+          {
+            "name": "Iced Yuen Yeung",
+            "price": 100
+          },
+          {
+            "name": "Iced Lemon Tea",
+            "price": 100
+          },
+          {
+            "name": "Hot Horlicks",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Chicken Macaroni Breakfast Set": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Macaroni",
+            "price": 0
+          },
+          {
+            "name": "Instant noodles",
+            "price": 0
+          },
+          {
+            "name": "Rice vermicelli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Eggs",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Scrambled",
+            "price": 0
+          },
+          {
+            "name": "Sunny side up",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot HK Milk Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot HK Coffee",
+            "price": 0
+          },
+          {
+            "name": "Hot Yuen Yeung",
+            "price": 0
+          },
+          {
+            "name": "Hot Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Iced HK Milk Tea",
+            "price": 100
+          },
+          {
+            "name": "Iced Yuen Yeung",
+            "price": 100
+          },
+          {
+            "name": "Iced Lemon Tea",
+            "price": 100
+          },
+          {
+            "name": "Hot Horlicks",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Luncheon Meat Noodle Breakfast Set": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Instant noodles",
+            "price": 0
+          },
+          {
+            "name": "Macaroni",
+            "price": 0
+          },
+          {
+            "name": "Rice vermicelli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot HK Milk Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot HK Coffee",
+            "price": 0
+          },
+          {
+            "name": "Hot Yuen Yeung",
+            "price": 0
+          },
+          {
+            "name": "Hot Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Iced HK Milk Tea",
+            "price": 100
+          },
+          {
+            "name": "Iced Yuen Yeung",
+            "price": 100
+          },
+          {
+            "name": "Iced Lemon Tea",
+            "price": 100
+          },
+          {
+            "name": "Hot Horlicks",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Scrambled Egg Toast Set": [
+      {
+        "name": "Eggs",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Scrambled",
+            "price": 0
+          },
+          {
+            "name": "Sunny side up",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot HK Milk Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot HK Coffee",
+            "price": 0
+          },
+          {
+            "name": "Hot Yuen Yeung",
+            "price": 0
+          },
+          {
+            "name": "Hot Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Iced HK Milk Tea",
+            "price": 100
+          },
+          {
+            "name": "Iced Yuen Yeung",
+            "price": 100
+          },
+          {
+            "name": "Iced Lemon Tea",
+            "price": 100
+          },
+          {
+            "name": "Hot Horlicks",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Pineapple Bun with Butter": [
+      {
+        "name": "Butter",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra-thick butter",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Pineapple Bun": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Butter",
+            "price": 150
+          },
+          {
+            "name": "Luncheon meat",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "HK French Toast": [
+      {
+        "name": "Syrup",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Golden syrup",
+            "price": 0
+          },
+          {
+            "name": "Condensed milk",
+            "price": 0
+          },
+          {
+            "name": "Honey",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra peanut butter",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Scrambled Egg Sandwich": [
+      {
+        "name": "Bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Plain",
+            "price": 0
+          },
+          {
+            "name": "Toasted",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Ham",
+            "price": 300
+          },
+          {
+            "name": "Luncheon meat",
+            "price": 300
+          },
+          {
+            "name": "Cheese slice",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Ham Macaroni Soup": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Macaroni",
+            "price": 0
+          },
+          {
+            "name": "Spaghetti",
+            "price": 0
+          },
+          {
+            "name": "Instant noodles",
+            "price": 0
+          },
+          {
+            "name": "Rice vermicelli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Extra ham",
+            "price": 300
+          },
+          {
+            "name": "Luncheon meat",
+            "price": 300
+          },
+          {
+            "name": "Cheese slice",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Luncheon Meat Egg Instant Noodles": [
+      {
+        "name": "Noodles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Instant noodles",
+            "price": 0
+          },
+          {
+            "name": "Macaroni",
+            "price": 0
+          },
+          {
+            "name": "Rice vermicelli",
+            "price": 0
+          },
+          {
+            "name": "Udon",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra fried egg",
+            "price": 200
+          },
+          {
+            "name": "Ham",
+            "price": 300
+          },
+          {
+            "name": "Extra luncheon meat",
+            "price": 300
+          },
+          {
+            "name": "Cheese slice",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Baked Pork Chop Rice": [
+      {
+        "name": "Base",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Egg fried rice",
+            "price": 0
+          },
+          {
+            "name": "Spaghetti",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sauce",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tomato sauce",
+            "price": 0
+          },
+          {
+            "name": "White sauce",
+            "price": 0
+          },
+          {
+            "name": "Black pepper sauce",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 200
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Baked Chicken Chop Rice": [
+      {
+        "name": "Base",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Egg fried rice",
+            "price": 0
+          },
+          {
+            "name": "Spaghetti",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 200
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Sweet and Sour Pork Rice": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Curry Chicken Rice": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Curry fish balls",
+            "price": 300
+          },
+          {
+            "name": "Extra rice",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Tomato Egg Rice": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Cheese slice",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Curry Fish Balls": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "8 pcs",
+            "price": 0
+          },
+          {
+            "name": "12 pcs",
+            "price": 350
+          }
+        ]
+      }
+    ],
+    "Borscht": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Bowl",
+            "price": 0
+          },
+          {
+            "name": "Large bowl",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Fried Chicken Wings": [
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "4 pcs",
+            "price": 0
+          },
+          {
+            "name": "6 pcs",
+            "price": 500
+          }
+        ]
+      }
+    ],
+    "Baked Pork Chop Rice Set": [
+      {
+        "name": "Base",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Egg fried rice",
+            "price": 0
+          },
+          {
+            "name": "Spaghetti",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot HK Milk Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot HK Coffee",
+            "price": 0
+          },
+          {
+            "name": "Hot Yuen Yeung",
+            "price": 0
+          },
+          {
+            "name": "Hot Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Iced HK Milk Tea",
+            "price": 100
+          },
+          {
+            "name": "Iced Yuen Yeung",
+            "price": 100
+          },
+          {
+            "name": "Iced Lemon Tea",
+            "price": 100
+          },
+          {
+            "name": "Hot Horlicks",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 200
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Curry Chicken Rice Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot HK Milk Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot HK Coffee",
+            "price": 0
+          },
+          {
+            "name": "Hot Yuen Yeung",
+            "price": 0
+          },
+          {
+            "name": "Hot Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Iced HK Milk Tea",
+            "price": 100
+          },
+          {
+            "name": "Iced Yuen Yeung",
+            "price": 100
+          },
+          {
+            "name": "Iced Lemon Tea",
+            "price": 100
+          },
+          {
+            "name": "Hot Horlicks",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Extra rice",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Sweet and Sour Pork Rice Set": [
+      {
+        "name": "Set drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot HK Milk Tea",
+            "price": 0
+          },
+          {
+            "name": "Hot HK Coffee",
+            "price": 0
+          },
+          {
+            "name": "Hot Yuen Yeung",
+            "price": 0
+          },
+          {
+            "name": "Hot Lemon Tea",
+            "price": 0
+          },
+          {
+            "name": "Iced HK Milk Tea",
+            "price": 100
+          },
+          {
+            "name": "Iced Yuen Yeung",
+            "price": 100
+          },
+          {
+            "name": "Iced Lemon Tea",
+            "price": 100
+          },
+          {
+            "name": "Hot Horlicks",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "HK Milk Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          },
+          {
+            "name": "Condensed milk instead of sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Yuen Yeung": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          },
+          {
+            "name": "Condensed milk instead of sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "HK Coffee": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          },
+          {
+            "name": "Condensed milk instead of sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Lemon Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Horlicks": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Ovaltine": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Lemon Coke": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Red Bean Ice": [
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra red beans",
+            "price": 100
+          },
+          {
+            "name": "Vanilla ice cream scoop",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fresh Soy Milk": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Cold",
+            "price": 0
+          },
+          {
+            "name": "Warm",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

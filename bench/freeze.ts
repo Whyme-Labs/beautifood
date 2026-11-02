@@ -15,3 +15,11 @@ for (const v of ["v3", "v4", "v5", "v6", "v7", "v8", "v10", "v11", "v12"]) {
   const files = readdirSync(dir).sort();
   console.log(`${v} menus`, files.length, createHash("sha256").update(files.map((f) => f + readFileSync(new URL(f, dir), "utf8")).join("\n")).digest("hex").slice(0, 16));
 }
+// A menu name must be unique across sets: the loader takes the first file it finds, so a reused name reads another set's menu.
+const seen = new Map<string, string>();
+for (const d of ["menus", ...readdirSync(new URL("./", import.meta.url)).filter((v) => existsSync(new URL(`./${v}/menus/`, import.meta.url))).map((v) => `${v}/menus`)])
+  for (const f of readdirSync(new URL(`./${d}/`, import.meta.url)).filter((f) => f.endsWith(".txt"))) {
+    const m = f.replace(/\.txt$/, "");
+    if (seen.has(m) && seen.get(m) !== d) console.error(`menu name "${m}" is in both ${seen.get(m)} and ${d}`);
+    else seen.set(m, d);
+  }
