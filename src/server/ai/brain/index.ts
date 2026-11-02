@@ -1652,7 +1652,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const billSoFar = state.order.length > 0 && (/\b(whats|what s|what is|how much is|hows|how s) (the|my|our) (bill|damage)\b|\bbill (so far|now|come to)\b|\bwhat did (i|we) order\b|\b(my|our) order so far\b|\bapa (saya|kami) (order|pesan)\b/.test(nt1) || /我(们)?点了什么|点了哪些/.test(u.text));
   const totalWord = !!shares || billSoFar || /\b(final (amount|bill|total)|how much (do|should|will) (i|we) pay|pay at the (counter|cashier))\b/.test(nt1) || /\b(total|altogether|all together|in total|sum|ttl|berapa semua|berapa total|jumlah)\b/.test(mentioned.reduce((t, i) => t.replace(normalize(i.name), " "), nt1)) || /一共|总共|加起来|合计|算钱|埋单|买单|结账|算一下/.test(u.text);
   // (typos put right too: "how mch")
-  const howMuch = /\b(how much|berapa|price)\b/.test(normalize(u.text)) || /\b(how much|berapa|price)\b/.test(u.toks.join(" ")) || /\bhow (mch|mich|muc|mutch)\b/.test(normalize(u.text)) || /多少钱|几钱|几多钱|多少/.test(u.text);
+  const howMuch = /\b(how much|berapa|price)\b/.test(normalize(u.text)) || /\b(how much|berapa|price)\b/.test(u.toks.join(" ")) || /\bhow (mch|mich|muc|mutch)\b/.test(normalize(u.text)) || /多少钱|几钱|几多钱|多少|几多|几镭/.test(u.text);
   const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text) || /\b(tambah|tambahkan|lagi satu|satu lagi|one more)\b/.test(nt1);
   // ("how much for two nasi lemak?", "we're 3, one nasi lemak each": one dish, more than one of it)
   // ("两碗大的经典巴西莓碗，一碗加…": counted as the order reads)
@@ -2507,7 +2507,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const said = countsOf(u.text, mentioned);
       const part: OrderLine[] = [];
       // (named with no count, "the kambing", in English or Malay: all of that line)
-      const counted = (i: Item) => u.spots.some((sp_) => sp_.dish.id === i.id && /^(\d+|a|an|one|two|three|four|five|six|seven|eight|nine|ten|satu|dua|tiga|empat|lima|sebiji|secawan|segelas)$/.test(u.toks[sp_.from - 1] ?? ""));
+      // (or with its measure between: "2 bowls of porridge", "dua mangkuk bubur")
+      const NUM_ = /^(\d+|a|an|one|two|three|four|five|six|seven|eight|nine|ten|satu|dua|tiga|empat|lima|sebiji|secawan|segelas)$/;
+      const MEASURE_ = /^(bowls?|plates?|cups?|glasses?|pieces?|pcs|sticks?|mangkuk|pinggan|cawan|gelas|biji|keping|cucuk|of)$/;
+      const counted = (i: Item) => u.spots.some((sp_) => sp_.dish.id === i.id && (NUM_.test(u.toks[sp_.from - 1] ?? "") || (MEASURE_.test(u.toks[sp_.from - 1] ?? "") && (NUM_.test(u.toks[sp_.from - 2] ?? "") || (MEASURE_.test(u.toks[sp_.from - 2] ?? "") && NUM_.test(u.toks[sp_.from - 3] ?? ""))))));
       const latinOnly = !/[\u3400-\u9fff]/.test(u.text);
       for (const i of mentioned) {
         // (of a line of many, satay sticks and the like; one of two murtabak is one)

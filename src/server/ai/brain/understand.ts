@@ -357,7 +357,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     }
     // (a bowl of porridge, "三碗糜" in Teochew, "两碗粥": the plain one, 白粥)
     if (Object.values(dish.translations ?? {}).some((tr) => /白粥$/.test(tr?.name ?? ""))) {
-      const bowl = raw.match(/碗(粥|糜)(?![\u4e00-\u9fff])|碗(粥|糜)(?=[和跟与，、。？！再加])/);
+      const bowl = raw.match(/碗(粥|糜)(?![\u4e00-\u9fff])|碗(粥|糜)(?=[和跟与同，、。？！再加])/);
       if (bowl) return void found.push({ dish, at: (bowl.index ?? 0) / 100, covered: [], score: 2, zh: bowl[0].slice(1) });
     }
     // a bracket said beside the name ("炒萝卜糕白的", "白的炒萝卜糕" for 炒萝卜糕（白）)
@@ -1102,7 +1102,8 @@ export type Reading = Omit<Understanding, "intent" | "confidence" | "guess">;
 
 /** Everything but the intent: the slots, and the question as the intent model reads it. */
 export function read(items: Dish[], asked: string): Reading {
-  const { text: said, injected } = stripInjection(asked);
+  // ("table 4: fish amritsari, …"): a table's number isn't a count
+  const { text: said, injected } = stripInjection(asked.replace(/\b(table|meja|tbl)\s*(?:no\.?\s*|#\s*)?(\d{1,3})\s*[:\-–]/gi, "$1$2:"));
   // what guests call a menu's drink for short ("柠檬多多" for its 柠檬养乐多)
   // ...and "siu yuk"/"sio bak" for its roast pork, "char siew" for its char siu
   const aliasedInitials: [RegExp, string][] = [];
