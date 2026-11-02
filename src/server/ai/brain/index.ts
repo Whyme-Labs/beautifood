@@ -712,8 +712,10 @@ export function pointedAt(text: string, shown: Item[]): { item: Item; count: num
   const N: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5, 一: 1, 两: 2, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6 };
   const out: { item: Item; count: number }[] = [];
   const push = (item: Item | undefined, count: number) => item && !out.some((o) => o.item.id === item.id) && out.push({ item, count });
+  // (a count after it too: "the first one x1")
+  const xAfter = (end: number) => Number(t.slice(end).match(/^\s*(?:one\s*)?(?:x|×)\s*(\d{1,2})\b/)?.[1] ?? 0);
   for (const m of t.matchAll(/\b(?:(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s+(?:of\s+)?)?(?:the|that|this|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|last|pertama|kedua|ketiga|terakhir)\b(?!\s+(two|three|dua|tiga|2|3)\b)/g))
-    push(can.at(ORD[m[2]]), m[1] ? (N[m[1]] ?? Number(m[1])) : 0);
+    push(can.at(ORD[m[2]]), m[1] ? (N[m[1]] ?? Number(m[1])) : xAfter((m.index ?? 0) + m[0].length));
   // "第二个", "第一个和第三个", "最后一个"
   // (each with its count: "第一个来五个，第三个来三个")
   for (const m of text.matchAll(/(?:第([一二三四五1-5])(?:个|道|杯|碗|款|样)?|最后(?:一个|那个|一样|一款|的))(?:[^，,。第]{0,3}?(?:来|要|给|拿)?([一两二三四五六七八九十\d]{1,2})\s*[个份杯碗碟盘包块粒只罐瓶])?/g))
@@ -753,14 +755,17 @@ export function pointedAt(text: string, shown: Item[]): { item: Item; count: num
     if (m && hits.length === 1) push(hits[0], N[m[1]] ?? Number(m[1]));
   }
   // "the curry one", "the vegan one", "the set", "yang avocado tu", "那个豆的": the one just shown its word names
-  if (!out.length) {
-    const words = [...t.matchAll(/\b(?:the|that|this) ([a-z]+(?: [a-z]+)?) one\b|\b(?:yang|yg) ([a-z]+) (?:tu|itu|ni|ini)\b|\bthe (set|combo|bowl|wrap|toast|soup|noodles?|rice|pizza|burger|drink|juice|salad|platter)\b/g)].map((m) => m[1] ?? m[2] ?? m[3]);
+  // (with another picked too, when each has its count: "the bitter gourd one x2 and the first one x1")
+  if (!out.length || /\bone\s*(?:x|×)\s*\d/.test(t)) {
+    const wordsAt = [...t.matchAll(/\b(?:the|that|this) ([a-z]+(?: [a-z]+)?) one\b|\b(?:yang|yg) ([a-z]+) (?:tu|itu|ni|ini)\b|\bthe (set|combo|bowl|wrap|toast|soup|noodles?|rice|pizza|burger|drink|juice|salad|platter)\b/g)].map((m) => ({ w: m[1] ?? m[2] ?? m[3], n: xAfter((m.index ?? 0) + m[0].length) }));
+    const words = wordsAt.map((x) => x.w);
     const zh = text.match(/(?:那个|这个|那碗|那杯|那份)([\u4e00-\u9fff]{1,3})的/)?.[1];
     const fits = (i: Item, w: string) => normalize(`${i.name} ${i.description ?? ""}`).split(" ").some((x) => x === w || x === `${w}s` || x.replace(/s$/, "") === w) || (w === "vegan" && i.dietary.includes("vegan")) || (w === "vegetarian" && (i.dietary.includes("vegetarian") || i.dietary.includes("vegan")));
-    for (const w of words) {
-      const byName = can.filter((i) => normalize(i.name).split(" ").some((x) => x === w || x.replace(/s$/, "") === w.replace(/s$/, "")));
+    for (const { w, n } of wordsAt) {
+      // (two words of its name: "the bitter gourd one")
+      const byName = can.filter((i) => normalize(i.name).split(" ").some((x) => x === w || x.replace(/s$/, "") === w.replace(/s$/, "")) || (w.includes(" ") && ` ${normalize(i.name)} `.includes(` ${w} `)));
       const hits = byName.length ? byName : can.filter((i) => fits(i, w));
-      if (hits.length === 1) push(hits[0], 0);
+      if (hits.length === 1) push(hits[0], n);
     }
     if (zh) {
       const hits = can.filter((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes(zh)));
@@ -2167,6 +2172,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // (not with "same again": "I also same, total for both?" is both orders, not the two dishes it last named)
     // (with the add-ons it was asked about with: "roti canai with egg add-on or roti telur?" … "the cheaper one")
     if (!readBill && !(sameAgain && again)) for (const p of pointed) if (!bill.some((o) => o.item.id === p.item.id) && !mentioned.includes(p.item)) bill.push({ item: p.item, count: p.count, ...(state.saidWith?.[p.item.id] ? { options: [...state.saidWith[p.item.id]] } : {}) });
+    // ("the bitter gourd one x2": named as it's pointed at, its count is the pointer's)
+    if (!readBill) for (const p of pointed) { const o = bill.filter((x) => x.item.id === p.item.id); if (p.count > 1 && o.length === 1 && o[0].count === 1 && !existing.includes(o[0])) o[0].count = p.count; }
     // ("那就汤板面" after "换一个没有虾的面吧": the one they asked to change goes)
     if (!readBill && state.swapOut && bill.length > existing.length) {
       const k0 = bill.findIndex((o) => o.item.id === state.swapOut!.item.id && sameOptions(o.options, state.swapOut!.options));

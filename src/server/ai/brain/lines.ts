@@ -192,16 +192,28 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
   toks.forEach((t, i) => {
     if (JOIN.test(t) && !taken(i, placed)) starts.add(i + 1);
   });
+  // ("2 fish ball noodle dry 1 soup": a count and a choice after a dish's other choice start another of it)
+  for (const [k, s] of placed.entries()) {
+    const end = placed[k + 1]?.from ?? toks.length;
+    for (let i = s.to + 1; i < end - 1; i++) {
+      const n = numberAfter(toks, i);
+      if (!n || taken(i, placed)) continue;
+      const single = (word: string) => optionsSaid(word, s.dish, true).add.filter((o) => (s.dish.modifiers ?? []).some((g) => (g.max ?? 1) <= 1 && g.options.includes(o as never)));
+      const next = single(toks[n.end] ?? "");
+      const before = single(phrase(toks.slice(s.to, i)));
+      if (next.length && before.some((b) => next.some((x) => x.name !== b.name && (s.dish.modifiers ?? []).some((g) => g.options.some((o) => o.name === b.name) && g.options.some((o) => o.name === x.name))))) starts.add(i);
+    }
+  }
   const clauseOf = (i: number) => Math.max(...[...starts].filter((b) => b <= i), 0);
-  const lines: (Line & { clause: number; counted?: boolean })[] = [];
-  let lastClause: (Line & { clause: number; counted?: boolean })[] = [];
+  const lines: (Line & { clause: number; counted?: boolean; chosen?: { name: string; price: number }[] })[] = [];
+  let lastClause: (Line & { clause: number; counted?: boolean; chosen?: { name: string; price: number }[] })[] = [];
   const bounds = [...starts].sort((a, b) => a - b);
   const clauseEnd = (c: number) => bounds.find((b) => b > c) ?? toks.length;
   for (const c of bounds) {
     const end = clauseEnd(c);
     const here = placed.filter((s) => s.from >= c && s.from < end);
     if (here.length) {
-      const made: (Line & { clause: number; counted?: boolean })[] = [];
+      const made: (Line & { clause: number; counted?: boolean; chosen?: { name: string; price: number }[] })[] = [];
       here.forEach((s, k) => {
         const nums = optionNumbers(s.dish);
         // what goes with it: from the last dish (or the clause's start) to the next dish's words
@@ -251,7 +263,9 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
         // "another teh", "satu lagi": one more
         const options = optionsSaid(phrase([...toks.slice(from, s.from), ...toks.slice(s.to, to)]), s.dish).add;
         const ref = count === null && /^(the|my|our|that|this|tu|itu|ni)$/.test(toks[s.from - 1] ?? "") && !/^(add|another|more|plus|tambah|order|get|have)$/.test(toks[s.from - 2] ?? "");
-        const line = { dish: s.dish, count: count ?? 1, options, clause: c, counted: count !== null, ref };
+        // (and its choices, free ones too: "dry" of the noodles, so "1 soup" after it is another bowl)
+        const chosen = optionsSaid(phrase([...toks.slice(from, s.from), ...toks.slice(s.to, to)]), s.dish, true).add;
+        const line = { dish: s.dish, count: count ?? 1, options, clause: c, counted: count !== null, ref, chosen };
         lines.push(line);
         made.push(line);
       });
@@ -271,7 +285,8 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
     if (first && (first.end === words.length || COUNTER.test(words[first.end] ?? "") || /^(of|daripadanya|with|w|less|no|extra|large|besar|tambah|add|加|换|要|走|少|冰|热|大)$/.test(words[first.end] ?? "") || /[㐀-鿿]/.test(words[first.end] ?? ""))) n = first.n;
     if (/^(both|all|semua|kedua|dua dua|全部|都)$/.test(words[0])) n = null;
     // ("tambah tahu satu": one, said after the add-on, as Malay does)
-    if (n === null && words.length >= 2 && /^(satu|one|sebiji|seketul|sekeping)$/.test(words[words.length - 1])) n = 1;
+    // (not "for the 2 dry one": "one" there is the bowl, its count said before)
+    if (n === null && words.length >= 2 && /^(satu|one|sebiji|seketul|sekeping)$/.test(words[words.length - 1]) && !words.slice(0, -1).some((w, k) => numberAfter(words, k))) n = 1;
     const targets = lastClause.filter((l) => optionsSaid(text, l.dish, true).add.length || optionsSaid(text, l.dish, true).off.length);
     // ("kirin? 2 bottles how much": the count of the one dish just named, said on its own)
     // (only the count and its unit: not "2 bowls of rice")
@@ -285,6 +300,15 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
     for (const l of n === null ? targets : targets.slice(-1)) {
       const { add, off } = optionsSaid(text, l.dish);
       const opts = [...l.options.filter((o) => !off.some((x) => x.name === o.name)), ...add.filter((o) => !l.options.some((x) => x.name === o.name))];
+      // ("2 fish ball noodle dry, 1 soup": a choice of the same single-choice group as one it has is another line, not some of it)
+      const groupOf = (o: { name: string }) => (l.dish.modifiers ?? []).find((g) => (g.max ?? 1) <= 1 && g.options.some((x) => x.name === o.name));
+      const chosenNow = optionsSaid(text, l.dish, true).add;
+      const nOther = n ?? (first && first.end < words.length ? first.n : null);
+      const other = nOther !== null && chosenNow.some((o) => groupOf(o) && (l.chosen ?? []).some((c) => c.name !== o.name && groupOf(c) === groupOf(o)));
+      if (other) {
+        lines.splice(lines.indexOf(l) + 1, 0, { dish: l.dish, count: nOther!, options: add, clause: l.clause, counted: true, chosen: chosenNow });
+        continue;
+      }
       if (n !== null && l.count > n) {
         l.count -= n;
         const split = { dish: l.dish, count: n, options: opts, clause: l.clause, counted: true };

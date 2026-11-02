@@ -1754,3 +1754,26 @@ describe("combo drinks, one size, and picks from what was shown", () => {
     expect(ask("nasi goreng jawa or soto ayam?", "Nasi Goreng Jawa is RM12.90; Soto Ayam, served with rice, is RM11.90.", "the cheaper one pls, with es jeruk")).toMatch(/Total RM16\.40/);
   });
 });
+
+describe("a fish soup stall's bowls, extras and pointed counts", () => {
+  const style = { name: "Style", min: 1, max: 1, options: [{ name: "Soup", price: 0 }, { name: "Dry", price: 0 }] };
+  const size = { name: "Size", min: 1, max: 1, options: [{ name: "Regular", price: 0 }, { name: "Large", price: 300 }] };
+  const dishes = asItems([
+    { id: "g1", name: "Sliced Fish Bee Hoon Soup", category: "Soups", description: "batang fish slices in clear broth", price: 1390, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "g2", name: "Bitter Gourd Fish Soup", category: "Soups", description: "fish slices with bitter gourd", price: 1390, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "g3", name: "Fish Ball Noodles", category: "Noodles", description: "fish balls with noodles", price: 990, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "g4", name: "Fish Slice Porridge", category: "Porridge", description: "rice porridge with fish slices", price: 1190, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "g5", name: "Vegetarian Tomato Tofu Soup", category: "Soups", description: "tofu and tomato", price: 1190, allergens: ["soy"], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "g1" ? { ...i, modifiers: [size, { name: "Add-ons", min: 0, max: 5, options: [{ name: "Extra Fish Slices", price: 400 }, { name: "Fish Paste", price: 300 }, { name: "Bitter Gourd", price: 200 }] }] } : i.id === "g3" ? { ...i, modifiers: [style, { name: "Add-ons", min: 0, max: 3, options: [{ name: "Tofu", price: 150 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads 'the sliced fish large with extra fish' beside a friend's soup", () => {
+    expect(ask("me the sliced fish large with extra fish, my friend the vegetarian tomato tofu soup. separate bills")).toMatch(/You: Sliced Fish Bee Hoon Soup with Large, Extra Fish Slices, total RM20\.90/);
+  });
+  it("bills '2 dry 1 soup' as three bowls, the tofu on the dry two", () => {
+    expect(ask("2 fish ball noodle dry 1 soup, add tofu for the 2 dry one. total how much")).toMatch(/2 × Fish Ball Noodles with Tofu \(RM11\.40\) \+ Fish Ball Noodles \(RM9\.90\) = Total RM32\.70/);
+  });
+  it("counts 'the bitter gourd one x2 and the first one x1'", () => {
+    expect(ask("fish soups how much?", "Sliced Fish Bee Hoon Soup RM13.90, Bitter Gourd Fish Soup RM13.90.", "the bitter gourd one x2 and the first one x1. total")).toMatch(/Total RM41\.70/);
+  });
+});

@@ -283,6 +283,11 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     const rivals = add.filter((x) => x !== o && g.options.includes(x));
     return !rivals.some((x) => keyWords(x).length > keyWords(o).length && keyWords(o).every((k) => keyWords(x).includes(k)));
   });
+  // ("with extra fish" of an Extra Fish Slices: the one "extra" option its word starts)
+  for (const m of t.matchAll(/\bextra (\w+)/g)) {
+    const of = all.filter((o) => (free || o.price > 0) && /^extra\s/i.test(o.name) && [m[1], m[1].replace(/s$/, ""), `${m[1]}s`].includes(keyWords(o)[0]));
+    if (of.length === 1 && !out.includes(of[0]) && !off.includes(of[0])) out.push(of[0]);
+  }
   // ("tambah cheese" of a Cheese slice add-on and a Cheese sauce: the add-on, said as one)
   for (const w of asked) {
     const of = all.filter((o) => (free || o.price > 0) && keyWords(o)[0] === w);
