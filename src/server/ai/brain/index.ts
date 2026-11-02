@@ -1346,6 +1346,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const text = own ? `${name(d)}: ${own.replace(/[.。]+$/, "")}${stop}` : w ? t("assistantReply.hasAlcohol", { dish: name(d), word: w }) : t("assistantReply.noAlcoholListed", { dish: name(d) });
     return { ...reply("dish_allergen", text, [d]), safetyNote: allyNote(locale) };
   }
+  // ("any alcohol in your cooking? like shaoxing or rice wine?"): of the kitchen, the dishes made with it, or none
+  if (!focus.length && !state.order.length && (/\b(alcohol|alcoholic|alkohol|arak|wine|shaoxing|mirin|sake)\b/.test(nt0) || /酒精|料酒|绍兴酒|米酒|用酒/.test(u.text)) && (/\b(your|you|the) (cooking|food|dishes|kitchen|menu)\b|\bin (your|the) (cooking|food|dishes)\b|\b(masakan|makanan) (sini|kamu|awak)\b/.test(nt0) || /你们的菜|菜里|煮的时候|做菜/.test(u.text))) {
+    const boozy_ = live.filter((i) => !isDrink(i) && alcoholWord(i));
+    return { ...reply("dish_allergen", boozy_.length ? t("assistantReply.alcoholDishes", { list: list(boozy_.slice(0, 6).map((i) => `${name(i)} (${alcoholWord(i)})`)) }) : t("assistantReply.noAlcoholAnywhere"), []), safetyNote: allyNote(locale) };
+  }
   // ---- decide ----
   let intent = u.intent;
   const unsure = u.confidence < 0.4;

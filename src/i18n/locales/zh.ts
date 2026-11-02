@@ -590,6 +590,8 @@ const zh = {
     samePrice: "{option}价钱一样，没有便宜：{dish}还是 {price}。",
     menuHours: "{menu}供应时间：{window}，有{list}。",
     endedToday: "今天{time}已经结束了。",
+    noAlcoholAnywhere: "我们的菜都没有列出酒类：不用酒、绍兴酒或米酒。如需确认，请问店员。",
+    alcoholDishes: "用到酒的有：{list}。其他的都没有列出酒。",
     hasAlcohol: "有的，{dish}用了{word}，含有酒精（煮过也不一定全部挥发）。",
     noAlcoholListed: "{dish}没有列出酒精成分，如需确认请问店员。",
     hottestLevel: "最辣是{option}（加{more}）：{dish}要{option}是 {price}。",

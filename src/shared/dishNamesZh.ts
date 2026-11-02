@@ -16,6 +16,7 @@ export const DISH_NAMES_ZH: Record<string, string[]> = {
   "braised egg": ["卤蛋"],
   "braised pork intestines": ["卤大肠", "猪大肠"],
   "salted vegetables": ["咸菜"],
+  "preserved radish omelette": ["菜脯蛋", "菜圃蛋", "萝卜干煎蛋", "菜脯煎蛋"],
   "pineapple bun with butter": ["菠萝油"],
   "luncheon meat egg instant noodles": ["餐蛋面", "午餐肉蛋面"],
   "yuen yeung": ["鸳鸯", "鸳鸯奶茶"],

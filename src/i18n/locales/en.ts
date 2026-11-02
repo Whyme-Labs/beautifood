@@ -592,6 +592,8 @@ const en = {
     samePrice: "{option} is the same price, not cheaper: {dish} stays {price}.",
     menuHours: "{menu} is {window}: {list}.",
     endedToday: "It ended at {time} today.",
+    noAlcoholAnywhere: "None of our dishes lists alcohol: no wine, shaoxing or rice wine in the cooking. Please check with our staff if you need to be sure.",
+    alcoholDishes: "Made with alcohol: {list}. The rest list none.",
     hasAlcohol: "Yes, {dish} is made with {word}, which contains alcohol (some may cook off, but not all).",
     noAlcoholListed: "{dish} lists no alcohol, but please check with our staff if you need to be sure.",
     hottestLevel: "The hottest is {option} (+{more}): {dish} at {option} is {price}.",
