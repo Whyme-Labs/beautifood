@@ -23,6 +23,7 @@ export const DISH_NAMES_ZH: Record<string, string[]> = {
   "char koay teow": ["炒粿条"],
   "hokkien mee": ["福建面"],
   "kl hokkien mee": ["大碌面", "福建炒面"],
+  "soft drink": ["汽水", "可乐", "雪碧"],
   "prawn mee": ["虾面"],
   "wonton mee": ["云吞面"],
   "wantan mee": ["云吞面"],

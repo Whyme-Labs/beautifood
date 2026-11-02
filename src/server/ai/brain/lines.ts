@@ -120,7 +120,8 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
       before.delete(o.name);
       return before.size >= (g.max ?? 1);
     };
-    const optionLine = whole && spots.some((y) => y !== spot && y.from >= 0 && y.to <= x.from && (y.dish.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name) === normalize(x.dish.name) && !full(y.dish, o))));
+    // (not with a count of its own: "1 lamb chop and 1 coleslaw")
+    const optionLine = whole && !counted && spots.some((y) => y !== spot && y.from >= 0 && y.to <= x.from && (y.dish.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name) === normalize(x.dish.name) && !full(y.dish, o))));
     if (optionLine) {
       out.add(spot);
       continue;

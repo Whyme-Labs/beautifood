@@ -1355,6 +1355,14 @@ describe("a western stall's sides and sauces", () => {
   it("takes the dish just talked about with what's said of it, the longer add-on named in full", () => {
     expect(ask("lamb chop how many pieces?", "The Lamb Chop (RM26.90) is two grilled lamb chops with fries and coleslaw.", "ok one, fries n mashed, extra black pepper sauce, add fried egg. total?")).toMatch(/Lamb Chop with Extra Black Pepper Sauce, Fried Egg \(RM29\.90\)/);
   });
+  it("bills what can be had when a dish named is sold out", () => {
+    const out = { ...shop, items: (shop.items as unknown as { id: string }[]).map((i) => (i.id === "w2" ? { ...i, soldOut: true } : i)) } as unknown as AssistantContext;
+    const r = answerGuest(out, [{ role: "user", content: "1 lamb chop and 1 coleslaw how much" }]).answer;
+    expect(r).toMatch(/Lamb Chop is sold out today\. Coleslaw \(RM3\.50\) = Total RM3\.50/);
+  });
+  it("changes a side with only the new one said", () => {
+    expect(ask("1 beef burger with cheesy fries", "Beef Burger with Cheesy Fries RM22.40.", "change to fries instead")).toMatch(/^Beef Burger \(RM18\.90\) = Total RM18\.90/);
+  });
   it("changes a line's choice for another of its group", () => {
     expect(ask("1 beef burger with cheesy fries", "Beef Burger with Cheesy Fries RM22.40.", "change cheesy fries to normal fries. total?")).toMatch(/^Beef Burger \(RM18\.90\) = Total RM18\.90/);
   });

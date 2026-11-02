@@ -193,6 +193,11 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     // ("Set: mushroom soup + iced lemon tea" is asked for as a set or combo, not by "mushrooms")
     // ("Meal: fries + teh o ais" likewise: "teh tarik" isn't it)
     if (/^(set|combo|meal|make it a set|make it a meal)\b/i.test(o.name) && !/\b(set|sets|combo|combos|meal|meals)\b/.test(t) && !/套餐|配套|套/.test(raw)) continue;
+    // ("chicken chop set dengan sup dan air": "set" said, of the one set it has)
+    if (/^(set|combo|make it a set)\b/i.test(o.name) && /\b(set|sets|combo|combos)\b/.test(t) && all.filter((x) => /^(set|combo|make it a set)\b/i.test(x.name)).length === 1) {
+      if (free || o.price > 0) add.push(o);
+      continue;
+    }
     // (a count in brackets describes it, "Sui kow (2 pcs)": its words name it, not the number)
     const counted = /\(\s*\d+\s*(pcs|pc|pieces?|ketul|biji)?\s*\)/i.test(o.name);
     const ks = keyWords(o).filter((k) => !counted || (!/^\d+$/.test(k) && !/^(pcs|pc|pieces?|ketul|biji)$/.test(k)));
