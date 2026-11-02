@@ -1399,6 +1399,12 @@ describe("a wantan mee stall's edits", () => {
   ]);
   const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
   const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads 加叉烧 as the noodles' char siu, and 荷包蛋不要了 as taking the egg off, not an egg allergy", () => {
+    const dry = { ...shop, items: (shop.items as unknown as { id: string; translations?: unknown }[]).map((i) => (i.id === "m1" ? { ...i, translations: { zh: { name: "干捞云吞面" } }, modifiers: [{ name: "Add-ons", min: 0, max: 3, options: [{ name: "Extra char siu", price: 300 }, { name: "Fried egg", price: 150 }] }] } : i.id === "m2" ? { ...i, translations: { zh: { name: "叉烧面" } } } : i)) } as unknown as AssistantContext;
+    const r = answerGuest(dry, [{ role: "user", content: "干捞云吞面，加叉烧，加荷包蛋" }, { role: "assistant", content: "干捞云吞面 RM8.50，加叉烧 RM3.00，加荷包蛋 RM1.50，一共 RM13.00。" }, { role: "user", content: "荷包蛋不要了，多少钱？" }], "zh").answer;
+    expect(r).toMatch(/RM11\.50/);
+    expect(r).not.toMatch(/不适合/);
+  });
   it("swaps one noodle for another and adds what's said after with its count", () => {
     expect(ask("1 wantan mee dry and 1 char siu noodles pls", "Got it.", "swap the char siu noodles for roast pork noodles and add 2 barley. total?")).toMatch(/Wantan Mee Dry \(RM8\.50\) \+ Roast Pork Noodles \(RM11\.00\) \+ 2 × Barley Water \(RM2\.80\) = Total RM25\.10/);
   });

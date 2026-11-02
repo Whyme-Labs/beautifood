@@ -112,8 +112,13 @@ export function claims(answer: string, items: Item[], labels: { id: string; labe
       // dish's add-on, so the price is the dish's before it, with nothing summed between)
       const line = [s.i];
       // (a "+" inside a menu add-on's own name, "with Egg, Meal: fries + teh o ais", doesn't end the line)
-      const ends = (between: string) => /[=;]|RM/i.test(between) || (/\+/.test(between) && !plusOptions.some((o) => between.toLowerCase().trimEnd().endsWith(o)));
-      for (let j = k - 1; j >= 0 && !ends(sentence.slice(here[j].to, here[j + 1].from)); j--) line.push(here[j].i);
+      // (read on the text as written, dish names in it too: "Set: mushroom soup + iced lemon tea")
+      const written = text.slice(from, to).toLowerCase();
+      const ends = (j: number) => {
+        const between = sentence.slice(here[j].to, here[j + 1].from);
+        return /[=;]|RM/i.test(between) || (/\+/.test(between) && !plusOptions.some((o) => written.slice(0, here[j + 1].from).trimEnd().endsWith(o)));
+      };
+      for (let j = k - 1; j >= 0 && !ends(j); j--) line.push(here[j].i);
       readCount++;
       if (!line.some(fits)) failed.push(`claims RM${(said / 100).toFixed(2)} for ${s.i.name} (menu: RM${(s.i.price / 100).toFixed(2)})`);
     }

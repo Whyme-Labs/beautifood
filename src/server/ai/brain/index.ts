@@ -1062,7 +1062,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // (and the dishes just shown: "2 of the last one, large, with pearls")
   const ownIds = new Set(ownDishes(u, [...state.order.map((o) => o.item), ...(state.focus ? [state.focus] : []), ...state.shown], state.order.map((o) => o.item)).map((d) => d.id));
   const mentioned = u.dishes.filter((d) => ownIds.has(d.id)).map((d) => ctx.items.find((i) => i.id === d.id)!).filter(Boolean);
-  const avoid = [...new Set([...state.avoid, ...u.avoid])];
+  // ("荷包蛋不要了", "no more the cheese": an add-on taken off a line ordered, not an allergy, unless one is said)
+  const offNow_ = /\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏|不能吃/.test(normalize(u.text) + u.text) ? [] : state.order.flatMap((o) => optionsSaid(u.text, o.item).off.filter((x) => o.options?.some((y) => y.name === x.name)));
+  const offAllergens_ = new Set(offNow_.flatMap((o) => mentionedAllergens(o.name)));
+  const avoid = [...new Set([...state.avoid, ...u.avoid.filter((a) => !offAllergens_.has(a))])];
   const c: Constraints = {
     avoid,
     diet: [...new Set([...state.diet, ...u.diet])],

@@ -909,7 +909,8 @@ export function askedCategories(items: Dish[], words: string[], raw: string): st
 
 const FOOD_NOUN = /^(tofu|tauhu|taukua|tempeh|prawns?|shrimps?|udang|crabs?|ketam|squid|sotong|calamari|fish|ikan|salmon|tuna|cheese|keju|oysters?|clams?|lala|mussels?)$/;
 const REQUEST = /\b(what|which|any|anything|got|have|has|do you|ada|apa|mana|want|wanna|nak|mau|give|show|recommend|suggest|like|love|suka|craving|order|get|serve|best|good|sedap)\b/i;
-const REQUEST_ZH = /有什么|有哪些|有没有|推荐|想要|想吃|想喝|来个|来一|要一|哪个|哪些|什么好/;
+// ("加荷包蛋": adding it is asking for it)
+const REQUEST_ZH = /有什么|有哪些|有没有|推荐|想要|想吃|想喝|来个|来一|要一|哪个|哪些|什么好|(?<![不别])加(?!钱)/;
 
 /** "not sweet", "tak manis", "no dessert": the word at `k` is negated by the one or two before it. */
 const negatedAt = (toks: string[], k: number) =>

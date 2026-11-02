@@ -46,6 +46,9 @@ describe("the claim checker", () => {
     expect(claims("Ramly Burger with sambal + Teh Tarik (RM8.50)", burger).failed).toEqual(["claims RM8.50 for Teh Tarik (menu: RM2.80)"]);
     // (a price said as what it adds isn't its price)
     expect(claims("Teh Tarik is RM1.00 more on the burger.", burger).failed).toEqual([]);
+    // (an add-on named with dish names in it)
+    const chop = [dish("Chicken Chop", { price: 1590, modifiers: [{ name: "Set", min: 0, max: 1, options: [{ name: "Set: mushroom soup + iced lemon tea", price: 650 }] }] }), dish("Mushroom Soup", { price: 690 }), dish("Iced Lemon Tea", { price: 420 })];
+    expect(claims("Chicken Chop with Set: mushroom soup + iced lemon tea (RM22.40) = Total RM22.40.", chop).failed).toEqual([]);
   });
   it("fails a wrong price for a dish", () => {
     expect(claims("Nasi Lemak (RM7.50) is our favourite.", menu).failed).toEqual(["claims RM7.50 for Nasi Lemak (menu: RM6.50)"]);

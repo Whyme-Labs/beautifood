@@ -36,7 +36,7 @@ const ALSO: Record<string, string[]> = {
 };
 // ...and in Chinese, as a guest writes it
 const ALSO_ZH: Record<string, RegExp> = {
-  ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻/, sui: /水饺|水餃/, kow: /水饺|水餃/, pok: /豆卜|豆泡|豆腐泡/, uduk: /椰香饭|椰浆饭|椰饭/, fried: /荷包蛋|煎蛋/, petai: /臭豆/, mushroom: /香菇|蘑菇|冬菇/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)/, suam: /温/,
+  ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻/, sui: /水饺|水餃/, kow: /水饺|水餃/, pok: /豆卜|豆泡|豆腐泡/, uduk: /椰香饭|椰浆饭|椰饭/, fried: /荷包蛋|煎蛋/, petai: /臭豆/, char: /叉烧/, mushroom: /香菇|蘑菇|冬菇/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)/, suam: /温/,
   besar: /大杯|大份|加大|大的|大碗|大包|大号/, large: /大杯|大份|加大|大的|大碗|大包|大号/,
   regular: /中碗|中份|(?<!其)中的|中杯|普通|正常份/, small: /小碗|小的|小份|小杯|小碟|小号|小包/, kecil: /小碗|小的|小份|小杯|小碟|小号|小包/,
   medium: /中碗|(?<!其)中的|中份|中杯|中碟|中号/, sederhana: /中碗|(?<!其)中的|中份|中杯|中碟|中号/,
@@ -61,7 +61,7 @@ const ALSO_ZH: Record<string, RegExp> = {
 const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "susu", "fresh", "tambah", "lebih", "more", "pcs", "pc", "inch", "inches", "make", "it", "combo", "upgrade", "level", "style", "x"]);
 // "no ice", "without ice", "tak nak ais", "走冰": an option taken off ("less ice" is still ice)
 const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|take out(?: the)?|keluarkan)\s+(?:(?:need|perlu|payah|mau|nak)\s+(?:the\s+)?)?(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
-const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰|(?:去掉|拿掉|取消|不要)(?:加的|那个)?([\u4e00-\u9fff]{1,4})/g;
+const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰|(?:去掉|拿掉|取消|不要)(?:加的|那个)?([\u4e00-\u9fff]{1,4})|([\u4e00-\u9fff]{2,4}?)(?:不要了|不要啦|取消了?|去掉)/g;
 // an option that is itself taken off or less of something ("Less ice", "No sugar", "Tanpa Kacang",
 // "Kurang Manis", "Kosong"): said as the guest says it, it's chosen (free), never "ice taken off"
 const PHRASES: [RegExp, RegExp][] = [
@@ -160,7 +160,7 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     const next = t.slice((m.index ?? 0) + m[0].length).trim().split(" ")[0];
     return [m[2], ...(GENERIC.has(m[2]) || (next && names.some((n) => n.includes(` ${m[2]} ${next} `))) ? [next] : [])];
   }), ...changed].filter((w) => w && !asked.has(w)));
-  const offZh = [...[...raw.matchAll(OFF_ZH)].map((m) => m[1] ?? m[2] ?? m[3]), changedZh].filter((x): x is string => !!x);
+  const offZh = [...[...raw.matchAll(OFF_ZH)].map((m) => m[1] ?? m[2] ?? m[3] ?? m[4]), changedZh].filter((x): x is string => !!x);
   const words = new Set(t.split(" ").filter((w) => !offWords.has(w)));
   const all = (dish.modifiers ?? []).flatMap((g) => g.options);
   // ("big prawns", "udang besar": more of an add-on, not the dish's size)
