@@ -46,7 +46,7 @@ const ALSO_ZH: Record<string, RegExp> = {
   balls: /鱼丸/, minced: /肉碎|肉末|肉燥/, bilis: /江鱼仔|小鱼干/, hoon: /米粉/, prawns: /(?<!濑尿|螳螂|琵琶)虾(?!蛄)/,
   duck: /鸭蛋|鸭/, natto: /纳豆/, corn: /玉米/, spinach: /菠菜/, onsen: /温泉蛋/, cockles: /蚶|血蛤|鲜蛤/, cheong: /腊肠|臘腸/, taugeh: /豆芽/, puffs: /豆卜|豆泡/,
   noodles: /加面|多面|面加倍/, mushrooms: /蘑菇|香菇/, skin: /腐竹|豆皮/, peanuts: /花生/, tofu: /豆腐/, milo: /美禄/,
-  pearls: /珍珠|波霸/, pudding: /布丁/, durian: /榴莲|榴槤/, ginger: /姜/, milky: /奶白|浓汤|白汤/, clear: /清汤/, gula: /椰糖|马六甲糖|棕榈糖/, melaka: /椰糖|马六甲糖|棕榈糖/, grass: /仙草/, coconut: /椰果|椰子片|椰丝/, bean: /红豆/, foam: /奶盖/,
+  pearls: /珍珠|波霸/, pudding: /布丁/, durian: /榴莲|榴槤/, ginger: /姜/, milky: /奶白|浓汤|白汤/, clear: /清汤/, sua: /面线|麵線/, mashed: /薯泥|马铃薯泥/, gula: /椰糖|马六甲糖|棕榈糖/, melaka: /椰糖|马六甲糖|棕榈糖/, grass: /仙草/, coconut: /椰果|椰子片|椰丝/, bean: /红豆/, foam: /奶盖/,
   cheese: /芝士|起司|奶酪/, ramyeon: /拉面|泡面|快熟面/, rice: /年糕/, cake: /年糕|鱼饼/, fries: /薯条/, coleslaw: /凉拌|卷心菜沙拉/, soft: /饮料|汽水|饮品/,
   kimchi: /泡菜/, yangnyeom: /甜辣/, garlic: /蒜/, butter: /黄油|牛油/, snow: /雪花/, honey: /蜂蜜/,
   pineapple: /菠萝|黄梨/, pepperoni: /意大利辣香肠|辣香肠/, parmesan: /帕玛森|帕马森/, cream: /冰淇淋|雪糕/, whey: /乳清/, plant: /植物蛋白/,

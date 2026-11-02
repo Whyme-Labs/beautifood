@@ -1698,6 +1698,9 @@ describe("a fish soup stall's Malay names and course words", () => {
   it("bills mee hoon kueh, sup ikan goreng bihun and jus limau kasturi as said", () => {
     expect(ask("Berapa semua: 2 mee hoon kueh, 1 sup ikan goreng bihun, 3 jus limau kasturi?")).toMatch(/2 × Mee Hoon Kueh Fish Soup \(RM12\.90\) \+ Fried Fish Bee Hoon Soup \(RM14\.90\) \+ 3 × Calamansi Juice \(RM4\.00\) = Total RM52\.70/);
   });
+  it("reads 面线 as the Mee Sua noodles", () => {
+    expect(answerGuest({ ...shop, items: (shop.items as unknown as Dish[]).map((i) => (i.id === "f2" ? { ...i, translations: { zh: { name: "炸鱼米粉" } }, modifiers: [{ name: "Noodles", min: 1, max: 1, options: [{ name: "Bee Hoon", price: 0 }, { name: "Mee Sua", price: 100 }] }] } : i)) } as unknown as AssistantContext, [{ role: "user", content: "炸鱼米粉可以换面线吗？要加钱吗？" }]).answer).toMatch(/RM15\.90/);
+  });
   it("doesn't take 'fish soups, how much?' as avoiding fish", () => {
     expect(ask("fish soups today how much?")).not.toMatch(/free of fish/);
   });
