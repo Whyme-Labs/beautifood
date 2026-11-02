@@ -1611,3 +1611,30 @@ describe("a hokkien mee stall's Malay names, Chinese counters and pork", () => {
     expect(ask("the lard crisps add on — that one pork ah?")).toMatch(/^Yes, the Extra lard crisps add-on is made from pork/);
   });
 });
+
+describe("an ikan bakar stall's add-ons by number, dips and splits", () => {
+  const dips = { name: "Dips", min: 1, max: 2, options: [{ name: "Sambal kicap", price: 0 }, { name: "Sambal belacan", price: 0 }] };
+  const addOns = { name: "Add-ons", min: 0, max: 3, options: [{ name: "Extra sambal", price: 100 }, { name: "Telur goreng", price: 200 }, { name: "Petai", price: 300 }] };
+  const size = { name: "Size", min: 1, max: 1, options: [{ name: "Small", price: 0 }, { name: "Large", price: 1600 }] };
+  const dishes = asItems([
+    { id: "k1", name: "Ikan Pari Bakar", category: "Bakar", description: "stingray grilled on banana leaf", price: 2200, allergens: ["fish"], dietary: [], spiceLevel: 2, isSignature: true },
+    { id: "k2", name: "Sotong Bakar", category: "Bakar", description: "grilled squid", price: 1800, allergens: ["molluscs"], dietary: [], spiceLevel: 2, isSignature: false },
+    { id: "k3", name: "Sotong Sambal", category: "Lauk", description: "squid in sambal", price: 1600, allergens: ["molluscs"], dietary: [], spiceLevel: 2, isSignature: false },
+    { id: "k4", name: "Nasi Lemak", category: "Nasi", description: "coconut rice with sambal", price: 800, allergens: ["peanuts"], dietary: [], spiceLevel: 2, isSignature: false },
+    { id: "k5", name: "Limau Ais", category: "Drinks", description: "iced lime", price: 300, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "k1" || i.id === "k2" ? { ...i, modifiers: [size, dips, addOns] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("prices the add-ons picked by their place in the list just given", () => {
+    expect(ask("ikan pari bakar small, what add-on got?", "For Ikan Pari Bakar you can add: extra sambal +RM1.00, telur goreng +RM2.00, petai +RM3.00.", "ok add the first and the third. total?")).toMatch(/Ikan Pari Bakar with Extra sambal, Petai: RM26\.00/);
+  });
+  it("keeps 'sotong sambal' its own dish beside 'ikan pari bakar large'", () => {
+    expect(ask("ikan pari bakar large, sotong sambal, 2 limau ais. how much?")).toMatch(/Ikan Pari Bakar with Large \(RM38\.00\) \+ Sotong Sambal \(RM16\.00\)/);
+  });
+  it("says the sambal belacan dip is shrimp paste to a guest avoiding shellfish", () => {
+    expect(ask("i'm allergic to prawns", "Noted.", "ikan pari bakar with sambal belacan dip ok for me?")).toMatch(/Sambal belacan add-on \(shrimp paste\)/);
+  });
+  it("reads a typo'd dish name with two letters swapped", () => {
+    expect(ask("ikan prai bakr hw much")).toMatch(/Ikan Pari Bakar/);
+  });
+});

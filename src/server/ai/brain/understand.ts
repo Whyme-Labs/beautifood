@@ -238,7 +238,7 @@ export const same = (a: string, b: string) =>
   // a typo: one letter off in a word of five or more, a letter left out of one ("perl" milk tea, not
   // "main" for Mein), two in a long word ("samgyupsal")
   (a[0] === b[0] && !intentModel().vocab?.has(a) && !REAL.has(a) &&
-    ((a.length >= 8 && b.length >= 8 && editDistance(a, b, 2) <= 2) || (a.length >= 5 && b.length >= 5 && editDistance(a, b, 1) <= 1) || (a.length === 4 && b.length === 5 && editDistance(a, b, 1) <= 1) || (a.length >= 5 && swapped(a, b))));
+    ((a.length >= 8 && b.length >= 8 && editDistance(a, b, 2) <= 2) || (a.length >= 5 && b.length >= 5 && editDistance(a, b, 1) <= 1) || (a.length === 4 && b.length === 5 && editDistance(a, b, 1) <= 1) || (a.length >= 4 && swapped(a, b))));
 /** "peral" for "pearl": two letters next to each other typed the wrong way round. */
 const swapped = (a: string, b: string) => {
   if (a.length !== b.length) return false;
@@ -257,7 +257,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
   hijau: ["green"], hitam: ["black"], putih: ["white"], merah: ["red"], vege: ["vegetable", "vegetables", "vegetarian"], veggie: ["vegetable", "vegetables", "vegetarian"], veg: ["vegetable", "vegetables", "vegetarian"],
-  hiris: ["sliced", "slice"], kuning: ["yellow"],
+  hiris: ["sliced", "slice"], kuning: ["yellow"], campur: ["mixed", "mix"],
 };
 
 const JOINED: Record<string, string[]> = { beehoon: ["bihun", "mihun", "bihoon"], meehoon: ["bihun", "mihun"], kuayteow: ["kueyteow", "kwayteow"], kweyteow: ["kueyteow", "kwayteow"] };
@@ -413,7 +413,9 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // name is longer than what a guest says (三杯鸡 for its 三杯鸡饭, 千层面 for its 牛肉千层面)
     if (HAN_RE.test(raw)) {
       const zh = zhNamesOf(dish.name)?.names.filter((x) => x.length > 1 && raw.includes(x)).sort((x, y) => y.length - x.length)[0];
-      if (zh) return void found.push({ dish, at: raw.indexOf(zh) / 100, covered: [], score: 1.9, zh });
+      // (not an add-on asked for by its usual name: "加臭豆要多少钱？" is the Petai add-on, not the Udang Sambal Petai)
+      const addOn = zh && new RegExp(`加${zh}`).test(raw) && items.some((o) => (o.modifiers ?? []).some((g) => g.options.some((x) => zhNamesOf(x.name)?.names.includes(zh))));
+      if (zh && !addOn) return void found.push({ dish, at: raw.indexOf(zh) / 100, covered: [], score: 1.9, zh });
     }
     // one letter can be the whole difference: Kopi O is black, Kopi C has evaporated milk
     let name = ix.names[n].filter((w) => w.length > 1 || /\d/.test(w) || !/^[ai]$/.test(w));
@@ -424,6 +426,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const joined = (t: string, k: number) => t === name[k] + name[k + 1] || (t.length >= 6 && same(t, name[k] + name[k + 1])) || (JOINED[name[k] + name[k + 1]] ?? []).includes(t);
     for (let k = 0; k + 1 < name.length; k++) if (toks.some((t) => joined(t, k))) name = [...name.slice(0, k), toks.find((t) => joined(t, k))!, ...name.slice(k + 2)];
     const covered: number[] = [];
+    const placed: string[] = [];
     let weight = 0;
     let total = 0;
     let unique = false;
@@ -458,8 +461,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
               const at = toks.map((_, k) => k).filter((k) => same(toks[k], x));
               return sum + (at.length ? Math.min(...at.map((k) => Math.abs(k - i) + (across(k, i) ? 10 : 0))) : 0);
             }, 0);
-      const at = spots.sort((a, b) => near(a) - near(b) || a - b)[0];
+      // (as near either side, the side its name puts it: "hamburg curry, vegetable curry" gives the vegetable the curry after it)
+      const sideFits = (i: number) => (covered.length && name.indexOf(w) >= 0 && name.indexOf(placed[0]) >= 0 ? ((name.indexOf(w) > name.indexOf(placed[0])) === (i > covered[0]) ? 0 : 1) : 0);
+      const at = spots.sort((a, b) => near(a) - near(b) || sideFits(a) - sideFits(b) || a - b)[0];
       covered.push(at);
+      placed.push(w);
       weight += idf * g;
       // ...unless pointed at as a dish: "the mussels dish", "the kombucha", "berapa harga lala?"
       // (not "the double-boiled soups": a word followed by more of a section's name is the section)
@@ -529,8 +535,9 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       for (const i of m.covered) by.set(clauseOf(i), (by.get(clauseOf(i)) ?? 0) + 1);
       if (by.size < 2) return [];
       const main = [...by.entries()].sort((a, b) => b[1] - a[1])[0];
-      if ([...by.values()].filter((n) => n === main[1]).length > 1) return [];
-      return m.covered.filter((i) => clauseOf(i) !== main[0] && found.some((o) => o !== m && o.covered.includes(i) && o.covered.filter((c) => clauseOf(c) === clauseOf(i)).length >= 2));
+      // (split evenly, any of its clauses: "ikan pari bakar large, sotong sambal" isn't the Sotong Bakar)
+      const tie = [...by.values()].filter((n) => n === main[1]).length > 1;
+      return m.covered.filter((i) => (tie || clauseOf(i) !== main[0]) && found.some((o) => o !== m && o.covered.includes(i) && o.covered.filter((c) => clauseOf(c) === clauseOf(i)).length >= 2));
     });
     found.forEach((m, k) => {
       if (!drops[k].length) return;
@@ -538,6 +545,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       m.covered = m.covered.filter((i) => !drops[k].includes(i));
       m.score *= m.covered.length / n;
     });
+    for (let k = found.length - 1; k >= 0; k--) if (drops[k].length && !found[k].covered.length) found.splice(k, 1);
   }
   // a match that covers more of the question wins over one inside it: "durian cendol" is the Musang
   // King Durian Cendol, not the plain Cendol whose one word it also contains

@@ -55,6 +55,8 @@ export interface DialogueState {
   focus: Item | null;
   /** The choices said with it ("how much is the seafood hokkien mee large?"), for "make it two". */
   focusOptions?: ModifierOption[];
+  /** The focus dish's add-ons the last answer listed, in its order ("the second and the last one"). */
+  optionsShown?: ModifierOption[];
   /** How many they are, said earlier ("we're 3", "我们四个人"). */
   party: number | null;
   /** Who each dish on the order is for, when they said ("me the 8 piece set, Ali the 6 piece"). */
@@ -423,6 +425,9 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
         s.shown = offered;
         if (offered.length === 1) s.focus = offered[0];
       }
+      // ("you can add: salted fish +RM3.00, lap cheong +RM4.00, …"): the add-ons it listed, in its order, for "the second and the last one"
+      const listed = s.focus ? (s.focus.modifiers ?? []).filter((g) => !(g.min ?? 0)).flatMap((g) => g.options).map((o) => ({ o, at: normalize(h.content).indexOf(` ${normalize(o.name.replace(/\([^)]*\)/g, " "))} `.replace(/^ /, "")) })).filter((x) => x.at >= 0).sort((a, b) => a.at - b.at).map((x) => x.o) : [];
+      s.optionsShown = listed.length >= 2 && (!named.length || named[0].id === s.focus?.id) ? listed : undefined;
     }
     } finally {
       const added = s.order.filter((o) => (had.get(o) ?? 0) < o.count).map((o) => ({ ...o, count: o.count - (had.get(o) ?? 0) }));
@@ -1556,7 +1561,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "can I add pudding?", "can make less spicy?", "boleh tambah telur?", "可以加奶盖吗？", "can I get it hot?":
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
-    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can)$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
+    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
     !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text) &&
     // ("can I have the second one with an iced lemon tea? total?": an order, its total asked)
     !(pointed.length && (/\b(total|altogether|semua|jumlah)\b/.test(nt1) || /一共|总共/.test(u.text)));
@@ -1633,7 +1638,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const vegan_ = [...state.diet, ...u.diet].includes("vegan") && !/\b(not|bukan) vegan\b/.test(nt1);
     const notVeganOf = vegan_ ? said.filter((o) => optionAllergens(o, optHost).some((a) => a === "egg" || a === "milk") || /\b(egg|telur|chicken|beef|pork|fish|prawn|meat|cheese|butter|ghee)\b/i.test(o.name)) : [];
     if (notVeganOf.length && !riskOf.length) return reply("dish_info", t("assistantReply.addOnNotVegan", { option: list(notVeganOf.map(optionLabel)), dish: name(optHost) }), [optHost]);
-    if (riskOf.length) return { ...reply("dish_info", `${riskOf.map((x) => t("assistantReply.addOnHasOn", { option: optionLabel(x.o), dish: name(optHost), list: list(x.has.map(allergen)) })).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(riskOf.flatMap((x) => x.has))].map(allergen)) })}`, [optHost]), safetyNote: allyNote(locale) };
+    if (riskOf.length) return { ...reply("dish_info", `${riskOf.map((x) => t("assistantReply.addOnHasOn", { option: optionLabel(x.o), what: /\b(belacan|terasi)\b/i.test(x.o.name) ? ` (${en ? "shrimp paste" : "虾膏"})` : "", dish: name(optHost), list: list(x.has.map(allergen)) })).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(riskOf.flatMap((x) => x.has))].map(allergen)) })}`, [optHost]), safetyNote: allyNote(locale) };
     if (priced.length) {
       const total = optHost.price + priced.reduce((n, o) => n + o.price, 0);
       // (its own price too: "RM17.90 (RM16.90, Iced Milo +RM1.00)")
@@ -1778,6 +1783,20 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("板面可以加肉丸吗？" of several noodles, "boleh tambah mentega badam dalam bowl?"): an add-on no dish has
   if (asksOption && !optHost && thingAsked && !optionsAsked(thingAsked, live).length && !live.some((i) => ` ${normalize(i.name)} `.includes(` ${normalize(thingAsked)} `) || Object.values(i.translations ?? {}).some((x) => x?.name?.includes(thingAsked))))
     return reply("dish_info", t("assistantReply.addOnNone", { option: en ? thingAsked.trim().charAt(0).toUpperCase() + thingAsked.trim().slice(1) : thingAsked.trim() }), []);
+  // "ok add the second and the last one. how much?" of the add-ons the last answer listed: the dish with those
+  if (state.optionsShown?.length && state.focus && !mentioned.length && orderable(state.focus)) {
+    const shownO = state.optionsShown;
+    const ORD: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, fourth: 3, "4th": 3, fifth: 4, "5th": 4, pertama: 0, kedua: 1, ketiga: 2, keempat: 3, 一: 0, 二: 1, 三: 2, 四: 3, 五: 4 };
+    const words_ = [...nt1.matchAll(/\b(first|1st|second|2nd|third|3rd|fourth|4th|fifth|5th|last|pertama|kedua|ketiga|keempat|terakhir)\b/g)].map((m) => m[1]);
+    const zh_ = [...u.text.matchAll(/第([一二三四五])(?:个|种|样)?|(最后)(?:一个|一种|一样|那个)?/g)].map((m) => m[1] ?? "last");
+    const picks = [...new Set([...words_, ...zh_].map((w) => (/^(last|terakhir)$/.test(w) ? shownO[shownO.length - 1] : shownO[ORD[w]])).filter((o): o is ModifierOption => !!o))];
+    if (picks.length && (/\b(add|tambah|with|take|want|nak|ok|how much|berapa|total)\b/.test(nt1) || /加|要|多少/.test(u.text))) {
+      const kept_ = (state.focusOptions ?? []).filter((o) => !picks.includes(o) && o.price > 0);
+      const line: OrderLine = { item: state.focus, count: 1, options: [...kept_, ...picks] };
+      const each = ` (${[money(state.focus.price), ...line.options!.filter((o) => o.price > 0).map((o) => `${optionLabel(o)} +${money(o.price)}`)].join(", ")})`;
+      return reply("order_help", `${t("assistantReply.pricedWith", { dish: lineName(line), price: money(unitPrice(line)) }).replace(/[.。]$/, "")}${each}${stop}`, [state.focus]);
+    }
+  }
   // "how much more for large?", "Tambah telur berapa?" about the dish just talked about: its price with it
   const focusDish = !mentioned.length && !pointed.length && !state.order.some((o) => o.item.id === state.focus?.id) && state.focus && orderable(state.focus) ? state.focus : null;
   const basketPriced = byBasket && (howMuch || totalWord || withCharges);
@@ -2007,7 +2026,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "what's my share?", "how much does each person pay?", "saya kena bayar berapa?"
   const mineAsked = /\b(my share|my part|my portion|mine|how much (do|should) i pay|what do i pay|saya kena bayar|saya bayar berapa|bahagian saya)\b/.test(nt1) || /我要付多少|我的部分|我付多少/.test(u.text);
-  const eachAsked = /\b((each|each person|each one of us) (pay|pays|owe|kena bayar)|how much (does|do) each|how much each|each (one |person )?how much|each of us|who pays what|everyone pays|separate bills?|separately|pay separately|masing masing|seorang berapa|berapa seorang|bayar asing|asing asing|berasingan|kira asing)\b/.test(nt1) || /各自|每个人付|每人付|分开算|分开付|各付/.test(u.text);
+  const eachAsked = /\b((each|each person|each one of us) (pay|pays|owe|kena bayar)|how much (does|do) each|how much each|each (one |person )?how much|each (with|incl|including|after|plus) (the )?(service|tax|sst|gst|charges?)|each of us|who pays what|everyone pays|separate bills?|separately|pay separately|masing masing|seorang berapa|berapa seorang|bayar asing|asing asing|berasingan|kira asing)\b/.test(nt1) || /各自|每个人付|每人付|分开算|分开付|各付/.test(u.text);
   const ownersNow = { ...state.owners, ...ownersOf(u.text, mentioned) };
   // "same again for my friend", "一样的再来一份", "tambah satu lagi yang sama": what they last ordered, again;
   // "one more of that", "再来一个": one more of the last thing
@@ -2054,7 +2073,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const byEnd = /[\u4e00-\u9fff]/.test(u.text) ? state.order.map((o) => o.item).filter((i) => !mentioned.includes(i) && zhEnds(i).some((e) => u.text.includes(e) && state.order.filter((o) => zhEnds(o.item).includes(e)).length === 1)) : [];
     if (byEnd.length && (/我只(吃|喝|点|要|付)了?|我(吃|喝|点)了|我的那|我付|付我的/.test(u.text))) mentioned.push(...byEnd);
     const mineSaid = !readBill && state.order.length > 0 && mentioned.length > 0 && !editing && (/\b(i only had|i had|i just had|i ate|i got|mine|my share|my part|my portion|for me|i ll pay for|i will pay for|i pay for|i m paying for|saya (makan|ambil|order|minum|bayar)|aku (makan|ambil|minum|bayar))\b/.test(nt1) || /我只(吃|喝|点|要|付)了?|我(吃|喝|点)了|我的那|我付|付我的/.test(u.text)) && mentioned.every((i) => state.order.some((o) => o.item.id === i.id));
-    if (!readBill && mentioned.length && !edited && !mineSaid && (ordering || totalWord || howMuch || changing || priceClaimed))
+    if (!readBill && mentioned.length && !edited && !mineSaid && (ordering || totalWord || howMuch || changing || priceClaimed || (eachAsked && withCharges)))
       addLines(bill, turnLines(ctx, orderedLines(u, mentioned, existing)).filter((l) => (ordering || !existing.some((o) => o.item.id === l.item.id)) && !((REMOVE.test(nt1) || REMOVE.test(u.text)) && !ORDERING.test(nt1))));
     // ("cancel the kai lan, add one milo ais": the edit made, and the new dish said with "add" comes on too)
     else if (!readBill && edited && (ORDERING.test(nt1) || ORDERING_ZH.test(u.text))) {
@@ -2174,7 +2193,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const ownerOf = (o: OrderLine) => (readBill ? lineOwner.get(o) : ownersNow[o.item.id]);
     const mineByOwner = readBill ? (mineAsked || mineWords) && bill.some((o) => ownerOf(o) === "me") && !eachAsked : mineAsked && !mineOnly && Object.values(ownersNow).includes("me");
     if (mineByOwner) bill.splice(0, bill.length, ...bill.filter((o) => ownerOf(o) === "me"));
-    if (eachAsked && (readBill ? new Set(bill.map(ownerOf)).size >= 2 : Object.keys(ownersNow).length >= 2) && bill.every((o) => ownerOf(o))) {
+    if (eachAsked && bill.length && (readBill ? new Set(bill.map(ownerOf)).size >= 2 : Object.keys(ownersNow).length >= 2) && bill.every((o) => ownerOf(o))) {
       const people = [...new Set(bill.map((o) => ownerOf(o)!))];
       // (with service and tax, each one's share as the till would total it)
       const who = (p: string) => (p === "me" ? t("assistantReply.you") : p.charAt(0).toUpperCase() + p.slice(1));
