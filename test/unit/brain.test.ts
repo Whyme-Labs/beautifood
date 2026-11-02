@@ -1777,3 +1777,23 @@ describe("a fish soup stall's bowls, extras and pointed counts", () => {
     expect(ask("fish soups how much?", "Sliced Fish Bee Hoon Soup RM13.90, Bitter Gourd Fish Soup RM13.90.", "the bitter gourd one x2 and the first one x1. total")).toMatch(/Total RM41\.70/);
   });
 });
+
+describe("the cheapest way, by what's really in a dish", () => {
+  const toppings = { name: "Toppings", min: 0, max: 4, options: [{ name: "Red Bean", price: 100 }, { name: "Sweet Corn", price: 100 }, { name: "Ice Cream", price: 250 }] };
+  const meal = { name: "Make it a meal", min: 0, max: 1, options: [{ name: "Meal: fries + sirap ais", price: 350 }] };
+  const dishes = asItems([
+    { id: "q1", name: "Cendol Pulut", category: "Desserts", description: "cendol with glutinous rice (pulut)", price: 650, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "q2", name: "Cendol Special", category: "Desserts", description: "cendol with red beans, sweet corn, glutinous rice and a scoop of vanilla ice cream", price: 900, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "q3", name: "Ice Cream Potong", category: "Desserts", description: "ice-cream stick made with milk, sugar and corn starch", price: 250, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "q4", name: "Burger Telur", category: "Burgers", description: "egg in a bun", price: 350, allergens: ["egg", "gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "q5", name: "Ramly Beef Burger", category: "Burgers", description: "beef patty", price: 550, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: true },
+  ]).map((i) => (i.id === "q1" ? { ...i, modifiers: [toppings] } : i.id === "q3" ? { ...i, modifiers: [{ name: "Flavour", min: 1, max: 1, options: [{ name: "Red Bean", price: 0 }, { name: "Sweet Corn", price: 0 }] }] } : i.category === "Burgers" ? { ...i, modifiers: [meal] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("finds the Special for cendol with pulut, red bean, corn and ice cream (corn starch isn't corn)", () => {
+    expect(ask("i want cendol with pulut, red bean, corn and ice cream. whats the cheapest way to order")).toMatch(/Cendol Special \(RM9\.00\)/);
+  });
+  it("gives the cheapest burger with its meal, for two", () => {
+    expect(ask("cheapest burger meal for 2 people?")).toMatch(/2 × Burger Telur with Meal: fries \+ sirap ais \(RM7\.00\)\. Total RM14\.00/);
+  });
+});

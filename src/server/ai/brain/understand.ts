@@ -257,7 +257,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
   hijau: ["green"], hitam: ["black"], putih: ["white"], merah: ["red"], vege: ["vegetable", "vegetables", "vegetarian"], veggie: ["vegetable", "vegetables", "vegetarian"], veg: ["vegetable", "vegetables", "vegetarian"],
-  hiris: ["sliced", "slice"], kuning: ["yellow"], campur: ["mixed", "mix"], kasturi: ["calamansi"], jus: ["juice"], popiya: ["popiah"], popia: ["popiah"],
+  hiris: ["sliced", "slice"], kuning: ["yellow"], campur: ["mixed", "mix"], kasturi: ["calamansi"], jus: ["juice"], popiya: ["popiah"], popia: ["popiah"], pulut: ["glutinous"],
 };
 
 const JOINED: Record<string, string[]> = { beehoon: ["bihun", "mihun", "bihoon"], meehoon: ["bihun", "mihun"], kuayteow: ["kueyteow", "kwayteow"], kweyteow: ["kueyteow", "kwayteow"] };

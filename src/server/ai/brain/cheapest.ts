@@ -100,7 +100,8 @@ function namedBy(d: Dish, n: Need): boolean {
 /** Whether `need` is part of what the dish comes with, by one clause of its description ("a soft drink"). */
 function inDescription(d: Dish, n: Need): boolean {
   if (n.zh || n.course) return false;
-  return (d.description ?? "")
+  // ("corn starch", "coconut essence": an ingredient made from it, not it)
+  return (d.description ?? "").replace(/\b[a-z]+ (starch|flour|syrup|extract|essence|powder|oil)\b/gi, "$1")
     .split(/[,;()]|\band\b|\bwith\b/)
     .map(nameWords)
     // (not "no egg in the dough": what it says it hasn't)

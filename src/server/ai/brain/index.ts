@@ -1961,6 +1961,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (notVegan) parts.push(t("assistantReply.optionNotVegan"));
     return reply("dish_allergen", parts.join(""), []);
   }
+  // ("cheapest burger meal for 2 people?"): the kind's cheapest dish with its cheapest meal, for each of them
+  if (u.superlative === "cheapest" && !mentioned.length && u.categories.length && (/\b(meal|meals|set|sets|combo|combos)\b/.test(nt1) || /套餐/.test(u.text))) {
+    const MEAL_ = /^(meal|set|combo|make it a meal|make it a set)\b/i;
+    const withMeal = live.filter((i) => u.categories.includes(i.category ?? "") && allowed(i, c)).flatMap((i) => (i.modifiers ?? []).flatMap((g) => g.options).filter((o) => MEAL_.test(o.name)).map((o) => ({ i, o, price: i.price + o.price })));
+    const best = withMeal.sort((a, b) => a.price - b.price)[0];
+    if (best) {
+      const n = u.party && u.party >= 2 ? u.party : 1;
+      const line_: OrderLine = { item: best.i, count: n, options: [best.o] };
+      return { ...reply("recommend", `${t("assistantReply.cheapestWay", { lines: `${n > 1 ? `${n} × ` : ""}${lineName(line_)} (${money(best.price)})`, total: money(best.price * n) })}`, [best.i]), order: orderCard([line_], {}) };
+    }
+  }
   // "what's the cheapest way to get half a chicken with fries, coleslaw and a drink?": a set, a dish with
   // its combo add-ons or the things one by one, whichever costs least of what's served now
   const wanted = (CHEAPEST_WAY.test(nt1) || CHEAPEST_WAY_ZH.test(u.text)) && !u.budget ? needsOf(u.text) : null;
