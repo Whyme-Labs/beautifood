@@ -379,7 +379,9 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
         applyOptions(s.order, h.content, picked.map((p) => p.item));
         continue;
       }
-      if (own.length && (ORDERING.test(normalize(h.content)) || ORDERING_ZH.test(h.content) || !asks)) {
+      // (not "rojak can add extra things?": asked whether it can, not added)
+      const canAdd = asks && /\b(can|could|may|boleh)( i| we| you)? (add|tambah)\b/.test(normalize(h.content)) && !ORDERING.test(normalize(h.content).replace(/\b(can|could|may|boleh)( i| we| you)? (add|tambah)\b/g, " "));
+      if (own.length && !canAdd && (ORDERING.test(normalize(h.content)) || ORDERING_ZH.test(h.content) || !asks)) {
         // (a dish sold out or not served now can't be on it)
         const before = [...s.order];
         addLines(s.order, orderedLines(u, own, s.order));
@@ -1589,7 +1591,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // (not "can add how many things?": a question, not a thing)
     if (/^(how|what|which|berapa|apa)\b/.test(thingAsked)) return null;
     const nameWords = new Set(normalize(optHost.name).split(" "));
-    const unknown = thingAsked.split(" ").filter((w) => w.length > 2 && !/^(it|them|more|one|two|the|some|also|too|again|lagi|sikit|sedikit|and|with|this|that|any|got|can|boleh|please|pls|extra|charge|cost|caj|how|much|price|free|all|everything|those|these|first|second|third|fourth|last|other|another|normal|same)$/.test(w) && !nameWords.has(w) && !nameWords.has(w.replace(/s$/, "")) && !optionsSaid(w, optHost, true).add.length && !optionsSaid(`add ${w}`, optHost, true, true).add.length);
+    const unknown = thingAsked.split(" ").filter((w) => w.length > 2 && !/^(it|them|more|one|two|the|some|also|too|again|lagi|sikit|sedikit|and|with|this|that|any|got|can|boleh|please|pls|extra|charge|cost|caj|how|much|price|free|all|everything|those|these|first|second|third|fourth|last|other|another|normal|same|things|thing|stuff|anything|something|else|toppings|topping|addons)$/.test(w) && !nameWords.has(w) && !nameWords.has(w.replace(/s$/, "")) && !optionsSaid(w, optHost, true).add.length && !optionsSaid(`add ${w}`, optHost, true, true).add.length);
     if (unknown.length) {
       const own_ = (optHost.modifiers ?? []).flatMap((g) => g.options.filter((o) => o.price > 0));
       const tail = own_.length ? `${sp}${t("assistantReply.itsAddOns", { dish: name(optHost), list: list(own_.map((o) => `${optionLabel(o)} (+${money(o.price)})`)) })}` : "";

@@ -91,20 +91,28 @@ export function basketOf(question: string, items: Dish[], spend = false, party: 
     // drink. What do you suggest?" is still one)
     if (course && (/^(apa|mana|yang|yg)$/.test(toks[j + 1] ?? "") || (n === undefined && /^(what|which)$/.test(toks[j - 1] ?? "")))) return null;
     // "a taco plate", "a rice bowl", "a cup of kopi": the serving word goes with the item
-    const after = (k: number) => (FILLER.test(toks[k] ?? "") ? k + 1 : k);
-    if (course) return { slot: { count, term: singular(w), course: !each, counted: n !== undefined, fits: byTray(singular(w), course[1]) }, next: after(j + 1) };
+    // ("cendol satu dengan air": its count said after it, as in Malay)
+    const after = (k: number) => {
+      const k_ = FILLER.test(toks[k] ?? "") ? k + 1 : k;
+      if (n === undefined && /^(satu|dua|tiga|empat|lima)$/.test(toks[k_] ?? "") && (!toks[k_ + 1] || SEP.test(toks[k_ + 1]))) {
+        count = NUMBER[toks[k_]];
+        return k_ + 1;
+      }
+      return k_;
+    };
+    if (course) { const nx = after(j + 1); return { slot: { count, term: singular(w), course: !each, counted: n !== undefined, fits: byTray(singular(w), course[1]) }, next: nx }; }
     // "4 of us, two pizzas": a category's word counted for a party is that many different ones
     const asCategory = catWords.get(singular(w));
-    if (asCategory && party && count > 1 && !each) return { slot: { count, term: singular(w), course: true, counted: true, fits: (d) => asCategory.has(d.category ?? "") }, next: after(j + 1) };
+    if (asCategory && party && count > 1 && !each) { const nx = after(j + 1); return { slot: { count, term: singular(w), course: true, counted: true, fits: (d) => asCategory.has(d.category ?? "") }, next: nx }; }
     const dishes = nameWords.get(singular(w.replace(/_/g, " ")));
-    if (dishes) return { slot: { count, term: singular(w), course: false, counted: n !== undefined, fits: (d) => dishes.includes(d) }, next: after(j + 1) };
+    if (dishes) { const nx = after(j + 1); return { slot: { count, term: singular(w), course: false, counted: n !== undefined, fits: (d) => dishes.includes(d) }, next: nx }; }
     // a word of the menu's own categories ("bingsu and a drink" on a menu with Bingsu & shaved ice)
     const inCats = catWords.get(singular(w));
-    if (inCats) return { slot: { count, term: singular(w), course: !each, counted: n !== undefined, fits: (d) => inCats.has(d.category ?? "") }, next: after(j + 1) };
+    if (inCats) { const nx = after(j + 1); return { slot: { count, term: singular(w), course: !each, counted: n !== undefined, fits: (d) => inCats.has(d.category ?? "") }, next: nx }; }
     // a course the menu has under another name ("a noodle and a coffee", "kuih and kopi"): its dishes
     const other = !/^(apa|mana|yang|yg)$/.test(toks[j + 1] ?? "") && !(n === undefined && /^(what|which)$/.test(toks[j - 1] ?? "")) ? courseOfWord(w) : null;
     const inCourse = other ? new Set(courseDishes(items, other).map((d) => d.id)) : null;
-    if (inCourse?.size) return { slot: { count, term: singular(w), course: !each, counted: n !== undefined, fits: (d) => inCourse.has(d.id) }, next: after(j + 1) };
+    if (inCourse?.size) { const nx = after(j + 1); return { slot: { count, term: singular(w), course: !each, counted: n !== undefined, fits: (d) => inCourse.has(d.id) }, next: nx }; }
     return null;
   };
   let best: Slot[] = [];

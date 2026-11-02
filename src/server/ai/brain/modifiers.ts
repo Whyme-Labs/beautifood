@@ -18,7 +18,7 @@ const ALSO: Record<string, string[]> = {
   kuah: ["kuah", "sauce", "peanut sauce"], laksa: ["laksa", "curry"], chilli: ["chilli", "chili", "sambal", "cili"],
   balls: ["ball", "fishball", "fishballs", "bebola"], fish: ["ikan"], minced: ["mince", "minced", "mincemeat"],
   bilis: ["anchovy", "anchovies"], hoon: ["bihun", "meehoon", "vermicelli"], prawns: ["prawn", "shrimp", "shrimps", "udang"],
-  puffs: ["taupok", "tau pok", "tofu puff"], pearls: ["pearl", "boba", "tapioca"], pudding: ["puding"],
+  puffs: ["taupok", "tau pok", "tofu puff", "tofu pok", "tauhu pok"], pearls: ["pearl", "boba", "tapioca"], pudding: ["puding"],
   grass: ["cincau"], coconut: ["kelapa", "nata"], bean: ["kacang merah"], foam: ["foam"],
   cheese: ["keju", "cheesy"], ramyeon: ["ramen", "ramyun", "ramyon", "noodle", "noodles", "maggi"], cake: ["cake"],
   fries: ["fry", "kentang", "kentang goreng", "chips"], soft: ["soda", "air", "minuman", "soft drink", "can drink"], drink: ["air", "minuman", "soda"], coleslaw: ["slaw"],
@@ -46,7 +46,7 @@ const ALSO_ZH: Record<string, RegExp> = {
   balls: /鱼丸/, minced: /肉碎|肉末|肉燥/, bilis: /江鱼仔|小鱼干/, hoon: /米粉/, prawns: /(?<!濑尿|螳螂|琵琶)虾(?!蛄)/,
   duck: /鸭蛋|鸭/, natto: /纳豆/, corn: /玉米/, spinach: /菠菜/, onsen: /温泉蛋/, cockles: /蚶|血蛤|鲜蛤/, cheong: /腊肠|臘腸/, taugeh: /豆芽/, puffs: /豆卜|豆泡/,
   noodles: /加面|多面|面加倍/, mushrooms: /蘑菇|香菇/, skin: /腐竹|豆皮/, peanuts: /花生/, tofu: /豆腐/, milo: /美禄/,
-  pearls: /珍珠|波霸/, pudding: /布丁/, grass: /仙草/, coconut: /椰果|椰子片|椰丝/, bean: /红豆/, foam: /奶盖/,
+  pearls: /珍珠|波霸/, pudding: /布丁/, durian: /榴莲|榴槤/, ginger: /姜/, gula: /椰糖|马六甲糖|棕榈糖/, melaka: /椰糖|马六甲糖|棕榈糖/, grass: /仙草/, coconut: /椰果|椰子片|椰丝/, bean: /红豆/, foam: /奶盖/,
   cheese: /芝士|起司|奶酪/, ramyeon: /拉面|泡面|快熟面/, rice: /年糕/, cake: /年糕|鱼饼/, fries: /薯条/, coleslaw: /凉拌|卷心菜沙拉/, soft: /饮料|汽水|饮品/,
   kimchi: /泡菜/, yangnyeom: /甜辣/, garlic: /蒜/, butter: /黄油|牛油/, snow: /雪花/, honey: /蜂蜜/,
   pineapple: /菠萝|黄梨/, pepperoni: /意大利辣香肠|辣香肠/, parmesan: /帕玛森|帕马森/, cream: /冰淇淋|雪糕/, whey: /乳清/, plant: /植物蛋白/,
@@ -229,7 +229,9 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
       const at = toks.findIndex((x) => need.some((k) => x === k || x === `${k}s` || x === k.replace(/(es|s)$/, "") || (ALSO[k] ?? []).includes(x)));
       // (or said right after, as in Malay: "sayur lebih")
       // (or named as the add-on it is: "the lard crisps add on")
-      const near = at >= 0 ? [...toks.slice(Math.max(0, at - 3), at), ...(/^(lebih|lagi)$/.test(toks[at + 1] ?? "") ? [toks[at + 1]] : []), ...((/^(addon|addons)$/.test(toks[at + need.length] ?? "") || (toks[at + need.length] === "add" && /^ons?$/.test(toks[at + need.length + 1] ?? ""))) ? ["add"] : [])] : toks;
+      // (or before a list it heads: "tambah you char kway and tofu pok")
+      const back = at >= 0 && toks.slice(Math.max(0, at - 3), at).some((x) => /^(and|dan|n|plus)$/.test(x)) ? 8 : 3;
+      const near = at >= 0 ? [...toks.slice(Math.max(0, at - back), at), ...(/^(lebih|lagi)$/.test(toks[at + 1] ?? "") ? [toks[at + 1]] : []), ...((/^(addon|addons)$/.test(toks[at + need.length] ?? "") || (toks[at + need.length] === "add" && /^ons?$/.test(toks[at + need.length + 1] ?? ""))) ? ["add"] : [])] : toks;
       const bigBefore = at > 0 && bigOf[at - 1];
       if (!bigBefore && !near.some((x) => /^(extra|add|adding|added|more|double|tambah|lebih|another|plus|with|w|dinosaur|godzilla)$/.test(x)) && !/\b(dinosaur|godzilla)\b/.test(t)) continue;
     }

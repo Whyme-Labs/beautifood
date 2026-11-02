@@ -1517,7 +1517,7 @@ describe("what an add-on brings", () => {
     expect(ask("the extra sambal got shrimp inside? im allergic to prawns")).toMatch(/Extra Sambal add-on \(sambal belacan\) has Crustaceans/);
   });
   it("warns of an add-on's allergen to a guest who said they avoid it, and only then", () => {
-    expect(ask("i'm allergic to dairy", "Noted.", "double chicken burger with cheese slice can?")).toMatch(/Cheese slice add-on for Double Chicken Burger has Milk/);
+    expect(ask("i'm allergic to dairy", "Noted.", "double chicken burger with cheese slice can?")).toMatch(/Double Chicken Burger: the Cheese slice add-on has Milk/);
     expect(ask("double chicken burger with cheese slice can?")).toMatch(/^Yes/);
   });
 });
@@ -1636,5 +1636,26 @@ describe("an ikan bakar stall's add-ons by number, dips and splits", () => {
   });
   it("reads a typo'd dish name with two letters swapped", () => {
     expect(ask("ikan prai bakr hw much")).toMatch(/Ikan Pari Bakar/);
+  });
+});
+
+describe("a cendol stall's toppings in Chinese and Malay lists", () => {
+  const toppings = { name: "Toppings", min: 0, max: 4, options: [{ name: "Red Bean", price: 100 }, { name: "Ice Cream", price: 250 }, { name: "Durian", price: 400 }] };
+  const dishes = asItems([
+    { id: "c1", name: "Ais Kacang", category: "Desserts", description: "shaved ice with red beans and corn", price: 600, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: true },
+    { id: "c2", name: "Cendol Original", category: "Desserts", description: "pandan jelly, coconut milk, gula melaka", price: 550, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: true },
+    { id: "c3", name: "Rojak Buah", category: "Snacks", description: "fruit with prawn paste sauce and peanuts", price: 750, allergens: ["peanuts", "crustaceans"], dietary: [], spiceLevel: 1, isSignature: false },
+    { id: "c4", name: "Limau Ais", category: "Drinks", description: "iced lime", price: 300, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "c1" ? { ...i, translations: { zh: { name: "红豆冰" } }, modifiers: [toppings] } : i.id === "c2" ? { ...i, modifiers: [toppings] } : i.id === "c3" ? { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 2, options: [{ name: "Extra You Char Kway", price: 100 }, { name: "Extra Tofu Puff", price: 100 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads 榴莲 as the Durian topping", () => {
+    expect(ask("红豆冰加榴莲加雪糕，多少钱一碗？")).toMatch(/RM12\.50/);
+  });
+  it("plans 'cendol satu dengan air' within the money", () => {
+    expect(ask("RM10 je, nak cendol satu dengan air. Boleh?")).toMatch(/Cendol Original \(RM5\.50\); Limau Ais \(RM3\.00\)/);
+  });
+  it("takes both add-ons of 'tambah X and Y', after asking what can be added", () => {
+    expect(ask("rojak can add extra things?", "Rojak Buah is RM7.50. You can add Extra You Char Kway (+RM1.00) and Extra Tofu Puff (+RM1.00).", "rojak tambah you char kway and tofu pok. berapa")).toMatch(/Extra You Char Kway, Extra Tofu Puff\)?:? ?\(?RM9\.50/);
   });
 });

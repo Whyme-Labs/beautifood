@@ -261,7 +261,9 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
     // a clause that names no dish changes the lines before it: "one of them with extra egg", "一碗加鱼丸", "satu besar", "both iced"
     const words = toks.slice(c, end);
     if (!words.length || !lastClause.length) continue;
-    const text = phrase(words);
+    // (after "and", the add word of the list it ends: "tambah you char kway and tofu pok")
+    const cue_ = /^(and|dan|n|&)$/.test(toks[c - 1] ?? "") ? toks.slice(Math.max(0, c - 7), c - 1).find((t) => /^(tambah|add|extra|plus)$/.test(t)) : undefined;
+    const text = cue_ ? `${cue_} ${phrase(words)}` : phrase(words);
     let n: number | null = null;
     // ("其中一份加芝士": one of them)
     const lead = words[0] === "其" && words[1] === "中" ? 2 : 0;
