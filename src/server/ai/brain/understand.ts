@@ -257,7 +257,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
   hijau: ["green"], hitam: ["black"], putih: ["white"], merah: ["red"], vege: ["vegetable", "vegetables", "vegetarian"], veggie: ["vegetable", "vegetables", "vegetarian"], veg: ["vegetable", "vegetables", "vegetarian"],
-  hiris: ["sliced", "slice"], kuning: ["yellow"], campur: ["mixed", "mix"], kasturi: ["calamansi"], jus: ["juice"], popiya: ["popiah"], popia: ["popiah"], pulut: ["glutinous"],
+  hiris: ["sliced", "slice"], kuning: ["yellow"], campur: ["mixed", "mix"], kasturi: ["calamansi"], jus: ["juice"], popiya: ["popiah"], popia: ["popiah"], pulut: ["glutinous"], bubur: ["porridge", "congee"], congee: ["porridge"], porridge: ["congee"],
 };
 
 const JOINED: Record<string, string[]> = { beehoon: ["bihun", "mihun", "bihoon"], meehoon: ["bihun", "mihun"], kuayteow: ["kueyteow", "kwayteow"], kweyteow: ["kueyteow", "kwayteow"] };
@@ -355,6 +355,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const one = tr?.name?.length === 1 ? raw.match(new RegExp(`[杯壶碗份个]${tr.name}(?![\u4e00-\u9fff])|[杯壶碗份个]${tr.name}(?=[和跟与，、。？！])`)) : null;
       if (one) return void found.push({ dish, at: (one.index ?? 0) / 100, covered: [], score: 2, zh: tr!.name });
     }
+    // (a bowl of porridge, "三碗糜" in Teochew, "两碗粥": the plain one, 白粥)
+    if (Object.values(dish.translations ?? {}).some((tr) => /白粥$/.test(tr?.name ?? ""))) {
+      const bowl = raw.match(/碗(粥|糜)(?![\u4e00-\u9fff])|碗(粥|糜)(?=[和跟与，、。？！再加])/);
+      if (bowl) return void found.push({ dish, at: (bowl.index ?? 0) / 100, covered: [], score: 2, zh: bowl[0].slice(1) });
+    }
     // a bracket said beside the name ("炒萝卜糕白的", "白的炒萝卜糕" for 炒萝卜糕（白）)
     for (const tr of Object.values(dish.translations ?? {})) {
       const m = (tr?.name ?? "").match(/^(.+?)[（(](.{1,3})[)）]$/);
@@ -370,7 +375,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
         if (at < 0) continue;
         // (two characters only after a drink's counter: "三罐汽水" of the 罐装汽水)
         // (or said alone: "唔该，啤酒有冇？" of the 老虎啤酒)
-        if (end.length === 2 && ((!/[罐瓶杯]/.test(raw[at - 1] ?? "") && /[\u4e00-\u9fff]/.test(raw[at - 1] ?? "")) || /[\u4e00-\u9fff]/.test(raw[at + 2] ?? "") && !/[有冇吗呢几要来和跟是好辣贵可含会]/.test(raw[at + 2]))) continue;
+        if (end.length === 2 && ((!/[罐瓶杯碗碟]/.test(raw[at - 1] ?? "") && /[\u4e00-\u9fff]/.test(raw[at - 1] ?? "")) || /[\u4e00-\u9fff]/.test(raw[at + 2] ?? "") && !/[有冇吗呢几要来和跟是好辣贵可含会]/.test(raw[at + 2]))) continue;
         if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘罐瓶两一二三四五六七八九十的要来加和与跟及还]/.test(raw[at - 1])) continue;
         if (items.filter((o) => Object.values(o.translations ?? {}).some((x) => x?.name?.endsWith(end))).length === 1) return void found.push({ dish, at: raw.indexOf(end) / 100, covered: [], score: 1.8, zh: end });
         break;
@@ -553,7 +558,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     if (family.length < 2) return;
     const PLAIN = /^(cafe|caffe|classic|original|regular|house|plain|traditional|biasa|asli)$/;
     const plain = family.filter((d) => normalize(d.name).split(" ").filter((w) => !same(t, w)).every((w) => PLAIN.test(w)));
-    if (plain.length === 1) found.push({ dish: plain[0], at: i, covered: [i], score: 0.6 });
+    // (or the one called plain among them: "porridge" of Plain Teochew Porridge and Sweet Potato Porridge)
+    // (only of a kind they all end in, said on its own: not "acai bowl" of the Classic Acai Bowl, nor "nasi lemak" of Nasi Lemak Biasa)
+    const headOnly = !/^(the|that|this|those|these|my|our|his|her)$/.test(toks[i - 1] ?? "") && family.every((d) => same(t, normalize(d.name).split(" ").slice(-1)[0])) && ![toks[i - 1], toks[i + 1]].some((w) => w && w.length > 2 && family.some((d) => normalize(d.name).split(" ").some((x) => same(w, x))));
+    const called = plain.length ? plain : headOnly ? family.filter((d) => normalize(d.name).split(" ").some((w) => /^(plain|original|classic|biasa|asli|kosong)$/.test(w))) : [];
+    if (called.length === 1) found.push({ dish: called[0], at: i, covered: [i], score: 0.6 });
   });
   // ("char siu noodles and char siu rice, the rice also got discount?": "the rice" is the char siu rice named, not the Plain Rice)
   for (let k = found.length - 1; k >= 0; k--) {
