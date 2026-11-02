@@ -568,6 +568,7 @@ const en = {
     lardNo: "No, {dish} isn't cooked in lard: the menu says {oil}.",
     lardUnsure: "The menu doesn't say {dish} is cooked in lard, but please check with our staff.",
     oil: { vegetable: "vegetable oil", palm: "palm oil", peanut: "peanut oil", sesame: "sesame oil", canola: "canola oil", olive: "olive oil", butter: "butter", ghee: "ghee" },
+    oneOfGroup: "{dish} takes just one {group}: {list}. Which one would you like?",
     maxChoices: "{dish} takes up to {max} {group}, and that's {count}: which {max} would you like?",
     addOnHasOn: "{dish}: the {option} add-on{what} has {list}.",
     drinkChoicesNot: "{drink} isn't one of the drinks that come with {dish}: you can pick {list}.",

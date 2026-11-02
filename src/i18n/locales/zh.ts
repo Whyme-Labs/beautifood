@@ -566,6 +566,7 @@ const zh = {
     lardNo: "不是，{dish}不是用猪油的：菜单写的是{oil}。",
     lardUnsure: "菜单没有写{dish}用猪油，但请向店员确认。",
     oil: { vegetable: "植物油", palm: "棕榈油", peanut: "花生油", sesame: "麻油", canola: "菜籽油", olive: "橄榄油", butter: "牛油", ghee: "酥油" },
+    oneOfGroup: "{dish}的{group}只能选一样：{list}。要哪一样？",
     maxChoices: "{dish}的{group}最多选{max}样，你选了{count}样：要哪{max}样？",
     addOnHasOn: "{dish}加的{option}{what}含有{list}。",
     drinkChoicesNot: "{dish}配的饮料没有{drink}，可以选：{list}。",
