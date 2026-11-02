@@ -1321,3 +1321,26 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     answer, scored before and after).
   - These are dev numbers only. v11 was made dev after its one held-out scoring, so there is no
     held-out figure for this work; the next one needs a new set.
+- **Bills and add-ons, second wave (owner: "keep going until all are fixed, then deploy").** Rules only.
+  All dev 2803 → 2927 of 3194 (87.8% → 91.6%) since the start of this work: fixed 124, broke 0, unsafe 0.
+  - By set: v8 428 → 435 of 491; v9 722 → 725 of 746; v10 798 → 851 of 956; v11 350 → 411 of 492
+    (71.1% → 83.5%). Cases tagged bill or modifier: v8 99 → 105 of 110, v9 445 → 448 of 456, v10
+    353 → 405 of 465, v11 149 → 210 of 250. 113 tagged cases still fail.
+  - What this wave added: counts and swaps at a satay stall ("10 ayam, 20 beef", "10 more ayam",
+    "change the beef to chicken, same 20 sticks"); an upsize priced as the difference; "saiz biasa",
+    中碗, 豆卜, 荷包蛋, 可乐, 咸鱼, 臭豆, 一壶, 三到四人, jagung, pulut, cendawan, hiris, lrg, ttl; a
+    dish's other name from its description ("ABC:" of the Ais Kacang); sides and choices (a third
+    side is a dish, "change cheesy fries to normal fries", "change to coleslaw instead", "extra
+    black pepper sauce" vs "Black Pepper"); a dish sold out is said and the rest billed; per-person
+    tea ("Chinese tea for 4"); pot sizes; "tambah tahu satu", "2 of the teh tarik make it ais",
+    "nasi just 2", "2 kopi only, and both kopi o iced"; "I had the rest" / "she pays the rest" with
+    both parts; the set against the order so far; "sambal kicap for the sotong" (a dip, not an
+    allergy); "take out the extra prawns, keep the egg" (an add-on off, not the dish, not an egg
+    allergy); "cancel the small one".
+  - Claim checker, both changes this work: a "+" inside a menu add-on's own name doesn't end the
+    line; a price said as what something adds ("Nasi uduk is RM1.00 more") isn't that dish's price.
+    From the start to now, one case changed verdict with the same answer (v10v-ayam-penyet-cafe-003,
+    whose answer was right and was misread before).
+  - Dev numbers only: no held-out figure exists for this work. It is ~30 commits of narrow rules
+    fitted on dev, so the risk of overfitting has gone up; a fresh held-out set is the only way to
+    know how much carries over.
