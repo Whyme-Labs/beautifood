@@ -1546,7 +1546,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "can I add pudding?", "can make less spicy?", "boleh tambah telur?", "可以加奶盖吗？", "can I get it hot?":
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
-    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
+    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can)$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
     !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text) &&
     // ("can I have the second one with an iced lemon tea? total?": an order, its total asked)
     !(pointed.length && (/\b(total|altogether|semua|jumlah)\b/.test(nt1) || /一共|总共/.test(u.text)));
@@ -1591,6 +1591,19 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const off = notOn(optHost, thingAsked);
     if (off) return off;
   }
+  // ("chicken burger with chilli, mayo AND black pepper sauce pls" where it takes two sauces: more than its group takes)
+  if (mentioned.length === 1 && orderable(mentioned[0]) && !state.order.length) {
+    const said_ = optionsSaid(u.text, mentioned[0], true).add;
+    const over = (mentioned[0].modifiers ?? []).filter((g) => (g.max ?? 1) > 1 && said_.filter((o) => g.options.includes(o)).length > (g.max ?? 1));
+    if (over.length) return reply("dish_info", over.map((g) => t("assistantReply.maxChoices", { dish: name(mentioned[0]), group: g.name.toLowerCase(), max: g.max ?? 1, count: said_.filter((o) => g.options.includes(o)).length })).join(sp), [mentioned[0]]);
+  }
+  // ("meal drink can change to milo ais?" of a dish whose meal comes with some drinks only: one it doesn't, told so)
+  const mealOf = state.focus ?? earlierHost;
+  if (mealOf && mentioned.length === 1 && mentioned[0].id !== mealOf.id && isDrink(mentioned[0] as Dish) && (/\b(meal|set|combo)\b/.test(nt1) || /套餐/.test(u.text)) && (/\b(drink|air|minuman)\b/.test(nt1) || /饮料/.test(u.text)) && (/\b(change|tukar|swap|ganti|switch|replace|instead)\b/.test(nt1) || /换/.test(u.text))) {
+    const meals = (mealOf.modifiers ?? []).flatMap((g) => g.options).filter((o) => /^(meal|set|combo)\b/i.test(o.name));
+    if (meals.length && !meals.some((o) => ` ${normalize(o.name)} `.includes(` ${normalize(mentioned[0].name)} `)))
+      return reply("dish_info", t("assistantReply.mealDrinkNot", { drink: name(mentioned[0]), dish: name(mealOf), list: list(meals.map((o) => `${optionLabel(o)} (+${money(o.price)})`)) }), [mealOf]);
+  }
   // ("2 of them, one with mushroom sauce, both with egg, how much?" with an order read: its bill, not the add-on's price)
   if (asksOption && optHost && orderable(optHost) && !editsLine && !(byBasket && (howMuch || totalWord || withCharges)) && !u.budget && !(!onHost && mentioned.length >= 2 && mentioned.every((i) => !optionsSaid(u.text, i, true).add.length) && !mentioned.slice(1).some((i) => optionsAsked(name(i), live).length))) {
     const said = optionsSaid(u.text, optHost, true).add;
@@ -1610,7 +1623,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const vegan_ = [...state.diet, ...u.diet].includes("vegan") && !/\b(not|bukan) vegan\b/.test(nt1);
     const notVeganOf = vegan_ ? said.filter((o) => optionAllergens(o, optHost).some((a) => a === "egg" || a === "milk") || /\b(egg|telur|chicken|beef|pork|fish|prawn|meat|cheese|butter|ghee)\b/i.test(o.name)) : [];
     if (notVeganOf.length && !riskOf.length) return reply("dish_info", t("assistantReply.addOnNotVegan", { option: list(notVeganOf.map(optionLabel)), dish: name(optHost) }), [optHost]);
-    if (riskOf.length) return { ...reply("dish_info", `${riskOf.map((x) => t("assistantReply.addOnHas", { option: optionLabel(x.o), what: "", list: list(x.has.map(allergen)) })).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(riskOf.flatMap((x) => x.has))].map(allergen)) })}`, [optHost]), safetyNote: allyNote(locale) };
+    if (riskOf.length) return { ...reply("dish_info", `${riskOf.map((x) => t("assistantReply.addOnHasOn", { option: optionLabel(x.o), dish: name(optHost), list: list(x.has.map(allergen)) })).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(riskOf.flatMap((x) => x.has))].map(allergen)) })}`, [optHost]), safetyNote: allyNote(locale) };
     if (priced.length) {
       const total = optHost.price + priced.reduce((n, o) => n + o.price, 0);
       // (its own price too: "RM17.90 (RM16.90, Iced Milo +RM1.00)")
@@ -2113,7 +2126,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // (never a dish that breaks what they said they avoid; "加巧克力酱" is an add-on, not "add")
     const adding = /\b(add|also|plus|tambah)\b/.test(normalize(u.text)) || ORDERING_ZH.test(u.text) && /加/.test(u.text);
     // (not when they chose one of them: "ok brinjal then, plus 3 fish balls")
-    if (!readBill && adding && !state.order.length && state.shown.length && state.shown.length <= 2 && !state.shown.some((i) => mentioned.includes(i))) {
+    // (nor when they pointed at one: "ok the cheaper one, add egg")
+    if (!readBill && adding && !state.order.length && state.shown.length && state.shown.length <= 2 && !state.shown.some((i) => mentioned.includes(i)) && !pointed.some((p) => state.shown.some((i) => i.id === p.item.id))) {
       const came: OrderLine[] = [];
       for (const item of [...state.shown].reverse()) if (!bill.some((o) => o.item.id === item.id) && allowed(item, { ...c, maxSpice: null, minSpice: null, budget: null })) {
         const o = { item, count: 1 };
@@ -2391,7 +2405,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // an order spelled out item by item ("one ramen and one drink for RM35", "one meat two veg"): a
   // dish for each, within what they have to spend, and the total
   // ("RM20 for a laksa and a drink" is an order with the money said, not a pairing)
-  if (basket && !(intent === "dish_allergen" && focus.length && u.asksContents) && !["compare", "order_help", "out_of_scope"].includes(intent) && !/\b(compare|vs|versus|difference|beza|bandingkan)\b/.test(normalize(u.text)) && (intent !== "pairing" || (u.amount ?? u.budget) !== null)) {
+  if (basket && !(intent === "dish_allergen" && focus.length && u.asksContents) && !["order_help", "out_of_scope"].includes(intent) && (intent !== "compare" || ((u.amount ?? u.budget) !== null && mentioned.length < 2)) && !/\b(compare|vs|versus|difference|beza|bandingkan)\b/.test(normalize(u.text)) && (intent !== "pairing" || (u.amount ?? u.budget) !== null)) {
     const spend = u.amount ?? u.budget;
     // "toast, eggs and two kopi": an allergen named as an item is asked for, unless they said they avoid it
     const items = new Set(basket.flatMap((b) => mentionedAllergens(b.term)));

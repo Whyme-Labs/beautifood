@@ -17,7 +17,7 @@ export interface Slot {
 
 const NUMBER: Record<string, number> = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, ten: 10, twelve: 12, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5, enam: 6, lapan: 8, sepuluh: 10, sebiji: 1, secawan: 1 };
 const NUMBER_WORD: Record<string, string> = { six: "6", eight: "8", ten: "10", twelve: "12", enam: "6", lapan: "8", sepuluh: "10" };
-const SEP = /^(and|dan|n|plus|with|also|then)$/;
+const SEP = /^(and|dan|n|plus|with|dengan|dgn|also|then)$/;
 const STOP = /^(and|the|with|dan|for|from|our|house|style|set|special|vegetarian|vegan|veggie|halal|spicy|mild|classic|signature)$/;
 
 const VEG_CATEGORY = /\b(veg|vegetables?|sayur|sayuran|greens)\b/i;
@@ -58,6 +58,8 @@ export function basketOf(question: string, items: Dish[], spend = false, party: 
     const n = normalize(d.name);
     if (/ and /.test(n) && text.includes(` ${n} `)) text = text.replace(` ${n} `, ` ${n.replace(/ and /g, "_")} `);
   }
+  // "burger dengan air": "air" alone is a drink, not the start of an Air Mata Kucing
+  text = text.replace(/ air (?=(\S*))/g, (m, next: string) => (items.some((d) => normalize(d.name).startsWith(`air ${next}`)) ? m : " minuman "));
   const nameWords = new Map<string, Dish[]>();
   for (const d of items) for (const w of normalize(d.name).split(" ")) if (w.length >= 3 && !STOP.test(w)) nameWords.set(singular(w), [...(nameWords.get(singular(w)) ?? []), d]);
   const catWords = new Map<string, Set<string>>();

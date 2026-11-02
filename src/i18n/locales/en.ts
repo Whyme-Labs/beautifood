@@ -567,6 +567,8 @@ const en = {
     lardUnsure: "The menu doesn't say {dish} is cooked in lard, but please check with our staff.",
     oil: { vegetable: "vegetable oil", palm: "palm oil", peanut: "peanut oil", sesame: "sesame oil", canola: "canola oil", olive: "olive oil", butter: "butter", ghee: "ghee" },
     maxChoices: "{dish} takes up to {max} {group}, and that's {count}: which {max} would you like?",
+    addOnHasOn: "The {option} add-on for {dish} has {list}.",
+    mealDrinkNot: "{drink} isn't an option as the meal drink for {dish}. Its meals: {list}.",
     addOnHas: "The {option} add-on{what} has {list}.",
     gloss: { natto: "fermented soybeans", edamame: "young soybeans", miso: "fermented soybean paste", tempeh: "fermented soybeans", tofu: "soybean curd", ghee: "clarified butter", paneer: "fresh cheese", tahini: "sesame paste" },
     samePrice: "{option} is the same price, not cheaper: {dish} stays {price}.",

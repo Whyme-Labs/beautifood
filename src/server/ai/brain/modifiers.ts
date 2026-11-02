@@ -12,7 +12,7 @@ const ALSO: Record<string, string[]> = {
   panas: ["hot", "warm"], hot: ["panas", "warm"], suam: ["warm"],
   besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger", "lrg", "lg"],
   small: ["kecil", "kecik"], kecil: ["small"], medium: ["sederhana", "mid"], sederhana: ["medium"], regular: ["biasa"],
-  telur: ["egg", "eggs"], egg: ["telur", "eggs"], fried: ["goreng"], vegetables: ["sayur", "veg", "veggie", "veggies", "greens"], bawang: ["onion"], onion: ["bawang"],
+  telur: ["egg", "eggs"], egg: ["telur", "eggs"], fried: ["goreng", "mata"], vegetables: ["sayur", "veg", "veggie", "veggies", "greens"], bawang: ["onion"], onion: ["bawang"],
   mata: ["fried egg", "sunny side"], rebus: ["boiled egg", "hard boiled"],
   oat: ["oat", "oatmilk"], almond: ["badam", "almond"], shot: ["shot", "double"],
   kuah: ["kuah", "sauce", "peanut sauce"], laksa: ["laksa", "curry"], chilli: ["chilli", "chili", "sambal", "cili"],
@@ -257,6 +257,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     // ("level 5 spicy" isn't the Spicy mayo: a describing word, all that's its own)
     else if (own.length === 1 && ks.length > 1 && /^(spicy|pedas|hot|sweet|sour|plain|original|classic|regular|fresh|crispy)$/.test(own[0]) && !ks.some((k) => k !== own[0] && said(k, words, joined, zhLeft))) continue;
     // (by shared words only, with the rest of its name said beside them: "tambah cheese, sos cili" isn't the Cheese sauce)
+    // ("big" of a "Besar (long loaf)": its name before the brackets, in other words)
+    else if (/\(/.test(o.name) && (() => { const out_ = keyWords({ ...o, name: o.name.replace(/\([^)]*\)/g, " ") }); return out_.length === 1 && (count.get(out_[0]) ?? 0) < 2 && said(out_[0], words, joined, zhLeft); })()) add.push(o);
     else if (own.length ? saysOption(own, words, joined, zhLeft) : ks.every((k) => said(k, words, joined, zhLeft)) && (/[\u3400-\u9fff]/.test(raw) || together(named.length > ks.length ? named.filter((w) => w.length > 1) : ks, t, raw))) add.push(o);
   }
   // an option said by its whole name wins over one whose words it has ("chocolate sauce" isn't also

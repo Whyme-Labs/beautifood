@@ -260,6 +260,8 @@ const MALAY_FOOD: Record<string, string[]> = {
   hiris: ["sliced", "slice"], kuning: ["yellow"],
 };
 
+const ONE_WORD: Record<string, string> = { "kentang goreng": "fries", "air mineral": "water", "air kosong": "water" };
+
 /** Where a dish is named among the question's words (`from` up to, not including, `to`). */
 export interface Spot {
   dish: Dish;
@@ -332,9 +334,10 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   const clauseOf = (i: number) => Math.max(0, ...qBreaks.filter((b) => b <= i));
   // a name the menu gives a dish at the start of its description ("ABC: shaved ice, red beans…" of the Ais Kacang)
   // (a name, not a note: not "for 2:", "per piece:", "extra dip:", "the special bowl:")
+  // (or the one English word for a Malay name of two: "fries" of the Kentang Goreng)
   const aka = (d: Dish) => {
     const a = (d.description ?? "").match(/^\s*([A-Za-z][\w ]{1,20}?):\s/)?.[1];
-    return a && !/\d/.test(a) && !/^(for|per|one|two|three|four|five|six|extra|the|a|an|with|serves|each|note|tip|add|served|comes)\b/i.test(a) ? a : undefined;
+    return a && !/\d/.test(a) && !/^(for|per|one|two|three|four|five|six|extra|the|a|an|with|serves|each|note|tip|add|served|comes)\b/i.test(a) ? a : ONE_WORD[normalize(d.name)];
   };
   const akas = items.map(aka).filter((x): x is string => !!x).map((x) => normalize(x));
   items.forEach((dish, n) => {
@@ -354,12 +357,14 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a menu's Chinese name by its distinctive end ("八件套" for 安邦八件套, "六件套"), when only it ends so
     for (const tr of Object.values(dish.translations ?? {})) {
       const zh = tr?.name ?? "";
-      for (let cut = 1; zh.length - cut >= 3; cut++) {
+      for (let cut = 1; zh.length - cut >= 2; cut++) {
         const end = zh.slice(cut);
         // (after a count, a counter or a joining word, not inside another dish's name: 鸡肉卷饼 isn't 牛肉卷饼)
         const at = raw.indexOf(end);
         if (at < 0) continue;
-        if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘两一二三四五六七八九十的要来加和与跟及还]/.test(raw[at - 1])) continue;
+        // (two characters only after a drink's counter: "三罐汽水" of the 罐装汽水)
+        if (end.length === 2 && !/[罐瓶杯]/.test(raw[at - 1] ?? "")) continue;
+        if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘罐瓶两一二三四五六七八九十的要来加和与跟及还]/.test(raw[at - 1])) continue;
         if (items.filter((o) => Object.values(o.translations ?? {}).some((x) => x?.name?.endsWith(end))).length === 1) return void found.push({ dish, at: raw.indexOf(end) / 100, covered: [], score: 1.8, zh: end });
         break;
       }
@@ -605,7 +610,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const m = found[k];
     // (its name said whole, side by side, is the dish: "mushroom burger")
     const sorted = [...m.covered].sort((a, b) => a - b);
-    if (m.zh || (m.covered.length >= normalize(m.dish.name).split(" ").length && sorted.every((c, j) => !j || c === sorted[j - 1] + 1))) continue;
+    if (m.zh || (m.covered.length >= normalize(m.dish.name).split(" ").length && sorted.every((c, j) => !j || c === sorted[j - 1] + 1)) || (aka(m.dish) && normalize(aka(m.dish)!) === sorted.map((i) => toks[i]).join(" "))) continue;
     const own = normalize(m.dish.name).split(" ");
     // (or a choice, by name, of another dish named: "both mushroom and black pepper sauce on my chicken chop")
     const hostHas = (w: string) => found.some((o) => o !== m && (o.dish.modifiers ?? []).some((g) => g.options.some((x) => normalize(x.name) === w)));
@@ -762,7 +767,7 @@ interface CourseWords {
 }
 
 const COURSES: CourseWords[] = [
-  { course: "drinks", ask: /\b(drinks?|beverages?|minum|minuman|air (apa|ape|bawah|yang|yg|sejuk|panas|sedap)|juices?|thirsty|haus|dahaga|to drink|sip|coffees?|teas?|iced tea)\b/, askZh: /饮料|喝|饮品|饮/, category: /drink|beverage|minum|饮|juice|coffee|\bteas?\b|kopi|teh|cheese foam|yakult|boba|bubble tea|smoothies|milkshakes?/i, dish: /juice|\btea\b|\bteh\b|kopi|coffee|latte|soda|lemonade|\bmilk\b|\bwater\b|smoothie|kombucha/i },
+  { course: "drinks", ask: /\b(drinks?|beverages?|minum|minuman|air (apa|ape|bawah|yang|yg|sejuk|panas|sedap)|(dengan|dgn|dan|plus|sama|satu) air(?! (mata|mineral|tin|kosong|batu|bandung|sirap|tebu|kelapa|limau|soya|barli|mangga|teh|kopi|milo|jagung|nenas|tembikai|asam|halia))|juices?|thirsty|haus|dahaga|to drink|sip|coffees?|teas?|iced tea)\b/, askZh: /饮料|喝|饮品|饮/, category: /drink|beverage|minum|饮|juice|coffee|\bteas?\b|kopi|teh|cheese foam|yakult|boba|bubble tea|smoothies|milkshakes?/i, dish: /juice|\btea\b|\bteh\b|kopi|coffee|latte|soda|lemonade|\bmilk\b|\bwater\b|smoothie|kombucha/i },
   { course: "desserts", ask: /\b(desserts?|sweets?|sweet things?|manis|pencuci mulut|kuih|after meal|cakes?|pastr(y|ies)|ice cream|pudding)\b/, askZh: /甜品|甜点|甜的|糖水|蛋糕/, category: /dessert|sweet|pencuci|甜|cake|pastr|kuih|ice cream|gelato|patisserie|bakery|tong sui|糖水|shaved ice|bingsu|soft serve|sorbet|sundae/i, dish: /cake|ice cream|pudding|cendol|ais kacang|sago|mochi|\btart\b|brownie|cookie|kuih|panna cotta|tiramisu|gelato/i },
   { course: "noodles", ask: /\b(noodles?|mee|mi|meehoon|bihun|kuey teow|kway teow|ramen|udon|soba|pasta|spaghetti)\b/, askZh: /面|粉/, category: /noodle|mee|ramen|pasta|面/i, dish: /noodle|\bmee\b|\bmi\b|kway teow|kuey teow|laksa|ramen|udon|soba|pasta|spaghetti|penne|aglio|macaroni|\bmac\b|linguine|fettuccine|tagliatelle|rigatoni|lasagn|ravioli|gnocchi|carbonara|bolognese/i },
   { course: "rice", ask: /\b(rice|nasi)\b/, askZh: /饭/, category: /rice|nasi|饭/i, dish: /\brice\b|\bnasi\b|biryani|briyani|don\b|risotto/i },

@@ -1517,7 +1517,7 @@ describe("what an add-on brings", () => {
     expect(ask("the extra sambal got shrimp inside? im allergic to prawns")).toMatch(/Extra Sambal add-on \(sambal belacan\) has Crustaceans/);
   });
   it("warns of an add-on's allergen to a guest who said they avoid it, and only then", () => {
-    expect(ask("i'm allergic to dairy", "Noted.", "double chicken burger with cheese slice can?")).toMatch(/Cheese slice add-on has Milk/);
+    expect(ask("i'm allergic to dairy", "Noted.", "double chicken burger with cheese slice can?")).toMatch(/Cheese slice add-on for Double Chicken Burger has Milk/);
     expect(ask("double chicken burger with cheese slice can?")).toMatch(/^Yes/);
   });
 });
@@ -1555,5 +1555,32 @@ describe("plain dish over its variant, and a count made", () => {
   });
   it("makes a drink's count what was said after 'make the X'", () => {
     expect(ask("1 teh o ais", "Got it.", "make the teh o ais 3. how much?")).toMatch(/3 × Teh O Ais/);
+  });
+});
+
+describe("a burger stall's names, sizes and meal drinks", () => {
+  const sauce = { name: "Sauce", min: 0, max: 2, options: [{ name: "Chilli sauce", price: 0 }, { name: "Black pepper sauce", price: 0 }, { name: "Mayonnaise", price: 0 }] };
+  const meal = { name: "Make it a meal", min: 0, max: 1, options: [{ name: "Meal: fries + sirap ais", price: 350 }] };
+  const dishes = asItems([
+    { id: "b1", name: "Ramly Chicken Burger", category: "Burgers", description: "chicken patty in a bun", price: 500, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "b2", name: "Kentang Goreng", category: "Sides", description: "fries cooked in vegetable oil", price: 400, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "b3", name: "Roti John Daging", category: "Roti John", description: "French loaf with minced beef and egg", price: 700, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "b4", name: "Sirap Ais", category: "Drinks", description: "rose syrup over ice", price: 200, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "b5", name: "Milo Ais", category: "Drinks", description: "iced chocolate malt", price: 350, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "b1" ? { ...i, modifiers: [sauce, meal] } : i.id === "b3" ? { ...i, modifiers: [{ name: "Size", min: 1, max: 1, options: [{ name: "Biasa", price: 0 }, { name: "Besar (long loaf)", price: 300 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("prices the meal against its parts, 'fries' being the Kentang Goreng", () => {
+    expect(ask("burger ayam + fries + sirap ais. take the meal or order separately, which cheaper?")).toMatch(/Kentang Goreng \(RM4\.00\).*RM11\.00/);
+  });
+  it("reads 'big' as the Besar size named before its brackets", () => {
+    expect(ask("roti john daging how much", "RM7.00.", "how much more for the big roti john?")).toMatch(/RM3\.00 more.*RM10\.00/);
+  });
+  it("plans a burger and a drink for 'burger dengan air' within the money", () => {
+    expect(ask("RM10 je ada. burger dengan air cukup?")).toMatch(/Ramly Chicken Burger \(RM5\.00\); (Sirap Ais|Milo Ais)/);
+  });
+  it("says a meal drink it doesn't come with isn't an option, and a third sauce is one too many", () => {
+    expect(ask("ramly chicken burger how much?", "RM5.00; a meal adds fries and a drink.", "meal drink can change to milo ais?")).toMatch(/Milo Ais isn't an option as the meal drink/);
+    expect(ask("chicken burger with chilli, mayo AND black pepper sauce pls")).toMatch(/up to 2 sauce, and that's 3/);
   });
 });
