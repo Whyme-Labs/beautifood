@@ -57,6 +57,8 @@ export interface DialogueState {
   focusOptions?: ModifierOption[];
   /** The focus dish's add-ons the last answer listed, in its order ("the second and the last one"). */
   optionsShown?: ModifierOption[];
+  /** The answers' lists before the last one, latest first ("the first dessert and the second drink"). */
+  shownBefore?: Item[][];
   /** How many they are, said earlier ("we're 3", "我们四个人"). */
   party: number | null;
   /** Who each dish on the order is for, when they said ("me the 8 piece set, Ali the 6 piece"). */
@@ -424,6 +426,7 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
       const inOne = priced.length === 1 && named[0] === priced[0] && named.every((i) => sentenceOf(i) === sentenceOf(priced[0]));
       const offered = (priced.length >= 2 || inOne) && priced.length < named.length ? priced : named;
       if (offered.length) {
+        if (s.shown.length && s.shown !== offered) s.shownBefore = [s.shown, ...(s.shownBefore ?? [])].slice(0, 3);
         s.shown = offered;
         if (offered.length === 1) s.focus = offered[0];
       }
@@ -1085,6 +1088,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // (and the dishes just shown: "2 of the last one, large, with pearls")
   const ownIds = new Set(ownDishes(u, [...state.order.map((o) => o.item), ...(state.focus ? [state.focus] : []), ...state.shown], state.order.map((o) => o.item)).map((d) => d.id));
   const mentioned = u.dishes.filter((d) => ownIds.has(d.id)).map((d) => ctx.items.find((i) => i.id === d.id)!).filter(Boolean);
+  // ("3 of the yam and 2 of the chocolate" of the one dish just shown, its flavours: a line of each)
+  const focusChoices = mentioned.every((i) => i.id === state.focus?.id) && state.shown.length === 1 && state.focus?.id === state.shown[0].id && orderable(state.focus) ? [...normalize(u.text).matchAll(/\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s+(?:of\s+)?(?:the\s+)?([a-z]+(?: [a-z]+)?)\b/g)].map((m) => ({ n: NUMBER_OF[m[1]] ?? Number(m[1]), o: optionsSaid(m[2], state.focus!, true).add.find((o) => (state.focus!.modifiers ?? []).some((g) => (g.max ?? 1) === 1 && (g.min ?? 0) >= 1 && g.options.includes(o))) })) : [];
+  const choiceLines: OrderLine[] = focusChoices.length && focusChoices.every((x) => x.o && x.n) ? focusChoices.map((x) => ({ item: state.focus!, count: x.n, options: [x.o!] })) : [];
   // ("荷包蛋不要了", "no more the cheese": an add-on taken off a line ordered, not an allergy, unless one is said)
   const offNow_ = /\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏|不能吃/.test(normalize(u.text) + u.text) ? [] : state.order.flatMap((o) => optionsSaid(u.text, o.item).off.filter((x) => o.options?.some((y) => y.name === x.name)));
   const offAllergens_ = new Set(offNow_.flatMap((o) => mentionedAllergens(o.name)));
@@ -1195,7 +1201,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         : undefined;
   // "do either of them have peanuts?", "这两个有没有虾？": each of the dishes just shown
   const allBack = !mentioned.length && !nth && !pickedBack && state.shown.length >= 2 && aboutContents && (/\b(either|both|them|those|these|any of)\b/.test(nt0) || /它们|这些|那些|两个|两道|都/.test(u.text)) ? state.shown.slice(0, 4) : [];
-  const focus = mentioned.length ? mentioned : nth ? [nth] : pickedBack ? [pickedBack] : allBack.length ? allBack : u.refersBack && state.focus ? [state.focus] : [];
+  const focus = mentioned.length ? mentioned : nth ? [nth] : pickedBack ? [pickedBack] : allBack.length ? allBack : u.refersBack && state.focus && !choiceLines.length ? [state.focus] : [];
 
   // ("prawn mee got 'no pork' option, so if I choose that it becomes halal right?"): a choice doesn't make it halal
   if ((/\bhalal\b/.test(nt0) || /清真/.test(u.text)) && (/\b(no pork|without pork|tanpa babi|tak nak babi)\b/.test(nt0) || /不要猪|走猪|无猪/.test(u.text)) && halalAt !== "certified" && halalAt !== "muslim_friendly" && halalAt !== "pork_free")
@@ -1503,7 +1509,14 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         : t("assistantReply.chargesAdded", { service: `${ch.serviceChargePct}%`, tax: `${ch.taxPct}%` });
     return reply("order_help", text, []);
   }
-  const pointed = pointedAt(u.text, state.shown);
+  // ("the first dessert and the second drink": each from the latest list of its kind)
+  const KIND: Record<string, (i: Item) => boolean> = { dessert: (i) => isDessert(i as Dish), drink: (i) => isDrink(i as Dish) };
+  const ORD_: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, last: -1 };
+  const byKind = [...nt1.matchAll(/\b(first|1st|second|2nd|third|3rd|last) (dessert|drink)s?\b/g)].map((m) => {
+    const list = [state.shown, ...(state.shownBefore ?? [])].find((l) => l.length && l.filter(KIND[m[2]]).length >= Math.ceil(l.length / 2));
+    return list?.filter(KIND[m[2]]).at(ORD_[m[1]]);
+  });
+  const pointed = byKind.length && byKind.every(Boolean) ? byKind.map((item) => ({ item: item!, count: 1 })) : pointedAt(u.text, state.shown);
   // the bill as data, for the chat's order card: each line with its add-ons by group (to go into a cart as it is)
   const orderCard = (lines: OrderLine[], extra: Partial<OrderCard> = {}, ownerOf?: (o: OrderLine) => string | undefined): OrderCard => ({
     lines: lines.map((o) => {
@@ -1563,7 +1576,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "can I add pudding?", "can make less spicy?", "boleh tambah telur?", "可以加奶盖吗？", "can I get it hot?":
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
-    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
+    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
     !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text) &&
     // ("can I have the second one with an iced lemon tea? total?": an order, its total asked)
     !(pointed.length && (/\b(total|altogether|semua|jumlah)\b/.test(nt1) || /一共|总共/.test(u.text)));
@@ -2052,7 +2065,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const asksMoney = howMuch || totalWord || withCharges || mineAsked || eachAsked || priceClaimed;
   const readBill = byBasket && (asksMoney || !!ctx.basketChanged);
   const lineOwner = new Map<OrderLine, string>();
-  if (!difference && !u.budget && (readBill || changing || again || priceClaimed || totalWord || ((mineAsked || eachAsked) && (state.order.length > 0 || mentioned.length > 1)) || (pointed.length > 0 && (howMuch || ordering || mentioned.length > 0 || pointed.some((p) => p.count > 1 || (optionsSaid(u.text, p.item, true).add.length && !(u.allergens.length && /[?？]|吗/.test(u.text)))) || (!/[?？]/.test(u.text) && !QUESTION.test(nt1)))) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
+  // ("make it two, and one of them with extra ice cream" of the one dish just priced: an order)
+  const makeIt = !mentioned.length && state.shown.length === 1 && /\b(?:make (?:it|that)|jadikan)\s+(\d|one|two|three|four|five|dua|tiga|empat|lima)\b/.test(nt1);
+  if (!difference && !u.budget && (readBill || changing || again || priceClaimed || totalWord || makeIt || choiceLines.length > 0 || ((mineAsked || eachAsked) && (state.order.length > 0 || mentioned.length > 1)) || (pointed.length > 0 && (howMuch || ordering || mentioned.length > 0 || pointed.some((p) => p.count > 1 || (optionsSaid(u.text, p.item, true).add.length && !(u.allergens.length && /[?？]|吗/.test(u.text)))) || (!/[?？]/.test(u.text) && !QUESTION.test(nt1)))) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
     const bill: OrderLine[] = readBill ? [] : state.order.map((o) => ({ ...o }));
     if (readBill)
       for (const l of ctx.basket!.lines) {
@@ -2156,6 +2171,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const next = Math.min(u.text.length, ...mentioned.map((i) => u.text.toLowerCase().indexOf(normalize(i.name).split(" ")[0])).filter((x) => x >= 0));
       applyOptions(bill, makeN ? u.text : u.text.slice(0, next), [state.shown[0]]);
     }
+    if (!readBill && choiceLines.length && !edited) bill.push(...choiceLines);
     // "2 bowls of rice", "satu nasi putih": the plain rice, when the menu has one
     const rice = plainRice(u.text, u.delexicalized.join(" "), live as Dish[]);
     if (!readBill && rice && !edited && !bill.some((o) => o.item.id === rice.dish.id)) bill.push({ item: rice.dish as Item, count: rice.count });

@@ -1659,3 +1659,28 @@ describe("a cendol stall's toppings in Chinese and Malay lists", () => {
     expect(ask("rojak can add extra things?", "Rojak Buah is RM7.50. You can add Extra You Char Kway (+RM1.00) and Extra Tofu Puff (+RM1.00).", "rojak tambah you char kway and tofu pok. berapa")).toMatch(/Extra You Char Kway, Extra Tofu Puff\)?:? ?\(?RM9\.50/);
   });
 });
+
+describe("a dessert stall's flavours, serving choices and lists by kind", () => {
+  const dishes = asItems([
+    { id: "d1", name: "Ice Cream Potong", category: "Desserts", description: "ice-cream stick, pick a flavour", price: 250, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "d2", name: "Cendol Original", category: "Desserts", description: "pandan jelly and coconut milk", price: 550, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: true },
+    { id: "d3", name: "Limau Ais", category: "Drinks", description: "iced lime", price: 300, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "d4", name: "Air Mata Kucing", category: "Drinks", description: "longan drink", price: 350, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "d5", name: "Kelapa Muda", category: "Drinks", description: "young coconut", price: 650, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "d6", name: "Coconut Shake", category: "Drinks", description: "coconut blended with ice cream", price: 800, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "d1" ? { ...i, modifiers: [{ name: "Flavour", min: 1, max: 1, options: [{ name: "Yam", price: 0 }, { name: "Chocolate", price: 0 }] }] } : i.id === "d5" ? { ...i, modifiers: [{ name: "Serve", min: 1, max: 1, options: [{ name: "In the Shell", price: 0 }, { name: "Cup with Ice", price: 0 }] }] } : i.id === "d6" ? { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 2, options: [{ name: "Extra Ice Cream", price: 250 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("bills the flavours counted of the dish just shown", () => {
+    expect(ask("ice cream potong what flavours?", "Ice Cream Potong is RM2.50 each: yam or chocolate.", "3 of the yam and 2 of the chocolate")).toMatch(/Total RM12\.50/);
+  });
+  it("says a serving choice is free", () => {
+    expect(ask("kelapa muda can pour into cup with ice? extra?")).toMatch(/Cup with Ice is free/);
+  });
+  it("makes it two with one changed", () => {
+    expect(ask("coconut shake how much", "Coconut Shake is RM8.00.", "make it two, and one of them with extra ice cream")).toMatch(/Total RM18\.50/);
+  });
+  it("takes the first dessert and the second drink from the lists that gave them", () => {
+    expect(ask("cold dessert?", "Cendol Original RM5.50 and Ice Cream Potong RM2.50.", "and a drink?", "Limau Ais RM3.00, Air Mata Kucing RM3.50 or Kelapa Muda RM6.50.", "ok the first dessert and the second drink. total?")).toMatch(/Cendol Original \(RM5\.50\) \+ Air Mata Kucing \(RM3\.50\) = Total RM9\.00/);
+  });
+});

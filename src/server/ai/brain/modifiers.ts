@@ -19,7 +19,7 @@ const ALSO: Record<string, string[]> = {
   balls: ["ball", "fishball", "fishballs", "bebola"], fish: ["ikan"], minced: ["mince", "minced", "mincemeat"],
   bilis: ["anchovy", "anchovies"], hoon: ["bihun", "meehoon", "vermicelli"], prawns: ["prawn", "shrimp", "shrimps", "udang"],
   puffs: ["taupok", "tau pok", "tofu puff", "tofu pok", "tauhu pok"], pearls: ["pearl", "boba", "tapioca"], pudding: ["puding"],
-  grass: ["cincau"], coconut: ["kelapa", "nata"], bean: ["kacang merah"], foam: ["foam"],
+  grass: ["cincau"], jelly: ["cincau"], coconut: ["kelapa", "nata"], bean: ["kacang merah"], foam: ["foam"],
   cheese: ["keju", "cheesy"], ramyeon: ["ramen", "ramyun", "ramyon", "noodle", "noodles", "maggi"], cake: ["cake"],
   fries: ["fry", "kentang", "kentang goreng", "chips"], soft: ["soda", "air", "minuman", "soft drink", "can drink"], drink: ["air", "minuman", "soda"], coleslaw: ["slaw"],
   mushrooms: ["mushroom", "cendawan"], mushroom: ["mushrooms", "cendawan"], pineapple: ["nanas"], pepperoni: ["pepperoni"], parmesan: ["parmesan"],
