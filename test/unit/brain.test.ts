@@ -1428,3 +1428,22 @@ describe("a cendol stall's names and toppings", () => {
     expect(ask("2 bubur cha cha and 2 cendol original", "Got it.", "I pay for the 2 bubur cha cha, my sister pays the rest. how much each?")).toMatch(/Your part: 2 × Bubur Cha Cha \(RM5\.50\) = Total RM11\.00\. The rest comes to RM11\.00/);
   });
 });
+
+describe("a kopitiam's 'only' and 'the rest'", () => {
+  const iced = { name: "Temperature", min: 1, max: 1, options: [{ name: "Hot", price: 0 }, { name: "Iced", price: 50 }] };
+  const dishes = asItems([
+    { id: "k1", name: "Kopi", category: "Drinks", description: "local coffee", price: 300, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "k2", name: "Kopi O", category: "Drinks", description: "black coffee", price: 280, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "k3", name: "Seafood Soup", category: "Soups", description: "prawns and fish", price: 1990, allergens: ["fish", "crustaceans"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "k4", name: "Lemon Tea", category: "Drinks", description: "iced lemon tea", price: 400, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "k5", name: "Fish Ball Noodles", category: "Noodles", description: "fish balls in broth", price: 990, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "k1" || i.id === "k2" ? { ...i, modifiers: [iced] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads '2 kopi only' and 'both kopi o iced' as two changes, the kopi not the kopi o", () => {
+    expect(ask("3 kopi and 2 kopi o", "Got it.", "make it 2 kopi only, and both kopi o iced")).toMatch(/2 × Kopi \(RM3\.00\) \+ 2 × Kopi O with Iced \(RM3\.30\) = Total RM12\.60/);
+  });
+  it("keeps the second of two lemon teas as mine when my friend had one", () => {
+    expect(ask("seafood soup, fish ball noodles and 2 lemon tea", "Got it.", "my friend had the seafood soup and one lemon tea, I had the rest. how much each?")).toMatch(/Your part: Fish Ball Noodles \(RM9\.90\) \+ Lemon Tea \(RM4\.00\) = Total RM13\.90.*The other part comes to RM23\.90/);
+  });
+});

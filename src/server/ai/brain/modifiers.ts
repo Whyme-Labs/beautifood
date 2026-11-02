@@ -10,7 +10,7 @@ type WithOptions = { name: string; translations?: Record<string, { name?: string
 const ALSO: Record<string, string[]> = {
   ais: ["ice", "iced", "cold", "peng", "sejuk"], iced: ["ice", "ais", "cold", "peng", "sejuk"], cold: ["ice", "iced", "ais", "peng", "sejuk"],
   panas: ["hot", "warm"], hot: ["panas", "warm"], suam: ["warm"],
-  besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger"],
+  besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger", "lrg", "lg"],
   small: ["kecil", "kecik"], kecil: ["small"], medium: ["sederhana", "mid"], sederhana: ["medium"], regular: ["biasa"],
   telur: ["egg", "eggs"], egg: ["telur", "eggs"], fried: ["goreng"], vegetables: ["sayur", "veg", "veggie", "veggies", "greens"], bawang: ["onion"], onion: ["bawang"],
   mata: ["fried egg", "sunny side"], rebus: ["boiled egg", "hard boiled"],

@@ -246,7 +246,9 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     if (/\b(allerg\w*|alergi|alah|intoleran\w*|cannot eat|can t eat|cant eat|tak boleh makan)\b/.test(c) || /过敏|不能吃|不吃/.test(clause)) continue;
     // (or by two of its own words, when the message names no dish of it outright: "one of the nasi
     // lemak", or one with "one": "the ayam one")
-    const inClause = order.filter((o) => (named.some((n) => n.id === o.item.id) ? nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} `)) : nameWords(o.item).filter((w) => ` ${c} `.includes(` ${w} `)).length >= 2 || nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} one `)) ||
+    // (not "kopi" in "both kopi o iced": a longer name on the order that holds it, taken out first)
+    const cOf = (i: Item) => [...new Set([...order.map((x) => x.item), ...named])].filter((x) => x.id !== i.id && ` ${normalize(x.name)} `.includes(` ${normalize(i.name)} `)).reduce((t_, x) => t_.replace(new RegExp(`\\b${normalize(x.name)}\\b`, "g"), " "), c);
+    const inClause = order.filter((o) => (named.some((n) => n.id === o.item.id) ? nameWords(o.item).some((w) => ` ${cOf(o.item)} `.includes(` ${w} `)) : nameWords(o.item).filter((w) => ` ${c} `.includes(` ${w} `)).length >= 2 || nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} one `)) ||
       // ("and the noodle i want large": one of its own words, pointed at)
       nameWords(o.item).some((w) => w.length > 3 && new RegExp(`\\b(the|my|that) ${w.replace(/s$/, "")}s?\\b`).test(c) && order.filter((x) => allWords(x.item).some((y) => y.replace(/s$/, "") === w.replace(/s$/, ""))).length === 1)));
     const zhIn = order.filter((o) => Object.values(o.item.translations ?? {}).some((x) => x?.name && clause.includes(x.name)));
@@ -429,11 +431,13 @@ const COUNT_SAID = /\b(\d+|one|two|three|four|five|six|satu|dua|tiga|empat|lima)
  * instead", "change the laksa to curry mee"), and says whether the message was one. `named` is the
  * dishes the message names, in the order it names them.
  */
+/** "only 1 barley", "2 kopi only" in the "N only" form ONLY_N reads: "1 only", "2 only". */
+const onlyForm = (text: string) => normalize(text).replace(/\bonly (\d{1,2}|one|two|three|four|five)\b/, "$1 only").replace(/\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga)\s+(?:[a-z]+\s+){1,3}?(only|je|jer|sahaja|saja)\b/, "$1 $2");
 export function editOrder(order: OrderLine[], text: string, named: Item[]): boolean {
   // "make the kopi ais 2 only, then add 1 milo ais", "cancel the kai lan, and barley make it 2 only":
   // each clause its own change, with the dishes it names (what a clause adds is the caller's to add)
   const parts = text.split(/[;；。]|\.(?!\d)\s|,|，|\b(?:then|lepas tu|pastu|and then)\b|然后/i).map((c) => c.trim()).filter(Boolean);
-  const editing = (c: string) => REMOVE.test(normalize(c)) || REMOVE.test(c) || ONLY_N.test(normalize(c)) || ONLY_N.test(c) || SWAP.test(normalize(c)) || SWAP.test(c);
+  const editing = (c: string) => REMOVE.test(normalize(c)) || REMOVE.test(c) || ONLY_N.test(onlyForm(c)) || ONLY_N.test(c) || SWAP.test(normalize(c)) || SWAP.test(c);
   if (parts.length >= 2 && order.length && parts.filter(editing).length >= 1 && named.length >= 2) {
     // (by its own words, not the ones it shares with another dish named: "kopi" of the Kopi Ais beside a Milo Ais)
     const ownWords = (i: Item) => {
@@ -441,7 +445,11 @@ export function editOrder(order: OrderLine[], text: string, named: Item[]): bool
       const own = ws.filter((w) => !named.some((o) => o.id !== i.id && normalize(o.name).split(" ").includes(w)));
       return own.length ? own : ws;
     };
-    const inClause = (i: Item, c: string) => ownWords(i).some((w) => ` ${normalize(c)} `.includes(` ${w} `) || ` ${normalize(c)} `.includes(` ${w}s `)) || Object.values(i.translations ?? {}).some((x) => !!x?.name && x.name.length > 1 && c.includes(x.name));
+    // (a dish whose name is inside another's named, "kopi" of "kopi o", by what's left once that one's name is taken out)
+    const without = (i: Item, c: string) => named.filter((o) => o.id !== i.id && ` ${normalize(o.name)} `.includes(` ${normalize(i.name)} `)).reduce((x, o) => x.replace(new RegExp(`\\b${normalize(o.name)}\\b`, "g"), " "), ` ${normalize(c)} `);
+    // (and one that has another's name inside its own, "kopi o", by its whole name)
+    const holds = (i: Item) => named.some((o) => o.id !== i.id && ` ${normalize(i.name)} `.includes(` ${normalize(o.name)} `));
+    const inClause = (i: Item, c: string) => (holds(i) ? ` ${normalize(c)} `.includes(` ${normalize(i.name)} `) : ownWords(i).some((w) => without(i, c).includes(` ${w} `) || without(i, c).includes(` ${w}s `))) || Object.values(i.translations ?? {}).some((x) => !!x?.name && x.name.length > 1 && c.includes(x.name));
     // (only when each dish named is in one clause: otherwise it's one change said across them)
     // (and only when each change is to a dish ordered: "remove the iced lemon tea, make it braised
     // tauhu" is one swap said across two clauses)
@@ -531,7 +539,8 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
   }
   if (!named.length) return false;
   // "kopi ais 2 only", "barley 2 je": the count it is now
-  const only = normalize(text).match(ONLY_N) ?? text.match(ONLY_N);
+  // ("only 1 barley": the same, the number after)
+  const only = onlyForm(text).match(ONLY_N) ?? text.match(ONLY_N);
   if (only && named.length === 1 && ordered(named[0]) && !removing) {
     const w = only[1] ?? only[3];
     order.find((o) => o.item.id === named[0].id)!.count = ({ one: 1, two: 2, three: 3, four: 4, five: 5, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5, 一: 1, 两: 2, 二: 2, 三: 3, 四: 4, 五: 5 } as Record<string, number>)[w] ?? Number(w);
@@ -648,7 +657,9 @@ export function pointedAt(text: string, shown: Item[]): { item: Item; count: num
   // "the first two", "the last two", "前面两个", "最后两个", "those two", "both", "这两个"
   const firstTwo = /\b(the )?(first|top) (two|2|dua)\b|\b(dua|2) (yang )?(pertama|first)\b/.test(t) || /前面(两|二)|头(两|二)|前两/.test(text);
   const lastTwo = /\b(the )?last (two|2|dua)\b|\b(dua|2) (yang )?(terakhir|last)\b/.test(t) || /最后(两|二)|后面(两|二)|后两/.test(text);
-  const both = /\b(?<!of )(those two|these two|the two)\b|\b(both|both of (them|those)|kedua dua|dua dua tu|yang dua tu)\b/.test(t) || /这两|那两|两个都|两样/.test(text);
+  // (not "both kopi o iced": both of a dish it names, not both of those shown)
+  const bothOf = t.match(/\bboth ([a-z]+)/)?.[1];
+  const both = (/\b(?<!of )(those two|these two|the two)\b|\b(both of (them|those)|kedua dua|dua dua tu|yang dua tu)\b/.test(t) || (/\bboth\b/.test(t) && !(bothOf && can.some((i) => normalize(i.name).split(" ")[0] === bothOf)))) || /这两|那两|两个都|两样/.test(text);
   // ("those two with seafood", "the cheaper egg"): of the ones its words name
   const SEAFOOD = /\b(seafood|shellfish|makanan laut)\b/.test(t) || /海鲜/.test(text);
   const wordOf = t.match(/\b(?:with|got|ada|yang ada)\s+([a-z]+)\b/)?.[1] ?? t.match(/\b(?:cheaper|cheapest|pricier|murah|mahal)\s+([a-z]+)\b/)?.[1];
@@ -1959,7 +1970,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // (a line split off one of them: "one of them thin crust")
     for (const o of existing) if (!bill.includes(o)) bill.splice(bill.indexOf(existing[existing.indexOf(o) - 1]) + 1, 0, o);
     // (each its own clause's: "the first one with telur mata, plus one of the second")
-    const pointedLines = readBill ? [] : bill.filter((o) => pointed.some((p) => p.item.id === o.item.id) && !o.options?.length);
+    // (not "both" of the kopi and kopi o when only the kopi o is named: "both kopi o iced")
+    const namedApart = (i: Item) => { const longer = mentioned.filter((m) => m.id !== i.id && ` ${normalize(m.name)} `.includes(` ${normalize(i.name)} `)); return !longer.length || ` ${longer.reduce((x, m) => x.replace(new RegExp(`\\b${normalize(m.name)}\\b`, "g"), " "), nt1)} `.includes(` ${normalize(i.name)} `); };
+    const pointedLines = readBill ? [] : bill.filter((o) => pointed.some((p) => p.item.id === o.item.id) && !o.options?.length && namedApart(o.item));
     // ("2 of the first one, iced, and one of the last one, hot": each pointer's words, up to the next)
     const pointers = [...u.text.toLowerCase().matchAll(/\b(first|second|third|fourth|fifth|last|1st|2nd|3rd|4th|5th|pertama|kedua|ketiga|terakhir)\b|第[一二三四五]|最后/g)].map((m) => m.index ?? 0);
     if (pointedLines.length >= 2 && pointers.length === pointedLines.length && pointed.every((p, k) => pointedLines[k]?.item.id === p.item.id))
@@ -2035,7 +2048,22 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // ("my friend had the kuey teow, I had the rest": theirs is everything but what's named for others)
     const restMine = /\b(i|saya|aku)( had| ate| got| makan| ambil)? (the rest|the others|everything else|semua yang lain|yang lain|selebihnya|bakinya)\b|\b(the rest|everything else|selebihnya|bakinya|yang lain) (is |are |tu |itu )?(mine|saya|aku)\b/.test(nt1) || /其余|其他的?都?是我|剩下的?都?是?我/.test(u.text);
     if (mineOnly && restMine) {
-      bill.splice(0, bill.length, ...bill.filter((o) => !mentioned.some((i) => i.id === o.item.id)));
+      // (theirs as many as said, "one lemon tea" of two; the rest, mine; and theirs too when each is asked)
+      const counted_ = (i: Item) => u.spots.some((sp_) => sp_.dish.id === i.id && /^(\d+|a|an|one|two|three|satu|dua|tiga)$/.test(u.toks[sp_.from - 1] ?? ""));
+      const said_ = countsOf(u.text, mentioned as Dish[]);
+      const theirs: OrderLine[] = [];
+      const mine_: OrderLine[] = [];
+      for (const o of bill) {
+        const i = mentioned.find((x) => x.id === o.item.id);
+        const take = !i ? 0 : counted_(i) ? Math.min(o.count, said_.get(i as Dish) ?? 1) : o.count;
+        if (take) theirs.push({ ...o, count: take });
+        if (o.count - take > 0) mine_.push({ ...o, count: o.count - take });
+      }
+      if (eachAsked && theirs.length) {
+        const sum = theirs.reduce((n, o) => n + unitPrice(o) * o.count, 0);
+        restNote = `${sp}${t("assistantReply.theirPart", { total: withCharges ? money(till(sum).due) : money(sum) })}`;
+      }
+      bill.splice(0, bill.length, ...mine_);
     } else if (mineOnly) {
       // (as many of each as they said they had: "the avocado toast and one matcha")
       const said = countsOf(u.text, mentioned);
