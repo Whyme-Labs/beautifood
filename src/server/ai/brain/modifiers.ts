@@ -62,7 +62,7 @@ const ALSO_ZH: Record<string, RegExp> = {
 // count's unit ("12 pcs", "12 inch": the number is what names it)
 const GENERIC = new Set(["milk", "extra", "add", "on", "the", "a", "with", "and", "of", "sauce", "set", "piece", "pieces", "smoked", "susu", "fresh", "tambah", "lebih", "more", "pcs", "pc", "inch", "inches", "make", "it", "combo", "upgrade", "level", "style", "x"]);
 // "no ice", "without ice", "tak nak ais", "走冰": an option taken off ("less ice" is still ice)
-const OFF = /\b(no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|take out(?: the)?|keluarkan)\s+(?:(?:need|perlu|payah|mau|nak)\s+(?:the\s+)?)?(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
+const OFF = /\b(no need(?: the)?|tak payah(?: the)?|no|without|tak nak|tak mau|xnak|x nak|tanpa|hold the|minus|remove the|take off the|takeout the|tak payah|instead of(?: the)?|not the|bukan|take out(?: the)?|keluarkan)\s+(?:(?:need|perlu|payah|mau|nak)\s+(?:the\s+)?)?(\w+)(?=\s+(?:to|for|kepada|jadi)\b|)/g;
 const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰|(?:去掉|拿掉|取消|不要)(?:加的|那个)?([\u4e00-\u9fff]{1,4})|([\u4e00-\u9fff]{2,4}?)(?:不要了|不要啦|取消了?|去掉)/g;
 // an option that is itself taken off or less of something ("Less ice", "No sugar", "Tanpa Kacang",
 // "Kurang Manis", "Kosong"): said as the guest says it, it's chosen (free), never "ice taken off"

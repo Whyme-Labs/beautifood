@@ -305,7 +305,7 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
       nameWords(o.item).some((w) => w.length > 3 && new RegExp(`\\b(the|my|that) ${w.replace(/s$/, "")}s?\\b`).test(c) && order.filter((x) => allWords(x.item).some((y) => y.replace(/s$/, "") === w.replace(/s$/, ""))).length === 1)));
     const zhIn = order.filter((o) => Object.values(o.item.translations ?? {}).some((x) => x?.name && clause.includes(x.name)));
     // ("add another teh tarik, both iced": every line of what's named)
-    const both = /\b(both|all|each|semua|kedua|dua dua|masing masing)\b/.test(c) || /都|各/.test(clause);
+    const both = /\b(both|all|each|semua|kedua|dua dua|masing masing|those two|these two|the two)\b/.test(c) || /都|各|这两|那两/.test(clause);
     // ("upsize all the drinks", "all the pizzas thin crust"): every line of that kind
     const allOf = /\ball (the )?(drinks?|beverages?|pizzas?|noodles?|minuman|air)\b|\bsemua (air|minuman)\b/.test(c) || /饮料都|全部饮料/.test(clause);
     const kindLines = allOf ? order.filter((o) => (/drink|minuman|air|beverage|饮料/.test(c + clause) ? isDrink(o.item) : !isDrink(o.item))) : [];
@@ -1657,7 +1657,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const evenly = /\b(split|splitting|share the bill|bahagi)\b/.test(nt1) || /平分|分摊/.test(u.text);
   const shares = ways ?? ((perPerson || evenly) && party && party >= 2 ? party : null);
   // "including tax", "after service charge", "nett": the bill as the till will total it
-  const withCharges = /\b(tax|taxes|sst|gst|service charge|service|(?<!extra |additional |any )charges|nett|after tax|incl|including tax|including service|plus tax|with tax|all in|final (amount|bill|total|price)|pay at the (counter|cashier)|servis|cukai|caj perkhidmatan|semua sekali|grand total|with everything)\b/.test(nt1) || /税|服务费|最后要付|一共要付|埋单|买单|结账/.test(u.text);
+  const withCharges = /\b(bayar tunai|pay cash|paying cash|pay in cash|in cash|berapa tepat|exact amount|tax|taxes|sst|gst|service charge|service|(?<!extra |additional |any )charges|nett|after tax|incl|including tax|including service|plus tax|with tax|all in|final (amount|bill|total|price)|pay at the (counter|cashier)|servis|cukai|caj perkhidmatan|semua sekali|grand total|with everything)\b/.test(nt1) || /税|服务费|最后要付|一共要付|埋单|买单|结账/.test(u.text);
   // ("what's the bill?" with an order open is its total; "bill please" asks the staff for it)
   const billSoFar = state.order.length > 0 && (/\b(whats|what s|what is|how much is|hows|how s) (the|my|our) (bill|damage)\b|\bbill (so far|now|come to)\b|\bwhat did (i|we) order\b|\b(my|our) order so far\b|\bapa (saya|kami) (order|pesan)\b/.test(nt1) || /我(们)?点了什么|点了哪些/.test(u.text));
   const totalWord = !!shares || billSoFar || /\b(final (amount|bill|total)|how much (do|should|will) (i|we) pay|pay at the (counter|cashier))\b/.test(nt1) || /\b(total|altogether|all together|in total|sum|ttl|berapa semua|berapa total|jumlah)\b/.test(mentioned.reduce((t, i) => t.replace(normalize(i.name), " "), nt1)) || /一共|总共|加起来|合计|算钱|埋单|买单|结账|算一下/.test(u.text);
@@ -2377,7 +2377,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // ("one more of that nasi lemak": the line its word names)
       const word_ = nt1.match(/\bof (?:that|those|the) ([a-z]+)/)?.[1];
       const byWord = word_ ? [...state.last].reverse().find((o) => normalize(o.item.name).split(" ").some((w) => w === word_ || w.replace(/s$/, "") === word_.replace(/s$/, ""))) : undefined;
-      const copies = (oneMore ? [{ ...(byWord ?? (state.last.length > 1 && /那个/.test(u.text) ? main : state.last[state.last.length - 1])), count: 1 }] : state.last.map((o) => ({ ...o })));
+      // ("tambah satu lagi yang sama" of 2 curry chicken rice: one more of it, not two)
+      const oneOfSame = sameAgain && state.last.length === 1 && /\b(one more|satu lagi|lagi satu|tambah satu|another one|1 more)\b/.test(nt1);
+      const copies = (oneMore || oneOfSame ? [{ ...(byWord ?? (state.last.length > 1 && /那个/.test(u.text) ? main : state.last[state.last.length - 1])), count: 1 }] : state.last.map((o) => ({ ...o })));
       // ("I also same, but chicken" of a Ramly Beef Burger: the Ramly Chicken Burger, with what it can keep)
       const MEAT = ["beef", "chicken", "lamb", "mutton", "fish", "pork", "prawn", "daging", "ayam", "kambing", "ikan", "udang"];
       for (const c of copies) {

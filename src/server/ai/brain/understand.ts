@@ -258,7 +258,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
   hijau: ["green"], hitam: ["black"], putih: ["white"], merah: ["red"], vege: ["vegetable", "vegetables", "vegetarian"], veggie: ["vegetable", "vegetables", "vegetarian"], veg: ["vegetable", "vegetables", "vegetarian"],
   hiris: ["sliced", "slice"], kuning: ["yellow"], campur: ["mixed", "mix"], kasturi: ["calamansi"], jus: ["juice"], popiya: ["popiah"], popia: ["popiah"], pulut: ["glutinous"], bubur: ["porridge", "congee"], congee: ["porridge"], porridge: ["congee"],
-  kukus: ["steamed"], masin: ["salted", "salty"], dadar: ["omelette", "omelet"], lobak: ["radish"], segera: ["instant"], rebus: ["boiled"], peria: ["bitter", "gourd"],
+  kukus: ["steamed"], kek: ["cake"], masin: ["salted", "salty"], dadar: ["omelette", "omelet"], lobak: ["radish"], segera: ["instant"], rebus: ["boiled"], peria: ["bitter", "gourd"],
 };
 
 const JOINED: Record<string, string[]> = { beehoon: ["bihun", "mihun", "bihoon"], meehoon: ["bihun", "mihun"], kuayteow: ["kueyteow", "kwayteow"], kweyteow: ["kueyteow", "kwayteow"] };
