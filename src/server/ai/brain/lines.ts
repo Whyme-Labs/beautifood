@@ -110,8 +110,25 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
       : optionsSaid(text, host.dish, true).add.length > 0);
     // (a menu line that is exactly another dish's option, said after that dish: "margherita 9-inch, extra
     // cheese and mushrooms", "两个烧烤鸡披萨，一个加菠萝")
-    const optionLine = whole && spots.some((y) => y !== spot && y.from >= 0 && y.to <= x.from && (y.dish.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name) === normalize(x.dish.name))));
+    // (nor one of a group already full from what's said before it: "with fries and mashed, plus coleslaw" of two sides)
+    const full = (d: Dish, o: { name: string; price: number }) => {
+      const g = (d.modifiers ?? []).find((x) => x.options.some((y) => y.name === o.name));
+      if (!g || (g.max ?? 1) < 2) return false;
+      const before = new Set(optionsSaid(phrase(toks.slice(0, x.from)), d, true).add.filter((y) => g.options.some((z) => z.name === y.name)).map((y) => y.name));
+      // (and the dishes named before it that are its choices: "mashed" of the Mashed Potato)
+      for (const y of spots) if (y !== spot && y.from >= 0 && y.from < x.from) for (const z of g.options) if (normalize(z.name) === normalize(y.dish.name)) before.add(z.name);
+      before.delete(o.name);
+      return before.size >= (g.max ?? 1);
+    };
+    const optionLine = whole && spots.some((y) => y !== spot && y.from >= 0 && y.to <= x.from && (y.dish.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name) === normalize(x.dish.name) && !full(y.dish, o))));
     if (optionLine) {
+      out.add(spot);
+      continue;
+    }
+    // ("ok one, medium well, fries n salad" of the lamb chop just talked about: its required sides, said with its other choices)
+    const ofOther = !counted && whole && others.some((d) => d.id !== x.dish.id && (d.modifiers ?? []).some((g) => (g.min ?? 0) >= 1 && g.options.some((o) => normalize(o.name) === normalize(x.dish.name))) &&
+      optionsSaid(phrase(toks), d, true).add.filter((o) => normalize(o.name) !== normalize(x.dish.name)).length >= 1) && !spots.some((y) => y !== spot && y.from >= 0 && !others.some((d) => d.id === y.dish.id) && !(y.dish.modifiers ?? []).length);
+    if (ofOther) {
       out.add(spot);
       continue;
     }
@@ -137,7 +154,7 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     // (only of words said side by side: "extra wantan and a fried egg" is the Extra wantan, its "fried" the egg's)
     const sideBySide = x.covered.length >= 2 && [...x.covered].sort((a, b) => a - b).every((c, k, all) => !k || c === all[k - 1] + 1);
     const allOf = (d: Dish, o: { name: string; price: number }) => !sideBySide || words.filter((w) => w.length > 2 && !DESCRIBES.test(w)).every((w) => normalize(o.name).split(" ").some((y) => y === w || y === w.replace(/s$/, "") || `${y}s` === w) || optionsSaid(w, alone_(d, o), true, true).add.length > 0 || optionsSaid(`add ${w}`, alone_(d, o), true, true).add.length > 0);
-    if (hosts.some((d) => { const r = optionsSaid(said, d, true); return [...r.add, ...r.off].some((o) => optionsSaid(own, alone_(d, o), true, true).add.length && allOf(d, o)); })) out.add(spot);
+    if (hosts.some((d) => { const r = optionsSaid(said, d, true); return [...r.add, ...r.off].some((o) => optionsSaid(own, alone_(d, o), true, true).add.length && allOf(d, o) && !full(d, o)); })) out.add(spot);
   }
   return out;
 }

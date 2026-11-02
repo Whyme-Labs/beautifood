@@ -1331,3 +1331,31 @@ describe("a laksa shop's sizes and swaps", () => {
     expect(ask("asam laksa can change to bihun?")).toMatch(/Penang Asam Laksa can't be changed to Bihun; that's a choice on Curry Laksa/);
   });
 });
+
+describe("a western stall's sides and sauces", () => {
+  const sides = { name: "Sides", min: 2, max: 2, options: [{ name: "Fries", price: 0 }, { name: "Coleslaw", price: 0 }, { name: "Mashed Potato", price: 0 }] };
+  const sauce = { name: "Sauce", min: 1, max: 1, options: [{ name: "Black Pepper", price: 0 }, { name: "Mushroom", price: 0 }] };
+  const extra = { name: "Extra sauce", min: 0, max: 3, options: [{ name: "Extra Black Pepper Sauce", price: 150 }] };
+  const addons = { name: "Add-ons", min: 0, max: 3, options: [{ name: "Fried Egg", price: 150 }] };
+  const side = { name: "Side", min: 1, max: 1, options: [{ name: "Fries", price: 0 }, { name: "Cheesy Fries", price: 350 }] };
+  const dishes = asItems([
+    { id: "w1", name: "Chicken Chop", category: "Mains", description: "grilled chicken thigh", price: 1590, allergens: [], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "w2", name: "Lamb Chop", category: "Mains", description: "two grilled lamb chops", price: 2690, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "w3", name: "Beef Burger", category: "Mains", description: "beef patty in a bun", price: 1890, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "w4", name: "Fries", category: "Sides", description: "shoestring fries", price: 500, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "w5", name: "Coleslaw", category: "Sides", description: "cabbage and carrot in mayonnaise", price: 350, allergens: ["egg"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "w6", name: "Mashed Potato", category: "Sides", description: "buttery mash", price: 490, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "w7", name: "Cheesy Fries", category: "Sides", description: "fries with cheese sauce", price: 890, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "w1" || i.id === "w2" ? { ...i, modifiers: [sauce, extra, sides, addons] } : i.id === "w3" ? { ...i, modifiers: [side] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads a dish's two sides as its choices, and a third named after them as a dish", () => {
+    expect(ask("chicken chop with fries and mashed, plus coleslaw also. how much")).toMatch(/Chicken Chop \(RM15\.90\) \+ Coleslaw \(RM3\.50\) = Total RM19\.40/);
+  });
+  it("takes the dish just talked about with what's said of it, the longer add-on named in full", () => {
+    expect(ask("lamb chop how many pieces?", "The Lamb Chop (RM26.90) is two grilled lamb chops with fries and coleslaw.", "ok one, fries n mashed, extra black pepper sauce, add fried egg. total?")).toMatch(/Lamb Chop with Extra Black Pepper Sauce, Fried Egg \(RM29\.90\)/);
+  });
+  it("changes a line's choice for another of its group", () => {
+    expect(ask("1 beef burger with cheesy fries", "Beef Burger with Cheesy Fries RM22.40.", "change cheesy fries to normal fries. total?")).toMatch(/^Beef Burger \(RM18\.90\) = Total RM18\.90/);
+  });
+});

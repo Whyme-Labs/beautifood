@@ -250,7 +250,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
   const whole = (o: ModifierOption) => normalize(o.name.replace(/\([^)]*\)/g, " ")).trim();
   const fullySaid = add.filter((o) => whole(o).includes(" ") && ` ${t} `.includes(` ${whole(o)} `));
   const sauceZh = /酱/.test(raw);
-  const kept = add.filter((o) => !fullySaid.some((x) => x !== o && keyWords(o).every((k) => whole(x).split(" ").includes(k))) && !(sauceZh && !/sauce|酱/i.test(o.name) && add.some((x) => x !== o && /sauce/i.test(x.name) && keyWords(o).every((k) => keyWords(x).includes(k)))));
+  // (the longer of two said in full: "extra black pepper sauce" is the Extra Black Pepper Sauce, not the Black Pepper)
+  const kept = add.filter((o) => !fullySaid.some((x) => x !== o && whole(x).length > whole(o).length && keyWords(o).every((k) => whole(x).split(" ").includes(k))) && !(sauceZh && !/sauce|酱/i.test(o.name) && add.some((x) => x !== o && /sauce/i.test(x.name) && keyWords(o).every((k) => keyWords(x).includes(k)))));
   // (and in other words: "telur goreng" is the Fried egg, not also the wantan's Fried)
   const longer = (o: ModifierOption) => add.some((x) => x !== o && keyWords(x).length > keyWords(o).length && keyWords(o).every((k) => keyWords(x).includes(k)));
   // one option of a group that takes one: the one whose words were said most fully

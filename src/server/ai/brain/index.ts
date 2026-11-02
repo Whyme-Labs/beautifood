@@ -376,7 +376,11 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
         const m = n.length > 1 ? new RegExp(`${esc(n)}([^.;。；()（）]{0,12}?)[(（,:：]?\\s*RM\\s?(\\d+(?:\\.\\d{2})?)`, "i").exec(h.content) : null;
         return !!m && !(/\bfrom\b/i.test(m[1]) && Math.round(Number(m[2]) * 100) !== i.price);
       }));
-      const offered = priced.length >= 2 && priced.length < named.length ? priced : named;
+      // (one priced among others only named: "The Lamb Chop (RM26.90) … with fries and coleslaw" offered the Lamb Chop)
+      const sentenceOf = (i: Item) => h.content.split(/(?<=[.!?。！？])\s+/).find((x) => x.toLowerCase().includes(i.name.toLowerCase())) ?? "";
+      // (and it named first: the others are what it comes with)
+      const inOne = priced.length === 1 && named[0] === priced[0] && named.every((i) => sentenceOf(i) === sentenceOf(priced[0]));
+      const offered = (priced.length >= 2 || inOne) && priced.length < named.length ? priced : named;
       if (offered.length) {
         s.shown = offered;
         if (offered.length === 1) s.focus = offered[0];
@@ -454,6 +458,27 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
   // how many of a dish the text says ("2 mee rebus instead", "same 20 sticks"), else `n`
   const sameN = normalize(text).match(/\bsame (\d{1,3})\b/)?.[1];
   const countFor = (i: Item, n: number) => (sameN ? Number(sameN) : COUNT_SAID.test(normalize(text)) || COUNT_SAID.test(text) ? (countsOf(text, [i as Dish]).get(i as Dish) ?? n) : n);
+  // "change cheesy fries to normal fries", "change the burger side to coleslaw": a line's choice for another
+  // of the same group (not the Cheesy Fries or the Fries on the menu as dishes)
+  let swappedOption = false;
+  for (const m of t.matchAll(/\b(?:change|swap|switch|tukar|ganti|replace)\s+(?:the |my )?((?:\w+ ){0,4}?\w+)\s+(?:to|for|with|jadi|kepada|dengan)\s+(?:a |an |the |normal |regular |plain |biasa )?((?:\w+ ){0,3}\w+)/g)) {
+    for (const o of [...order].reverse()) {
+      const all_ = (o.item.modifiers ?? []).flatMap((g) => g.options.map((x) => ({ g, x })));
+      const to = optionsSaid(m[2], o.item, true).add.map((x) => all_.find((y) => y.x.name === x.name)!).filter(Boolean);
+      if (to.length !== 1 || (to[0].g.max ?? 1) > 1) continue;
+      const g = to[0].g;
+      const from = optionsSaid(m[1], o.item, true).add.filter((x) => g.options.some((y) => y.name === x.name) && x.name !== to[0].x.name);
+      const had = (o.options ?? []).filter((x) => g.options.some((y) => y.name === x.name));
+      // (what it had of that group, or what they named of it: either way the new one takes its place)
+      if (!from.length && !had.length) continue;
+      if (from.length && !normalize(m[1]).split(" ").some((w) => normalize(from[0].name).split(" ").includes(w))) continue;
+      o.options = [...(o.options ?? []).filter((x) => !g.options.some((y) => y.name === x.name)), ...(to[0].x.price > 0 ? [to[0].x] : [])];
+      if (!o.options.length) o.options = undefined;
+      swappedOption = true;
+      break;
+    }
+  }
+  if (swappedOption) return true;
   // ("make it two, and add one hot teh o": the count of what's ordered, in its own clause, whatever comes after)
   const makeIt = text.split(/[,;，；]|\band\b|\bdan\b/i)[0];
   // ("改成两份": the same in Chinese)
@@ -1903,7 +1928,16 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // (never a dish that breaks what they said they avoid; "加巧克力酱" is an add-on, not "add")
     const adding = /\b(add|also|plus|tambah)\b/.test(normalize(u.text)) || ORDERING_ZH.test(u.text) && /加/.test(u.text);
     // (not when they chose one of them: "ok brinjal then, plus 3 fish balls")
-    if (!readBill && adding && !state.order.length && state.shown.length && state.shown.length <= 2 && !state.shown.some((i) => mentioned.includes(i))) for (const item of [...state.shown].reverse()) if (!bill.some((o) => o.item.id === item.id) && allowed(item, { ...c, maxSpice: null, minSpice: null, budget: null })) bill.unshift({ item, count: 1 });
+    if (!readBill && adding && !state.order.length && state.shown.length && state.shown.length <= 2 && !state.shown.some((i) => mentioned.includes(i))) {
+      const came: OrderLine[] = [];
+      for (const item of [...state.shown].reverse()) if (!bill.some((o) => o.item.id === item.id) && allowed(item, { ...c, maxSpice: null, minSpice: null, budget: null })) {
+        const o = { item, count: 1 };
+        bill.unshift(o);
+        came.push(o);
+      }
+      // ("ok one, extra black pepper sauce, add fried egg": its add-ons, as said; of the one dish only)
+      if (came.length === 1) applyOptions(came, u.text, [came[0].item]);
+    }
     // "total for both?" with nothing ordered: the dishes just talked about
     // (not when this message ordered something of its own: "then one large milk tea with pudding, total?")
     // (not one the bill has as a line's add-on: the Teh O Ais of its "Meal: fries + teh o ais")
