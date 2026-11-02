@@ -148,7 +148,9 @@ export function reanchor<T extends { dishes: Dish[]; toks: string[]; spots: Spot
     }
     const opts = (d: Dish) => optionsSaid(said, d, true).add.length;
     if (!opts(s.dish)) {
-      const better = alike.filter((d) => opts(d) > 0 && (sliceSaid ? /slice/i.test(d.name) : !/slice/i.test(d.name)));
+      // (not to a set unasked for: "the char siu rice and kopi" isn't the Char Siu Rice Set with its kopi)
+      const setSaid = /\b(set|sets|combo|meal)\b/.test(u.toks.join(" ")) || /套餐/.test(u.text);
+      const better = alike.filter((d) => opts(d) > 0 && (sliceSaid ? /slice/i.test(d.name) : !/slice/i.test(d.name)) && (setSaid || !/\b(set|combo|meal)\b/i.test(d.name)));
       if (better.length === 1 || (better.length > 1 && better.every((d) => d.price === better[0].price))) return { ...s, dish: better[0] as Dish };
     }
     return s;
@@ -244,7 +246,9 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     if (/\b(allerg\w*|alergi|alah|intoleran\w*|cannot eat|can t eat|cant eat|tak boleh makan)\b/.test(c) || /过敏|不能吃|不吃/.test(clause)) continue;
     // (or by two of its own words, when the message names no dish of it outright: "one of the nasi
     // lemak", or one with "one": "the ayam one")
-    const inClause = order.filter((o) => (named.some((n) => n.id === o.item.id) ? nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} `)) : nameWords(o.item).filter((w) => ` ${c} `.includes(` ${w} `)).length >= 2 || nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} one `))));
+    const inClause = order.filter((o) => (named.some((n) => n.id === o.item.id) ? nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} `)) : nameWords(o.item).filter((w) => ` ${c} `.includes(` ${w} `)).length >= 2 || nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} one `)) ||
+      // ("and the noodle i want large": one of its own words, pointed at)
+      nameWords(o.item).some((w) => w.length > 3 && new RegExp(`\\b(the|my|that) ${w.replace(/s$/, "")}s?\\b`).test(c) && order.filter((x) => allWords(x.item).some((y) => y.replace(/s$/, "") === w.replace(/s$/, ""))).length === 1)));
     const zhIn = order.filter((o) => Object.values(o.item.translations ?? {}).some((x) => x?.name && clause.includes(x.name)));
     // ("add another teh tarik, both iced": every line of what's named)
     const both = /\b(both|all|each|semua|kedua|dua dua|masing masing)\b/.test(c) || /都|各/.test(clause);
@@ -275,8 +279,11 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
       const cue = clause.search(/换成|改成/);
       const zhAt = (i: Item) => Math.max(...Object.values(i.translations ?? {}).map((x) => (x?.name ? clause.indexOf(x.name) : -1)));
       if (cue >= 0 && targets.length >= 2 && zhAt(o.item) >= 0) said = zhAt(o.item) < cue ? clause.slice(0, cue) : clause.slice(cue);
-      const { add, off } = optionsSaid(said, o.item);
-      const chosen = optionsSaid(said, o.item, true).add;
+      // (a clause that takes something off adds nothing: "cancel the fried wantan" isn't a Fried egg)
+      const removing_ = REMOVE.test(c) || REMOVE.test(clause);
+      const { add: add_, off } = optionsSaid(said, o.item);
+      const add = removing_ ? [] : add_;
+      const chosen = removing_ ? [] : optionsSaid(said, o.item, true).add;
       if (!add.length && !off.length && !chosen.length) continue;
       // (a choice of a group that takes one replaces the one before it: "change the original to snow cheese")
       const groupOf = (x: ModifierOption) => o.item.modifiers?.find((g) => g.options.some((y) => y.name === x.name));
@@ -591,7 +598,14 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
     const whole = !(line && n !== undefined && n < line.count);
     if (!whole) line!.count -= n!;
     else drop(out);
-    const fresh = named.filter((i) => i !== out);
+    let fresh = named.filter((i) => i !== out);
+    // ("swap the char siu noodles for roast pork noodles and add 2 barley": the replacement only; what's added after
+    // with "add" is the caller's to add, with its count)
+    if (fresh.length >= 2 && /\b(add|tambah|plus)\b/.test(t)) {
+      const at_ = (i: Item) => t.indexOf(normalize(i.name).split(" ")[0]);
+      const addAt = t.search(/\b(add|tambah|plus)\b/);
+      fresh = fresh.filter((i) => at_(i) >= 0 && at_(i) < addAt);
+    }
     for (const i of fresh) add(i, whole && fresh.length === 1 ? countFor(i, line?.count ?? 1) : n ?? 1);
     return true;
   }
@@ -1783,6 +1797,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (set) {
       const parts = others.length >= 2 ? asLines(u.text, [set]) : asLines(set.description ?? "", [set]);
       if (parts.length >= 2) return verdict(name(set), set.price, parts, [set, ...parts.map((o) => o.item)]);
+    }
+    // ("1 wantan mee dry, 1 hot kopi" … "better take the set or order separately?": the order so far, against the set its dishes make)
+    if (!set && !mentioned.length && state.order.length >= 2) {
+      const ofOrder = live.filter((i) => SETLIKE.test(i.name)).map((i) => ({ i, n: state.order.filter((o) => ` ${normalize(i.description ?? "")} `.includes(` ${normalize(o.item.name)} `) || normalize(i.name).split(" ").filter((w) => !SETLIKE.test(w)).every((w) => normalize(o.item.name).split(" ").includes(w))).length })).filter((x) => x.n >= 2).sort((a, b) => b.n - a.n)[0]?.i;
+      if (ofOrder) return verdict(name(ofOrder), ofOrder.price, state.order.map((o) => ({ ...o })), [ofOrder, ...state.order.map((o) => o.item)]);
     }
     // a dish's meal add-on ("Meal: fries + sirap ais"): the one whose parts they said
     const host = others.find((i) => i.modifiers?.some((g) => g.options.some((o) => MEAL.test(o.name))));

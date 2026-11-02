@@ -1387,3 +1387,22 @@ describe("an ayam penyet stall's choices", () => {
     expect(ask("got kerupuk to add?")).toMatch(/Kerupuk isn't available as an add-on/);
   });
 });
+
+describe("a wantan mee stall's edits", () => {
+  const dishes = asItems([
+    { id: "m1", name: "Wantan Mee Dry", category: "Noodles", description: "egg noodles with char siu and wantan", price: 850, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "m2", name: "Char Siu Noodles", category: "Noodles", description: "egg noodles with char siu", price: 1050, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "m3", name: "Roast Pork Noodles", category: "Noodles", description: "egg noodles with roast pork", price: 1100, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "m4", name: "Barley Water", category: "Drinks", description: "pearl barley", price: 280, allergens: ["gluten"], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+    { id: "m5", name: "Kopi", category: "Drinks", description: "local coffee", price: 230, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "m6", name: "Wantan Mee Set", category: "Sets", description: "a regular Wantan Mee Dry or Soup with a hot Kopi", price: 1000, allergens: ["gluten", "egg", "milk"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]);
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("swaps one noodle for another and adds what's said after with its count", () => {
+    expect(ask("1 wantan mee dry and 1 char siu noodles pls", "Got it.", "swap the char siu noodles for roast pork noodles and add 2 barley. total?")).toMatch(/Wantan Mee Dry \(RM8\.50\) \+ Roast Pork Noodles \(RM11\.00\) \+ 2 × Barley Water \(RM2\.80\) = Total RM25\.10/);
+  });
+  it("prices the order so far against the set its dishes make", () => {
+    expect(ask("1 wantan mee dry, 1 kopi", "Wantan Mee Dry RM8.50 and a Kopi RM2.30.", "eh better take the set or order separately?")).toMatch(/Wantan Mee Set: RM10\.00\. Separately, Wantan Mee Dry \(RM8\.50\), Kopi \(RM2\.30\) come to RM10\.80, so the set saves you RM0\.80/);
+  });
+});
