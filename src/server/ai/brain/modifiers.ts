@@ -11,6 +11,7 @@ const ALSO: Record<string, string[]> = {
   ais: ["ice", "iced", "cold", "peng", "sejuk"], iced: ["ice", "ais", "cold", "peng", "sejuk"], cold: ["ice", "iced", "ais", "peng", "sejuk"],
   panas: ["hot", "warm"], hot: ["panas", "warm"], suam: ["warm"],
   besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger", "lrg", "lg"],
+  full: ["whole", "seekor", "ekor", "penuh"], half: ["separuh", "setengah"],
   small: ["kecil", "kecik"], kecil: ["small"], medium: ["sederhana", "mid"], sederhana: ["medium"], regular: ["biasa"],
   telur: ["egg", "eggs"], egg: ["telur", "eggs"], fried: ["goreng", "mata"], vegetables: ["sayur", "veg", "veggie", "veggies", "greens"], bawang: ["onion"], onion: ["bawang"],
   mata: ["fried egg", "sunny side"], rebus: ["boiled egg", "hard boiled"],
@@ -37,7 +38,8 @@ const ALSO: Record<string, string[]> = {
 // ...and in Chinese, as a guest writes it
 const ALSO_ZH: Record<string, RegExp> = {
   ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻|冷的|冷饮/, sui: /水饺|水餃/, kow: /水饺|水餃/, pok: /豆卜|豆泡|豆腐泡/, uduk: /椰香饭|椰浆饭|椰饭/, fried: /荷包蛋|煎蛋/, petai: /臭豆/, char: /叉烧/, mushroom: /香菇|蘑菇|冬菇/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)/, suam: /温/,
-  besar: /大杯|大份|加大|大的|大碗|大包|大号/, large: /大杯|大份|加大|大的|大碗|大包|大号/,
+  besar: /大杯|大份|加大|大的|大碗|大包|大号|大碟|大盘/, large: /大杯|大份|加大|大的|大碗|大包|大号|大碟|大盘/,
+  full: /整只|全只|一整只|整份|大份/, half: /半只|半份/,
   regular: /中碗|中份|(?<!其)中的|中杯|普通|正常份/, small: /小碗|小的|小份|小杯|小碟|小号|小包/, kecil: /小碗|小的|小份|小杯|小碟|小号|小包/,
   medium: /中碗|(?<!其)中的|中份|中杯|中碟|中号/, sederhana: /中碗|(?<!其)中的|中份|中杯|中碟|中号/,
   telur: /加蛋|蛋|卵/, egg: /加蛋|鸡蛋|蛋|卵/, mata: /荷包蛋|煎蛋|太阳蛋/, rebus: /水煮蛋|白煮蛋|煮蛋/, bawang: /洋葱/, onion: /洋葱/,
