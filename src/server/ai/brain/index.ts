@@ -542,9 +542,22 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
   // a change that names no dish of the order plainly: the ordered one its words name ("remove one
   // pasta" with two pastas on the menu), else, said with "it"/"that" and a number, the last one
   // ordered ("actually make it two")
+  // ("cancel the small one" of a small and a large KL Hokkien Mee): the line its choice word picks
+  const oneWord = t.match(/\bthe (\w+) one\b/)?.[1];
+  if (removing && !named.some(ordered) && oneWord) {
+    const byOpt = order.filter((o) => (o.options ?? []).some((x) => normalize(x.name).split(" ").includes(oneWord)));
+    const plain = /^(small|regular|kecil|normal|biasa|hot|panas)$/.test(oneWord) ? order.filter((o) => !(o.options ?? []).length && order.some((x) => x !== o && x.item.id === o.item.id && (x.options ?? []).length)) : [];
+    const hit = byOpt.length === 1 ? byOpt : plain.length === 1 ? plain : [];
+    if (hit.length) {
+      order.splice(order.indexOf(hit[0]), 1);
+      return true;
+    }
+  }
   if ((removing || swap) && !named.some(ordered)) {
     const said = new Set(t.split(" ").filter((w) => w.length > 3).flatMap((w) => [w, w.replace(/(es|s)$/, "")]));
     const byWords = order.filter((o) => normalize(o.item.name).split(" ").some((w) => said.has(w) || said.has(w.replace(/(es|s)$/, ""))));
+    // (not "take out the extra prawns" of a prawn mee with Extra prawns: its add-on comes off, not the dish)
+    if (removing && byWords.length === 1 && optionsSaid(text, byWords[0].item).off.some((x) => (byWords[0].options ?? []).some((y) => y.name === x.name))) return false;
     if (byWords.length === 1) named = [byWords[0].item, ...named.filter((i) => !ordered(i))];
     // (not "change one of them to medium": one of them changed, not the count)
     else if (!named.length && swap && (COUNT_SAID.test(t) || COUNT_SAID.test(text)) && /\b(it|that|them|those)\b/.test(t) && !/\b(one of (the|them|those)|satu daripada|salah satu)\b/.test(t) && !/其中一/.test(text)) {
@@ -1443,7 +1456,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // (a free choice too, in a swap: "change to coleslaw instead")
   const optionsNow = state.order.some((o) => optionsSaid(u.text, o.item).add.length || optionsSaid(u.text, o.item).off.length || (editing && optionsSaid(u.text, o.item, true).add.length > 0));
   // ("actually no ice cream": an add-on on a line taken off, not a question of what has milk)
-  const takenOff = !/[?？]/.test(u.text) && !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac|vegan|vegetarian)\b/.test(nt1) && !/过敏|素/.test(u.text) && state.order.some((o) => optionsSaid(u.text, o.item).off.some((x) => o.options?.some((y) => y.name === x.name)));
+  // (a question too when it's the money: "take out the extra prawns, keep the egg. how much?")
+  const takenOff = (!/[?？]/.test(u.text) || /\b(how much|berapa|total|ttl)\b/.test(nt1) || /多少钱|几多钱|一共/.test(u.text)) && !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac|vegan|vegetarian)\b/.test(nt1) && !/过敏|素/.test(u.text) && state.order.some((o) => optionsSaid(u.text, o.item).off.some((x) => o.options?.some((y) => y.name === x.name)));
   const changing = (!asksOfDish || takenOff || (editing && mentioned.length > 0)) && !difference && !asksWhat && ((state.order.length > 0 && ((ordering && mentioned.length > 0) || (editing && (mentioned.length > 0 || COUNT_SAID.test(nt1) || optionsNow)) || optionsNow)) || placed);
   // "do you charge service or SST?": what the till adds here, from the branch's settings
   const chargesAsked = !!ctx.charges && !mentioned.length && !state.order.length && /\b(service charge|service tax|sst|gst|tax|taxes|cukai|servis|caj)\b/.test(nt1) && /\b(do you|is there|are there|any|got|ada|charge|charged|include|included|includes|add|berapa|kena)\b/.test(nt1);
@@ -1948,7 +1962,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       for (const c of u.text.split(/[;；。]|\.(?!\d)\s|,|，|\b(?:then|lepas tu|pastu|and then)\b|然后/i)) {
         const nc = normalize(c);
         if (!/\b(add|tambah|plus|another|more|lagi)\b/.test(nc) || REMOVE.test(nc) || SWAP.test(nc)) continue;
-        for (const i of mentioned.filter((x) => state.order.some((o) => o.item.id === x.id) && normalize(x.name).split(" ").every((w) => ` ${nc} `.includes(` ${w} `)))) {
+        // (by its name, or most of it: "1 more chicken rice" of the Claypot Chicken Rice)
+        for (const i of mentioned.filter((x) => state.order.some((o) => o.item.id === x.id) && normalize(x.name).split(" ").filter((w) => ` ${nc} `.includes(` ${w} `)).length >= Math.min(2, normalize(x.name).split(" ").length))) {
           const n = countsOf(c, [i as Dish]).get(i as Dish) ?? 1;
           const options = optionsSaid(c, i).add.filter((o) => o.price > 0);
           addLines(bill, [{ item: i, count: n, options: options.length ? options : undefined }]);

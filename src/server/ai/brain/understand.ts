@@ -948,7 +948,7 @@ function requested(question: string, a: Allergen): boolean {
   const words = normalize(question).split(" ");
   if (words.some((w, i) => /^(dish|dishes|options?|food|foods|items?|stuff|menu|selection)$/.test(w) && i > 0 && mentionedAllergens(words[i - 1]).includes(a))) return true;
   // ("with extra telur", "2 of the cheaper egg", "tambah telur", "a waffle with ice cream"): more of it, or a count of it
-  if (question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && /\b(extra|add|tambah|plus|more|another|lebih|with|dengan)\b|\b(\d|two|three|dua|tiga)\s+(of the\s+)?(\w+\s+)?(eggs?|telur|cheese|keju)\b/i.test(clause))) return true;
+  if (question.split(/[,;.!?，。；、]+/).some((clause) => mentionedAllergens(clause).includes(a) && /\b(extra|add|tambah|plus|more|another|lebih|with|dengan|keep|kekal)\b|\b(\d|two|three|dua|tiga)\s+(of the\s+)?(\w+\s+)?(eggs?|telur|cheese|keju)\b/i.test(clause))) return true;
   // ("sambal kicap for the sotong": the sotong ordered, its dip asked for; an allergy said is still governed above)
   if (question.split(/[,;.!?，。；、]+/).some((clause) => /\bfor (the|my|our) (\w+ )?\w+/i.test(clause) && mentionedAllergens(normalize(clause).match(/\bfor (?:the|my|our) ((?:\w+ )?\w+)/)?.[1] ?? "").includes(a))) return true;
   // ("I want nasi lemak with ayam goreng, sambal sotong and a fried egg": the whole order is wanted)

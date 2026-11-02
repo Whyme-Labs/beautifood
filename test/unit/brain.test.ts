@@ -1478,3 +1478,18 @@ describe("an ikan bakar stall's edits", () => {
     expect(run("4 teh tarik and 3 nasi putih", "Got it.", "2 of the teh tarik make it ais, and nasi just 2. total?").answer).toMatch(/2 × Teh Tarik \(RM3\.00\) \+ 2 × Teh Tarik with Iced \(RM3\.50\) \+ 2 × Nasi Putih \(RM2\.00\)|2 × Teh Tarik \(RM3\.00\).*2 × Nasi Putih/);
   });
 });
+
+describe("taking off and cancelling lines by their choices", () => {
+  const dishes = asItems([
+    { id: "h1", name: "KL Hokkien Mee", category: "Noodles", description: "thick noodles", price: 1200, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "h2", name: "Penang Hokkien Prawn Mee", category: "Noodles", description: "prawn broth noodles", price: 1100, allergens: ["crustaceans"], dietary: [], spiceLevel: 2, isSignature: false },
+  ]).map((i) => ({ ...i, modifiers: [{ name: "Size", min: 1, max: 1, options: [{ name: "Small", price: 0 }, { name: "Large", price: 400 }] }, { name: "Add-ons", min: 0, max: 3, options: [{ name: "Extra prawns", price: 400 }, { name: "Hard-boiled egg", price: 120 }] }] }));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("takes off an add-on named like the dish, keeping the dish and what's kept", () => {
+    expect(ask("penang prawn mee large, extra prawns and add hard boiled egg", "Got it.", "take out the extra prawns la, just keep the egg. how much?")).toMatch(/Penang Hokkien Prawn Mee with Large, Hard-boiled egg \(RM16\.20\) = Total RM16\.20/);
+  });
+  it("cancels the small one of a small and a large", () => {
+    expect(ask("1 kl hokkien mee large and 1 kl hokkien mee small", "Got it.", "cancel the small one. how much now?")).toMatch(/^KL Hokkien Mee with Large \(RM16\.00\) = Total RM16\.00/);
+  });
+});
