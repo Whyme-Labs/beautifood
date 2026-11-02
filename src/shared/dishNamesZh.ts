@@ -1062,6 +1062,8 @@ const INGREDIENTS_ZH: [RegExp, string][] = [
 ];
 /** The main ingredients a description names, in Chinese, in the order it names them. */
 export function ingredientsZh(description: string): string[] {
+  // (not what it says it hasn't: "no milk, no sugar", "without egg")
+  description = description.replace(/\b(no|without|non|free of)\s+[a-z-]+(\s+(or|and)\s+[a-z-]+)?/gi, " ");
   const found = INGREDIENTS_ZH.map(([re, zh]) => ({ zh, at: description.search(re) })).filter((x) => x.at >= 0);
   // ("sweet potato" is 番薯, not also 土豆)
   const out = found.sort((a, b) => a.at - b.at).map((x) => x.zh);

@@ -401,7 +401,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
         const head = zh.slice(0, len);
         const at = raw.indexOf(head);
         // (two characters only as a brand said with its kind: "麒麟啤酒" for 麒麟一番榨)
-        if (len === 2 && (at < 0 || !/^(啤酒|汽水|苏打)/.test(raw.slice(at + 2)))) continue;
+        // (or after its counter and alone: "一杯冷萃，" of the 冷萃咖啡)
+        if (len === 2 && (at < 0 || (!/^(啤酒|汽水|苏打)/.test(raw.slice(at + 2)) && !(/[杯碗份个]/.test(raw[at - 1] ?? "") && (!/[\u4e00-\u9fff]/.test(raw[at + 2] ?? "") || /[多吗呢和跟要几]/.test(raw[at + 2])))))) continue;
         if (at < 0 || (len > 2 && /[\u4e00-\u9fff]/.test(raw[at + len] ?? "") && !/[，、。？！的走加少多和跟还要是吗呢有几怎可能会]/.test(raw[at + len]))) continue;
         if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘片块瓶罐包支两一二三四五六七八九十的要来加和与跟及还，、]/.test(raw[at - 1])) continue;
         const starts = items.map((o) => Object.values(o.translations ?? {}).map((x) => x?.name ?? "").find((z) => z.startsWith(head))).filter((z): z is string => !!z);
@@ -527,6 +528,14 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       return void found.push({ dish, at: Math.min(...own), covered: own, score: w / total + own.length * 0.01 });
     }
     found.push({ dish, at: Math.min(...covered), covered, score: (all ? 1 : coverage) + covered.length * 0.01 });
+  });
+  // ("two lattes" where the lattes are Cafe, Spanish, Matcha …: the plain one, its other word only a cafe's)
+  toks.forEach((t, i) => {
+    if (skip.has(i) || found.some((m) => m.covered.includes(i)) || t.length < 4) return;
+    const family = items.filter((d) => { const ws = normalize(d.name).split(" "); return ws.length >= 2 && same(t, ws[ws.length - 1]); });
+    if (family.length < 2) return;
+    const plain = family.filter((d) => normalize(d.name).split(" ").slice(0, -1).every((w) => /^(cafe|caffe|classic|original|regular|house|plain|traditional|biasa)$/.test(w)));
+    if (plain.length === 1) found.push({ dish: plain[0], at: i, covered: [i], score: 0.6 });
   });
   // a match across a comma keeps the words of its own clause, when another dish names the other clause's
   // ("2 burger daging, 1 special ayam": the "special" is the ayam's, not the Burger Special Daging's)

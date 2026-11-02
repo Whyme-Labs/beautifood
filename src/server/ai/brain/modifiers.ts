@@ -100,8 +100,11 @@ const keyWords = (o: ModifierOption) => {
 const has = (w: string, words: Set<string>, joined: string) => (w.includes(" ") ? joined.includes(` ${w} `) : words.has(w));
 // said as itself (or in Chinese), or only in the guest's other words for it ("ikan" for fish)
 // (not an everyday word one letter from it: "my friend" isn't Fried egg, "dried" isn't fried)
-const EVERYDAY = new Set(["cheese", "cheesy", "friend", "friends", "dried", "tried", "fired", "bread", "breads", "fries", "fried", "plain", "place", "large", "lunch", "sauce", "spice", "share", "shared", "table", "drink", "drinks"]);
-const typo = (w: string, words: Set<string>) => w.length >= 5 && !/\d/.test(w) && [...words].some((x) => x.length >= 4 && x[0] === w[0] && x !== w && !EVERYDAY.has(x) && (editDistance(x, w, 1) <= 1 || (w.startsWith(x) && w.length - x.length === 1) || (x.length >= 5 && w.length - x.length === 2 && w.startsWith(x.slice(0, 3)) && subseq(x, w))));
+const EVERYDAY = new Set(["cheese", "cheesy", "friend", "friends", "bill", "bills", "dried", "tried", "fired", "bread", "breads", "fries", "fried", "plain", "place", "large", "lunch", "sauce", "spice", "share", "shared", "table", "drink", "drinks"]);
+const typo = (w: string, words: Set<string>) =>
+  (w.length >= 5 && !/\d/.test(w) && [...words].some((x) => x.length >= 4 && x[0] === w[0] && x !== w && !EVERYDAY.has(x) && (editDistance(x, w, 1) <= 1 || (w.startsWith(x) && w.length - x.length === 1) || (x.length >= 5 && w.length - x.length === 2 && w.startsWith(x.slice(0, 3)) && subseq(x, w))))) ||
+  // ("telur mta" for Telur Mata: a vowel left out of a four-letter word, first and last letters kept)
+  (w.length === 4 && /^[a-z]+$/.test(w) && [...words].some((x) => x.length === 3 && !LEAD.test(x) && [1, 2].some((k) => /[aeiou]/.test(w[k]) && w.slice(0, k) + w.slice(k + 1) === x)));
 // "pudin" for "pudding": the letters typed are all in it, in order, with two left out
 const subseq = (typed: string, w: string) => {
   let k = 0;

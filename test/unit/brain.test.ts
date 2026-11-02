@@ -1705,3 +1705,29 @@ describe("a fish soup stall's Malay names and course words", () => {
     expect(ask("fish soups today how much?")).not.toMatch(/free of fish/);
   });
 });
+
+describe("a cafe's plain latte, add-ons said with a question, and typos", () => {
+  const dishes = asItems([
+    { id: "l1", name: "Cafe Latte", category: "Coffee", description: "double shot with steamed milk", price: 1300, allergens: ["milk"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "l2", name: "Spanish Latte", category: "Coffee", description: "condensed milk, iced", price: 1500, allergens: ["milk"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: true },
+    { id: "l3", name: "Eggs Benedict", category: "Brunch", description: "poached eggs, hollandaise", price: 2800, allergens: ["egg", "gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "l4", name: "Roti Canai", category: "Roti", description: "flatbread, no egg in the dough", price: 180, allergens: ["gluten"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: true },
+    { id: "l5", name: "Roti Telur", category: "Roti", description: "roti canai folded with egg", price: 300, allergens: ["gluten", "egg"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "l6", name: "Teh Tarik", category: "Drinks", description: "pulled milk tea", price: 280, allergens: ["milk"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "l7", name: "Chicken Carbonara", category: "Pasta", description: "spaghetti with cream and smoked chicken", price: 1990, allergens: ["gluten", "milk", "egg"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "l4" ? { ...i, modifiers: [{ name: "Add-on", min: 0, max: 2, options: [{ name: "Egg", price: 100 }] }] } : i.id === "l7" ? { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 3, options: [{ name: "Chicken", price: 400 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads 'two lattes' as the plain Cafe Latte", () => {
+    expect(ask("one eggs benedict, two lattes. total?")).toMatch(/2 × Cafe Latte/);
+  });
+  it("keeps the egg add-on asked about with the dish, when the cheaper one is taken", () => {
+    expect(ask("roti canai with egg add-on or roti telur, which is cheaper?", "Roti Canai with the egg add-on is RM2.80. Roti Telur is RM3.00.", "ok the cheaper one. two of those plus a teh tarik")).toMatch(/Total RM8\.40/);
+  });
+  it("finds the cheapest way to roti with egg, not a roti whose description says no egg", () => {
+    expect(ask("cheapest way to get roti with egg?")).toMatch(/Roti Canai with Egg \(RM2\.80\)/);
+  });
+  it("prices more of an add-on the dish's own name has", () => {
+    expect(ask("Add more chicken to the carbonara, how much?")).toMatch(/RM23\.90/);
+  });
+});

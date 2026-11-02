@@ -4,7 +4,7 @@
 /** Malay SMS spellings and Manglish shorthands, to one spelling each. */
 const LEXICON: Record<string, string> = {
   u: "you", ur: "your", r: "are", pls: "please", plz: "please", pliz: "please", thx: "thanks", tq: "thanks", tqvm: "thanks", ty: "thanks",
-  wat: "what", wht: "what", wats: "whats", hw: "how", abt: "about", bcos: "because", coz: "because", cuz: "because", gd: "good", hv: "have", nt: "not",
+  wat: "what", wht: "what", wats: "whats", hw: "how", mcuh: "much", muhc: "much", mch: "much", mucn: "much", abt: "about", bcos: "because", coz: "because", cuz: "because", gd: "good", hv: "have", nt: "not",
   dun: "dont", dunno: "dont know", dont: "dont", cant: "cant", wont: "wont", w: "with", wif: "with", wid: "with", n: "and", b4: "before", "2day": "today",
   x: "tak", tk: "tak", tak: "tak", tidak: "tak", tdk: "tak", tak2: "tak", xde: "takde", xda: "takde", tade: "takde", takde: "takde", tiada: "takde",
   nk: "nak", nak: "nak", mau: "nak", mahu: "nak", ingin: "nak", sdp: "sedap", sedap: "sedap", mkn: "makan", makan: "makan", mnm: "minum", minum: "minum",

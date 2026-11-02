@@ -103,6 +103,8 @@ function inDescription(d: Dish, n: Need): boolean {
   return (d.description ?? "")
     .split(/[,;()]|\band\b|\bwith\b/)
     .map(nameWords)
+    // (not "no egg in the dough": what it says it hasn't)
+    .filter((clause) => !clause.some((w) => /^(no|not|without|tanpa|non|free)$/.test(w)))
     .some((clause) => clause.length > 0 && (courseOnly(n) ? n.words.some((w) => clause.some((c) => like(w, c))) : hasAll(n.words, clause)));
 }
 /** Whether an add-on is the thing wanted ("Fries", "Soft drink" for "a drink"). */
