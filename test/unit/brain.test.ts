@@ -1731,3 +1731,26 @@ describe("a cafe's plain latte, add-ons said with a question, and typos", () => 
     expect(ask("Add more chicken to the carbonara, how much?")).toMatch(/RM23\.90/);
   });
 });
+
+describe("combo drinks, one size, and picks from what was shown", () => {
+  const drinks = { name: "Drink", min: 1, max: 1, options: [{ name: "Es Teh Manis", price: 0 }, { name: "Es Jeruk", price: 100 }] };
+  const dishes = asItems([
+    { id: "p1", name: "Combo Ayam Penyet", category: "Combos", description: "smashed fried chicken with rice and a drink", price: 1690, allergens: [], dietary: [], spiceLevel: 2, isSignature: true },
+    { id: "p2", name: "Teh Tarik", category: "Drinks", description: "pulled milk tea", price: 380, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "p3", name: "Char Siu Rice", category: "Rice", description: "honey char siu over rice", price: 1000, allergens: ["soy"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "p4", name: "Nasi Goreng Jawa", category: "Rice", description: "Javanese fried rice", price: 1290, allergens: [], dietary: [], spiceLevel: 1, isSignature: false },
+    { id: "p5", name: "Soto Ayam", category: "Soup", description: "chicken soup with rice", price: 1190, allergens: [], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "p6", name: "Es Jeruk", category: "Drinks", description: "iced orange", price: 450, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "p1" ? { ...i, modifiers: [drinks] } : i.id === "p3" ? { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 3, options: [{ name: "Extra rice", price: 100 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("says which drinks a combo comes with when asked for another", () => {
+    expect(ask("1 combo ayam penyet", "One Combo Ayam Penyet, RM16.90, with an Es Teh Manis.", "can change the drink to teh tarik?")).toMatch(/Teh Tarik isn't one of the drinks that come with Combo Ayam Penyet/);
+  });
+  it("says a dish comes in one size, and how to get more", () => {
+    expect(ask("1 char siu rice", "One Char Siu Rice, RM10.00.", "got large size?")).toMatch(/one size only.*Extra rice/);
+  });
+  it("bills the cheaper of two just priced, with a drink", () => {
+    expect(ask("nasi goreng jawa or soto ayam?", "Nasi Goreng Jawa is RM12.90; Soto Ayam, served with rice, is RM11.90.", "the cheaper one pls, with es jeruk")).toMatch(/Total RM16\.40/);
+  });
+});
