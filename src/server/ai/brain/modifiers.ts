@@ -239,8 +239,10 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
       const forms = [need[0], `${need[0]}s`, ...(ALSO[need[0]] ?? []).filter((x) => !x.includes(" "))];
       const at = toks.findIndex((x) => forms.includes(x));
       const near = [toks[at + 1], toks[at - 1]];
-      const food = (x: string | undefined) => !!x && x.length > 2 && !named.includes(x) && !LEAD.test(x) && !GENERIC.has(x) && !SIZE_TEMP.test(x) && !/^(need|perlu|payah|mau|nak|want|on|top|please|pls|and|or|to|in|for|with|inside|dalam|lah|la|ah|ok|boleh|too|also|one|the|how|berapa|not|tak|can|plus|then|extra|more|instead|nak|mau|want|add|put|letak|tambah|large|besar|cup|hot|iced|ais|panas)$/.test(x);
-      if (at >= 0 && near.some(food)) continue;
+      const food = (x: string | undefined) => !!x && x.length > 2 && !named.includes(x) && !LEAD.test(x) && !GENERIC.has(x) && !SIZE_TEMP.test(x) && !/^(need|perlu|payah|mau|nak|want|on|top|please|pls|and|or|to|in|for|with|inside|dalam|lah|la|ah|ok|boleh|too|also|one|the|how|berapa|not|tak|can|plus|then|extra|more|instead|nak|mau|want|add|put|letak|tambah|large|besar|cup|hot|iced|ais|panas|dengan|dan)$/.test(x) && !(/^(sos|sauce)$/.test(x) && named.includes("sauce"));
+      // (beside it, not across a comma: "tambah cheese, sos cili")
+      const apart = (x: string | undefined) => !!x && forms.some((f) => new RegExp(`\\b${f}\\s*[,;.]\\s*${x}\\b|\\b${x}\\s*[,;.]\\s*${f}\\b`).test(raw.toLowerCase()));
+      if (at >= 0 && near.some((x) => food(x) && !apart(x))) continue;
     }
     // ("no taugeh" of a "No taugeh" choice: that choice, made)
     const without = normalize(o.name).match(/^(?:no|without|tanpa|tak nak)\s+(.+)$/)?.[1];
@@ -254,7 +256,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     if (isOff) off.push(o);
     // ("level 5 spicy" isn't the Spicy mayo: a describing word, all that's its own)
     else if (own.length === 1 && ks.length > 1 && /^(spicy|pedas|hot|sweet|sour|plain|original|classic|regular|fresh|crispy)$/.test(own[0]) && !ks.some((k) => k !== own[0] && said(k, words, joined, zhLeft))) continue;
-    else if (own.length ? saysOption(own, words, joined, zhLeft) : ks.every((k) => said(k, words, joined, zhLeft))) add.push(o);
+    // (by shared words only, with the rest of its name said beside them: "tambah cheese, sos cili" isn't the Cheese sauce)
+    else if (own.length ? saysOption(own, words, joined, zhLeft) : ks.every((k) => said(k, words, joined, zhLeft)) && (/[\u3400-\u9fff]/.test(raw) || together(named.length > ks.length ? named.filter((w) => w.length > 1) : ks, t, raw))) add.push(o);
   }
   // an option said by its whole name wins over one whose words it has ("chocolate sauce" isn't also
   // the Chocolate flavour; "巧克力酱" neither)
@@ -272,8 +275,27 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     const rivals = add.filter((x) => x !== o && g.options.includes(x));
     return !rivals.some((x) => keyWords(x).length > keyWords(o).length && keyWords(o).every((k) => keyWords(x).includes(k)));
   });
+  // ("tambah cheese" of a Cheese slice add-on and a Cheese sauce: the add-on, said as one)
+  for (const w of asked) {
+    const of = all.filter((o) => (free || o.price > 0) && keyWords(o)[0] === w);
+    if (of.length < 2 || of.some((o) => out.includes(o) || off.includes(o))) continue;
+    const addOn = of.filter((o) => /add|extra|topping/i.test((dish.modifiers ?? []).find((g) => g.options.includes(o))?.name ?? ""));
+    if (addOn.length === 1 && of.every((o) => o.price === addOn[0].price)) out.push(addOn[0]);
+  }
   return { add: out, off };
 }
+// an option whose words are all ones others share, said together: "sos cili dengan mayo, tambah cheese"
+// isn't also the Cheese sauce
+const together = (ks: string[], t: string, raw: string) => {
+  const near = (toks: string[]) => {
+    const at = ks.map((k) => toks.flatMap((x, i) => (x === k || x === `${k}s` || (ALSO[k] ?? []).includes(x) || (k === "sauce" && x === "sos") ? [i] : [])));
+    return at.every((xs) => xs.length) && at[0].some((i) => at.slice(1).every((xs) => xs.some((j) => Math.abs(j - i) <= ks.length)));
+  };
+  // (said at all in other words than these: as before)
+  if (ks.length < 2 || (!near(t.split(" ")) && ks.some((k) => !t.split(" ").some((x) => x === k || x === `${k}s` || (ALSO[k] ?? []).includes(x) || (k === "sauce" && x === "sos"))))) return true;
+  // (in one clause: "tambah cheese, sos cili" says the cheese and the sauce apart)
+  return raw.split(/[,;.!?]/).some((part) => near(normalize(part).split(" ")));
+};
 
 /** The options a question names on any dish ("Ada susu badam? Berapa tambah?"), with the dishes that have them. */
 export function optionsAsked<T extends WithOptions>(text: string, dishes: T[]): { option: ModifierOption; dishes: T[] }[] {

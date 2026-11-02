@@ -1806,7 +1806,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "ada susu badam? berapa tambah?": an add-on asked about on its own
   // (asked as a price, not "allergic to egg, which roti?" or "what's acar bawang?")
-  if (!mentioned.length && !pointed.length && !state.order.length && (/\b(how much|berapa|price|harga|cost|extra charge|charge for|more for|tambah berapa|got charge|any charge|ada caj|kena caj|charge|kena bayar|bayar lebih|percuma|(?<!(?:gluten|dairy|sugar|nut|egg|msg|pork|lard|meat|alcohol|lactose|caffeine|halal) )free)\b/.test(nt1) || /多少钱|加多少|几钱|加钱|要钱|另外收费|收费|免费/.test(u.text)) && !/\b(allerg\w*|alergi|alah|alahan|intolerant)\b|过敏/.test(u.text.toLowerCase())) {
+  // (not of the dish just talked about, when it has them: "Ok satu. Tambah cheese, sos cili dengan mayo. Berapa?")
+  if (!mentioned.length && !pointed.length && !state.order.length && !(state.focus && optionsSaid(u.text, state.focus, true).add.length && /\b(satu|one|ok|okay|tambah|add|with|dengan|take|ambil|nak|want)\b/.test(nt1)) && (/\b(how much|berapa|price|harga|cost|extra charge|charge for|more for|tambah berapa|got charge|any charge|ada caj|kena caj|charge|kena bayar|bayar lebih|percuma|(?<!(?:gluten|dairy|sugar|nut|egg|msg|pork|lard|meat|alcohol|lactose|caffeine|halal) )free)\b/.test(nt1) || /多少钱|加多少|几钱|加钱|要钱|另外收费|收费|免费/.test(u.text)) && !/\b(allerg\w*|alergi|alah|alahan|intolerant)\b|过敏/.test(u.text.toLowerCase())) {
     // ("how much more for the large tom yam": of the dish its words name, when one with it is)
     const namedHere = live.filter((d) => normalize(d.name).split(" ").filter((w) => w.length > 2 && ` ${nt1} `.includes(` ${w} `)).length >= 2);
     const pricedAll = optionsAsked(u.text, live).filter((x) => x.option.price > 0);
@@ -2097,7 +2098,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // "I'll take that, and a teh", "ok add it": the one dish the last answer suggested
     // ("make it two, one with extra scoop. total" of the dish just priced: two of it)
     const makeN = nt1.match(/\b(?:make (?:it|that)|jadikan)\s+(\d|one|two|three|four|five|dua|tiga|empat|lima)\b/)?.[1];
-    const accepts = (ordering || !!makeN || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)));
+    const accepts = (ordering || !!makeN || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)) || (!mentioned.length && /^(ok|okay|ya|boleh) satu\b/.test(normalize(u.text))));
     if (!readBill && accepts && !edited && state.shown.length === 1 && !bill.some((o) => o.item.id === state.shown[0].id) && !mentioned.includes(state.shown[0])) {
       bill.push({ item: state.shown[0], count: makeN ? (NUMBER_OF[makeN] ?? (Number(makeN) || 1)) : 1 });
       // ("ok that one, large, less oil. and a soy bean milk": its add-ons, said before the next dish)

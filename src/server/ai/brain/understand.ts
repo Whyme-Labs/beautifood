@@ -506,9 +506,28 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     }
     found.push({ dish, at: Math.min(...covered), covered, score: (all ? 1 : coverage) + covered.length * 0.01 });
   });
+  // a match across a comma keeps the words of its own clause, when another dish names the other clause's
+  // ("2 burger daging, 1 special ayam": the "special" is the ayam's, not the Burger Special Daging's)
+  if (qBreaks.length) {
+    const drops = found.map((m) => {
+      if (m.covered.length < 2) return [];
+      const by = new Map<number, number>();
+      for (const i of m.covered) by.set(clauseOf(i), (by.get(clauseOf(i)) ?? 0) + 1);
+      if (by.size < 2) return [];
+      const main = [...by.entries()].sort((a, b) => b[1] - a[1])[0];
+      if ([...by.values()].filter((n) => n === main[1]).length > 1) return [];
+      return m.covered.filter((i) => clauseOf(i) !== main[0] && found.some((o) => o !== m && o.covered.includes(i) && o.covered.filter((c) => clauseOf(c) === clauseOf(i)).length >= 2));
+    });
+    found.forEach((m, k) => {
+      if (!drops[k].length) return;
+      const n = m.covered.length;
+      m.covered = m.covered.filter((i) => !drops[k].includes(i));
+      m.score *= m.covered.length / n;
+    });
+  }
   // a match that covers more of the question wins over one inside it: "durian cendol" is the Musang
   // King Durian Cendol, not the plain Cendol whose one word it also contains
-  const inside = (a: Mention, b: Mention) => a.covered.length > 0 && b.covered.length > a.covered.length && a.covered.every((i) => b.covered.includes(i));
+  const inside =(a: Mention, b: Mention) => a.covered.length > 0 && b.covered.length > a.covered.length && a.covered.every((i) => b.covered.includes(i));
   for (let k = found.length - 1; k >= 0; k--) if (found.some((b) => inside(found[k], b))) found.splice(k, 1);
   // a usual Chinese name that fits three dishes or more is a kind of food (拉面, 卷饼), not one dish;
   // and the menu's own Chinese name wins over a usual one (its 卤肉饭 is the Braised Pork Rice, not
@@ -563,7 +582,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       // (said in its own clause: "2 burger daging, 1 special ayam" says special of the ayam only)
       const clauseToks = toks.filter((_, i) => m.covered.length && clauseOf(i) === clauseOf(m.covered[0]));
       const unsaid_ = (d: Dish) => normalize(d.name).split(" ").some((w) => VARIANT.test(w) && !clauseToks.includes(w));
-      if (unsaid_(m.dish) && same_.some((o) => o !== m && !unsaid_(o.dish))) m.score -= 0.6;
+      if (unsaid_(m.dish) && same_.some((o) => o !== m && !unsaid_(o.dish))) m.score -= 1;
     }
   }
   // "a classic acai with peanut butter topping": the Classic Acai Bowl with its topping, not the Peanut

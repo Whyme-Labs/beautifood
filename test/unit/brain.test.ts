@@ -1543,9 +1543,16 @@ describe("plain dish over its variant, and a count made", () => {
     { id: "r1", name: "Ramly Beef Burger", category: "Burgers", description: "beef patty, egg", price: 600, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: true },
     { id: "r2", name: "Burger Special Daging", category: "Burgers", description: "double beef patty, egg, cheese", price: 900, allergens: ["gluten", "egg", "milk"], dietary: [], spiceLevel: 0, isSignature: false },
     { id: "r3", name: "Teh O Ais", category: "Drinks", description: "iced black tea", price: 250, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
-  ]);
+    { id: "r4", name: "Burger Special Ayam", category: "Burgers", description: "chicken patty, egg, cheese", price: 650, allergens: ["gluten", "egg", "milk"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.category === "Burgers" ? { ...i, modifiers: [{ name: "Sauce", min: 0, max: 2, options: [{ name: "Chilli sauce", price: 0 }, { name: "Mayonnaise", price: 0 }, { name: "Cheese sauce", price: 100 }] }, { name: "Add-ons", min: 0, max: 3, options: [{ name: "Cheese slice", price: 100 }, { name: "Egg", price: 100 }] }] } : i));
+  it("takes 'tambah cheese' as the cheese slice add-on, not the cheese sauce said apart from 'sos'", () => {
+    expect(ask("Burger Special Ayam ada?", "Ada, RM6.50.", "Ok satu. Tambah cheese, sos cili dengan mayo. Berapa?")).toMatch(/Cheese slice: RM7\.50/);
+  });
   const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
   const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads 'burger daging' as the plain one when the special is said of another", () => {
+    expect(ask("2 burger daging, 1 special ayam. berapa semua?")).toMatch(/2 × Ramly Beef Burger/);
+  });
   it("makes a drink's count what was said after 'make the X'", () => {
     expect(ask("1 teh o ais", "Got it.", "make the teh o ais 3. how much?")).toMatch(/3 × Teh O Ais/);
   });
