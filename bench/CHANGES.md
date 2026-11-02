@@ -1415,3 +1415,30 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     milks not dairy, mee hoon not wheat.
   - The claim checker did not change. Dev numbers only; with ~65 commits of rules fitted on dev,
     a fresh held-out set is the only way to know how much carries over.
+
+## v12 held-out set: pre-registration (2026-11-02, before any v12 file exists)
+
+- **What is measured.** The deployed brain at `d2a451b` (rules; the reader off), scored once on v12's
+  `test` split, with the claim checker unchanged. Nothing in the engine (`src/`) changes between this
+  entry and that scoring. v12's failures will not be read case by case.
+- **Why.** Dev is 95.3% after ~65 commits of rules fitted on v8–v11 dev (every bill/add-on dev case
+  passes). The last held-out reads, each scored once by the brain of its day: v8 test 74.1%, v10 67.6%,
+  v11 71.1%.
+- **What the numbers would mean (written before scoring):**
+  - unsafe 0 on the whole set (a hard requirement);
+  - headline ≥ 80% and cases tagged bill or modifier ≥ 75%: most of the dev gain carries over;
+  - headline near the old 70–74%: the dev work was fitted to dev, not general.
+- **How v12 is written.** As v11: 4 new menus by 2 new authors (z1, z2) who never see the engine, its
+  code, any earlier case file or any result, briefed with v11's common brief unchanged except for the
+  set name, paths, the read list (adding `bench/v11/REVIEW-xy.md`) and their menus; then a third,
+  blind reviewer checks every case and gold entry. No coverage was added to the brief.
+- **Menus and branch settings (chosen for distance from v1–v11, and to cover README settings v11
+  didn't use):**
+  - z1 `hk-cha-chaan-teng`: halal none; 10% service, 6% tax not inclusive, cash rounding 5; a
+    Breakfast timed menu; a tea-time drinks deal; one dish sold out.
+  - z1 `teochew-porridge-stall`: halal none; no service, 6% tax inclusive in the prices; a Supper
+    timed menu; a dated promotion (start/end dates); one dish sold out.
+  - z2 `punjabi-dhaba`: halal muslim_friendly; 10% service, 6% tax; a weekday Lunch thali timed menu;
+    a drinks deal; one dish sold out.
+  - z2 `nyonya-kitchen`: halal certified with a certificate past its valid-until date; 5% service,
+    6% tax; a Kuih counter timed menu; a deal; one dish sold out.
