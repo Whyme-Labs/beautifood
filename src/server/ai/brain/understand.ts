@@ -704,7 +704,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   // "Steamed Rice"), when nothing else took it
   const PLAIN_WORD = /^(french|plain|original|classic|regular|steamed|white|fresh|house|normal|biasa|kosong)$/;
   toks.forEach((t, i) => {
-    if (t.length < 3 || GENERIC.has(t) || kept.some((m) => m.covered.includes(i)) || skip.has(i)) return;
+    // (not "the naan", "that rice": the one already said or ordered)
+    if (t.length < 3 || GENERIC.has(t) || kept.some((m) => m.covered.includes(i)) || skip.has(i) || /^(the|that|this|my|our)$/.test(toks[i - 1] ?? "")) return;
     const ends = items.filter((d) => { const w = normalize(d.name).split(" "); return w.length === 2 && same(t, w[1]) && PLAIN_WORD.test(w[0]); });
     const any = items.filter((d) => normalize(d.name).split(" ").some((w) => same(t, w)));
     if (ends.length === 1 && any.length >= 2 && !kept.some((m) => m.dish === ends[0])) kept.push({ dish: ends[0], at: i, covered: [i], score: 0.5 });

@@ -4,7 +4,7 @@ import { EVAL_CASES, MORE_CASES, sampleDishes, score, type EvalCase } from "../.
 import { parseMenuText } from "../../src/shared/menuParser";
 import { WEIGHTS } from "../../src/shared/brain/weights.gen";
 import { normalize } from "../../src/shared/brain/text";
-import { answerGuest } from "../../src/server/ai/brain";
+import { answerGuest, editSteps } from "../../src/server/ai/brain";
 import { correct, isDrink, read, understand, type Dish } from "../../src/server/ai/brain/understand";
 import type { AssistantContext } from "../../src/server/ai/local";
 import { conceptsOf, type PlatformPairs } from "../../src/server/ai/brain/concepts";
@@ -1932,5 +1932,17 @@ describe("group plans within money that includes the charges, and kids' dishes",
   });
   it("plans a kids' dish for each child and dishes for the adults", () => {
     expect(ask("family of 4, 2 adults 2 kids, RM120 everything included. the kids can't take spicy. what to order?")).toMatch(/2 × Kids Curry Plate/);
+  });
+});
+
+describe("several changes to an order in one message", () => {
+  it("splits them into steps, the question with the last", () => {
+    expect(editSteps("make the naan 5 and drop one lime soda. how much?", true)).toEqual(["make the naan 5", "drop one lime soda. how much?"]);
+    expect(editSteps("cancel one of the lassi, and make one of the tandoori a full chicken. how much now", true)).toEqual(["cancel one of the lassi", "make one of the tandoori a full chicken. how much now"]);
+  });
+  it("leaves one order, one swap and a first order whole", () => {
+    expect(editSteps("2 roti and a teh tarik", true)).toBeNull();
+    expect(editSteps("remove the fish balls and add one egg tofu instead", true)).toBeNull();
+    expect(editSteps("make the naan 5 and drop one lime soda", false)).toBeNull();
   });
 });

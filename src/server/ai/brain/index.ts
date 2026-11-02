@@ -311,7 +311,9 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     const lines = kindLines.length ? kindLines : inClause.length || zhIn.length ? [...new Set([...inClause, ...zhIn])] : before.length && !onlyNamed ? before : both ? order.filter((o) => named.some((n) => n.id === o.item.id)) : [];
     // (the line whose choice the words name most fully: "snow cheese" is the chicken's Snow Cheese, not the tteokbokki's Cheese)
     const fitOf = (i: Item) => Math.max(0, ...optionsSaid(clause, i, true).add.map((x) => Math.max(1, normalize(x.name).split(" ").filter((w) => ` ${c} `.includes(` ${w} `)).length)));
-    const fit = (o: OrderLine) => fitOf(o.item) + (optionsSaid(clause, o.item).off.length ? 0.5 : 0);
+    // (taking off: the line that has it, "take out the egg" of the laksa's Boiled egg, not the one that could add one)
+    const offOn = (o: OrderLine) => optionsSaid(clause, o.item).off.some((x) => (o.options ?? []).some((y) => y.name === x.name));
+    const fit = (o: OrderLine) => (REMOVE.test(c) || REMOVE.test(clause) ? (offOn(o) ? 1 : 0) : fitOf(o.item) + (optionsSaid(clause, o.item).off.length ? 0.5 : 0));
     const fallback = !onlyNamed || (fresh && Math.max(0, ...order.map(fit)) > Math.max(0, ...fresh.map(fitOf)) && !fresh.some((i) => nameWords(i).every((w) => ` ${c} `.includes(` ${w} `))));
     const targets = [...(lines.length || !fallback ? lines : [...order].reverse().filter((o) => fit(o) > 0).sort((a, b) => fit(b) - fit(a)).slice(0, 1))];
     // ("make one of the nasi lemak large", "one of the teh tarik iced": one of that line, on a line of its own)
@@ -770,7 +772,11 @@ export function pointedAt(text: string, shown: Item[]): { item: Item; count: num
     // ("those two cheaper ones": the two cheapest)
     const byPrice = [...pool].sort((a, b) => a.price - b.price);
     const two = /\b(cheaper|cheapest|murah)\b/.test(t) || /便宜/.test(text) ? byPrice.slice(0, 2) : lastTwo ? pool.slice(-2) : pool.slice(0, 2);
-    for (const i of two) push(i, 1);
+    // ("those two, 2 each", "both, dua satu", "这两个各两份")
+    const each = t.match(/\b(\d{1,2}|two|three|four|five|dua|tiga|empat|lima) (each|setiap|masing masing|satu)\b|\beach (\d{1,2}|two|three)\b/);
+    const eachZh = text.match(/各([一两二三四五六七八九\d])[个份杯碗碟盘包块粒只]?/);
+    const n_ = each ? (N[each[1] ?? each[3]] ?? Number(each[1] ?? each[3])) : eachZh ? (N[eachZh[1]] ?? Number(eachZh[1])) : 1;
+    for (const i of two) push(i, n_ || 1);
   }
   if (!out.length && can.length >= 2) {
     const byPrice = [...pool].sort((a, b) => a.price - b.price);
@@ -1052,8 +1058,36 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
   const earlier = history.slice(0, history.map((h) => h.content).lastIndexOf(question));
   const state = dialogueState(ctx, earlier);
+  // ("cancel one of the lassi, and make one of the tandoori a full chicken. how much now"): changes to the
+  // order one after another, each as its own turn, the question asked of the last
+  const steps = editSteps(question, state.order.length > 0);
+  if (steps) {
+    const turns = [...earlier];
+    for (const s of steps.slice(0, -1)) {
+      const r = answerGuest(ctx, [...turns, { role: "user", content: s }], locale);
+      turns.push({ role: "user", content: s }, { role: "assistant", content: r.answer });
+    }
+    return answerGuest(ctx, [...turns, { role: "user", content: steps[steps.length - 1] }], locale, taste);
+  }
   const u = understand(ctx.items as Dish[], question);
   return { ...respond(ctx, u, state, locale, taste ?? undefined), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
+}
+
+/** A message of several changes to an open order, as its steps (the question, "total?", with the last); null if it is one. */
+export function editSteps(text: string, open: boolean): string[] | null {
+  // (one swap said in two halves: "remove the fish balls and add one egg tofu instead")
+  if (!open || /\b(instead|rather|ganti|gantikan)\b/i.test(text) || /代替|换成/.test(text)) return null;
+  // the question at the end: "total?", "how much now", "一共多少？"
+  const tail = text.match(/[.?!。？，,]?\s*((?:ok |so )?(?:total|how much|how much now|berapa|berapa semua|jumlah|一共多少|多少钱|几多钱|总共几多)\b[^.?!。？]*[?？]?)\s*$/i);
+  const body = tail ? text.slice(0, tail.index) : text;
+  const parts = body.split(/\s*(?:,\s*and\s+|\s+and\s+(?=(?:cancel|remove|drop|take|change|make|swap|replace|add|only|one more|another|no)\b)|;\s*|，\s*(?=(?:取消|不要|去掉|换|改|加|再))|\s+dan\s+(?=(?:buang|batal|tukar|tambah|ganti)\b))\s*/i).map((x) => x.trim()).filter(Boolean);
+  if (parts.length < 2 || parts.length > 4) return null;
+  const KIND = (x: string) => (REMOVE.test(normalize(x)) || REMOVE.test(x) ? "off" : SWAP.test(normalize(x)) || SWAP.test(x) || /\b(only (one|1|two|2)|make)\b/.test(normalize(x)) ? "change" : /\b(add|one more|another|tambah|lagi)\b/.test(normalize(x)) || /加|再/.test(x) ? "add" : null);
+  const kinds = parts.map(KIND);
+  // (each a change, and not all adds: "2 roti and a teh" is one order)
+  if (kinds.some((k) => !k) || kinds.every((k) => k === "add")) return null;
+  const q = tail?.[1] ?? "";
+  return parts.map((x, k) => (k === parts.length - 1 && q ? `${x}. ${q}` : x));
 }
 
 /**

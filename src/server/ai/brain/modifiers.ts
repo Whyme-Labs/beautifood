@@ -261,7 +261,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
       add.push(o);
       continue;
     }
-    const isOff = need.some((k) => offWords.has(k) || (ALSO[k] ?? []).some((x) => offWords.has(x)) || offZh.some((z) => ALSO_ZH[k]?.test(z)));
+    // ("take out the egg" of the Boiled egg on it: any of its words)
+    const isOff = need.some((k) => offWords.has(k) || (ALSO[k] ?? []).some((x) => offWords.has(x)) || offZh.some((z) => ALSO_ZH[k]?.test(z))) || ks.some((k) => offWords.has(k) || offWords.has(`${k}s`));
     if (isOff) off.push(o);
     // ("level 5 spicy" isn't the Spicy mayo: a describing word, all that's its own)
     else if (own.length === 1 && ks.length > 1 && /^(spicy|pedas|hot|sweet|sour|plain|original|classic|regular|fresh|crispy)$/.test(own[0]) && !ks.some((k) => k !== own[0] && said(k, words, joined, zhLeft))) continue;
@@ -269,6 +270,12 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     // ("big" of a "Besar (long loaf)": its name before the brackets, in other words)
     else if (/\(/.test(o.name) && (() => { const out_ = keyWords({ ...o, name: o.name.replace(/\([^)]*\)/g, " ") }); return out_.length === 1 && (count.get(out_[0]) ?? 0) < 2 && said(out_[0], words, joined, zhLeft); })()) add.push(o);
     else if (own.length ? saysOption(own, words, joined, zhLeft) : ks.every((k) => said(k, words, joined, zhLeft)) && (/[\u3400-\u9fff]/.test(raw) || together(named.length > ks.length ? named.filter((w) => w.length > 1) : ks, t, raw))) add.push(o);
+  }
+  // ("iced milk tea" of a set's Iced HK Milk Tea): said without the style word of its name, the one option of its group so said
+  for (const g of dish.modifiers ?? []) {
+    if (g.options.some((o) => add.includes(o))) continue;
+    const fit = g.options.filter((o) => (free || o.price > 0) && !phraseOf(o) && (() => { const ks = keyWords(o); const left = ks.filter((k) => !/^(hk|house|homemade|signature|local)$/.test(k)); return left.length >= 2 && left.length < ks.length && left.every((k) => said(k, words, joined, zhLeft)) && together(left, t, raw); })());
+    if (fit.length === 1) add.push(fit[0]);
   }
   // an option said by its whole name wins over one whose words it has ("chocolate sauce" isn't also
   // the Chocolate flavour; "巧克力酱" neither)
