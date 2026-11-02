@@ -1330,6 +1330,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "order sotong, sayur apa sesuai?": a course asked for, not a meal for a group
   if (intent === "group" && !u.party && u.categories.length) intent = "recommend";
+  // ("family of 4, 2 adults 2 kids, RM120 … what to order?": a plan for the party, even with a kids' dish named)
+  if (u.party && u.party >= 2 && /\b(what to order|what (should|can|do) (we|i) (order|get|have)|what to get)\b/.test(normalize(u.text)) && !state.order.length) intent = "group";
   if ((intent === "dish_allergen" || intent === "dish_info") && !focus.length) intent = state.focus && u.refersBack ? intent : "recommend";
   if (intent === "refine" && !state.shown.length) intent = "recommend";
   if (u.superlative && state.shown.length && u.refersBack && intent !== "compare" && !pickedBack) intent = "refine";
@@ -1904,7 +1906,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // ("how many dips can i pick with the karaage?": a group of the dish's, by its name)
   // (its name in the plural, asked which or how many: not "what goes well with the chilli pan mee")
-  const namesGroup = mentioned.length === 1 && /\b(what|which|how many)\b/.test(nt0) && !/\b(go|goes|going|pair|pairs|match)\b/.test(nt0) && (mentioned[0].modifiers ?? []).some((g) => normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(level|size|rice|portion)$/.test(w) && new RegExp(`\\b${w.replace(/s$/, "")}(s|es)\\b`).test(nt0)));
+  const namesGroup = mentioned.length === 1 && !u.party && u.amount === null && /\b(what|which|how many)\b/.test(nt0) && !/\b(go|goes|going|pair|pairs|match)\b/.test(nt0) && (mentioned[0].modifiers ?? []).some((g) => normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(level|size|rice|portion)$/.test(w) && new RegExp(`\\b${w.replace(/s$/, "")}(s|es)\\b`).test(nt0)));
   // (not "the glutinous rice topping got gluten?": an add-on's allergen asked)
   const optAllergyAsked = (u.allergens.length > 0 || u.diet.length > 0 || /\b(vegan|vegetarian|halal|dairy|milk)\b/.test(nt0)) && optionsAsked(u.text, live).length > 0 && !mentioned.length;
   const asksChoices = !optAllergyAsked && (namesGroup || !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|flavou?rs?|perisa|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (?!(?:sides?|drinks?|desserts?|dish|dishes) )(\w+ )?(can|could) (i|we) (add|put|get|have|change)( or (add|change|remove|swap))? (on|to|with|in|onto|for)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && (!/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) || /\b(and how much|how much each|each how much|berapa satu|berapa setiap)\b/.test(nt0)) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选|有什么口味|有哪些口味|什么口味|几种口味/.test(u.text)));
@@ -2237,7 +2239,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("char siu noodles and char siu rice, the rice also got discount?": both, at the day's prices)
   const dealsOfTwo = mentioned.length >= 2 && !state.order.length && /\b(discount|discounts|discounted|promo|diskaun)\b/.test(nt1);
   const makeIt = !mentioned.length && state.shown.length === 1 && /\b(?:make (?:it|that)|jadikan)\s+(\d|one|two|three|four|five|dua|tiga|empat|lima)\b/.test(nt1);
-  if (!difference && !u.budget && (readBill || changing || again || priceClaimed || totalWord || makeIt || dealsOfTwo || choiceLines.length > 0 || (howMuch && mentioned.some((i) => !orderable(i)) && /\b(and|plus|dan|with)\b/.test(nt1)) || ((mineAsked || eachAsked) && (state.order.length > 0 || mentioned.length > 1)) || (pointed.length > 0 && (howMuch || ordering || mentioned.length > 0 || pointed.some((p) => p.count > 1 || (optionsSaid(u.text, p.item, true).add.length && !(u.allergens.length && /[?？]|吗/.test(u.text)))) || (!/[?？]/.test(u.text) && !QUESTION.test(nt1)))) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
+  // (not a party asking what to order: "family of 4, 2 adults 2 kids, RM120 … what to order?" is a plan, not a bill of 2 kids plates)
+  const planAsked = !!u.party && /\b(what to order|what (should|can|do) (we|i) (order|get|have)|suggest|recommend|what to get)\b/.test(nt0);
+  if (!difference && !u.budget && !planAsked && (readBill || changing || again || priceClaimed || totalWord || makeIt || dealsOfTwo || choiceLines.length > 0 || (howMuch && mentioned.some((i) => !orderable(i)) && /\b(and|plus|dan|with)\b/.test(nt1)) || ((mineAsked || eachAsked) && (state.order.length > 0 || mentioned.length > 1)) || (pointed.length > 0 && (howMuch || ordering || mentioned.length > 0 || pointed.some((p) => p.count > 1 || (optionsSaid(u.text, p.item, true).add.length && !(u.allergens.length && /[?？]|吗/.test(u.text)))) || (!/[?？]/.test(u.text) && !QUESTION.test(nt1)))) || withCharges && (state.order.length || mentioned.length) || (howMuch && (mentioned.length >= 2 || state.order.length || several)))) {
     const bill: OrderLine[] = readBill ? [] : state.order.map((o) => ({ ...o }));
     if (readBill)
       for (const l of ctx.basket!.lines) {
@@ -2896,7 +2900,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       }
       // "budget RM40" for a group is the total; "under RM15" is each dish
       const totalAsked = u.budget === null || /\b(budget|bajet)\b/.test(normalize(u.text));
-      const total = totalAsked ? u.amount : null;
+      // ("RM50 including service and tax", "RM120 everything included": the food can be what that leaves)
+      const allIn_ = withCharges || /\b(everything included|all included|all in|nett|including (service|tax)|incl\.? (service|tax))\b/.test(nt0) || /含税|包括服务费|全部包括/.test(u.text);
+      const food_ = (x: number) => { let lo = 0; let hi = x; while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); if (till(mid).due <= x) lo = mid; else hi = mid - 1; } return lo; };
+      const total = totalAsked ? (u.amount !== null && allIn_ ? food_(u.amount) : u.amount) : null;
       const perDish = totalAsked ? null : u.budget;
       // "table of 8, starters to share", "which soup base for the four of us": that course; else the meal
       const asked = u.courses.filter((k) => k !== "food");
@@ -2904,6 +2911,27 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // "four of us want to share roast meats": the platters and whole birds first
       const sharing = /\b(share|sharing|kongsi)\b/.test(normalize(u.text)) || /分享|一起吃/.test(u.text);
       const pool = sharing ? [...ranks.filter(sharer), ...ranks.filter((i) => !sharer(i))] : ranks;
+      // ("2 adults 2 kids … the kids can't take spicy"): the kids' dish for each child, not spicy, the rest for the grown-ups
+      const kidsN = (() => { const m = nt0.match(/\b(\d|one|two|three|four)\s+(kids|children|child|anak)\b/); return m ? NUMBER_OF[m[1]] ?? (Number(m[1]) || 1) : 0; })();
+      const kidsDish = kidsN ? live.find((i) => /\b(kids?|children|child)\b/i.test(`${i.name} ${i.category ?? ""}`) && i.spiceLevel === 0 && allowed(i, { ...c, budget: null })) : undefined;
+      if (kidsDish && kidsN < n) {
+        const adults = n - kidsN;
+        const left = total !== null ? total - kidsDish.price * kidsN : null;
+        const grown: Item[] = [];
+        // (not the kids' own section: "kids" names their dish, not the grown-ups'; what they said they can't have, kept for all)
+        const grownUp = (i: Item) => !/\b(kids?|children|child)\b/i.test(`${i.name} ${i.category ?? ""}`);
+        const adultPool = ranked(live.filter((i) => grownUp(i) && !isDrink(i) && !isDessert(i) && allowed(i, { ...c, budget: perDish })));
+        for (const i of adultPool) {
+          if (grown.length >= adults) break;
+          if (i.id === kidsDish.id || grown.includes(i) || isDessert(i) || isDrink(i)) continue;
+          if (left !== null && grown.reduce((x, p) => x + p.price, 0) + i.price > left) continue;
+          grown.push(i);
+        }
+        if (grown.length) {
+          const sum_ = kidsDish.price * kidsN + grown.reduce((x, p) => x + p.price, 0);
+          return reply(intent, t("assistantReply.groupPlan", { count: n, list: list([`${kidsN} × ${line(kidsDish)}`, ...grown.map(line)]), total: money(sum_) }), [kidsDish, ...grown]);
+        }
+      }
       // a dish each, near enough, spread over the courses: mains first, then a side and a sweet
       const want = Math.max(3, Math.min(n + (n >= 4 ? 0 : 1), 8));
       const picks: Item[] = [];

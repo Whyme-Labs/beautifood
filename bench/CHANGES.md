@@ -1395,3 +1395,23 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
     start of this work (v10v-ayam-penyet-cafe-003).
   - Dev numbers only, with ~55 commits of rules fitted on dev; only a fresh held-out set can say how
     much carries over.
+- **Bills and add-ons, fifth wave (owner: "keep going on the remaining 21").** The 21 that needed new
+  capabilities, all fixed: every case tagged bill or modifier on the dev sets now passes (v8 110,
+  v9 456, v10 465, v11 250). All dev 2803 → 3044 of 3194 (87.8% → 95.3%) since the start of this
+  work: fixed 241, broke 0, unsafe 0. By set: v8 441, v9 733, v10 913, v11 452.
+  - New capabilities: prices at another time from the branch's own rules and clock (a deal's
+    hours, "tomorrow", "at 4pm", "下午四点"); a dish served later said, the rest billed; an add-on's
+    allergens from what the menu says it's made of anywhere ("chilli flakes (… dried shrimp …)",
+    a set's "mushroom soup (cream, wheat flour)"), and "no/less X" choices adding none; an alcohol
+    add-on isn't halal to a Muslim guest; a vegan warning across the dishes just shown; the choices
+    of a required group that keep a dish vegan (yellow mee has egg); "less spicy but not without
+    chilli"; no no-lard choice, and a dish made without lard; an allergy said with a choice checks
+    that choice ("coeliac … with mee sua instead"); a free choice asked of no dish ("汤可以分开装吗");
+    a combo's drink list with what each adds; "all of those on one X" past its group's limit;
+    add-on names in Chinese for common words (卤肉, 鱼饼, 红豆, 芋头 …); group plans within money
+    that includes service and tax; a kids' dish for each child in a family plan.
+  - Narrow rules worth knowing about: a small table of Chinese add-on words (OPTION_ZH), 雪条 for
+    Ice Cream Potong, "the cendol itself" as the plain one of a family by its first word, plant
+    milks not dairy, mee hoon not wheat.
+  - The claim checker did not change. Dev numbers only; with ~65 commits of rules fitted on dev,
+    a fresh held-out set is the only way to know how much carries over.

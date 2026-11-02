@@ -1912,3 +1912,25 @@ describe("a combo's drinks, a group's limit, and vegan-safe noodles", () => {
     expect(ask("i'm vegan", "Our Vegetarian Curry Laksa is vegan.", "for the laksa which noodle should i take? yellow mee can?")).toMatch(/take Bihun; Yellow Mee has egg/);
   });
 });
+
+describe("group plans within money that includes the charges, and kids' dishes", () => {
+  const dishes = asItems([
+    { id: "y1", name: "Ayam Penyet", category: "Penyet", description: "smashed fried chicken", price: 1490, allergens: [], dietary: [], spiceLevel: 2, isSignature: true },
+    { id: "y2", name: "Ikan Penyet", category: "Penyet", description: "smashed fried fish", price: 1590, allergens: ["fish"], dietary: [], spiceLevel: 2, isSignature: false },
+    { id: "y3", name: "Tempe Tahu Penyet", category: "Penyet", description: "tempeh and tofu", price: 1090, allergens: ["soy"], dietary: ["vegan"], spiceLevel: 2, isSignature: false },
+    { id: "y4", name: "Kids Curry Plate", category: "Kids", description: "sweet curry, not spicy", price: 1390, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "y5", name: "Chicken Katsu Curry", category: "Curry", description: "katsu with curry", price: 1990, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 1, isSignature: true },
+    { id: "y6", name: "Chicken Karaage Rice", category: "Rice", description: "fried chicken over rice", price: 1690, allergens: ["gluten", "soy"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "y7", name: "Hamburg Steak Rice", category: "Rice", description: "beef patty over rice", price: 1890, allergens: ["gluten", "egg"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]);
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (q: string) => answerGuest(shop, [{ role: "user", content: q }]).answer;
+  it("keeps a group's dishes within the money once service and tax are added", () => {
+    const a = ask("3 of us, RM40 including service and tax. all want penyet, can or not?");
+    const total = Number(a.match(/That's RM(\d+\.\d{2})/)?.[1] ?? 999);
+    expect(total * 1.1 * 1.06).toBeLessThanOrEqual(40.05);
+  });
+  it("plans a kids' dish for each child and dishes for the adults", () => {
+    expect(ask("family of 4, 2 adults 2 kids, RM120 everything included. the kids can't take spicy. what to order?")).toMatch(/2 × Kids Curry Plate/);
+  });
+});
