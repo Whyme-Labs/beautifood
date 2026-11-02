@@ -356,6 +356,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const one = tr?.name?.length === 1 ? raw.match(new RegExp(`[杯壶碗份个]${tr.name}(?![\u4e00-\u9fff])|[杯壶碗份个]${tr.name}(?=[和跟与，、。？！])`)) : null;
       if (one) return void found.push({ dish, at: (one.index ?? 0) / 100, covered: [], score: 2, zh: tr!.name });
     }
+    // (tea by the head, "三位茶", "两杯茶": the plain Chinese tea)
+    if (Object.values(dish.translations ?? {}).some((tr) => /^(中国茶|中式茶|茶|清茶|唐茶)$/.test(tr?.name ?? ""))) {
+      const cup = raw.match(/[位杯壶](茶)(?![\u4e00-\u9fff])|[位杯壶](茶)(?=[和跟与同，、。？！再加])/);
+      if (cup) return void found.push({ dish, at: (cup.index ?? 0) / 100, covered: [], score: 2, zh: "茶" });
+    }
     // (a bowl of porridge, "三碗糜" in Teochew, "两碗粥": the plain one, 白粥)
     if (Object.values(dish.translations ?? {}).some((tr) => /白粥$/.test(tr?.name ?? ""))) {
       const bowl = raw.match(/碗(粥|糜)(?![\u4e00-\u9fff])|碗(粥|糜)(?=[和跟与同，、。？！再加])/);
@@ -711,6 +716,15 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const any = items.filter((d) => normalize(d.name).split(" ").some((w) => same(t, w)));
     if (ends.length === 1 && any.length >= 2 && !kept.some((m) => m.dish === ends[0])) kept.push({ dish: ends[0], at: i, covered: [i], score: 0.5 });
   });
+  // ("2 ham macaroni" in the evening): a set unasked for gives way to the dish of the same words that isn't one
+  const setSaid = toks.some((t) => /^(set|sets|combo|meal|meals|breakfast|sarapan)$/.test(t)) || /套餐|配套|早餐/.test(raw);
+  if (!setSaid)
+    for (const m of kept) {
+      if (!SET_NAME.test(m.dish.name) || !m.covered.length) continue;
+      const said_ = m.covered.map((i) => toks[i]);
+      const alt = items.filter((d) => d !== m.dish && !SET_NAME.test(d.name) && !kept.some((o) => o.dish === d) && said_.every((w) => normalize(d.name).split(" ").some((x) => same(w, x))));
+      if (alt.length === 1) m.dish = alt[0];
+    }
   return kept.sort((a, b) => a.at - b.at);
 }
 
@@ -1105,7 +1119,8 @@ export type Reading = Omit<Understanding, "intent" | "confidence" | "guess">;
 /** Everything but the intent: the slots, and the question as the intent model reads it. */
 export function read(items: Dish[], asked: string): Reading {
   // ("table 4: fish amritsari, …"): a table's number isn't a count
-  const { text: said, injected } = stripInjection(asked.replace(/\b(table|meja|tbl)\s*(?:no\.?\s*|#\s*)?(\d{1,3})\s*[:\-–]/gi, "$1$2:"));
+  // ("bill for 4: butter chicken full, …"): the party, not four of the first dish
+  const { text: said, injected } = stripInjection(asked.replace(/\b(table|meja|tbl)\s*(?:no\.?\s*|#\s*)?(\d{1,3})\s*[:\-–]/gi, "$1$2:").replace(/\b(for|untuk)\s+(\d{1,2})\s*[:\-–]\s*/gi, "$1 $2 people: "));
   // what guests call a menu's drink for short ("柠檬多多" for its 柠檬养乐多)
   // ...and "siu yuk"/"sio bak" for its roast pork, "char siew" for its char siu
   const aliasedInitials: [RegExp, string][] = [];
