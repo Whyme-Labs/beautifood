@@ -477,7 +477,9 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
             }, 0);
       // (as near either side, the side its name puts it: "hamburg curry, vegetable curry" gives the vegetable the curry after it)
       const sideFits = (i: number) => (covered.length && name.indexOf(w) >= 0 && name.indexOf(placed[0]) >= 0 ? ((name.indexOf(w) > name.indexOf(placed[0])) === (i > covered[0]) ? 0 : 1) : 0);
-      const at = spots.sort((a, b) => near(a) - near(b) || sideFits(a) - sideFits(b) || a - b)[0];
+      // (the side its name puts it counts too: "pork chop rice, sweet sour pork rice" gives the sweet and sour its own rice after it)
+      const back = (i: number) => (covered.length && name.indexOf(w) > name.indexOf(placed[0]) && name.indexOf(placed[0]) >= 0 && i < covered[0] && clauseOf(i) !== clauseOf(covered[0]) ? 3 : 0);
+      const at = spots.sort((a, b) => near(a) + back(a) - (near(b) + back(b)) || sideFits(a) - sideFits(b) || a - b)[0];
       covered.push(at);
       placed.push(w);
       weight += idf * g;
@@ -716,6 +718,10 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const any = items.filter((d) => normalize(d.name).split(" ").some((w) => same(t, w)));
     if (ends.length === 1 && any.length >= 2 && !kept.some((m) => m.dish === ends[0])) kept.push({ dish: ends[0], at: i, covered: [i], score: 0.5 });
   });
+  // ("yangzhou fried rice, curry fish balls" isn't also a Curry Chicken Rice): a dish whose words are spread over
+  // clauses, each of them taken by a dish said within its clause, isn't named
+  const spread = kept.filter((m) => new Set(m.covered.map(clauseOf)).size >= 2 && m.covered.every((i) => kept.some((o) => o !== m && o.covered.includes(i) && new Set(o.covered.map(clauseOf)).size === 1)));
+  for (const m of spread) kept.splice(kept.indexOf(m), 1);
   // ("2 ham macaroni" in the evening): a set unasked for gives way to the dish of the same words that isn't one
   const setSaid = toks.some((t) => /^(set|sets|combo|meal|meals|breakfast|sarapan)$/.test(t)) || /套餐|配套|早餐/.test(raw);
   if (!setSaid)
