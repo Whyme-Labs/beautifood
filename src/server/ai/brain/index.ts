@@ -1880,7 +1880,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const kin = live.filter((i) => i.category === optHost.category && i.modifiers?.some((g) => g.options.some((o) => free.some((f) => f.name === o.name))));
       return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.freeOn", { option: list(free.map(optionLabel)), list: list(kin.slice(0, 4).map(name)) })}`, kin.slice(0, 4));
     }
-    if (free.length) return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.freeChoice", { dish: name(optHost), option: list(free.map(optionLabel)), price: money(optHost.price) })}`, [optHost]);
+    // (at the price of the line ordered: "1 iced milk tea" … "less sweet, still the same price?" stays RM6.60)
+    const ordered_ = state.order.find((o) => o.item.id === optHost.id);
+    if (free.length) return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.freeChoice", { dish: name(optHost), option: list(free.map(optionLabel)), price: money(ordered_ ? unitPrice(ordered_) : optHost.price) })}`, [optHost]);
     // ("can add protein or not?" with whey and plant protein): each of its choices that word names
     const alike = (optHost.modifiers ?? []).flatMap((g) => g.options).filter((o) => normalize(o.name).split(" ").some((w) => w.length > 3 && ` ${nt1} `.includes(` ${w} `)));
     if (alike.length >= 2) return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.itsAddOns", { dish: name(optHost), list: list(alike.map((o) => (o.price ? `${optionLabel(o)} (+${money(o.price)})` : optionLabel(o)))) })}`, [optHost]);
@@ -2088,7 +2090,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "ada susu badam? berapa tambah?": an add-on asked about on its own
   // (asked as a price, not "allergic to egg, which roti?" or "what's acar bawang?")
   // (not of the dish just talked about, when it has them: "Ok satu. Tambah cheese, sos cili dengan mayo. Berapa?")
-  if (!mentioned.length && !pointed.length && !state.order.length && !(state.focus && optionsSaid(u.text, state.focus, true).add.length && /\b(satu|one|ok|okay|tambah|add|with|dengan|take|ambil|nak|want)\b/.test(nt1)) && (/\b(how much|berapa|price|harga|cost|extra charge|charge for|more for|tambah berapa|got charge|any charge|ada caj|kena caj|charge|kena bayar|bayar lebih|percuma|(?<!(?:gluten|dairy|sugar|nut|egg|msg|pork|lard|meat|alcohol|lactose|caffeine|halal) )free)\b/.test(nt1) || /多少钱|加多少|几钱|加钱|要钱|另外收费|收费|免费/.test(u.text)) && !/\b(allerg\w*|alergi|alah|alahan|intolerant)\b|过敏/.test(u.text.toLowerCase())) {
+  if (!mentioned.length && !pointed.length && !state.order.length && !(state.focus && optionsSaid(u.text, state.focus, true).add.length && /\b(satu|one|ok|okay|tambah|add|with|dengan|take|ambil|nak|want)\b/.test(nt1)) && (/\b(how much|berapa|price|harga|cost|extra charge|charge for|more for|tambah berapa|got charge|any charge|ada caj|kena caj|charge|kena bayar|bayar lebih|percuma|top up|topup|(?<!(?:gluten|dairy|sugar|nut|egg|msg|pork|lard|meat|alcohol|lactose|caffeine|halal) )free)\b/.test(nt1) || /多少钱|加多少|几钱|加钱|要钱|另外收费|收费|免费/.test(u.text)) && !/\b(allerg\w*|alergi|alah|alahan|intolerant)\b|过敏/.test(u.text.toLowerCase())) {
     // ("how much more for the large tom yam": of the dish its words name, when one with it is)
     const namedHere = live.filter((d) => normalize(d.name).split(" ").filter((w) => w.length > 2 && ` ${nt1} `.includes(` ${w} `)).length >= 2);
     const pricedAll = optionsAsked(u.text, live).filter((x) => x.option.price > 0);
