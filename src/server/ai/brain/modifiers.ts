@@ -73,7 +73,7 @@ const PHRASES: [RegExp, RegExp][] = [
   [/^50 ?%$/, /\b(50 ?%|50 percent|half sugar|half sweet|separuh manis)\b|半糖|五分糖/],
   [/^25 ?%$/, /\b(25 ?%|25 percent)\b|三分糖|微糖/],
   [/^75 ?%$/, /\b(75 ?%|75 percent)\b|七分糖/],
-  [/^less spicy$|^less chilli$|^mild$/, /\b(less spicy|less chilli|less chili|kurang pedas|not so spicy|mild|less hot|kurang cili)\b|少辣|微辣|不要太辣|小辣/],
+  [/^less spicy$|^less chilli$|^mild$/, /\b(less spicy|less chilli|less chili|kurang pedas|not so spicy|mild|less hot|kurang cili)\b|少辣|微辣|不要太辣|不要那么辣|没那么辣|不那么辣|别那么辣|小辣/],
   [/^no chilli$/, /\b(no chilli|no chili|tanpa cili|tak nak cili|without chilli|not spicy)\b|不要辣|走辣|不辣/],
   [/^extra hot$|^extra spicy$/, /\b(extra hot|extra spicy|more spicy|spicier|lebih pedas)\b|加辣|特辣|大辣/],
   [/^normal ice$/, /\b(normal ice|regular ice)\b|正常冰/],

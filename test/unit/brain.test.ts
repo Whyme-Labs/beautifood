@@ -1867,3 +1867,26 @@ describe("what an add-on is made of, the plain one of a kind, and choices in Chi
     expect(answerGuest(shop, [{ role: "user", content: "卤面可以加什么料？" }], "zh").answer).toMatch(/加卤肉（Extra braised pork）.*鱼饼（Fish cake）/);
   });
 });
+
+describe("less spicy, no lard, and an allergy said with a choice", () => {
+  const spice = { name: "Spice level", min: 0, max: 1, options: [{ name: "Less spicy", price: 0 }, { name: "Normal", price: 0 }] };
+  const dishes = asItems([
+    { id: "s1", name: "Penang Asam Laksa", category: "Laksa", description: "tamarind fish broth", price: 1150, allergens: ["fish"], dietary: [], spiceLevel: 2, isSignature: true },
+    { id: "s2", name: "Wantan Mee Dry", category: "Noodles", description: "egg noodles in soy sauce and pork lard", price: 850, allergens: ["gluten", "egg", "soy"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "s3", name: "Mushroom Noodles", category: "Noodles", description: "egg noodles in mushroom sauce, no lard, no meat", price: 800, allergens: ["gluten", "egg", "soy"], dietary: ["vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "s4", name: "Sliced Fish Bee Hoon Soup", category: "Soups", description: "fish slices with bee hoon", price: 1390, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "s1" ? { ...i, translations: { zh: { name: "槟城亚参叻沙" } }, modifiers: [spice] } : i.id === "s2" ? { ...i, translations: { zh: { name: "干捞云吞面" } } } : i.id === "s3" ? { ...i, translations: { zh: { name: "香菇捞面" } } } : i.id === "s4" ? { ...i, modifiers: [{ name: "Noodles", min: 1, max: 1, options: [{ name: "Bee Hoon", price: 0 }, { name: "Mee Sua", price: 100 }, { name: "Mee Hoon", price: 0 }] }] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const zh = (q: string) => answerGuest(shop, [{ role: "user", content: q }], "zh").answer;
+  const ask = (q: string) => answerGuest(shop, [{ role: "user", content: q }]).answer;
+  it("says a dish can be made less spicy but not without chilli", () => {
+    expect(zh("一碗亚参叻沙打包，可以走辣吗？")).toMatch(/本身是辣的.*少辣/);
+  });
+  it("says there's no no-lard choice, and names a dish made without lard", () => {
+    expect(zh("干捞面可以走猪油吗？")).toMatch(/没有不加猪油的选项.*香菇捞面/);
+  });
+  it("warns that mee sua has wheat to a coeliac, but not mee hoon", () => {
+    expect(ask("coeliac. sliced fish bee hoon but with mee sua instead ok?")).toMatch(/Mee Sua add-on has Gluten/);
+    expect(ask("coeliac. sliced fish bee hoon with mee hoon instead ok?")).not.toMatch(/Mee Hoon add-on has Gluten/);
+  });
+});

@@ -133,7 +133,11 @@ export function optionMadeOf(o: ModifierOption, menu: { description?: string | n
 }
 export function optionAllergens(o: ModifierOption, dish?: { description?: string | null }, menu: { description?: string | null }[] = []): Allergen[] {
   const n = normalize(o.name);
+  // (a choice that takes something out adds none: "No bonito flakes", "Less hae ko", "Tanpa kacang")
+  if (/^(no|without|less|tanpa|tak|kurang|hold)\b/.test(n)) return [];
   const out = new Set(mentionedAllergens(o.name));
+  // (a plant milk isn't dairy: "Oat milk", "Soy milk")
+  if (/\b(oat|soy|soya|almond|coconut|rice|cashew|hazelnut|pea)\s+milk\b/.test(n)) out.delete("milk");
   // (what the menu says it's made of, anywhere: "house chilli flakes (dried chilli fried with dried shrimp …)",
   // a set's "mushroom soup (cream, wheat flour)")
   const parts = o.name.replace(/^\s*(set|meal|combo)\s*:\s*/i, "").split(/\s*\+\s*|\s+and\s+|,\s*/).map((x) => x.replace(/\([^)]*\)/g, "").trim().toLowerCase()).filter((x) => x.length >= 4);
@@ -144,7 +148,7 @@ export function optionAllergens(o: ModifierOption, dish?: { description?: string
   }
   if (/\bglutinous\b|\bpulut\b/.test(n)) out.delete("gluten");
   if (/\b(mayo|mayonnaise)\b/.test(n)) out.add("egg");
-  if (/\b(mee sua|mee|yellow noodles?|egg noodles?|bread|roti|bun|croutons?|batter)\b/.test(n) && !/\b(bihun|bee hoon|rice noodles?|kuey teow|kway teow)\b/.test(n)) out.add("gluten");
+  if (/\b(mee sua|mee|yellow noodles?|egg noodles?|bread|roti|bun|croutons?|batter)\b/.test(n) && !/\b(bihun|bee hoon|mee hoon|meehoon|mihun|rice noodles?|kuey teow|kway teow)\b/.test(n)) out.add("gluten");
   if (/\b(sambal|belacan|terasi|hae ko)\b/.test(n) && (/\b(belacan|terasi|hae ko)\b/.test(n) || /\b(belacan|terasi|shrimp paste|hae ko|dried shrimp|prawn paste)\b/i.test(dish?.description ?? ""))) out.add("crustaceans");
   return [...out];
 }
@@ -1234,6 +1238,25 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("prawn mee got 'no pork' option, so if I choose that it becomes halal right?"): a choice doesn't make it halal
   if ((/\bhalal\b/.test(nt0) || /清真/.test(u.text)) && (/\b(no pork|without pork|tanpa babi|tak nak babi)\b/.test(nt0) || /不要猪|走猪|无猪/.test(u.text)) && halalAt !== "certified" && halalAt !== "muslim_friendly" && halalAt !== "pork_free")
     return reply("dish_info", t("assistantReply.noPorkNotHalal"), []);
+  // ("干捞面可以走猪油吗？", "can the dry wantan mee be without lard?"): no such choice, and a dish made without it
+  const noLardAsked = (/(走|不要|免|去)猪油/.test(u.text) || /\b(no|without|tanpa|tak nak) (lard|minyak babi)\b/.test(nt0)) && (/可以|能|吗/.test(u.text) || /\b(can|could|boleh)\b/.test(nt0));
+  // (or a kind said in Chinese, "干捞面": the dishes whose Chinese names are of it)
+  const kindZh = !mentioned.length && !state.focus ? u.text.match(/^([\u4e00-\u9fff]{2,5}?)(?:可以|能不能|能|要)/)?.[1] : undefined;
+  const ofKind_ = kindZh ? live.filter((i) => Object.values(i.translations ?? {}).some((x) => !!x?.name && x.name.includes(kindZh.slice(0, 2)) && x.name.endsWith(kindZh.slice(-1)))) : [];
+  const lardOf = mentioned.length === 1 ? mentioned[0] : !mentioned.length && state.focus ? state.focus : ofKind_.length === 1 ? ofKind_[0] : null;
+  if (noLardAsked && lardOf && /\blard\b/i.test(`${lardOf.name} ${lardOf.description ?? ""}`) && !/\b(no|without)[\s-]+lard\b/i.test(lardOf.description ?? "") && !(lardOf.modifiers ?? []).some((g) => g.options.some((o) => /\b(no|without|less) lard\b/i.test(o.name)))) {
+    const alt = live.filter((i) => i.id !== lardOf.id && i.category === lardOf.category && /\b(no|without)[\s-]+lard\b|\blard[\s-]free\b/i.test(i.description ?? "")).slice(0, 2);
+    return reply("dish_info", `${t("assistantReply.lardNoChoice", { dish: name(lardOf) })}${alt.length ? `${sp}${t("assistantReply.lardFreeAlt", { list: list(alt.map(line)) })}` : ""}`, [lardOf, ...alt]);
+  }
+  // ("一碗亚参叻沙打包，可以走辣吗？" of a dish that can only be less spicy): not fully, but less spicy
+  const noChilliAsked = (/(走辣|不要辣|不辣的?吗|免辣)/.test(u.text) || /\b(no chilli|no chili|not spicy|without chilli|tak nak pedas|tanpa cili|tak pedas)\b/.test(nt0)) && (/可以|能|吗/.test(u.text) || /\b(can|could|boleh)\b/.test(nt0));
+  const hotOne = mentioned.length === 1 ? mentioned[0] : !mentioned.length && state.focus ? state.focus : null;
+  if (noChilliAsked && hotOne && hotOne.spiceLevel > 0) {
+    const opts = (hotOne.modifiers ?? []).flatMap((g) => g.options);
+    const none = opts.find((o) => /\b(no chilli|no chili|not spicy|non spicy|tak pedas|no spice)\b/i.test(o.name));
+    const less = opts.find((o) => /\b(less spicy|less chilli|mild|kurang pedas)\b/i.test(o.name));
+    if (!none && less) return reply("dish_info", t("assistantReply.onlyLessSpicy", { dish: name(hotOne), option: optionLabel(less) }), [hotOne]);
+  }
   // "第二个是猪油炒的吗？", "is the fried mee cooked in lard?": the fat it's cooked in, as the menu says
   // (not "got pork or lard?": the meat answer covers both)
   // (nor "走猪油渣, 几多钱?": its lard crisps taken off, an order)
@@ -1629,7 +1652,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "can I add pudding?", "can make less spicy?", "boleh tambah telur?", "可以加奶盖吗？", "can I get it hot?":
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
-    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
+    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走|不要)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
     !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text) &&
     // ("can I have the second one with an iced lemon tea? total?": an order, its total asked)
     !(pointed.length && (/\b(total|altogether|semua|jumlah)\b/.test(nt1) || /一共|总共/.test(u.text)));
@@ -1680,6 +1703,15 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const said_ = optionsSaid(u.text, mentioned[0], true).add;
     const over = (mentioned[0].modifiers ?? []).filter((g) => (g.max ?? 1) > 1 && said_.filter((o) => g.options.includes(o)).length > (g.max ?? 1));
     if (over.length) return reply("dish_info", over.map((g) => t("assistantReply.maxChoices", { dish: name(mentioned[0]), group: g.name.toLowerCase(), max: g.max ?? 1, count: said_.filter((o) => g.options.includes(o)).length })).join(sp), [mentioned[0]]);
+  }
+  // ("coeliac. sliced fish bee hoon but with mee sua instead ok?": an allergy said with the choice, the choice checked)
+  if (mentioned.length === 1 && u.stated.length && orderable(mentioned[0])) {
+    const d = mentioned[0];
+    // (asked for by its own name, with a word for adding or swapping: not "fish" of "fish allergy" naming the Fish Balls)
+    const ownWords = (o: ModifierOption) => normalize(o.name).split(" ").filter((w) => w.length > 2 && !mentionedAllergens(w).length && ` ${nt1} `.includes(` ${w} `));
+    const cue_ = /\b(with|instead|add|tambah|change|swap|switch|put|tukar|ganti)\b/.test(nt1) || /加|换/.test(u.text);
+    const risky = cue_ ? optionsSaid(u.text, d, true).add.filter((o) => ownWords(o).length).map((o) => ({ o, has: optionAllergens(o, d, ctx.items).filter((a) => u.stated.includes(a)) })).filter((x) => x.has.length) : [];
+    if (risky.length) return { ...reply("dish_info", `${risky.map((x) => t("assistantReply.addOnHasOn", { option: optionLabel(x.o), what: "", dish: name(d), list: list(x.has.map(allergen)) })).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(risky.flatMap((x) => x.has))].map(allergen)) })}`, [d]), safetyNote: allyNote(locale) };
   }
   // ("meal drink can change to milo ais?" of a dish whose meal comes with some drinks only: one it doesn't, told so)
   const mealOf = state.focus ?? earlierHost;
