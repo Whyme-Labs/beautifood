@@ -2293,7 +2293,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // ("I only had the set and the lime juice": "the set" a line ordered, pointed at by its word)
     if (/\b(i only had|i had|i just had|i ate|i only ate)\b/.test(nt1)) for (const p of pointed) if (state.order.some((o) => o.item.id === p.item.id) && !mentioned.includes(p.item)) mentioned.push(p.item);
     const mineSaid = !readBill && state.order.length > 0 && mentioned.length > 0 && !editing && (/\b(i only had|i had|i just had|i ate|i got|mine|my share|my part|my portion|for me|i ll pay for|i will pay for|i pay for|i m paying for|saya (makan|ambil|order|minum|bayar)|aku (makan|ambil|minum|bayar))\b/.test(nt1) || /我只(吃|喝|点|要|付)了?|我(吃|喝|点)了|我的那|我付|付我的/.test(u.text)) && mentioned.every((i) => state.order.some((o) => o.item.id === i.id));
-    if (!readBill && mentioned.length && !edited && !mineSaid && (ordering || totalWord || howMuch || changing || priceClaimed || dealsOfTwo || (eachAsked && withCharges) || (pointed.length > 0 && ORDERING_OK.test(nt1) && !/[?？]/.test(u.text))))
+    if (!readBill && mentioned.length && !edited && !mineSaid && (ordering || totalWord || howMuch || changing || priceClaimed || dealsOfTwo || (eachAsked && withCharges) || (withCharges && !state.order.length) || (pointed.length > 0 && ORDERING_OK.test(nt1) && !/[?？]/.test(u.text))))
       addLines(bill, turnLines(ctx, orderedLines(u, mentioned, existing)).filter((l) => (ordering || !existing.some((o) => o.item.id === l.item.id)) && !((REMOVE.test(nt1) || REMOVE.test(u.text)) && !ORDERING.test(nt1))));
     // ("cancel the kai lan, add one milo ais": the edit made, and the new dish said with "add" comes on too)
     else if (!readBill && edited && (ORDERING.test(nt1) || ORDERING_ZH.test(u.text))) {
@@ -2366,7 +2366,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (pointedLines.length >= 2 && pointers.length === pointedLines.length && pointed.every((p, k) => pointedLines[k]?.item.id === p.item.id))
       pointedLines.forEach((o, k) => applyOptions([o], u.text.slice(k ? pointers[k] : 0, pointers[k + 1] ?? u.text.length), [o.item]));
     else if (pointedLines.length) {
-      applyOptions(pointedLines, u.text, pointedLines.map((o) => o.item));
+      // (not the words of another dish said whole: "2 of the last one and 1 butter naan" isn't the roti with butter)
+      const others_ = mentioned.filter((m) => !pointedLines.some((o) => o.item.id === m.id) && normalize(m.name).split(" ").length >= 2);
+      const own_ = others_.reduce((x, m) => x.replace(new RegExp(`\\b${normalize(m.name).split(" ").join("\\s+")}\\b`, "gi"), " "), u.text);
+      applyOptions(pointedLines, own_, pointedLines.map((o) => o.item));
       // ("那两份，一份要蘑菇酱，一份要芝士酱": a line split off one of them is on the bill too)
       for (const o of pointedLines) if (!bill.includes(o)) bill.push(o);
     }
