@@ -260,6 +260,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   hiris: ["sliced", "slice"], kuning: ["yellow"],
 };
 
+const JOINED: Record<string, string[]> = { beehoon: ["bihun", "mihun", "bihoon"], meehoon: ["bihun", "mihun"], kuayteow: ["kueyteow", "kwayteow"], kweyteow: ["kueyteow", "kwayteow"] };
 const ONE_WORD: Record<string, string> = { "kentang goreng": "fries", "air mineral": "water", "air kosong": "water" };
 
 /** Where a dish is named among the question's words (`from` up to, not including, `to`). */
@@ -349,6 +350,11 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
       if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2, zh: tr.name });
+    // (a name of one character, after its counter and alone: "一杯茶" of the 茶)
+    for (const tr of Object.values(dish.translations ?? {})) {
+      const one = tr?.name?.length === 1 ? raw.match(new RegExp(`[杯壶碗份个]${tr.name}(?![\u4e00-\u9fff])|[杯壶碗份个]${tr.name}(?=[和跟与，、。？！])`)) : null;
+      if (one) return void found.push({ dish, at: (one.index ?? 0) / 100, covered: [], score: 2, zh: tr!.name });
+    }
     // a bracket said beside the name ("炒萝卜糕白的", "白的炒萝卜糕" for 炒萝卜糕（白）)
     for (const tr of Object.values(dish.translations ?? {})) {
       const m = (tr?.name ?? "").match(/^(.+?)[（(](.{1,3})[)）]$/);
@@ -363,7 +369,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
         const at = raw.indexOf(end);
         if (at < 0) continue;
         // (two characters only after a drink's counter: "三罐汽水" of the 罐装汽水)
-        if (end.length === 2 && !/[罐瓶杯]/.test(raw[at - 1] ?? "")) continue;
+        // (or said alone: "唔该，啤酒有冇？" of the 老虎啤酒)
+        if (end.length === 2 && ((!/[罐瓶杯]/.test(raw[at - 1] ?? "") && /[\u4e00-\u9fff]/.test(raw[at - 1] ?? "")) || /[\u4e00-\u9fff]/.test(raw[at + 2] ?? "") && !/[有冇吗呢几要来和跟是好辣贵可含会]/.test(raw[at + 2]))) continue;
         if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘罐瓶两一二三四五六七八九十的要来加和与跟及还]/.test(raw[at - 1])) continue;
         if (items.filter((o) => Object.values(o.translations ?? {}).some((x) => x?.name?.endsWith(end))).length === 1) return void found.push({ dish, at: raw.indexOf(end) / 100, covered: [], score: 1.8, zh: end });
         break;
@@ -413,7 +420,9 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     if (!name.length) return;
     // two of its words typed as one ("kungpao" for Kung Pao): one word, as rare as the rarer
     const df = (w: string) => ix.df.get(w) ?? Math.min(...name.filter((x) => w.startsWith(x) || w.endsWith(x)).map((x) => ix.df.get(x) ?? 1), 1);
-    for (let k = 0; k + 1 < name.length; k++) if (toks.some((t) => t === name[k] + name[k + 1] || (t.length >= 6 && same(t, name[k] + name[k + 1])))) name = [...name.slice(0, k), toks.find((t) => t === name[k] + name[k + 1] || (t.length >= 6 && same(t, name[k] + name[k + 1])))!, ...name.slice(k + 2)];
+    // (or as it's spelt in Malay: "bihun" for Bee Hoon)
+    const joined = (t: string, k: number) => t === name[k] + name[k + 1] || (t.length >= 6 && same(t, name[k] + name[k + 1])) || (JOINED[name[k] + name[k + 1]] ?? []).includes(t);
+    for (let k = 0; k + 1 < name.length; k++) if (toks.some((t) => joined(t, k))) name = [...name.slice(0, k), toks.find((t) => joined(t, k))!, ...name.slice(k + 2)];
     const covered: number[] = [];
     let weight = 0;
     let total = 0;

@@ -53,6 +53,8 @@ export interface DialogueState {
   shown: Item[];
   /** The dish being talked about. */
   focus: Item | null;
+  /** The choices said with it ("how much is the seafood hokkien mee large?"), for "make it two". */
+  focusOptions?: ModifierOption[];
   /** How many they are, said earlier ("we're 3", "我们四个人"). */
   party: number | null;
   /** Who each dish on the order is for, when they said ("me the 8 piece set, Ali the 6 piece"). */
@@ -353,7 +355,10 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
       s.noMeat = [...new Set([...s.noMeat, ...u.noMeat])];
       s.noWords = [...new Set([...s.noWords, ...u.noWords])];
       if (u.minSpice !== null) s.maxSpice = null;
-      if (own.length === 1) s.focus = own[0];
+      if (own.length === 1) {
+        if (s.focus?.id !== own[0].id || optionsSaid(h.content, own[0], true).add.length) s.focusOptions = optionsSaid(h.content, own[0], true).add;
+        s.focus = own[0];
+      }
       if (u.party) s.party = u.party;
       Object.assign(s.owners, ownersOf(h.content, own));
       // "I'll have the X", "add a Y", and a dish named without a question ("one nasi kerabu please",
@@ -1185,6 +1190,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const allBack = !mentioned.length && !nth && !pickedBack && state.shown.length >= 2 && aboutContents && (/\b(either|both|them|those|these|any of)\b/.test(nt0) || /它们|这些|那些|两个|两道|都/.test(u.text)) ? state.shown.slice(0, 4) : [];
   const focus = mentioned.length ? mentioned : nth ? [nth] : pickedBack ? [pickedBack] : allBack.length ? allBack : u.refersBack && state.focus ? [state.focus] : [];
 
+  // ("prawn mee got 'no pork' option, so if I choose that it becomes halal right?"): a choice doesn't make it halal
+  if ((/\bhalal\b/.test(nt0) || /清真/.test(u.text)) && (/\b(no pork|without pork|tanpa babi|tak nak babi)\b/.test(nt0) || /不要猪|走猪|无猪/.test(u.text)) && halalAt !== "certified" && halalAt !== "muslim_friendly" && halalAt !== "pork_free")
+    return reply("dish_info", t("assistantReply.noPorkNotHalal"), []);
   // "第二个是猪油炒的吗？", "is the fried mee cooked in lard?": the fat it's cooked in, as the menu says
   // (not "got pork or lard?": the meat answer covers both)
   // (nor "走猪油渣, 几多钱?": its lard crisps taken off, an order)
@@ -1194,7 +1202,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const words = `${d.name} ${d.description ?? ""}`;
     const oil = words.match(/\b(vegetable oil|palm oil|peanut oil|sesame oil|canola oil|olive oil|butter|ghee)\b/i)?.[1];
     const noLard = /\b(no|without|non)[\s-]+(pork (and|or) (no )?)?lard\b|\blard[\s-]free\b/i.test(words);
-    const text = noLard ? t("assistantReply.lardNone", { dish: name(d) }) : /\blard\b/i.test(words) ? t("assistantReply.lardYes", { dish: name(d) }) : oil ? t("assistantReply.lardNo", { dish: name(d), oil: t(`assistantReply.oil.${oil.toLowerCase().split(" ")[0]}` as MessageKey) }) : t("assistantReply.lardUnsure", { dish: name(d) });
+    // ("can add lard crisps to it?" of one made without: it can't be added)
+    const adding_ = /\b(add|tambah|put|letak|extra|with)\b/.test(nt0) || /加/.test(u.text);
+    const text = noLard ? t(adding_ ? "assistantReply.lardNoAdd" : "assistantReply.lardNone", { dish: name(d) }) : /\blard\b/i.test(words) ? t("assistantReply.lardYes", { dish: name(d) }) : oil ? t("assistantReply.lardNo", { dish: name(d), oil: t(`assistantReply.oil.${oil.toLowerCase().split(" ")[0]}` as MessageKey) }) : t("assistantReply.lardUnsure", { dish: name(d) });
     return reply("dish_allergen", text, [d]);
   }
   // "kids curry plate got any alcohol?", "有酒精吗？": what the menu says it's made with
@@ -1862,6 +1872,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("the extra sambal got shrimp inside? im allergic to prawns", "the glutinous rice topping got gluten?"): what's known of it
   // (asked of it: "got shrimp inside?", "ok for me?", "got gluten?"; not "with vanilla ice cream, how much?" or "which ones?")
   const askedOfIt = (/\b(got|contain\w*|has|have|inside|ada|ok for me|safe|can i eat|can she eat|can he eat|vegan|vegetarian)\b/.test(nt1) || /含|有没有|可以吃/.test(u.text)) && !/\b(which|how much|berapa|price)\b/.test(nt1) && !/哪|多少钱/.test(u.text);
+  // ("the lard crisps add on — that one pork ah?"): an add-on that's pork, said so
+  if (!mentioned.length && !state.order.length && (/\b(pork|babi)\b/.test(nt1) || /猪肉|是猪/.test(u.text))) {
+    const porky = optionsAsked(u.text, live).filter((x) => named_(x.option) > 0 && /\b(lard|bacon|char siu|siu yuk|pork|babi|ham|lap cheong|chinese sausage)\b|猪/i.test(x.option.name));
+    if (porky.length) return reply("dish_info", t("assistantReply.addOnPork", { option: optionLabel(porky[0].option) }), []);
+  }
   if (askedOpt && !madeOf && named_(askedOpt.option) > 0 && askedOfIt && (u.allergens.length || u.diet.length)) {
     const host_ = askedOpt.dishes[0];
     const has = optionAllergens(askedOpt.option, host_).filter((a) => !u.allergens.length || u.allergens.includes(a));
@@ -2113,7 +2128,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const makeN = nt1.match(/\b(?:make (?:it|that)|jadikan)\s+(\d|one|two|three|four|five|dua|tiga|empat|lima)\b/)?.[1];
     const accepts = (ordering || !!makeN || /\b(yes|yeah|ok|okay|sure|sounds good|go with)\b/.test(normalize(u.text)) || /好的|可以|就这个/.test(u.text)) && (u.refersBack || /\b(that|it|this|your suggestion|the one you|what you said)\b/.test(normalize(u.text)) || (!mentioned.length && /^(ok|okay|ya|boleh) satu\b/.test(normalize(u.text))));
     if (!readBill && accepts && !edited && state.shown.length === 1 && !bill.some((o) => o.item.id === state.shown[0].id) && !mentioned.includes(state.shown[0])) {
-      bill.push({ item: state.shown[0], count: makeN ? (NUMBER_OF[makeN] ?? (Number(makeN) || 1)) : 1 });
+      // (with the choices it was priced with: "how much is the seafood hokkien mee large?" … "make it two")
+      const kept_ = state.focus?.id === state.shown[0].id && state.focusOptions?.length ? state.focusOptions : undefined;
+      bill.push({ item: state.shown[0], count: makeN ? (NUMBER_OF[makeN] ?? (Number(makeN) || 1)) : 1, ...(kept_ ? { options: [...kept_] } : {}) });
       // ("ok that one, large, less oil. and a soy bean milk": its add-ons, said before the next dish)
       const next = Math.min(u.text.length, ...mentioned.map((i) => u.text.toLowerCase().indexOf(normalize(i.name).split(" ")[0])).filter((x) => x >= 0));
       applyOptions(bill, makeN ? u.text : u.text.slice(0, next), [state.shown[0]]);

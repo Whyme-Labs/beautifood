@@ -228,7 +228,8 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
       const toks = t.split(" ");
       const at = toks.findIndex((x) => need.some((k) => x === k || x === `${k}s` || x === k.replace(/(es|s)$/, "") || (ALSO[k] ?? []).includes(x)));
       // (or said right after, as in Malay: "sayur lebih")
-      const near = at >= 0 ? [...toks.slice(Math.max(0, at - 3), at), ...(/^(lebih|lagi)$/.test(toks[at + 1] ?? "") ? [toks[at + 1]] : [])] : toks;
+      // (or named as the add-on it is: "the lard crisps add on")
+      const near = at >= 0 ? [...toks.slice(Math.max(0, at - 3), at), ...(/^(lebih|lagi)$/.test(toks[at + 1] ?? "") ? [toks[at + 1]] : []), ...((/^(addon|addons)$/.test(toks[at + need.length] ?? "") || (toks[at + need.length] === "add" && /^ons?$/.test(toks[at + need.length + 1] ?? ""))) ? ["add"] : [])] : toks;
       const bigBefore = at > 0 && bigOf[at - 1];
       if (!bigBefore && !near.some((x) => /^(extra|add|adding|added|more|double|tambah|lebih|another|plus|with|w|dinosaur|godzilla)$/.test(x)) && !/\b(dinosaur|godzilla)\b/.test(t)) continue;
     }

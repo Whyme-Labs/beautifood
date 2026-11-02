@@ -1584,3 +1584,30 @@ describe("a burger stall's names, sizes and meal drinks", () => {
     expect(ask("chicken burger with chilli, mayo AND black pepper sauce pls")).toMatch(/up to 2 sauce, and that's 3/);
   });
 });
+
+describe("a hokkien mee stall's Malay names, Chinese counters and pork", () => {
+  const addOns = { name: "Add-ons", min: 0, max: 3, options: [{ name: "Fried egg", price: 150 }, { name: "Extra lard crisps", price: 100 }] };
+  const size = { name: "Size", min: 1, max: 1, options: [{ name: "Small", price: 0 }, { name: "Large", price: 400 }] };
+  const dishes = asItems([
+    { id: "h1", name: "Fried Bee Hoon", category: "Noodles", description: "rice vermicelli fried with soy sauce and lard crisps", price: 1000, allergens: ["soy"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "h2", name: "Seafood Hokkien Mee (No Pork)", category: "Noodles", description: "thick noodles with prawns and squid, no lard", price: 1400, allergens: ["crustaceans"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "h3", name: "Braised Egg", category: "Sides", description: "egg braised in soy sauce", price: 200, allergens: ["egg", "soy"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "h4", name: "Teh", category: "Drinks", description: "tea with condensed milk", price: 220, allergens: ["milk"], dietary: [], spiceLevel: 0, isSignature: false },
+    { id: "h5", name: "Soya Bean Ais", category: "Drinks", description: "iced soy milk", price: 250, allergens: ["soy"], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "h1" ? { ...i, modifiers: [size, addOns] } : i.id === "h2" ? { ...i, modifiers: [size] } : i.id === "h3" ? { ...i, translations: { zh: { name: "卤蛋" } } } : i.id === "h4" ? { ...i, translations: { zh: { name: "茶" } } } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads 'bihun goreng' as the Fried Bee Hoon, one of two with fried egg", () => {
+    expect(ask("2 bihun goreng kecil, satu tambah telur goreng", "Baik.", "Semua sekali berapa?")).toMatch(/Fried Bee Hoon \(RM10\.00\) \+ Fried Bee Hoon with Fried egg \(RM11\.50\)/);
+  });
+  it("keeps the size the dish was priced with when it's made two", () => {
+    expect(ask("how much is the seafood hokkien mee large?", "Seafood Hokkien Mee (No Pork) large is RM18.00.", "make it two, plus 2 soya bean ais. total?")).toMatch(/Total RM41\.00/);
+  });
+  it("reads a one-character Chinese name after its counter", () => {
+    expect(ask("一个卤蛋和一杯茶，多少钱？")).toMatch(/RM4\.20/);
+  });
+  it("says lard can't go on a dish made without it, and that the lard crisps add-on is pork", () => {
+    expect(ask("seafood hokkien mee how much?", "RM14.00.", "can add lard crisps to it?")).toMatch(/can't be added/);
+    expect(ask("the lard crisps add on — that one pork ah?")).toMatch(/^Yes, the Extra lard crisps add-on is made from pork/);
+  });
+});
