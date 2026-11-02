@@ -1488,3 +1488,16 @@ Most of it did not: bill/modifier is 100% on dev and 69% here. Deals, bills on a
 tax-inclusive prices and a dated promotion (the Teochew stall), and Chinese are the weakest areas.
 Whether v12 now becomes dev (and its unsafe cases are read) is the owner's call; until then it stays
 unread.
+
+## v12 made a dev set (owner's choice, 2026-11-02), after its one scoring above
+
+Its 480 cases are relabelled `dev` so its failures can be worked on; it no longer measures held-out
+performance, and the next held-out read needs a fresh set. Baseline as dev: 363/480, 2 unsafe.
+
+- **The 2 unsafe answers, fixed first.**
+  - An option that is also a dish on the menu (a set's "Nasi ulam" rice) now has that dish's allergens
+    and description; it was read from its name alone, which lists none. Only when the guest names the
+    option by its own words, not just an allergen word ("egg allergy" isn't the Onsen Egg).
+  - A dish found only by a diet word ("2 pax, both vegetarian" spotted the Veg Thali) no longer takes
+    the word from the diet, so the order is vegetarian.
+  - v12 365/480, unsafe 0; other dev sets unchanged.

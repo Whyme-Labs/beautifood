@@ -131,11 +131,18 @@ export function optionMadeOf(o: ModifierOption, menu: { description?: string | n
   }
   return undefined;
 }
-export function optionAllergens(o: ModifierOption, dish?: { description?: string | null }, menu: { description?: string | null }[] = []): Allergen[] {
+/** The menu's dish an option is ("Nasi ulam" in a set's rice choice is the menu's Nasi Ulam). */
+export function optionDish<T extends { name?: string; description?: string | null }>(o: ModifierOption, menu: T[]): T | undefined {
+  const n = normalize(o.name).replace(/^(add|extra|tambah|with)\s+/, "");
+  return n.length >= 4 ? menu.find((d) => d.name && normalize(d.name) === n) : undefined;
+}
+export function optionAllergens(o: ModifierOption, dish?: { description?: string | null }, menu: { name?: string; description?: string | null; allergens?: readonly string[] }[] = []): Allergen[] {
   const n = normalize(o.name);
   // (a choice that takes something out adds none: "No bonito flakes", "Less hae ko", "Tanpa kacang")
   if (/^(no|without|less|tanpa|tak|kurang|hold)\b/.test(n)) return [];
   const out = new Set(mentionedAllergens(o.name));
+  // (an option that is a dish on the menu has that dish's allergens)
+  for (const a of optionDish(o, menu)?.allergens ?? []) out.add(a as Allergen);
   // (a plant milk isn't dairy: "Oat milk", "Soy milk")
   if (/\b(oat|soy|soya|almond|coconut|rice|cashew|hazelnut|pea)\s+milk\b/.test(n)) out.delete("milk");
   // (what the menu says it's made of, anywhere: "house chilli flakes (dried chilli fried with dried shrimp …)",
@@ -2061,7 +2068,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     ? optionsAsked(u.text, live).sort((a, b) => named_(b.option) - named_(a.option) || b.dishes.length - a.dishes.length)[0]
     : undefined;
   // (not a note on it: "evaporated milk (vegetarian)" says nothing of what's in it)
-  const madeOf = askedOpt && live.map((i) => (i.description ?? "").match(new RegExp(`${normalize(askedOpt.option.name).replace(/[^a-z0-9 ]/g, "")}\\s*\\(([^)]+)\\)`, "i"))?.[1]).find((x) => !!x && !/^(vegetarian|vegan|halal|optional|extra|on the side|\+?rm ?\d)/i.test(x.trim()));
+  const madeOf = askedOpt && ((named_(askedOpt.option) > 0 ? optionDish(askedOpt.option, ctx.items) : undefined)?.description?.replace(/,\s*(mild|not spicy|spicy|very spicy)\s*$/i, "") || live.map((i) => (i.description ?? "").match(new RegExp(`${normalize(askedOpt.option.name).replace(/[^a-z0-9 ]/g, "")}\\s*\\(([^)]+)\\)`, "i"))?.[1]).find((x) => !!x && !/^(vegetarian|vegan|halal|optional|extra|on the side|\+?rm ?\d)/i.test(x.trim())));
   // ("the extra sambal got shrimp inside? im allergic to prawns", "the glutinous rice topping got gluten?"): what's known of it
   // (asked of it: "got shrimp inside?", "ok for me?", "got gluten?"; not "with vanilla ice cream, how much?" or "which ones?")
   const askedOfIt = (/\b(got|contain\w*|has|have|inside|ada|ok for me|safe|can i eat|can she eat|can he eat|vegan|vegetarian)\b/.test(nt1) || /含|有没有|可以吃/.test(u.text)) && !/\b(which|how much|berapa|price)\b/.test(nt1) && !/哪|多少钱/.test(u.text);
@@ -2082,7 +2089,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   if (askedOpt && madeOf) {
     // (what it's made with, and what its own name says: "evaporated milk" is milk)
-    const all_ = [...new Set([...mentionedAllergens(madeOf), ...optionAllergens(askedOpt.option)])];
+    const all_ = [...new Set([...mentionedAllergens(madeOf), ...optionAllergens(askedOpt.option, undefined, ctx.items)])];
     const has = all_.filter((a) => !u.allergens.length || u.allergens.includes(a) || u.diet.length > 0);
     const notVegan = u.diet.includes("vegan") && all_.some((a) => a === "milk" || a === "egg");
     const parts = [t("assistantReply.optionMadeOf", { option: optionLabel(askedOpt.option), made: madeOf })];

@@ -1124,7 +1124,9 @@ export function read(items: Dish[], asked: string): Reading {
   const noWords = wordsAvoided(items, question);
   const ruledOut = (t: string) => noWords.some((w) => w === t || singular(w) === singular(t));
   const mentions = findDishes(items, raw, toks, skip).filter((m) => !(noWords.length && m.covered.length && m.covered.every((i) => ruledOut(toks[i]))));
-  const dishWords = new Set(mentions.flatMap((m) => m.covered));
+  // (a dish found only by a diet word, "both vegetarian" as the Veg Thali, leaves the word to the diet)
+  const DIET_TOK = /^(vegetarian|vegetarians|vegan|vegans|veggie|vege)$/;
+  const dishWords = new Set(mentions.filter((m) => !(m.covered.length && m.covered.every((i) => DIET_TOK.test(toks[i])))).flatMap((m) => m.covered));
   // the question without its dish names: "vegetarian" in Vegetarian Mee Goreng is not a diet ask
   const rest = toks.filter((_, i) => !dishWords.has(i));
   // (a dish named in Chinese takes its characters too: 炸鱼薯条 says nothing of fish)
