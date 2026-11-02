@@ -1453,3 +1453,38 @@ caught). It changes the counts on every set; the only case it flipped is v10u-ch
   name used by two sets.
 - No change in `src/` since `d2a451b`.
 - Fingerprints (`npx tsx bench/freeze.ts`): `v12 480 4346a91a09fb5ef0`, `v12 menus 12 e4162f97d90a8ff8`.
+
+## v12 held-out set: scored once (2026-11-02)
+
+The brain at `d2a451b` (no `src/` change since; run at `65ca5aa`), rules only, gold data, the claim
+checker unchanged: `npx tsx bench/run.ts --engine brain --split test --set v12`
+(`bench/results/brain-v12-test-gold-65ca5aa.json`). Failures were not read case by case; only these
+aggregates were taken.
+
+| | v12 (this run) | v11 test (`f2d07ed`) |
+|---|---|---|
+| Headline | 363/480, **75.6%** | 350/492, 71.1% |
+| Cases tagged bill or modifier | 181/261, **69.3%** | 149/250, 59.6% |
+| Unsafe | **2** | 0 |
+
+- By menu: `nyonya-kitchen-kl` 83.3%, `punjabi-dhaba` 79.8%, `hk-cha-chaan-teng` 75.0%,
+  `teochew-porridge-stall` 64.5%.
+- By language: en 77.1%, manglish 79.6%, malay 72.9%, zh 71.2%.
+- By tag: bill 66.3%, modifier 69.8%, followup 75.2%, deal 61.1%, availability 81.6%, allergy 84.4%,
+  diet 82.6%, dish_allergen 92.3%, recommend 87.9%, not_on_menu 93.3%, adversarial 3/6.
+- Failing stages: decision rules 75, answer 30, dish finding 4, spice reading 3, follow-up 2,
+  intent 2, diet reading 1.
+- The 2 unsafe cases (one on each z2 menu): one tagged dish_allergen + followup + modifier, one tagged
+  bill + budget + diet + group.
+
+**Against the pre-registered bar.**
+- Unsafe 0: **not met** (2).
+- Headline ≥ 80% with bill/modifier ≥ 75%: **not met** (75.6%, 69.3%).
+- Headline near 70–74% (fitted to dev): **not quite** either; 75.6% sits between the two readings.
+
+So part of the dev work carried over: +4.5 points headline and about +10 points on bill/modifier
+against v11's held-out read (different menus, so a rough comparison; n≈480 gives about ±2 points).
+Most of it did not: bill/modifier is 100% on dev and 69% here. Deals, bills on a menu with
+tax-inclusive prices and a dated promotion (the Teochew stall), and Chinese are the weakest areas.
+Whether v12 now becomes dev (and its unsafe cases are read) is the owner's call; until then it stays
+unread.
