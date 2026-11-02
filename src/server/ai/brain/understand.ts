@@ -256,7 +256,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   sayur: ["vegetable", "vegetables", "greens"], kelapa: ["coconut"], mangga: ["mango"], pisang: ["banana"], kopi: ["coffee"], teh: ["tea"], tee: ["tea"], nasi: ["rice"], sup: ["soup"], kari: ["curry"], dri: ["dry"], susu: ["milk"],
   limau: ["lime", "limes", "lemon"], tebu: ["sugarcane"], coke: ["cola"], cokes: ["cola"], klasik: ["classic"], sayap: ["wing", "wings"], separuh: ["half"], masak: ["boiled", "cooked"], kering: ["dry"], cili: ["chilli", "chili"], sarapan: ["breakfast"], sos: ["sauce"], penuh: ["whole"], goreng: ["fried"], kentang: ["potato", "fries"],
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
-  hijau: ["green"], hitam: ["black"], putih: ["white"], merah: ["red"], vege: ["vegetable", "vegetables"], veggie: ["vegetable", "vegetables"], veg: ["vegetable", "vegetables"],
+  hijau: ["green"], hitam: ["black"], putih: ["white"], merah: ["red"], vege: ["vegetable", "vegetables", "vegetarian"], veggie: ["vegetable", "vegetables", "vegetarian"], veg: ["vegetable", "vegetables", "vegetarian"],
   hiris: ["sliced", "slice"], kuning: ["yellow"],
 };
 

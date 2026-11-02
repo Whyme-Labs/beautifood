@@ -603,6 +603,7 @@ const en = {
     restTotal: "The rest comes to {total}.",
     theirPart: "The other part comes to {total}.",
     groupOn: " (on {list}).",
+    addOnNotVegan: "You can add {option}, but it isn't vegan: {dish} with it is no longer vegan.",
     cheaperThanApart: "Ordered one by one it would be {apart}, so that saves {saved}.",
     waysCheaper: "{a} is cheaper: {aPrice}, against {bPrice} for {b}, so you save {diff}.",
     waysSame: "{a} and {b} cost the same: {price}.",

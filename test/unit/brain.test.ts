@@ -1521,3 +1521,19 @@ describe("what an add-on brings", () => {
     expect(ask("double chicken burger with cheese slice can?")).toMatch(/^Yes/);
   });
 });
+
+describe("vegetarian dishes and add-ons", () => {
+  const dishes = asItems([
+    { id: "v1", name: "Claypot Vegetarian Rice", category: "Claypot", description: "mushrooms and tofu (vegan)", price: 1490, allergens: ["soy"], dietary: ["vegan", "vegetarian"], spiceLevel: 0, isSignature: false },
+    { id: "v2", name: "Claypot Chicken Rice", category: "Claypot", description: "chicken and salted fish", price: 1690, allergens: ["fish"], dietary: [], spiceLevel: 0, isSignature: true },
+  ]).map((i) => (i.id === "v1" ? { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 3, options: [{ name: "Egg", price: 200 }] }] } : { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 3, options: [{ name: "Salted fish", price: 300 }] }] }));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("reads 'veg rice' as the vegetarian one, and an add-on 'on the veg rice' of it", () => {
+    expect(ask("can i get salted fish on the veg rice?")).toMatch(/Salted fish isn't an option on Claypot Vegetarian Rice; it comes on Claypot Chicken Rice/);
+  });
+  it("says egg isn't vegan to a vegan, but adds it for a vegetarian", () => {
+    expect(ask("i'm vegan", "Noted.", "veg claypot rice can add egg?")).toMatch(/isn't vegan/);
+    expect(ask("veg claypot rice can add egg? i'm vegetarian not vegan")).toMatch(/^Yes\. Claypot Vegetarian Rice with Egg/);
+  });
+});
