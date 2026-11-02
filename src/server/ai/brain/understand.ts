@@ -258,6 +258,7 @@ const MALAY_FOOD: Record<string, string[]> = {
   keledek: ["sweet", "potato"], ubi: ["potato", "tapioca"], cendawan: ["mushroom", "mushrooms"], jagung: ["corn"], nanas: ["pineapple"], tembikai: ["watermelon"],
   hijau: ["green"], hitam: ["black"], putih: ["white"], merah: ["red"], vege: ["vegetable", "vegetables", "vegetarian"], veggie: ["vegetable", "vegetables", "vegetarian"], veg: ["vegetable", "vegetables", "vegetarian"],
   hiris: ["sliced", "slice"], kuning: ["yellow"], campur: ["mixed", "mix"], kasturi: ["calamansi"], jus: ["juice"], popiya: ["popiah"], popia: ["popiah"], pulut: ["glutinous"], bubur: ["porridge", "congee"], congee: ["porridge"], porridge: ["congee"],
+  kukus: ["steamed"], masin: ["salted", "salty"], dadar: ["omelette", "omelet"], lobak: ["radish"], segera: ["instant"], rebus: ["boiled"], peria: ["bitter", "gourd"],
 };
 
 const JOINED: Record<string, string[]> = { beehoon: ["bihun", "mihun", "bihoon"], meehoon: ["bihun", "mihun"], kuayteow: ["kueyteow", "kwayteow"], kweyteow: ["kueyteow", "kwayteow"] };
@@ -1121,7 +1122,21 @@ export function read(items: Dish[], asked: string): Reading {
   const raw = question.normalize("NFKC").toLowerCase();
   const ix = dishIndex(items);
   // fix typos in the words we read constraints from, but never in a word of a dish's name
-  const toks = tokens(normalize(question, ix.own), true).map((t) => (ix.df.has(t) || MALAY_FOOD[t] ? t : correct(t)));
+  // (not a Malay word that looks like one: "makan", "minum", "berapa", "sedap")
+  const MALAY_WORD = /^(makan|minum|berapa|sedap|pedas|manis|tapau|bungkus|boleh|kurang|lebih|tambah|sikit|banyak|sahaja|satu|empat|semua|untuk|dengan|tanpa|takde|tiada|nasi|teh|kopi|ayam|ikan|udang|sotong|daging|kambing|sayur|telur|goreng|bakar|rebus|panas|sejuk|besar|kecil|biasa|special|kosong|kasi|bagi|nak|mahu|ambil|cucuk|kenduri|tempah|hujung|minggu|esok|malam|pagi|petang)$/;
+  // (a typo of a word of this menu's dish names, "brased duk", "porige", "chikken": that word, when it's the one close)
+  const menuWords = [...ix.df.keys()].filter((w) => w.length >= 4 && /^[a-z]+$/.test(w));
+  const menuFix = (t: string) => {
+    if (!/^[a-z]+$/.test(t) || t.length < 5 || KEYWORDS.includes(t) || REAL.has(t) || intentModel().vocab?.has(t) || MALAY_WORD.test(t)) return undefined;
+    // (two letters off only as letters left out, "porige" of porridge; not "friends" as fries, "weather" as water)
+    const dropped = (w: string) => { let k = 0; for (const ch of w) if (ch === t[k]) k++; return k === t.length; };
+    const max = 2;
+    const near = menuWords.filter((w) => w[0] === t[0] && w.length >= 5 && Math.abs(w.length - t.length) <= max && (osaDistance(t, w, 1) <= 1 || (w.length > t.length && dropped(w) && osaDistance(t, w, 2) <= 2)));
+    const best = Math.min(...near.map((w) => osaDistance(t, w, max)));
+    const top = near.filter((w) => osaDistance(t, w, max) === best);
+    return top.length === 1 ? top[0] : undefined;
+  };
+  const toks = tokens(normalize(question, ix.own), true).map((t) => (ix.df.has(t) || MALAY_FOOD[t] ? t : correct(t) !== t ? correct(t) : menuFix(t) ?? t));
   // "saya alergi kacang", "allergic to nuts": the word after is an allergen, not a dish (Ais Kacang)
   const skip = new Set<number>();
   toks.forEach((t, i) => {
