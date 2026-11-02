@@ -329,7 +329,15 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   const common = (i: number) => GENERIC.has(toks[i]) || ORIGIN.has(toks[i]) || (ix.df.get(toks[i]) ?? 0) >= 2;
   const qBreaks = clauseBreaks(raw, toks.length);
   const clauseOf = (i: number) => Math.max(0, ...qBreaks.filter((b) => b <= i));
+  // a name the menu gives a dish at the start of its description ("ABC: shaved ice, red beans…" of the Ais Kacang)
+  const aka = (d: Dish) => (d.description ?? "").match(/^\s*([A-Za-z][\w ]{1,20}?):\s/)?.[1];
+  const akas = items.map(aka).filter((x): x is string => !!x).map((x) => normalize(x));
   items.forEach((dish, n) => {
+    const a = aka(dish);
+    if (a && akas.filter((x) => x === normalize(a)).length === 1 && ` ${toks.join(" ")} `.includes(` ${normalize(a)} `)) {
+      const at = toks.join(" ").split(" ").indexOf(normalize(a).split(" ")[0]);
+      return void found.push({ dish, at, covered: normalize(a).split(" ").map((_, k) => at + k), score: 1.5 });
+    }
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
       if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2, zh: tr.name });

@@ -598,6 +598,7 @@ const zh = {
     setDearer: "{set}：{price}。分开点，{lines}一共 {apart}，分开点反而便宜 {diff}。",
     setEven: "{set}：{price}。分开点，{lines}一共 {apart}，价钱一样。",
     youSave: "比平时便宜 {saved}。",
+    restTotal: "其余的一共 {total}。",
     cheaperThanApart: "分开点要 {apart}，这样省 {saved}。",
     waysCheaper: "{a}比较便宜：{aPrice}，{b}要 {bPrice}，省 {diff}。",
     waysSame: "{a}和{b}价钱一样：{price}。",

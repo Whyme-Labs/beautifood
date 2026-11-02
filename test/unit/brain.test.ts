@@ -1406,3 +1406,25 @@ describe("a wantan mee stall's edits", () => {
     expect(ask("1 wantan mee dry, 1 kopi", "Wantan Mee Dry RM8.50 and a Kopi RM2.30.", "eh better take the set or order separately?")).toMatch(/Wantan Mee Set: RM10\.00\. Separately, Wantan Mee Dry \(RM8\.50\), Kopi \(RM2\.30\) come to RM10\.80, so the set saves you RM0\.80/);
   });
 });
+
+describe("a cendol stall's names and toppings", () => {
+  const tops = { name: "Toppings", min: 0, max: 4, options: [{ name: "Sweet Corn", price: 100 }, { name: "Glutinous Rice", price: 150 }, { name: "Ice Cream", price: 250 }, { name: "Durian", price: 400 }] };
+  const size = { name: "Size", min: 1, max: 1, options: [{ name: "Regular", price: 0 }, { name: "Large", price: 200 }] };
+  const dishes = asItems([
+    { id: "c1", name: "Cendol Original", category: "Cendol", description: "shaved ice, cendol, coconut milk and gula melaka", price: 550, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: true },
+    { id: "c2", name: "Ais Kacang", category: "Ais Kacang", description: "ABC: shaved ice, red beans, sweet corn, grass jelly, peanuts", price: 600, allergens: ["peanuts"], dietary: [], spiceLevel: 0, isSignature: true },
+    { id: "c3", name: "Bubur Cha Cha", category: "Bubur", description: "sweet potato and yam in coconut milk", price: 550, allergens: [], dietary: ["vegan"], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id !== "c3" ? { ...i, modifiers: [size, tops] } : i));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("knows ABC by the name its description gives it, its size said before it", () => {
+    expect(ask("large abc + durian + ice cream on top. how much ah")).toMatch(/Ais Kacang with Large, Ice Cream, Durian: RM14\.50/);
+    expect(ask("cendol original 1, abc 1, ttl?")).toMatch(/Cendol Original \(RM5\.50\) \+ Ais Kacang \(RM6\.00\) = Total RM11\.50/);
+  });
+  it("reads jagung and pulut as its toppings", () => {
+    expect(ask("Cendol original saiz besar, tambah pulut dan jagung. Berapa?")).toMatch(/RM10\.00/);
+  });
+  it("gives the rest's total when someone else pays it", () => {
+    expect(ask("2 bubur cha cha and 2 cendol original", "Got it.", "I pay for the 2 bubur cha cha, my sister pays the rest. how much each?")).toMatch(/Your part: 2 × Bubur Cha Cha \(RM5\.50\) = Total RM11\.00\. The rest comes to RM11\.00/);
+  });
+});

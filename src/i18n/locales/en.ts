@@ -600,6 +600,7 @@ const en = {
     setDearer: "{set}: {price}. Separately, {lines} come to {apart}, so ordering them separately is {diff} cheaper.",
     setEven: "{set}: {price}. Separately, {lines} come to {apart}, the same.",
     youSave: "That saves you {saved} against the usual prices.",
+    restTotal: "The rest comes to {total}.",
     cheaperThanApart: "Ordered one by one it would be {apart}, so that saves {saved}.",
     waysCheaper: "{a} is cheaper: {aPrice}, against {bPrice} for {b}, so you save {diff}.",
     waysSame: "{a} and {b} cost the same: {price}.",

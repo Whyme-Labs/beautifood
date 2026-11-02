@@ -77,6 +77,8 @@ const PHRASES: [RegExp, RegExp][] = [
   [/^no chilli$/, /\b(no chilli|no chili|tanpa cili|tak nak cili|without chilli|not spicy)\b|不要辣|走辣|不辣/],
   [/^extra hot$|^extra spicy$/, /\b(extra hot|extra spicy|more spicy|spicier|lebih pedas)\b|加辣|特辣|大辣/],
   [/^normal ice$/, /\b(normal ice|regular ice)\b|正常冰/],
+  [/^sweet corn$/, /\b(sweet corn|corn|jagung)\b|玉米/],
+  [/^glutinous rice$/, /\b(glutinous rice|pulut)\b|糯米/],
   [/^tanpa kacang$/, /\b(no peanuts?|without peanuts?|tanpa kacang|tak nak kacang|no nuts)\b|不要花生|走花生|去花生/],
   [/^tanpa ikan bilis$/, /\b(no (ikan )?bilis|no anchov\w*|tanpa (ikan )?bilis|without anchov\w*)\b|不要江鱼仔|走江鱼仔/],
   [/^sambal asing$/, /\b(sambal asing|sambal (on the )?side|separate sambal|sambal separate)\b|参巴分开|叁巴另外|酱另外/],

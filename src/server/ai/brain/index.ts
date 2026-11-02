@@ -1391,7 +1391,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const withCharges = /\b(tax|taxes|sst|gst|service charge|service|(?<!extra |additional |any )charges|nett|after tax|incl|including tax|including service|plus tax|with tax|all in|final (amount|bill|total|price)|pay at the (counter|cashier)|servis|cukai|caj perkhidmatan|semua sekali|grand total|with everything)\b/.test(nt1) || /税|服务费|最后要付|一共要付|埋单|买单|结账/.test(u.text);
   // ("what's the bill?" with an order open is its total; "bill please" asks the staff for it)
   const billSoFar = state.order.length > 0 && (/\b(whats|what s|what is|how much is|hows|how s) (the|my|our) (bill|damage)\b|\bbill (so far|now|come to)\b|\bwhat did (i|we) order\b|\b(my|our) order so far\b|\bapa (saya|kami) (order|pesan)\b/.test(nt1) || /我(们)?点了什么|点了哪些/.test(u.text));
-  const totalWord = !!shares || billSoFar || /\b(final (amount|bill|total)|how much (do|should|will) (i|we) pay|pay at the (counter|cashier))\b/.test(nt1) || /\b(total|altogether|all together|in total|sum|berapa semua|berapa total|jumlah)\b/.test(mentioned.reduce((t, i) => t.replace(normalize(i.name), " "), nt1)) || /一共|总共|加起来|合计|算钱|埋单|买单|结账|算一下/.test(u.text);
+  const totalWord = !!shares || billSoFar || /\b(final (amount|bill|total)|how much (do|should|will) (i|we) pay|pay at the (counter|cashier))\b/.test(nt1) || /\b(total|altogether|all together|in total|sum|ttl|berapa semua|berapa total|jumlah)\b/.test(mentioned.reduce((t, i) => t.replace(normalize(i.name), " "), nt1)) || /一共|总共|加起来|合计|算钱|埋单|买单|结账|算一下/.test(u.text);
   // (typos put right too: "how mch")
   const howMuch = /\b(how much|berapa|price)\b/.test(normalize(u.text)) || /\b(how much|berapa|price)\b/.test(u.toks.join(" ")) || /\bhow (mch|mich|muc|mutch)\b/.test(normalize(u.text)) || /多少钱|几钱|几多钱|多少/.test(u.text);
   const ordering = ORDERING.test(normalize(u.text)) || ORDERING_ZH.test(u.text) || /\b(tambah|tambahkan|lagi satu|satu lagi|one more)\b/.test(nt1);
@@ -1671,7 +1671,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const d = mentioned[0];
     // (not from the words that named it: "a 12-inch pepperoni" isn't also the Beef Pepperoni topping)
     const named_ = new Set(u.spots.filter((s) => s.dish.id === d.id).flatMap((s) => s.covered));
-    const rest = u.toks.filter((_, k) => !named_.has(k)).join(" ").replace(/(?<=[\u3400-\u9fff]) (?=[\u3400-\u9fff])/g, "");
+    // (its words leave a gap, not nothing: "large abc + durian" isn't "large durian")
+    const rest = u.toks.map((w, k) => (named_.has(k) ? (named_.has(k - 1) ? "" : "it") : w)).filter(Boolean).join(" ").replace(/(?<=[\u3400-\u9fff]) (?=[\u3400-\u9fff])/g, "");
     const with_ = optionsSaid(/[\u3400-\u9fff]/.test(u.text) ? u.text : rest, d).add;
     if (with_.length && orderable(d)) {
       const total = d.price + with_.reduce((n, o) => n + o.price, 0);
@@ -2010,6 +2011,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (after.length) for (let k = bill.length - 1; k >= 0; k--) if (normalize(bill[k].item.name).split(" ").some((w) => w.length > 2 && after.includes(w))) bill.splice(k, 1);
     // "I only had the briyani and one teh tarik, how much is mine?": their part of the bill
     const mineOnly = mineSaid;
+    let restNote = "";
     // ("saya ambil X, kawan saya Y. saya kena bayar berapa?": the guest's own, by who said they'd have what)
     // (with a conversation reader's lines, whose each line is, as it read them)
     const ownerOf = (o: OrderLine) => (readBill ? lineOwner.get(o) : ownersNow[o.item.id]);
@@ -2050,6 +2052,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
           left -= Math.min(o.count, left);
         }
       }
+      // ("my sister pays the rest. how much each?": the rest's total too)
+      if (/\b(pays?|paying|bayar|settles?|covers?|takes?) (for )?the rest\b|\bthe rest (is|for) (him|her|them|my|his)\b/.test(nt1) || /其余|剩下的?(她|他|朋友)/.test(u.text)) {
+        const restSum = bill.reduce((n, o) => n + unitPrice(o) * o.count, 0) - part.reduce((n, o) => n + unitPrice(o) * o.count, 0);
+        if (restSum > 0) restNote = `${sp}${t("assistantReply.restTotal", { total: money(restSum) })}`;
+      }
       bill.splice(0, bill.length, ...part);
     }
     // (one dish is a bill too when its total is asked for: "one large milk tea with pudding, total?")
@@ -2089,7 +2096,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         ...(mineOnly || mineByOwner ? { mine: true } : {}),
         notes: [warn, noSuch, goneNote].map((x) => x.trim()).filter(Boolean),
       });
-      return { ...reply("recommend", `${warn}${noSuch}${goneNote}${mineOnly || mineByOwner ? `${t("assistantReply.yourPart")}${sp}` : ""}${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${saving}${charges}${each}`, bill.map((o) => o.item)), order: card };
+      return { ...reply("recommend", `${warn}${noSuch}${goneNote}${mineOnly || mineByOwner ? `${t("assistantReply.yourPart")}${sp}` : ""}${lines.join(" + ")} = ${t("assistantReply.basketTotal", { total: money(total) })}${saving}${charges}${each}${restNote}`, bill.map((o) => o.item)), order: card };
     }
   }
 
