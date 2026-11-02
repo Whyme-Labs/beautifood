@@ -747,6 +747,8 @@ export function pointedAt(text: string, shown: Item[]): { item: Item; count: num
   const push = (item: Item | undefined, count: number) => item && !out.some((o) => o.item.id === item.id) && out.push({ item, count });
   // (a count after it too: "the first one x1")
   const xAfter = (end: number) => Number(t.slice(end).match(/^\s*(?:one\s*)?(?:x|×)\s*(\d{1,2})\b/)?.[1] ?? 0);
+  // ("number 2", "no. 3", "#2", "nombor 2"): the one at that place in the list
+  for (const m of t.matchAll(/\b(?:number|no|num|nombor|nomor)\s*([1-9])\b|#([1-9])\b/g)) push(can.at(Number(m[1] ?? m[2]) - 1), 0);
   for (const m of t.matchAll(/\b(?:(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s+(?:of\s+)?)?(?:the|that|this|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|last|pertama|kedua|ketiga|terakhir)\b(?!\s+(two|three|dua|tiga|2|3)\b)/g))
     push(can.at(ORD[m[2]]), m[1] ? (N[m[1]] ?? Number(m[1])) : xAfter((m.index ?? 0) + m[0].length));
   // "第二个", "第一个和第三个", "最后一个"
@@ -1279,7 +1281,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         : undefined;
   // "do either of them have peanuts?", "这两个有没有虾？": each of the dishes just shown
   const allBack = !mentioned.length && !nth && !pickedBack && state.shown.length >= 2 && aboutContents && (/\b(either|both|them|those|these|any of)\b/.test(nt0) || /它们|这些|那些|两个|两道|都/.test(u.text)) ? state.shown.slice(0, 4) : [];
-  const focus = mentioned.length ? mentioned : nth ? [nth] : pickedBack ? [pickedBack] : allBack.length ? allBack : u.refersBack && state.focus && !choiceLines.length ? [state.focus] : [];
+  // ("第二个同第三个有咩分别？", "difference between the first and the last?"): the two pointed at, weighed
+  const twoNth = !mentioned.length && state.shown.length >= 2 && (/\b(difference|differences|different|compare|vs|versus|beza|bandingkan)\b/.test(normalize(u.text)) || /分别|区别|比较|差别|唔同|不同|差在/.test(u.text)) ? pointedAt(u.text, state.shown) : [];
+  const focus = mentioned.length ? mentioned : twoNth.length >= 2 ? twoNth.map((p) => p.item) : nth ? [nth] : pickedBack ? [pickedBack] : allBack.length ? allBack : u.refersBack && state.focus && !choiceLines.length ? [state.focus] : [];
 
   // ("prawn mee got 'no pork' option, so if I choose that it becomes halal right?"): a choice doesn't make it halal
   if ((/\bhalal\b/.test(nt0) || /清真/.test(u.text)) && (/\b(no pork|without pork|tanpa babi|tak nak babi)\b/.test(nt0) || /不要猪|走猪|无猪/.test(u.text)) && halalAt !== "certified" && halalAt !== "muslim_friendly" && halalAt !== "pork_free")
@@ -1359,6 +1363,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (nth && !["dish_allergen", "compare", "pairing"].includes(intent)) intent = "dish_info";
   // "compare the X and Y", "X vs Y", "比较一下X和Y": a comparison, whatever the model guessed
   if (mentioned.length >= 2 && (/\b(compare|comparing|vs|versus|difference between|bandingkan|beza)\b/.test(normalize(u.text)) || /比较|区别/.test(u.text))) intent = "compare";
+  if (twoNth.length >= 2) intent = "compare";
   if (intent === "compare" && focus.length + (mentioned.length ? 0 : state.shown.length) < 2) intent = focus.length ? "dish_info" : "recommend";
   // "那面呢？", "what about desserts?": a new course asked for, not the last dishes weighed
   if (intent === "compare" && !mentioned.length && (u.courses.length || u.categories.length)) intent = "recommend";
@@ -1773,7 +1778,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const afterOn = nt1.match(/\b(?:on|onto|to|into|in|for) (?:the|my) ((?:\w+ ){0,3}\w+)/)?.[1] ?? "";
   const onHost = afterOn ? mentioned.find((i) => u.spots.some((sp_) => sp_.dish.id === i.id && sp_.covered.some((k) => ` ${afterOn} `.includes(` ${u.toks[k]} `)) && nt1.indexOf(afterOn) <= nt1.indexOf(u.toks[sp_.covered[0]] ?? "\u0000"))) : undefined;
   // ("can add char siu on it?": the dish talked about, not the Char Siu plate)
-  const optHost = onHost ?? (earlierHost && /\b(on|to|in|into) it\b/.test(nt1) && mentioned.every((i) => !state.order.some((o) => o.item.id === i.id)) ? earlierHost : null) ?? (earlierHost && mentioned.length && !mentioned.some(fully) ? earlierHost : null) ?? mentioned.find((i) => i.modifiers?.length) ?? mentioned[0] ?? earlierHost ?? ofKind;
+  const optHost = onHost ?? (earlierHost && /\b(on|to|in|into) it\b/.test(nt1) && mentioned.every((i) => !state.order.some((o) => o.item.id === i.id)) ? earlierHost : null) ?? (earlierHost && mentioned.length && !mentioned.some(fully) ? earlierHost : null) ?? mentioned.find((i) => i.modifiers?.length) ?? mentioned[0] ?? (pointed.length === 1 ? pointed[0].item : undefined) ?? earlierHost ?? ofKind;
   // ("remove the egg and add minced pork instead. how much?": a change to the line ordered, not a question of the choice)
   const editsLine = state.order.some((o) => o.item.id === optHost?.id) && !/\b(can|could|may|boleh|bole|leh)\b/.test(nt1) && !/可以|能不能|可不可以/.test(u.text) && (REMOVE.test(nt1) || /\b(add|tambah)\b/.test(nt1));
   // (a conversation reader's order, when the bill uses it: "replace" always, "edits" on a turn that builds on an earlier one)
