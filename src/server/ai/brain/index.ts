@@ -1165,7 +1165,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // (a dish named only as another's add-on isn't named: "with pudding and pearls", "加鱼丸", "barley add lime")
   // (and the dishes just shown: "2 of the last one, large, with pearls")
   const ownIds = new Set(ownDishes(u, [...state.order.map((o) => o.item), ...(state.focus ? [state.focus] : []), ...state.shown], state.order.map((o) => o.item)).map((d) => d.id));
-  const mentioned = u.dishes.filter((d) => ownIds.has(d.id)).map((d) => ctx.items.find((i) => i.id === d.id)!).filter(Boolean);
+  const mentioned0 = u.dishes.filter((d) => ownIds.has(d.id)).map((d) => ctx.items.find((i) => i.id === d.id)!).filter(Boolean);
+  // ("… breakfast set, drink change to iced yuen yeung", "套餐，饮品转冻柠檬茶", "both drink tukar mango lassi"): the set's drink, not another
+  const drinkCue = /\b(drinks?|minuman|air)\b/.test(normalize(u.text)) || /饮品|饮料|嘢饮|饮/.test(u.text);
+  const setDrink = (d: Item) => drinkCue && isDrink(d) && mentioned0.some((h) => h.id !== d.id && (h.modifiers ?? []).some((g) => /drink|minuman|饮/i.test(g.name) && optionsSaid(u.text, h, true).add.some((o) => g.options.includes(o) && normalize(o.name).includes(normalize(d.name).replace(/^hk /, "")))));
+  const mentioned = mentioned0.filter((d) => !setDrink(d));
   // ("3 of the yam and 2 of the chocolate" of the one dish just shown, its flavours: a line of each)
   const focusChoices = mentioned.every((i) => i.id === state.focus?.id) && state.shown.length === 1 && state.focus?.id === state.shown[0].id && orderable(state.focus) ? [...normalize(u.text).matchAll(/\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s+(?:of\s+)?(?:the\s+)?([a-z]+(?: [a-z]+)?)\b/g)].map((m) => ({ n: NUMBER_OF[m[1]] ?? Number(m[1]), o: optionsSaid(m[2], state.focus!, true).add.find((o) => (state.focus!.modifiers ?? []).some((g) => (g.max ?? 1) === 1 && (g.min ?? 0) >= 1 && g.options.includes(o))) })) : [];
   const choiceLines: OrderLine[] = focusChoices.length && focusChoices.every((x) => x.o && x.n) ? focusChoices.map((x) => ({ item: state.focus!, count: x.n, options: [x.o!] })) : [];
