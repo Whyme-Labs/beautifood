@@ -1499,3 +1499,19 @@ describe("taking off and cancelling lines by their choices", () => {
     expect(ask("1 kl hokkien mee large and 1 kl hokkien mee small", "Got it.", "cancel the small one. how much now?")).toMatch(/^KL Hokkien Mee with Large \(RM16\.00\) = Total RM16\.00/);
   });
 });
+
+describe("what an add-on brings", () => {
+  const dishes = asItems([
+    { id: "a1", name: "Curry Laksa", category: "Laksa", description: "coconut curry broth with sambal belacan on the side", price: 1190, allergens: ["crustaceans"], dietary: [], spiceLevel: 2, isSignature: true },
+    { id: "a2", name: "Double Chicken Burger", category: "Burgers", description: "two chicken patties", price: 750, allergens: ["gluten"], dietary: [], spiceLevel: 0, isSignature: false },
+  ]).map((i) => (i.id === "a1" ? { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 3, options: [{ name: "Extra Sambal", price: 100 }, { name: "Glutinous Rice", price: 150 }] }] } : { ...i, modifiers: [{ name: "Add-ons", min: 0, max: 3, options: [{ name: "Cheese slice", price: 100 }, { name: "Mayonnaise", price: 0 }] }] }));
+  const shop = { ...ctx, items: dishes } as unknown as AssistantContext;
+  const ask = (...turns: string[]) => answerGuest(shop, turns.map((content, k) => ({ role: (k % 2 ? "assistant" : "user") as "user" | "assistant", content }))).answer;
+  it("says the sambal has shrimp, by its dish's words", () => {
+    expect(ask("the extra sambal got shrimp inside? im allergic to prawns")).toMatch(/Extra Sambal add-on \(sambal belacan\) has Crustaceans/);
+  });
+  it("warns of an add-on's allergen to a guest who said they avoid it, and only then", () => {
+    expect(ask("i'm allergic to dairy", "Noted.", "double chicken burger with cheese slice can?")).toMatch(/Cheese slice add-on has Milk/);
+    expect(ask("double chicken burger with cheese slice can?")).toMatch(/^Yes/);
+  });
+});

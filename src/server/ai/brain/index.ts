@@ -112,6 +112,17 @@ export type OrderLine = { item: Item; count: number; options?: ModifierOption[] 
 /** What a guest can order now: not sold out, and on a menu that's on. */
 const orderable = (i: Item) => !i.soldOut && i.servedNow !== false && i.active !== false;
 const unitPrice = (o: OrderLine) => o.item.price + (o.options ?? []).reduce((s, x) => s + x.price, 0);
+/** What an add-on brings: by its name ("Cheese slice" milk), what everyone knows of it (mayonnaise is egg,
+ * mee sua is wheat; glutinous rice has no gluten), and its dish's description ("sambal belacan"). */
+export function optionAllergens(o: ModifierOption, dish?: { description?: string | null }): Allergen[] {
+  const n = normalize(o.name);
+  const out = new Set(mentionedAllergens(o.name));
+  if (/\bglutinous\b|\bpulut\b/.test(n)) out.delete("gluten");
+  if (/\b(mayo|mayonnaise)\b/.test(n)) out.add("egg");
+  if (/\b(mee sua|mee|yellow noodles?|egg noodles?|bread|roti|bun|croutons?|batter)\b/.test(n) && !/\b(bihun|bee hoon|rice noodles?|kuey teow|kway teow)\b/.test(n)) out.add("gluten");
+  if (/\b(sambal|belacan|terasi|hae ko)\b/.test(n) && (/\b(belacan|terasi|hae ko)\b/.test(n) || /\b(belacan|terasi|shrimp paste|hae ko|dried shrimp|prawn paste)\b/i.test(dish?.description ?? ""))) out.add("crustaceans");
+  return [...out];
+}
 const sameOptions = (a: ModifierOption[] = [], b: ModifierOption[] = []) => a.length === b.length && a.every((o) => b.some((x) => x.name === o.name));
 
 /**
@@ -1585,6 +1596,12 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (over.length) return reply("dish_info", over.map((g) => t("assistantReply.maxChoices", { dish: name(optHost), group: g.name.toLowerCase(), max: g.max ?? 1, count: said.filter((o) => g.options.includes(o)).length })).join(sp), [optHost]);
     const priced = said.filter((o) => o.price > 0);
     const free = said.filter((o) => !o.price);
+    // ("double chicken burger with cheese slice can?" of a guest who avoids milk): said first
+    // (of an allergy said, before or now: not the "soy" of "酱油蒜香" or the egg of "fried egg" asked for)
+    const saidAllergy = /\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac|can t eat|cannot eat|cant eat)\b/.test(nt0) || /过敏|不能吃/.test(u.text);
+    const strictAvoid = [...state.avoid, ...(saidAllergy ? u.avoid : [])];
+    const riskOf = said.map((o) => ({ o, has: optionAllergens(o, optHost).filter((a) => strictAvoid.includes(a) && !optHost.allergens.includes(a)) })).filter((x) => x.has.length);
+    if (riskOf.length) return { ...reply("dish_info", `${riskOf.map((x) => t("assistantReply.addOnHas", { option: optionLabel(x.o), what: "", list: list(x.has.map(allergen)) })).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(riskOf.flatMap((x) => x.has))].map(allergen)) })}`, [optHost]), safetyNote: allyNote(locale) };
     if (priced.length) {
       const total = optHost.price + priced.reduce((n, o) => n + o.price, 0);
       // (its own price too: "RM17.90 (RM16.90, Iced Milo +RM1.00)")
@@ -1675,7 +1692,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("how many dips can i pick with the karaage?": a group of the dish's, by its name)
   // (its name in the plural, asked which or how many: not "what goes well with the chilli pan mee")
   const namesGroup = mentioned.length === 1 && /\b(what|which|how many)\b/.test(nt0) && !/\b(go|goes|going|pair|pairs|match)\b/.test(nt0) && (mentioned[0].modifiers ?? []).some((g) => normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(level|size|rice|portion)$/.test(w) && new RegExp(`\\b${w.replace(/s$/, "")}(s|es)\\b`).test(nt0)));
-  const asksChoices = namesGroup || !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|flavou?rs?|perisa|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (?!(?:sides?|drinks?|desserts?|dish|dishes) )(\w+ )?(can|could) (i|we) (add|put|get|have|change)( or (add|change|remove|swap))? (on|to|with|in|onto|for)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && (!/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) || /\b(and how much|how much each|each how much|berapa satu|berapa setiap)\b/.test(nt0)) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text));
+  // (not "the glutinous rice topping got gluten?": an add-on's allergen asked)
+  const optAllergyAsked = (u.allergens.length > 0 || u.diet.length > 0 || /\b(vegan|vegetarian|halal|dairy|milk)\b/.test(nt0)) && optionsAsked(u.text, live).length > 0 && !mentioned.length;
+  const asksChoices = !optAllergyAsked && (namesGroup || !/\b(so|too|very|banyak|many) (many )?(choices?|options?)\b/.test(nt0) && ((/\b(choose|choices?|options?|add ?ons?|extras?(?! (charge|cost))|toppings?|sizes?|bases?|kinds of milk|(what|which) milks?|flavou?rs?|perisa|pilihan|boleh tambah|ada saiz)\b/.test(nt0) || /\b(what|which) (?!(?:sides?|drinks?|desserts?|dish|dishes) )(\w+ )?(can|could) (i|we) (add|put|get|have|change)( or (add|change|remove|swap))? (on|to|with|in|onto|for)\b|\bapa (boleh|blh) (tambah|letak)\b/.test(nt0)) && (!/\b(extra charge|charge|cost|how much|berapa|allerg\w*|alergi|intolerant)\b/.test(nt0) || /\b(and how much|how much each|each how much|berapa satu|berapa setiap)\b/.test(nt0)) && /\b(what|which|any|got|ada|apa|can i|boleh)\b/.test(nt0) || /可以加什么|有什么选择|有哪些选择|有什么汤底|可以选/.test(u.text)));
   if (asksChoices) {
     const groupWord = (g: { name: string }) => normalize(g.name).split(" ").some((w) => w.length > 2 && ` ${nt0} `.includes(` ${w.replace(/s$/, "")}`));
     const of = mentioned.filter((i) => i.modifiers?.length).length ? mentioned.filter((i) => i.modifiers?.length) : [...(state.order.length ? [state.order[state.order.length - 1].item] : []), ...(state.focus ? [state.focus] : [])].filter((i) => i.modifiers?.some(groupWord)).slice(0, 1);
@@ -1786,16 +1805,34 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "Teh Tarik with iced": a line's add-ons
   // "does the cheese foam have dairy?", "我吃全素，可以加奶盖吗？", "what's in the snow cheese?": an add-on
   // asked about on its own, by what the menu's lines say it's made of ("salted cheese foam (cream cheese, …)")
+  const named_ = (o: ModifierOption) => normalize(o.name).split(" ").filter((w) => w.length > 2 && !mentionedAllergens(w).length && ` ${nt1} `.includes(` ${w} `)).length;
   const askedOpt = !mentioned.length && !nth && !state.order.length && !u.superlative && u.budget === null && !CHEAPEST_WAY.test(nt1) && !CHEAPEST_WAY_ZH.test(u.text) && (u.asksContents || u.allergens.length > 0 || u.diet.length > 0 || /\b(what is|whats|what s|apa itu)\b/.test(nt1) || /是什么/.test(u.text)) && (/[?？]|吗/.test(u.text) || QUESTION.test(nt1))
-    ? optionsAsked(u.text, live).sort((a, b) => b.dishes.length - a.dishes.length)[0]
+    // (the one named by more than an allergen word: "the extra sambal got shrimp?" is the Extra sambal, not the Prawns)
+    ? optionsAsked(u.text, live).sort((a, b) => named_(b.option) - named_(a.option) || b.dishes.length - a.dishes.length)[0]
     : undefined;
-  const madeOf = askedOpt && live.map((i) => (i.description ?? "").match(new RegExp(`${normalize(askedOpt.option.name).replace(/[^a-z0-9 ]/g, "")}\\s*\\(([^)]+)\\)`, "i"))?.[1]).find(Boolean);
+  // (not a note on it: "evaporated milk (vegetarian)" says nothing of what's in it)
+  const madeOf = askedOpt && live.map((i) => (i.description ?? "").match(new RegExp(`${normalize(askedOpt.option.name).replace(/[^a-z0-9 ]/g, "")}\\s*\\(([^)]+)\\)`, "i"))?.[1]).find((x) => !!x && !/^(vegetarian|vegan|halal|optional|extra|on the side|\+?rm ?\d)/i.test(x.trim()));
+  // ("the extra sambal got shrimp inside? im allergic to prawns", "the glutinous rice topping got gluten?"): what's known of it
+  // (asked of it: "got shrimp inside?", "ok for me?", "got gluten?"; not "with vanilla ice cream, how much?" or "which ones?")
+  const askedOfIt = (/\b(got|contain\w*|has|have|inside|ada|ok for me|safe|can i eat|can she eat|can he eat|vegan|vegetarian)\b/.test(nt1) || /含|有没有|可以吃/.test(u.text)) && !/\b(which|how much|berapa|price)\b/.test(nt1) && !/哪|多少钱/.test(u.text);
+  if (askedOpt && !madeOf && named_(askedOpt.option) > 0 && askedOfIt && (u.allergens.length || u.diet.length)) {
+    const host_ = askedOpt.dishes[0];
+    const has = optionAllergens(askedOpt.option, host_).filter((a) => !u.allergens.length || u.allergens.includes(a));
+    const label = optionLabel(askedOpt.option);
+    // (and why, when it's from the dish's words: "sambal belacan", "shrimp paste")
+    const why = ["sambal belacan", "belacan", "shrimp paste", "terasi", "hae ko", "dried shrimp"].find((w) => new RegExp(`\\b${w}\\b`, "i").test(host_?.description ?? ""));
+    const what_ = has.includes("crustaceans") && /sambal/i.test(askedOpt.option.name) && why ? ` (${why})` : "";
+    const text = has.length ? `${t("assistantReply.addOnHas", { option: label, what: what_, list: list(has.map(allergen)) })}${u.allergens.length ? t("assistantReply.notSuitable", { list: list(has.map(allergen)) }) : ""}` : `${label}:${t("assistantReply.optionHasNone", { allergens: list(u.allergens.map((a) => (en ? allergen(a).toLowerCase() : allergen(a)))) })}`;
+    if (has.length || u.allergens.length) return { ...reply("dish_allergen", text, []), safetyNote: allyNote(locale) };
+  }
   if (askedOpt && madeOf) {
-    const has = mentionedAllergens(madeOf).filter((a) => !u.allergens.length || u.allergens.includes(a) || u.diet.length > 0);
-    const notVegan = u.diet.includes("vegan") && mentionedAllergens(madeOf).some((a) => a === "milk" || a === "egg");
+    // (what it's made with, and what its own name says: "evaporated milk" is milk)
+    const all_ = [...new Set([...mentionedAllergens(madeOf), ...optionAllergens(askedOpt.option)])];
+    const has = all_.filter((a) => !u.allergens.length || u.allergens.includes(a) || u.diet.length > 0);
+    const notVegan = u.diet.includes("vegan") && all_.some((a) => a === "milk" || a === "egg");
     const parts = [t("assistantReply.optionMadeOf", { option: optionLabel(askedOpt.option), made: madeOf })];
     if (has.length) parts.push(t("assistantReply.optionHas", { allergens: list(has.map(allergen)) }));
-    else if (u.allergens.length) parts.push(t("assistantReply.optionHasNone", { allergens: list(u.allergens.map(allergen)) }));
+    else if (u.allergens.length) parts.push(t("assistantReply.optionHasNone", { allergens: list(u.allergens.map((a) => (en ? allergen(a).toLowerCase() : allergen(a)))) }));
     if (notVegan) parts.push(t("assistantReply.optionNotVegan"));
     return reply("dish_allergen", parts.join(""), []);
   }
