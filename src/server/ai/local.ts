@@ -116,7 +116,7 @@ const ALLERGEN_WORDS: Record<Allergen, RegExp> = {
   molluscs: /shellfish|mollusc|mollusk|squid|clam|oyster|mussel|scallop|octopus|cuttlefish|cockle|abalone|whelk|snail|escargot|geoduck/i,
   fish: /\bfish\b|seafood|anchov|\bbilis\b|salmon|\btuna\b|mackerel|sardine|bonito|\bcod\b|\beel\b|tilapia|grouper|seabass|sea bass/i,
   egg: /\beggs?\b/i,
-  milk: /milk|dairy|lactose|cheese|cream/i,
+  milk: /milk|dairy|lactose|cheese|cream|yogh?urt|\braita\b|\bwhey\b|\bkefir\b|\blabneh\b/i,
   peanuts: /peanut/i,
   tree_nuts: /tree ?nut|\bnuts?\b|almond|cashew|walnut|hazelnut|pistachio/i,
   soy: /\bsoy|soya|tofu|\bnatto\b|edamame|\bmiso\b|tempeh/i,

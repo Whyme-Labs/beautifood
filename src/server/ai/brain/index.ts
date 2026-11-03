@@ -1145,7 +1145,10 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
   if (only && !/[\u3400-\u9fff]/.test(asked) && !normalize(asked).split(" ").some((w) => w.length > 3 && normalize(only.name).split(" ").includes(w)))
     asked = asked.replace(/\b(?:the |a |one )?((?:[a-z]+ ){0,2}[a-z]+)\s+one\b(?!\s+(?:of|more))/i, (m, p: string) => {
       const ws = p.toLowerCase().split(" ").filter((w) => !/^(the|a|one|that|this)$/.test(w));
-      if (!ws.length || ws.some((w) => /^(and|or|with|but|then|also|dan|atau|make|change|of|them|it)$/.test(w)) || !optionsSaid(ws.join(" "), only, true).add.length || ws.some((w) => ctx.items.some((i) => normalize(i.name).split(" ").includes(w)))) return m;
+      if (!ws.length || ws.some((w) => /^(and|or|with|but|then|also|dan|atau|make|change|of|them|it)$/.test(w)) || !optionsSaid(ws.join(" "), only, true).add.length) return m;
+      // (a dish's word too only when no choice of this dish is named by it: "the kadala one" of the parotta's Kadala curry gravy)
+      const inChoice = (only.modifiers ?? []).some((g) => g.options.some((o) => ws.every((w) => normalize(o.name).split(" ").includes(w))));
+      if (!inChoice && ws.some((w) => ctx.items.some((i) => normalize(i.name).split(" ").includes(w)))) return m;
       return ordering_ ? `1 ${only.name} ${ws.join(" ")}` : `the ${only.name} ${ws.join(" ")}`;
     });
   const u = understand(ctx.items as Dish[], asked);
@@ -1859,7 +1862,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "can I add pudding?", "can make less spicy?", "boleh tambah telur?", "可以加奶盖吗？", "can I get it hot?":
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
-    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走|不要)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
+    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan [a-z]+ (one|ones)\s*[?？]|\bada yang [a-z]+\s*[?？]/i.test(u.text) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走|不要)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
     !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text) &&
     // ("can I have the second one with an iced lemon tea? total?": an order, its total asked)
     !(pointed.length && (/\b(total|altogether|semua|jumlah)\b/.test(nt1) || /一共|总共/.test(u.text)));
@@ -2304,7 +2307,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "Teh Tarik with iced": a line's add-ons
   // "does the cheese foam have dairy?", "我吃全素，可以加奶盖吗？", "what's in the snow cheese?": an add-on
   // asked about on its own, by what the menu's lines say it's made of ("salted cheese foam (cream cheese, …)")
-  const named_ = (o: ModifierOption) => normalize(o.name).split(" ").filter((w) => w.length > 2 && !mentionedAllergens(w).length && ` ${nt1} `.includes(` ${w} `)).length;
+  // (or its whole one-word name, itself an allergen's: "the raita got dairy?")
+  const named_ = (o: ModifierOption) => normalize(o.name).split(" ").filter((w) => w.length > 2 && (!mentionedAllergens(w).length || (normalize(o.name) === w && nt1.split(" ").some((x) => x !== w && mentionedAllergens(x).length))) && ` ${nt1} `.includes(` ${w} `)).length;
   const askedOpt = !mentioned.length && !nth && !state.order.length && !u.superlative && u.budget === null && !CHEAPEST_WAY.test(nt1) && !CHEAPEST_WAY_ZH.test(u.text) && (u.asksContents || u.allergens.length > 0 || u.diet.length > 0 || /\b(what is|whats|what s|apa itu)\b/.test(nt1) || /是什么/.test(u.text)) && (/[?？]|吗/.test(u.text) || QUESTION.test(nt1))
     // (the one named by more than an allergen word: "the extra sambal got shrimp?" is the Extra sambal, not the Prawns)
     ? optionsAsked(u.text, live).sort((a, b) => named_(b.option) - named_(a.option) || b.dishes.length - a.dishes.length)[0]
@@ -2320,7 +2324,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (porky.length) return reply("dish_info", t("assistantReply.addOnPork", { option: optionLabel(porky[0].option) }), []);
   }
   // (not an allergen word that is the add-on itself: "with extra cheese" for a fish allergy said before is about the fish)
-  const ownAllergy_ = u.allergens.filter((a) => u.stated.includes(a) || state.avoid.includes(a) || !optionAllergens(askedOpt?.option ?? { name: "", price: 0 }).includes(a));
+  // ("the raita got dairy?": the word asked about, not the add-on's own name, says the allergen)
+  const optWords_ = new Set(normalize(askedOpt?.option.name ?? "").split(" "));
+  const askedApart = (a: Allergen) => mentionedAllergens(nt1.split(" ").filter((w) => !optWords_.has(w)).join(" ")).includes(a);
+  const ownAllergy_ = u.allergens.filter((a) => u.stated.includes(a) || state.avoid.includes(a) || !optionAllergens(askedOpt?.option ?? { name: "", price: 0 }).includes(a) || askedApart(a));
   if (askedOpt && !madeOf && named_(askedOpt.option) > 0 && askedOfIt && (ownAllergy_.length || u.diet.length)) {
     const host_ = askedOpt.dishes[0];
     const has = optionAllergens(askedOpt.option, host_).filter((a) => !u.allergens.length || u.allergens.includes(a));
@@ -2329,7 +2336,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const why = ["sambal belacan", "belacan", "shrimp paste", "terasi", "hae ko", "dried shrimp"].find((w) => new RegExp(`\\b${w}\\b`, "i").test(host_?.description ?? ""));
     const what_ = has.includes("crustaceans") && /sambal/i.test(askedOpt.option.name) && why ? ` (${why})` : "";
     const text = has.length ? `${t("assistantReply.addOnHas", { option: label, what: what_, list: list(has.map(allergen)) })}${u.allergens.length ? t("assistantReply.notSuitable", { list: list(has.map(allergen)) }) : ""}` : `${label}:${t("assistantReply.optionHasNone", { allergens: list(u.allergens.map((a) => (en ? allergen(a).toLowerCase() : allergen(a)))) })}`;
-    if (has.length || u.allergens.length) return { ...reply("dish_allergen", text, []), safetyNote: allyNote(locale) };
+    // (the dish it's an add-on of, when it's the one just talked about: "biryani can add what?" … "the raita got dairy?")
+    const of_ = host_ && askedOpt.dishes.length === 1 && state.shown.some((i) => i.id === host_.id) ? [host_] : [];
+    if (has.length || u.allergens.length) return { ...reply("dish_allergen", text, of_), safetyNote: allyNote(locale) };
   }
   if (askedOpt && madeOf) {
     // (what it's made with, and what its own name says: "evaporated milk" is milk)
@@ -3145,6 +3154,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     case "pairing": {
       const anchors = focus.length ? focus : state.focus ? [state.focus] : [];
       const anchor = anchors[0];
+      // ("pazham pori with vanilla ice cream pls": an add-on it hasn't, asked for, not what goes with it)
+      if (focus.length === 1 && !/\b(go|goes|going|pair|pairs|pairing|match|matches|sesuai|recommend|suggest)\b/.test(nt0) && /\b(pls|please|can|boleh|nak|want|i ll have|give me|order)\b/.test(nt0)) {
+        const gone_ = missingAddOns(u.text, focus, live);
+        if (gone_.length) return reply("dish_info", `${gone_.map((x) => t("assistantReply.addOnNone", { option: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })).join(sp)}${sp}${t("assistantReply.priceIs", { dish: name(focus[0]), price: money(focus[0].price) })}`, focus);
+      }
       const wanted = u.courses.filter((k) => k !== "food");
       const wantedCats = u.categories.filter((c) => !anchors.some((a) => a.category === c));
       let pool = live.filter((i) => !anchors.includes(i) && allowed(i, c));
@@ -3387,7 +3401,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
 function missingAddOns(text: string, hosts: Item[], live: Item[], cue = /\b(?:tambah|add|extra|letak|top with|with)\s+(.+)$/): string[] {
   if (/[\u3400-\u9fff]/.test(text)) return [];
   const COUNTED = /^(one|two|three|four|five|satu|dua|tiga|empat|lima|another|lagi|sama|same|yang|again|more|order|now|shot|shots|money|duit|cost|charge|charges|price)$/;
-  const NOT_FOOD = /^(service|charge|charges|tax|taxes|sst|gst|cukai|caj|perkhidmatan|friend|friends|kawan|me|my|you|us|him|her|them|family|kids?|everything|all|that|this|those|one|ones|ice|ais|sugar|gula)$/;
+  const NOT_FOOD = /^(service|charge|charges|tax|taxes|sst|gst|cukai|caj|perkhidmatan|friend|friends|kawan|me|my|you|us|him|her|them|family|kids?|everything|all|that|this|those|one|ones)$/;
+  // ("with ice", "less sugar": the drink's own, but "vanilla ice cream" is a thing)
+  const ALONE = /^(ice|ais|sugar|gula|less|kurang|no|normal)$/;
   const STOP = /^(a|an|the|some|extra|more|sikit|lagi|please|pls|also|too|on|top|it|in|of|with|and|dan|berapa|how|much|ah|lah|la|boleh|can|or|not)$/;
   const out: string[] = [];
   for (const clause of text.split(/[,.;?!]|(?<!\b(?:first|second|third|last|the|that|this|which|same|each|every|pertama|kedua)\s)(?=\b(?:one|satu) (?:with|w|dengan)\b)/i)) {
@@ -3395,7 +3411,7 @@ function missingAddOns(text: string, hosts: Item[], live: Item[], cue = /\b(?:ta
     if (!m) continue;
     for (const part of m[1].split(/\b(?:and|dan|n)\b|&/)) {
       const words = part.trim().split(" ").filter((w) => w && !STOP.test(w));
-      if (!words.length || words.some((w) => /^\d/.test(w) || NOT_FOOD.test(w))) continue;
+      if (!words.length || words.some((w) => /^\d/.test(w) || NOT_FOOD.test(w)) || words.every((w) => ALONE.test(w))) continue;
       const phrase = words.join(" ");
       if (hosts.some((h) => optionsSaid(phrase, h, true).add.length || optionsSaid(phrase, h, true, true).add.length)) continue;
       // (a count or another of something is a dish ordered, and so is a word of a dish's name)
