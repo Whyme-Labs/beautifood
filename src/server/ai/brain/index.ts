@@ -2140,6 +2140,21 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return reply("dish_info", t(key, { option: optionLabel(vs.o), dish: name(vs.h), addPrice: money(a), item: name(vs.d!), itemPrice: money(b), diff: money(Math.abs(a - b)) }), [vs.h, vs.d!]);
     }
   }
+  // ("i'm allergic to egg. can still add the onsen egg?", "im vegetarian. if i add pork floss still ok?"): the add-on
+  // asked of the dish talked about, against what they said
+  {
+    // (of the dish talked about before, an add-on to put on it: not a bill, nor one taken off)
+    const host_ = !mentioned.length ? state.focus ?? (state.shown.length === 1 ? state.shown[0] : undefined) : undefined;
+    if (host_ && /\b(add|adding|tambah|put)\b/.test(nt1) && !/\b(how much|berapa|total|price|skip|without|no|tanpa|remove)\b/.test(nt1) && !/多少|几多|几钱|不要|走/.test(u.text)) {
+      const said_ = optionsSaid(u.text, host_, true).add;
+      const allergy_ = [...new Set([...u.stated, ...state.avoid])];
+      const bad_ = said_.map((o) => ({ o, has: optionAllergens(o, host_, ctx.items).filter((a) => allergy_.includes(a)) })).filter((x) => x.has.length);
+      if (bad_.length && allergy_.length) return { ...reply("dish_info", bad_.map((x) => `${t("assistantReply.addOnHas", { option: optionLabel(x.o), what: "", list: list(x.has.map(allergen)) })}${t("assistantReply.notSuitable", { list: list(x.has.map(allergen)) })}`).join(sp), [host_]), safetyNote: allyNote(locale) };
+      const vegetarian_ = [...state.diet, ...u.diet].includes("vegetarian") && !/\b(not|bukan) vegetarian\b/.test(nt1);
+      const meat_ = vegetarian_ ? said_.filter((o) => /\b(chicken|beef|pork|fish|prawns?|shrimp|meat|bacon|ham|floss|lard|anchov\w*|squid|crab|ayam|daging|babi|ikan|udang|sotong)\b/i.test(o.name) || optionAllergens(o, host_, ctx.items).some((a) => a === "fish" || a === "crustaceans" || a === "molluscs")) : [];
+      if (meat_.length) return reply("dish_info", t("assistantReply.addOnNotVegetarian", { option: list(meat_.map(optionLabel)), dish: name(host_) }), [host_]);
+    }
+  }
   // ("2 of them, one with mushroom sauce, both with egg, how much?" with an order read: its bill, not the add-on's price)
   if (asksOption && optHost && orderable(optHost) && !editsLine && !(byBasket && (howMuch || totalWord || withCharges)) && !u.budget && !(!onHost && mentioned.length >= 2 && mentioned.every((i) => !optionsSaid(u.text, i, true).add.length) && !mentioned.slice(1).some((i) => optionsAsked(name(i), live).length))) {
     const said = optionsSaid(u.text, optHost, true).add;
@@ -3170,6 +3185,12 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // (a narrowing of what was just shown stays one, whatever the filters made of it)
   if (ofShown && intent === "recommend") intent = "refine";
+  // ("pazham pori with vanilla ice cream pls", "egg fried rice with crab meat pls": an add-on it hasn't, asked for)
+  if (focus.length === 1 && mentioned.length === 1 && !u.stated.length && !/\b(go|goes|going|pair|pairs|pairing|match|matches|sesuai|recommend|suggest|allerg\w*)\b/.test(nt0) && /\b(pls|please|nak|want|i ll have|give me|order)\b/.test(nt0) && /\bwith\b/.test(nt0)) {
+    const gone_ = missingAddOns(u.text, focus, live);
+    if (gone_.length) return reply("dish_info", `${gone_.map((x) => t("assistantReply.addOnNone", { option: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })).join(sp)}${sp}${t("assistantReply.priceIs", { dish: name(focus[0]), price: money(focus[0].price) })}`, focus);
+  }
+
   // ("our signature is …" → "that one spicy ah? my kid also eating"): how spicy the one pointed at is, not a list
   if (intent === "recommend" && u.refersBack && focus.length === 1 && !mentioned.length && (/\b(spicy|pedas|hot)\b/.test(nt0) || /辣/.test(u.text)) && (/[?？]|\b(ah|ke|tak)\b/.test(u.text) || /吗|不辣/.test(u.text)) && !/\b(which|what|other|another|less|milder|something)\b/.test(nt0)) intent = "dish_info";
   switch (intent) {
@@ -3332,11 +3353,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     case "pairing": {
       const anchors = focus.length ? focus : state.focus ? [state.focus] : [];
       const anchor = anchors[0];
-      // ("pazham pori with vanilla ice cream pls": an add-on it hasn't, asked for, not what goes with it)
-      if (focus.length === 1 && !/\b(go|goes|going|pair|pairs|pairing|match|matches|sesuai|recommend|suggest)\b/.test(nt0) && /\b(pls|please|can|boleh|nak|want|i ll have|give me|order)\b/.test(nt0)) {
-        const gone_ = missingAddOns(u.text, focus, live);
-        if (gone_.length) return reply("dish_info", `${gone_.map((x) => t("assistantReply.addOnNone", { option: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })).join(sp)}${sp}${t("assistantReply.priceIs", { dish: name(focus[0]), price: money(focus[0].price) })}`, focus);
-      }
+
       const wanted = u.courses.filter((k) => k !== "food");
       const wantedCats = u.categories.filter((c) => !anchors.some((a) => a.category === c));
       let pool = live.filter((i) => !anchors.includes(i) && allowed(i, c));
@@ -3594,7 +3611,8 @@ function missingAddOns(text: string, hosts: Item[], live: Item[], cue = /\b(?:ta
       if (hosts.some((h) => optionsSaid(phrase, h, true).add.length || optionsSaid(phrase, h, true, true).add.length)) continue;
       // (a count or another of something is a dish ordered, and so is a word of a dish's name)
       if (words.some((w) => COUNTED.test(w))) continue;
-      if (live.some((i) => words.some((w) => w.length > 2 && normalize(i.name).split(" ").some((x) => x === w || x === `${w}s` || `${x}s` === w)))) continue;
+      // (all of its words, one dish's: "crab meat" isn't the Crab Roe Xiaolongbao)
+      if (live.some((i) => words.filter((w) => w.length > 2).length > 0 && words.filter((w) => w.length > 2).every((w) => normalize(i.name).split(" ").some((x) => x === w || x === `${w}s` || `${x}s` === w)))) continue;
       // (another dish's part, said for this one; not one this dish's own line names with no add-on for it: "laksa add cockles")
       if (live.some((i) => !hosts.some((h) => h.id === i.id) && words.every((w) => normalize(`${i.name} ${i.description ?? ""}`).split(" ").some((x) => x === w || x === `${w}s` || `${x}s` === w)))) continue;
       out.push(phrase);
