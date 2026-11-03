@@ -570,6 +570,7 @@ const en = {
     oil: { vegetable: "vegetable oil", palm: "palm oil", peanut: "peanut oil", sesame: "sesame oil", canola: "canola oil", olive: "olive oil", butter: "butter", ghee: "ghee" },
     oneOfGroup: "{dish} takes just one {group}: {list}. Which one would you like?",
     maxChoices: "{dish} takes up to {max} {group}, and that's {count}: which {max} would you like?",
+    withoutAddOn: "{dish} itself doesn't list them, so order it without the add-on: {option} is made with {list}.",
     addOnHasOn: "{dish}: the {option} add-on{what} has {list}.",
     drinkChoicesNot: "{drink} isn't one of the drinks that come with {dish}: you can pick {list}.",
     oneSize: "{dish} comes in one size only.",

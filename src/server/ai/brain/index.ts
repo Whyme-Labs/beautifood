@@ -1845,7 +1845,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const ownWords = (o: ModifierOption) => normalize(o.name).split(" ").filter((w) => w.length > 2 && !mentionedAllergens(w).length && ` ${nt1} `.includes(` ${w} `));
     const cue_ = /\b(with|instead|add|tambah|change|swap|switch|put|tukar|ganti)\b/.test(nt1) || /加|换/.test(u.text);
     const risky = cue_ ? optionsSaid(u.text, d, true).add.filter((o) => ownWords(o).length).map((o) => ({ o, has: optionAllergens(o, d, ctx.items).filter((a) => u.stated.includes(a)) })).filter((x) => x.has.length) : [];
-    if (risky.length) return { ...reply("dish_info", `${risky.map((x) => t("assistantReply.addOnHasOn", { option: optionLabel(x.o), what: "", dish: name(d), list: list(x.has.map(allergen)) })).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(risky.flatMap((x) => x.has))].map(allergen)) })}`, [d]), safetyNote: allyNote(locale) };
+    // (the dish fine on its own: order it without the add-on)
+    const swapped_ = /\b(instead|change|swap|switch|tukar|ganti|replace)\b/.test(nt1) || /换/.test(u.text);
+    const withoutR = risky.length && !swapped_ && risky.every((x) => !x.has.some((a) => d.allergens.includes(a))) && allowed(d, { ...c, maxSpice: null, minSpice: null, budget: null }) ? `${sp}${risky.map((x) => t("assistantReply.withoutAddOn", { dish: name(d), option: optionLabel(x.o), list: list(x.has.map(allergen)) })).join(sp)}` : "";
+    if (risky.length) return { ...reply("dish_info", `${risky.map((x) => t("assistantReply.addOnHasOn", { option: optionLabel(x.o), what: "", dish: name(d), list: list(x.has.map(allergen)) })).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(risky.flatMap((x) => x.has))].map(allergen)) })}${withoutR}`, [d]), safetyNote: allyNote(locale) };
   }
   // ("meal drink can change to milo ais?" of a dish whose meal comes with some drinks only: one it doesn't, told so)
   const mealOf = state.focus ?? earlierHost;
@@ -1896,7 +1899,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const boozy = halal_ ? said.filter((o) => /\b(wine|beer|brandy|rum|sake|mirin|liquor|whisky|whiskey|vodka|soju|cognac|shaoxing|xo|alcohol)\b|酒/i.test(o.name)) : [];
     if (boozy.length) return reply("dish_info", t("assistantReply.addOnNotHalal", { option: list(boozy.map(optionLabel)), dish: name(optHost) }), [optHost]);
     if (notVeganOf.length && !riskOf.length) return reply("dish_info", t("assistantReply.addOnNotVegan", { option: list(notVeganOf.map(optionLabel)), dish: name(optHost) }), [optHost]);
-    if (riskOf.length) return { ...reply("dish_info", `${riskOf.map((x) => { const made = optionMadeOf(x.o, [optHost, ...ctx.items]); return t("assistantReply.addOnHasOn", { option: optionLabel(x.o), what: /\b(belacan|terasi)\b/i.test(x.o.name) ? ` (${en ? "shrimp paste" : "虾膏"})` : made ? ` (${made})` : "", dish: name(optHost), list: list(x.has.map(allergen)) }); }).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(riskOf.flatMap((x) => x.has))].map(allergen)) })}`, [optHost]), safetyNote: allyNote(locale) };
+    // ("the cendol with vanilla ice cream ok for him?" when the cendol itself is fine): without it, then
+    const plainOk = riskOf.length === said.length && riskOf.every((x) => !x.has.some((a) => optHost.allergens.includes(a))) && allowed(optHost, { ...c, maxSpice: null, minSpice: null, budget: null });
+    const withoutO = riskOf.length && plainOk && !(/\b(instead|change|swap|switch|tukar|ganti|replace)\b/.test(nt1) || /换/.test(u.text)) ? `${sp}${riskOf.map((x) => t("assistantReply.withoutAddOn", { dish: name(optHost), option: optionLabel(x.o), list: list(x.has.map(allergen)) })).join(sp)}` : "";
+    if (riskOf.length) return { ...reply("dish_info", `${riskOf.map((x) => { const made = optionMadeOf(x.o, [optHost, ...ctx.items]); return t("assistantReply.addOnHasOn", { option: optionLabel(x.o), what: /\b(belacan|terasi)\b/i.test(x.o.name) ? ` (${en ? "shrimp paste" : "虾膏"})` : made ? ` (${made})` : "", dish: name(optHost), list: list(x.has.map(allergen)) }); }).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(riskOf.flatMap((x) => x.has))].map(allergen)) })}${withoutO}`, [optHost]), safetyNote: allyNote(locale) };
     if (priced.length) {
       // ("laksa add cockles and extra prawns": what it hasn't, said first)
       const missing_ = missingAddOns(u.text, [optHost], live).map((x) => `${t("assistantReply.notAvailable", { thing: en ? x.charAt(0).toUpperCase() + x.slice(1) : x })}${sp}`).join("");
