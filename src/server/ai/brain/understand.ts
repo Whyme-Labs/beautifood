@@ -134,7 +134,7 @@ const GENERIC = new Set(
 
 /** Places and styles a dish is named after: they describe it ("Penang Assam Laksa") but don't name it on their own ("the traffic on the Penang bridge"). */
 const ORIGIN = new Set(
-  "free gluten dairy sugar less penang ipoh melaka malacca johor kelantan kedah perak sabah sarawak kampung hainanese hokkien cantonese teochew hakka nyonya peranakan sichuan szechuan hong kong taiwanese thai korean japanese chinese indian malay mamak western italian singapore".split(" "),
+  "free gluten dairy sugar less penang ipoh melaka malacca johor kelantan kedah perak sabah sarawak kampung hainanese hokkien cantonese teochew hakka nyonya peranakan sichuan szechuan hong kong taiwanese thai korean japanese chinese indian malay mamak western italian singapore kerala malabar goan punjabi filipino vietnamese shanghai shanghainese".split(" "),
 );
 
 interface DishIndex {
@@ -608,6 +608,13 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const pairOnly = onlyIts(run);
       if (run.length >= 2 && ((run.length >= name.length - 1 && (run.length >= 3 || run.some((i) => !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))) || run.some((i) => df(toks[i]) === 1 && !GENERIC.has(toks[i]) && toks[i].length >= 4) || pairOnly))
         return void found.push({ dish, at: run[0], covered: run, score: run.reduce((sum, i) => sum + 1 / df(toks[i]) * (GENERIC.has(toks[i]) ? 0.3 : 1), 0) / total + run.length * 0.01 });
+      // ("barbecue platter plus 2 more pork sticks"): a counted word far from the rest is that family's one with it,
+      // the other word the platter's
+      const lone = covered.filter((i) => COUNT_W.test(toks[i - 1] ?? "") || (/^(more|lagi|extra)$/.test(toks[i - 1] ?? "") && COUNT_W.test(toks[i - 2] ?? "")));
+      if (lone.length === 1 && name.length === 2) {
+        const fam = items.filter((o) => { const ws = normalize(o.name).split(" "); return ws.length === 2 && ws.some((x) => same(toks[lone[0]], x)) && ws.some((x) => !same(toks[lone[0]], x) && (ix.df.get(x) ?? 0) >= 3); });
+        if (fam.length === 1 && fam[0] === dish) return void found.push({ dish, at: lone[0], covered: lone, score: 0.5 });
+      }
       if (!unique || !own.length || Math.max(...own) - Math.min(...own) + 1 > name.length + 2) return;
       const w = own.reduce((sum, i) => sum + 1 / df(toks[i]), 0);
       return void found.push({ dish, at: Math.min(...own), covered: own, score: w / total + own.length * 0.01 });
@@ -1252,7 +1259,7 @@ export function read(items: Dish[], asked: string): Reading {
   const cut = items.flatMap((i) => { const ws = i.name.toLowerCase().split(/[^a-z]+/).filter(Boolean); return ws.length >= 2 && ws[1].length >= 6 ? [[new RegExp(`\\b${ws[0]} (${ws[1].slice(0, 3)}[a-z]{0,${ws[1].length - 4}})\\b(?![a-z])`, "gi"), `${ws[0]} ${ws[1]}`] as [RegExp, string]] : []; });
   const spaced = [...cut, ...longWords.map((w) => [new RegExp(`\\b${[...w].join("[ -]?")}\\b`, "gi"), w] as [RegExp, string]).filter(([re, w]) => re.source.length > 0 && w.length >= 8)];
   // (and the ones everyone writes: "xlb", "ckt", "bkt")
-  const aliased = [[/\b(siu yuk|siu yoke|siew yoke|siew yuk|sio bak)\b/gi, "roast pork"], [/\b(char siew|cha siu|char sio)\b/gi, "char siu"], [/\bxlbs?\b/gi, "xiaolongbao"], [/\bteh cina\b/gi, "chinese tea"], [/\bckt\b/gi, "char kway teow"], [/\bbkt\b/gi, "bak kut teh"], ...aliasedInitials] as [RegExp, string][];
+  const aliased = [[/\b(siu yuk|siu yoke|siew yoke|siew yuk|sio bak)\b/gi, "roast pork"], [/\b(char siew|cha siu|char sio)\b/gi, "char siu"], [/\bxlbs?\b/gi, "xiaolongbao"], [/\bteh cina\b/gi, "chinese tea"], [/\bckt\b/gi, "char kway teow"], [/\bbkt\b/gi, "bak kut teh"], [/\bbbq\b/gi, "barbecue"], ...aliasedInitials] as [RegExp, string][];
   const question = spaced.reduce((q, [re, to]) => q.replace(re, to), aliased.reduce((q, [re, to]) => (menuText.includes(to) && !items.some((i) => re.test(i.name)) ? q.replace(re, to) : q), items.some((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes("养乐多"))) ? said.replace(/(?<!养乐)多多/g, "养乐多") : said));
   const raw = question.normalize("NFKC").toLowerCase();
   const ix = dishIndex(items);

@@ -1568,6 +1568,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
   }
 
+  // ("bbq platter enough for 3 ppl ah?" of a platter "for two"): how many it's meant for, against how many they are
+  if (mentioned.length === 1 && u.party && u.party >= 2 && (/\b(enough|cukup|sufficient|can feed|feed|fill)\b/.test(nt0) || /够/.test(u.text))) {
+    const d = mentioned[0];
+    const WORDS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
+    const m = normalize(d.description ?? "").match(/\b(?:for|serves|feeds|untuk) (one|two|three|four|five|six|\d)(?: (?:people|persons|pax|orang))?\b/);
+    const serves = m ? WORDS[m[1]] ?? Number(m[1]) : 0;
+    if (serves >= 1) {
+      const key = serves >= u.party ? "assistantReply.servesEnough" : "assistantReply.servesFewer";
+      return reply("dish_info", t(key, { dish: name(d), price: money(d.price), serves, party: u.party }), [d]);
+    }
+  }
   // ("got beer bucket or not? cheaper than 5 bottles?", "一桶五支几多钱？" of the San Miguel just asked about): a choice
   // that is several of it at once, its price against that many one by one
   {
@@ -2192,7 +2203,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("can share 1 pot tea for 3 or must pay each ah?" of a tea charged per person): per head, and for them all
   const perHead = [...mentioned, ...(state.focus ? [state.focus] : [])].find((i) => /\b(per person|per pax|per head|seorang)\b/i.test(i.description ?? ""));
   const heads = u.party ?? Number(nt1.match(/\bfor (\d{1,2})\b/)?.[1] ?? 0);
-  if (perHead && heads >= 2 && (/\b(share|sharing|kongsi|each|per person|seorang)\b/.test(nt1) || /[两三四五六七八九十\d]位/.test(u.text))) {
+  // (not one line of a whole order: "2 pork xlb, 1 shengjian, …, 4 chinese tea. split 4 ways")
+  if (perHead && heads >= 2 && mentioned.filter((i) => i !== perHead).length < 2 && (/\b(share|sharing|kongsi|each|per person|seorang)\b/.test(nt1) || /[两三四五六七八九十\d]位/.test(u.text))) {
     // (with the choice said: "茶要菊花，四位" is four chrysanthemum teas)
     const unit = perHead.price + optionsSaid(u.text, perHead, true).add.reduce((n, o) => n + o.price, 0);
     return reply("dish_info", t("assistantReply.perHeadPrice", { dish: name(perHead), price: money(unit), n: heads, total: money(unit * heads) }), [perHead]);

@@ -475,6 +475,8 @@ const en = {
     colouredWith: "{dish} gets its colour from {what}.",
     bundleSaves: "{dish}, {option}: {price}, against {apart} for {n} one by one, so it saves you {saved}.",
     bundleNoSave: "{dish}, {option}: {price}; {n} one by one come to {apart}.",
+    servesEnough: "{dish} ({price}) is meant for {serves} people, so it's enough for {party}.",
+    servesFewer: "{dish} ({price}) is meant for {serves} people, so for {party} it'll be a bit short: add a dish or two.",
     weHave: "Here's what we have:",
     noHave: "We don't have {thing} on today's menu, sorry. Our favourites are {list}.",
     noHaveClosest: "We don't have {thing} on today's menu, sorry. The closest we have:",

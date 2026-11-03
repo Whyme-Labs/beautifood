@@ -473,6 +473,8 @@ const zh = {
     colouredWith: "{dish}的颜色来自{what}。",
     bundleSaves: "{dish}（{option}）：{price}，单点{n}个要{apart}，省{saved}。",
     bundleNoSave: "{dish}（{option}）：{price}；单点{n}个是{apart}。",
+    servesEnough: "{dish}（{price}）是{serves}人份的，{party}个人够吃。",
+    servesFewer: "{dish}（{price}）是{serves}人份的，{party}个人吃会不太够，可以再加一两样。",
     weHave: "我们有这些：",
     noHave: "抱歉，今天的菜单上没有{thing}。大家最爱的是{list}。",
     noHaveClosest: "抱歉，今天的菜单上没有{thing}。最接近的是：",
