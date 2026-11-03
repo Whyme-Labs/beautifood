@@ -1117,6 +1117,10 @@ function wordsAvoided(items: Dish[], question: string): string[] {
       if (!/^(and|or|dan|atau|n|&|nor)$/.test(toks[j + 1] ?? "")) break;
     }
   });
+  // ...and in Chinese: "不吃葱蒜", "走葱", "不要香菜"
+  const ZH_WORDS: [RegExp, string[]][] = [[/洋葱/, ["onion", "onions"]], [/葱/, ["onion", "scallion", "scallions", "chives"]], [/蒜/, ["garlic"]], [/香菜|芫荽/, ["coriander", "cilantro"]], [/姜/, ["ginger"]], [/韭菜/, ["chives"]]];
+  for (const m of question.matchAll(/(?:不吃|不要|不能吃|走|戒|唔食|唔要|免)([\u4e00-\u9fff]{1,4})/g))
+    for (const [re, ws] of ZH_WORDS) if (re.test(m[1])) for (const w of ws) if (vocab.has(w)) out.push(w);
   return [...new Set(out)];
 }
 
