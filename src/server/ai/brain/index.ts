@@ -2910,7 +2910,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         const fits = (i: Item) => !focus.includes(i) && allowed(i, { ...c, diet: said.diet, avoid: [...new Set([...avoid, ...u.allergens.filter((a) => said.avoid.includes(a) || avoid.includes(a))])], maxSpice: null, minSpice: null, budget: null });
         const sameCategory = live.filter((i) => fits(i) && i.category === unsafe[0].category);
         const inCourse = u.courses.length || u.categories.length ? byCourse(live.filter(fits), u.courses) : [];
-        const alt = ranked(sameCategory.length ? sameCategory : inCourse).slice(0, 2);
+        // (its own kind first: Kopi O for the Kopi, by a word of its name)
+        const kin = (i: Item) => normalize(i.name).split(" ").some((w) => w.length > 2 && normalize(unsafe[0].name).split(" ").includes(w));
+        const alt = [...ranked(sameCategory.length ? sameCategory : inCourse)].sort((a, b) => Number(kin(b)) - Number(kin(a))).slice(0, 2);
         if (alt.length) parts.push(t("assistantReply.insteadTry", { list: list(alt.map(line)) }));
         return { ...reply(intent, parts.join(sp), [...focus, ...alt]), safetyNote: allyNote(locale) };
       }
