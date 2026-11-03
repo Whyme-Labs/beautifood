@@ -326,7 +326,7 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     const targets = [...(lines.length || !fallback ? lines : [...order].reverse().filter((o) => fit(o) > 0).sort((a, b) => fit(b) - fit(a)).slice(0, 1))];
     // ("make one of the nasi lemak large", "one of the teh tarik iced": one of that line, on a line of its own)
     // (and "make it two, one with extra scoop": one of them)
-    const oneOf = /\b(one of (the|them|those)|satu daripada|salah satu)\b|^\s*(one|satu) (with|w|dengan|tambah|add)\b/.test(c) || /其中一|^\s*一(个|份|杯|碗)?(要|加)/.test(clause);
+    const oneOf = /\b(one of (the|them|those)|satu daripada|salah satu)\b|^\s*(one|satu) (with|w|dengan|tambah|add|change|tukar|ganti|swap)\b/.test(c) || /其中一|^\s*一(个|份|杯|碗)?(要|加)/.test(clause);
     // ("2 of the teh tarik make it ais": two of them)
     const nOfW = c.match(/\b(two|three|four|\d) of (the|them|those)\b/)?.[1];
     const nOf = nOfW ? ({ two: 2, three: 3, four: 4 } as Record<string, number>)[nOfW] ?? Number(nOfW) : oneOf ? 1 : 0;
@@ -334,6 +334,9 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
       const o = targets[0];
       o.count -= nOf;
       const copy: OrderLine = { item: o.item, count: nOf, options: o.options ? [...o.options] : undefined };
+      // (what this clause gives the one isn't the others' too: "2 sets, one change rice to garlic naan")
+      const mine_ = optionsSaid(clause, o.item, true).add;
+      if (o.options?.length && mine_.length) o.options = o.options.filter((x) => !mine_.some((y) => y.name === x.name)) || undefined;
       order.splice(order.indexOf(o) + 1, 0, copy);
       targets.splice(0, 1, copy);
     }
@@ -1210,7 +1213,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("… breakfast set, drink change to iced yuen yeung", "套餐，饮品转冻柠檬茶", "both drink tukar mango lassi"): the set's drink, not another
   const drinkCue = /\b(drinks?|minuman|air)\b/.test(normalize(u.text)) || /饮品|饮料|嘢饮|饮/.test(u.text);
   const setDrink = (d: Item) => drinkCue && isDrink(d) && mentioned0.some((h) => h.id !== d.id && (h.modifiers ?? []).some((g) => /drink|minuman|饮/i.test(g.name) && optionsSaid(u.text, h, true).add.some((o) => g.options.includes(o) && normalize(o.name).includes(normalize(d.name).replace(/^hk /, "")))));
-  const mentioned = mentioned0.filter((d) => !setDrink(d));
+  // ("one change rice to garlic naan" of a set ordered): the set's rice, changed, isn't a dish of its own
+  const changedOut = [...normalize(u.text).matchAll(/\b(?:change|tukar|swap|ganti) (?:the )?([a-z]+(?: [a-z]+)?) (?:to|for|jadi|kepada|with)\b/g)].map((m) => m[1]);
+  const setPart = (d: Item) => changedOut.some((w) => normalize(d.name).split(" ").some((x) => sameWord(x, w.split(" ").pop()!))) && mentioned0.some((h) => h.id !== d.id && (h.modifiers ?? []).some((g) => (g.min ?? 0) >= 1 && g.options.some((o) => changedOut.some((w) => normalize(o.name).split(" ").some((x) => sameWord(x, w.split(" ").pop()!))))));
+  const mentioned = mentioned0.filter((d) => !setDrink(d) && !setPart(d));
   // ("3 of the yam and 2 of the chocolate" of the one dish just shown, its flavours: a line of each)
   const focusChoices = mentioned.every((i) => i.id === state.focus?.id) && state.shown.length === 1 && state.focus?.id === state.shown[0].id && orderable(state.focus) ? [...normalize(u.text).matchAll(/\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s+(?:of\s+)?(?:the\s+)?([a-z]+(?: [a-z]+)?)\b/g)].map((m) => ({ n: NUMBER_OF[m[1]] ?? Number(m[1]), o: optionsSaid(m[2], state.focus!, true).add.find((o) => (state.focus!.modifiers ?? []).some((g) => (g.max ?? 1) === 1 && (g.min ?? 0) >= 1 && g.options.includes(o))) })) : [];
   const choiceLines: OrderLine[] = focusChoices.length && focusChoices.every((x) => x.o && x.n) ? focusChoices.map((x) => ({ item: state.focus!, count: x.n, options: [x.o!] })) : [];
@@ -2689,6 +2695,18 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
     // ("2 gulab jamun, one with ice cream one with rabri"): each of the two its own add-ons, not both the first's
     const perOne = nt1.match(/\b(?:one|satu) (?:with|w|dengan) (.+?),? (?:and )?(?:one|satu|the other) (?:with|w|dengan) (.+?)(?:\s+(?:how much|berapa|total)\b|$)/);
+    // ("2 set butter chicken, one change rice to garlic naan, both drink …"): what "one" changes is on one of them only
+    const oneClause = !perOne ? u.text.split(/[,;，。]/).map((x) => normalize(x)).find((x) => /^\s*(one|satu) (change|tukar|ganti|swap|with|w|dengan|add|tambah)\b/.test(x)) : undefined;
+    if (oneClause) {
+      const two = bill.find((o) => o.count >= 2 && (o.options ?? []).length);
+      const mine = two ? optionsSaid(oneClause, two.item, true).add.filter((x) => (two.options ?? []).some((y) => y.name === x.name)) : [];
+      if (two && mine.length) {
+        two.count -= 1;
+        bill.splice(bill.indexOf(two) + 1, 0, { item: two.item, count: 1, options: [...(two.options ?? [])] });
+        two.options = (two.options ?? []).filter((x) => !mine.some((y) => y.name === x.name));
+        if (!two.options.length) two.options = undefined;
+      }
+    }
     if (perOne) {
       const two = bill.find((o) => o.count >= 2 && (o.options ?? []).length);
       if (two) {
