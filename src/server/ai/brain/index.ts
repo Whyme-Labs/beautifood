@@ -5,7 +5,7 @@
 // dish, price and allergen it states comes from the menu.
 import { ALLERGENS, ALLERGEN_LABELS, type Allergen } from "../../../shared/allergens";
 import { localizeItem } from "../../../shared/menuI18n";
-import { ingredientsZh } from "../../../shared/dishNamesZh";
+import { ingredientsZh, zhNamesOf } from "../../../shared/dishNamesZh";
 import type { MenuItem, ModifierOption } from "../../../shared/types";
 import { clockLabel, ruledPrice, scheduleName, serving, weekdayNames, type Clock, type TimedMenu } from "../../../shared/schedule";
 import { formatters, translator, type MessageKey } from "../../../i18n/core";
@@ -371,7 +371,9 @@ export function dishesIn(ctx: AssistantContext, text: string): Item[] {
   const n = ` ${normalize(text)} `;
   return ctx.items
     .map((i) => {
-      const names = [i.name, ...Object.values(i.translations ?? {}).map((x) => x?.name ?? "")].filter((x) => x.length > 1);
+      // (and, with no Chinese name of its own, what it's usually called: 卤鸭 of the Braised Duck)
+      const own_ = Object.values(i.translations ?? {}).map((x) => x?.name ?? "").filter(Boolean);
+      const names = [i.name, ...own_, ...(own_.length ? [] : (zhNamesOf(i.name)?.names ?? []).filter((z) => z.length >= 2))].filter((x) => x.length > 1);
       const hits = names
         .map((x) => (/[a-z]/i.test(x) ? { at: n.indexOf(` ${normalize(x.replace(/\(.*?\)/g, ""))} `), len: normalize(x.replace(/\(.*?\)/g, "")).length + 1, latin: true } : { at: t.indexOf(x.toLowerCase()), len: x.length, latin: false }))
         .filter((h) => h.at >= 0)
@@ -467,7 +469,8 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
       // what it offered are the dishes it priced, not one its words mention)
       const esc = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       // ("plus kopi and teh from RM1.80": a kind's lowest price, not the Teh's)
-      const priced = named.filter((i) => [i.name, ...Object.values(i.translations ?? {}).map((x) => x?.name ?? "")].some((n) => {
+      const zhOwn = (i: Item) => { const o = Object.values(i.translations ?? {}).map((x) => x?.name ?? "").filter(Boolean); return o.length ? o : (zhNamesOf(i.name)?.names ?? []).filter((z) => z.length >= 2); };
+      const priced = named.filter((i) => [i.name, ...zhOwn(i)].some((n) => {
         const m = n.length > 1 ? new RegExp(`${esc(n)}([^.;。；()（）]{0,24}?)[(（,:：]?\\s*RM\\s?(\\d+(?:\\.\\d{2})?)`, "i").exec(h.content) : null;
         return !!m && !(/\bfrom\b/i.test(m[1]) && Math.round(Number(m[2]) * 100) !== i.price);
       }));
@@ -1859,6 +1862,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
     return null;
   };
+  // ("第三个是不是用卤猪肉的锅？", "is the second one cooked with the pork belly?"): a dish pointed at, asked about another
+  // dish its own line names: yes, by its line
+  {
+    const pt = pointedAt(u.text, state.shown);
+    const other = mentioned.filter((m) => !pt.some((p) => p.item.id === m.id));
+    if (pt.length === 1 && other.length === 1 && (/[吗是不是]|\b(is|was|does|did|is it|kah|ke)\b/.test(`${u.text} ${nt1}`))) {
+      const d = pt[0].item;
+      const ws = normalize(other[0].name).split(" ").filter((w) => w.length > 3 && !/^(braised|fried|steamed|stir|plain|with)$/.test(w));
+      if (ws.length && ws.every((w) => ` ${normalize(d.description ?? "")} `.includes(` ${w} `))) return reply("dish_info", t("assistantReply.yesItsLine", { dish: name(d), desc: desc(d) }), [d]);
+    }
+  }
   // ("my daughter is allergic to fish" … "can she have number 2 with extra cheese?"): whether it's safe, add-ons and all
   const canHave_ = /\bcan (she|he|i|we|they|my \w+|the kids?|kids) (have|eat|take)\b|\bboleh (dia |saya |anak )?makan\b/.test(nt1);
   const pointed_ = !mentioned.length ? pointedAt(u.text, state.shown) : [];

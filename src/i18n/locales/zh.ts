@@ -575,6 +575,7 @@ const zh = {
     perHeadPrice: "{dish}按人数算：每人{price}，{n}位共{total}。",
     canHaveYes: "可以：{dish}没有列出{list}，加了也一样（{price}）。",
     choiceMakesIt: "{dish}原本含有{list}；可以改成{option}，价钱一样（{price}）。点的时候请告诉店员你的过敏，让厨房这样做。",
+    yesItsLine: "是的。{dish}：{desc}。",
     addOnHasOn: "{dish}加的{option}{what}含有{list}。",
     drinkChoicesNot: "{dish}配的饮料没有{drink}，可以选：{list}。",
     oneSize: "{dish}只有一种分量。",
