@@ -111,6 +111,13 @@ export function ownersOf(text: string, named: Item[]): Record<string, string> {
   // (then, a dish no part names by its words, by the guest's word for it: "mee udang" is the Prawn Mee)
   for (const { n, whose } of parts)
     for (const i of named) if (!out[i.id] && own(i).some((w) => !w.includes(" ") && w.length > 3 && n.trim().split(" ").some((x) => x !== w && sameWord(x, w)))) out[i.id] = whose;
+  // (then by a word it shares, in the one part where no dish already placed there explains it: "me the duck and a
+  // porridge, my wife … a sweet potato porridge" gives me the plain porridge)
+  for (const i of named) {
+    if (out[i.id]) continue;
+    const fits = parts.filter((p) => all(i).some((w) => p.n.includes(` ${w} `)) && !named.some((o) => o.id !== i.id && out[o.id] === p.whose && all(o).some((w) => all(i).includes(w) && p.n.includes(` ${w} `))));
+    if (fits.length === 1) out[i.id] = fits[0].whose;
+  }
   // (two people at least: "Kami 5 orang. 2 ekor ayam…" is everyone's)
   return new Set(Object.values(out)).size >= 2 ? out : {};
 }

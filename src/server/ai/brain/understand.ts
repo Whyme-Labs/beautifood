@@ -342,6 +342,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     return a && !/\d/.test(a) && !/^(for|per|one|two|three|four|five|six|extra|the|a|an|with|serves|each|note|tip|add|served|comes)\b/i.test(a) ? a : ONE_WORD[normalize(d.name)];
   };
   const akas = items.map(aka).filter((x): x is string => !!x).map((x) => normalize(x));
+  let endsCache: Map<Dish, string[]> | undefined;
   items.forEach((dish, n) => {
     const a = aka(dish);
     if (a && akas.filter((x) => x === normalize(a)).length === 1 && ` ${toks.join(" ")} `.includes(` ${normalize(a)} `)) {
@@ -355,6 +356,16 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     for (const tr of Object.values(dish.translations ?? {})) {
       const one = tr?.name?.length === 1 ? raw.match(new RegExp(`[杯壶碗份个]${tr.name}(?![\u4e00-\u9fff])|[杯壶碗份个]${tr.name}(?=[和跟与，、。？！])`)) : null;
       if (one) return void found.push({ dish, at: (one.index ?? 0) / 100, covered: [], score: 2, zh: tr!.name });
+    }
+    // ("鸭要大碟", "鸭一碟": the one dish whose Chinese names end in that word, said first or after a count)
+    if (/[鸭鹅鸡鱼虾蟹]/.test(raw)) {
+      const endsAll = (endsCache ??= new Map(items.map((d) => [d, [...Object.values(d.translations ?? {}).map((x) => x?.name ?? ""), ...(zhNamesOf(d.name)?.names ?? [])].filter((z) => z.length >= 2).map((z) => z.slice(-1))])));
+      const ends_ = (d: Dish) => endsAll.get(d) ?? [];
+      for (const ch of new Set(ends_(dish))) {
+        if (!/[鸭鹅鸡鱼虾蟹]/.test(ch) || !raw.includes(ch) || items.filter((o) => ends_(o).includes(ch)).length !== 1) continue;
+        const one = raw.match(new RegExp(`(^|[，,。\\s个份碟盘只])${ch}(?=[要来加一两半，,。？?]|$)`));
+        if (one && !items.some((o) => o !== dish && Object.values(o.translations ?? {}).some((x) => x?.name && raw.includes(x.name) && x.name.includes(ch)))) return void found.push({ dish, at: (one.index ?? 0) / 100, covered: [], score: 1.5, zh: ch });
+      }
     }
     // (tea by the head, "三位茶", "两杯茶": the plain Chinese tea)
     if (Object.values(dish.translations ?? {}).some((tr) => /^(中国茶|中式茶|茶|清茶|唐茶)$/.test(tr?.name ?? ""))) {
