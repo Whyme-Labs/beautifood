@@ -1614,7 +1614,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     intent = focus.length ? (aboutDish ? intent : hasFilters ? "recommend" : "dish_info") : hasFilters || u.superlative ? "recommend" : intent;
   if ((intent === "out_of_scope" || intent === "about" || intent === "greeting") && hasFilters && !settled) intent = "recommend";
   // "Ebi tempura vs takoyaki, which one cheaper?", "acai bowl ke quinoa bowl, mana lg sihat?": two dishes weighed
-  if (mentioned.length >= 2 && !["dish_allergen", "pairing", "group"].includes(intent) && (/\b(vs|versus|or|ke|atau|compare|which|mana|better|cheaper|difference|lagi|lg)\b/.test(normalize(u.text)) || /还是|或者|比较|哪个|哪一/.test(u.text))) intent = "compare";
+  // (not an order of them with its total asked: "the skewers cheaper right? 3 pork bbq, 3 chicken bbq, 2 garlic rice how much?")
+  const countedBill = /\b(how much|total|berapa|jumlah)\b/.test(nt0) && [...nt0.matchAll(/\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s+[a-z]/g)].length >= 2 && !/\b(vs|versus|or|atau|compare|which|mana|difference)\b/.test(nt0);
+  if (countedBill && mentioned.length >= 2) { if (intent === "compare" || intent === "dish_info") intent = "recommend"; u = { ...u, superlative: null, categories: [], courses: [] }; }
+  if (mentioned.length >= 2 && !countedBill && !["dish_allergen", "pairing", "group"].includes(intent) && (/\b(vs|versus|or|ke|atau|compare|which|mana|better|cheaper|difference|lagi|lg)\b/.test(normalize(u.text)) || /还是|或者|比较|哪个|哪一/.test(u.text))) intent = "compare";
   // "which one has no peanuts?", "any of those without dairy?", "哪个没有虾": narrow what was just shown
   if (u.choosing && !mentioned.length && !nth && !pickedBack && state.shown.length >= 2 && hasFilters && !["compare", "pairing", "group"].includes(intent)) intent = "refine";
   // "I love BTS, what should I get?": a taste Qloo could place on this menu is a recommendation
@@ -1849,7 +1852,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "how much each?", "per person?", "每人多少？" with the party said: the share each ("one nasi lemak
   // each" is a count per person instead)
   const nt1 = normalize(u.text);
-  const oneEach = /\b(one|1|a|satu)\s+(\w+\s+){0,4}each\b|\beach (have|get|having|getting|take|one)\b|\bsatu (seorang|sorang)\b/.test(nt1) || /每人一|一人一/.test(u.text);
+  // (not "… and a soft drink. each pay how much": each person's share)
+  const oneEach = /\b(one|1|a|satu)\s+(\w+\s+){0,4}each\b(?!\s+(pay|pays|paying|owe|owes|person|one pay))|\beach (have|get|having|getting|take|one)\b|\bsatu (seorang|sorang)\b/.test(nt1) || /每人一|一人一/.test(u.text);
   const perPerson = !oneEach && (/\b(how much|berapa)\b.*\b(each|per person|per head|per pax|seorang|sorang)\b|\b(each|per person|per head|per pax) (pay|pays|paying)\b|\b(per person|per head|per pax|each of us)\b|\b(seorang|sorang|setiap orang|each one|each)\s+(berapa|how much)\b/.test(nt1) || /每人|每个人|一人多少/.test(u.text));
   const party = u.party ?? state.party ?? null;
   // ("4 of us ... split equally": the party)
@@ -1868,8 +1872,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const several = mentioned.length === 1 && ([...countsOf(u.text, mentioned).values()][0] > 1 || orderedLines(u, mentioned).reduce((n, l) => n + l.count, 0) > 1 || (oneEach && !!party && party >= 2));
   // "laksa or curry mee, how much cheaper?", "price difference between X and Y", "how much more is X
   // than Y?": the dishes weighed, not a bill
-  const difference = mentioned.length >= 2 && !ordering && /\b(cheaper|pricier|more expensive|less expensive|difference|diff|how much more|how much less|beza|lebih mahal|lebih murah|than)\b/.test(nt1) && !/\b(total|altogether|together|sum|jumlah|semua)\b/.test(nt1);
-  if (difference) intent = "compare";
+  const difference = mentioned.length >= 2 && !ordering && !countedBill && /\b(cheaper|pricier|more expensive|less expensive|difference|diff|how much more|how much less|beza|lebih mahal|lebih murah|than)\b/.test(nt1) && !/\b(total|altogether|together|sum|jumlah|semua)\b/.test(nt1);
+  if (difference && !countedBill) intent = "compare";
   // "add another teh tarik", "make the rice banjir instead", "2 roti canai and a teh tarik": an order
   // being placed or changed, answered with the order as it stands and its total
   // ("actually only 1 beer" of the two ordered: the count set)
@@ -1953,7 +1957,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "rice small can cheaper?" of a line ordered (or the dish just talked about): a choice at the same price
   // (asked, not pointed at: "ok the cheaper one" picks a dish)
-  const cheaperAsked = (/\b(cheaper|cheap|discount|murah|potong)\b/.test(nt1) || /便宜|少算|算便宜/.test(u.text)) && (/[?？吗]/.test(u.text) || /\b(can|boleh|ke|is it|will it)\b/.test(nt1)) && !/\b(the cheaper|cheaper one|cheapest|yang murah)\b/.test(nt1) && !/\s(or|atau)\s|还是/.test(u.text);
+  const cheaperAsked = !countedBill && (/\b(cheaper|cheap|discount|murah|potong)\b/.test(nt1) || /便宜|少算|算便宜/.test(u.text)) && (/[?？吗]/.test(u.text) || /\b(can|boleh|ke|is it|will it)\b/.test(nt1)) && !/\b(the cheaper|cheaper one|cheapest|yang murah)\b/.test(nt1) && !/\s(or|atau)\s|还是/.test(u.text);
   const sameOn = cheaperAsked && !mentioned.length ? ([...state.order].reverse().map((o) => o.item).find((i) => optionsSaid(u.text, i, true).add.some((x) => !x.price)) ?? (state.focus && optionsSaid(u.text, state.focus, true).add.some((x) => !x.price) ? state.focus : undefined)) : undefined;
   if (sameOn) {
     const free = optionsSaid(u.text, sameOn, true).add.filter((x) => !x.price);

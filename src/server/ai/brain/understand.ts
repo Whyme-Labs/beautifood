@@ -592,10 +592,14 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const own = covered.filter((i) => !common(i));
       // "claypot chicken rice or ginger chicken rice": its words side by side, all but one it shares
       // with the other dish, name it
-      const run = [...covered].sort((a, b) => a - b).reduce<number[][]>((runs, i) => (runs.length && i === runs[runs.length - 1].at(-1)! + 1 ? (runs[runs.length - 1].push(i), runs) : [...runs, [i]]), []).sort((a, b) => b.length - a.length)[0];
+      const runs_ = [...covered].sort((a, b) => a - b).reduce<number[][]>((runs, i) => (runs.length && i === runs[runs.length - 1].at(-1)! + 1 ? (runs[runs.length - 1].push(i), runs) : [...runs, [i]]), []).sort((a, b) => b.length - a.length);
+      // (two side by side that only it has together: "the daging bakar one" of Nasi Kerabu Daging Bakar, its "nasi kerabu" another's)
+      const onlyIts = (r: number[]) => r.length >= 2 && items.filter((d) => r.every((i) => normalize(d.name).split(" ").some((x) => same(toks[i], x)))).length === 1;
+      const run = runs_.find((r) => r.length === runs_[0].length && onlyIts(r)) ?? runs_.find(onlyIts) ?? runs_[0];
       // (three of them in a row are it too, generic or not: "penang prawn mee" far from the "hokkien" of another)
       // (or two side by side, one only it has: "the sliced fish large …, the … tofu soup" is the Sliced Fish Bee Hoon Soup)
-      if (run.length >= 2 && ((run.length >= name.length - 1 && (run.length >= 3 || run.some((i) => !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))) || run.some((i) => df(toks[i]) === 1 && !GENERIC.has(toks[i]) && toks[i].length >= 4)))
+      const pairOnly = onlyIts(run);
+      if (run.length >= 2 && ((run.length >= name.length - 1 && (run.length >= 3 || run.some((i) => !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))) || run.some((i) => df(toks[i]) === 1 && !GENERIC.has(toks[i]) && toks[i].length >= 4) || pairOnly))
         return void found.push({ dish, at: run[0], covered: run, score: run.reduce((sum, i) => sum + 1 / df(toks[i]) * (GENERIC.has(toks[i]) ? 0.3 : 1), 0) / total + run.length * 0.01 });
       if (!unique || !own.length || Math.max(...own) - Math.min(...own) + 1 > name.length + 2) return;
       const w = own.reduce((sum, i) => sum + 1 / df(toks[i]), 0);
@@ -1230,7 +1234,9 @@ export function read(items: Dish[], asked: string): Reading {
   for (const [ini, ns] of initials) if (ns.length === 1) aliasedInitials.push([new RegExp(`\\b${ini}\\b`, "gi"), ns[0]]);
   // (a long word of a dish's name said in its parts: "xiao long bao" of Xiaolongbao)
   const longWords = [...new Set(items.flatMap((i) => i.name.toLowerCase().split(/[^a-z]+/)).filter((w) => w.length >= 8))];
-  const spaced = longWords.map((w) => [new RegExp(`\\b${[...w].join("[ -]?")}\\b`, "gi"), w] as [RegExp, string]).filter(([re, w]) => re.source.length > 0 && w.length >= 8);
+  // ("2 san mig" of San Miguel …): a name's second word cut short after its first
+  const cut = items.flatMap((i) => { const ws = i.name.toLowerCase().split(/[^a-z]+/).filter(Boolean); return ws.length >= 2 && ws[1].length >= 6 ? [[new RegExp(`\\b${ws[0]} (${ws[1].slice(0, 3)}[a-z]{0,${ws[1].length - 4}})\\b(?![a-z])`, "gi"), `${ws[0]} ${ws[1]}`] as [RegExp, string]] : []; });
+  const spaced = [...cut, ...longWords.map((w) => [new RegExp(`\\b${[...w].join("[ -]?")}\\b`, "gi"), w] as [RegExp, string]).filter(([re, w]) => re.source.length > 0 && w.length >= 8)];
   // (and the ones everyone writes: "xlb", "ckt", "bkt")
   const aliased = [[/\b(siu yuk|siu yoke|siew yoke|siew yuk|sio bak)\b/gi, "roast pork"], [/\b(char siew|cha siu|char sio)\b/gi, "char siu"], [/\bxlbs?\b/gi, "xiaolongbao"], [/\bckt\b/gi, "char kway teow"], [/\bbkt\b/gi, "bak kut teh"], ...aliasedInitials] as [RegExp, string][];
   const question = spaced.reduce((q, [re, to]) => q.replace(re, to), aliased.reduce((q, [re, to]) => (menuText.includes(to) && !items.some((i) => re.test(i.name)) ? q.replace(re, to) : q), items.some((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes("养乐多"))) ? said.replace(/(?<!养乐)多多/g, "养乐多") : said));
