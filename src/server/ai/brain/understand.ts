@@ -372,7 +372,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     }
     // (tea by the head, "三位茶", "两杯茶": the plain Chinese tea)
     if (Object.values(dish.translations ?? {}).some((tr) => /^(中国茶|中式茶|茶|清茶|唐茶)$/.test(tr?.name ?? ""))) {
-      const cup = raw.match(/[位杯壶](茶)(?![\u4e00-\u9fff])|[位杯壶](茶)(?=[和跟与同，、。？！再加])/);
+      const cup = raw.match(/[位杯壶](茶)(?![\u4e00-\u9fff])|[位杯壶](茶)(?=[和跟与同，、。？！再加])|(?:^|[，,。\s])(茶)(?=要|[，,。？?]|$)/);
       if (cup) return void found.push({ dish, at: (cup.index ?? 0) / 100, covered: [], score: 2, zh: "茶" });
     }
     // (a bowl of porridge, "三碗糜" in Teochew, "两碗粥": the plain one, 白粥)
@@ -680,9 +680,20 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   const withAt = toks.findIndex((t) => /^(with|dengan|tambah|plus|w|add)$/.test(t));
   if (withAt > 0) {
     const spans = (m: Mention) => m.covered.some((i) => i < withAt) && m.covered.some((i) => i > withAt);
-    for (const m of found) {
+    for (const m of [...found]) {
       if (!spans(m)) continue;
       const after = m.covered.filter((i) => i > withAt).map((i) => toks[i]);
+      // ("steamed egg can add minced pork?"): a dish named whole before it, not found yet, whose add-on the rest is
+      const before_ = toks.slice(0, withAt);
+      // (only when that one isn't itself said whole: "pineapple bun with butter" is the Pineapple Bun with Butter)
+      const mWhole = normalize(m.dish.name).split(" ").filter((w) => w.length > 2 && !/^(with|and|dengan)$/.test(w)).every((w) => toks.includes(w));
+      const whole_ = !mWhole && items.find((d) => d !== m.dish && !found.some((o) => o.dish === d) && normalize(d.name).split(" ").every((w) => before_.includes(w)) && (d.modifiers ?? []).some((g) => g.options.some((x) => { const ws = normalize(x.name).split(" "); return after.every((w) => ws.some((y) => same(w, y))); })));
+      if (whole_) {
+        const cov = normalize(whole_.name).split(" ").map((w) => before_.indexOf(w));
+        found.push({ dish: whole_, at: Math.min(...cov), covered: cov, score: 1 });
+        m.score = -1;
+        continue;
+      }
       const host = found.find((o) => o !== m && !spans(o) && o.covered.some((i) => m.covered.includes(i)) && o.dish.modifiers?.some((g) => g.options.some((x) => { const ws = normalize(x.name).split(" "); return after.every((w) => ws.some((y) => same(w, y))); })));
       if (host) m.score = -1;
     }

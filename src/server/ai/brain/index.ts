@@ -1877,7 +1877,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("can share 1 pot tea for 3 or must pay each ah?" of a tea charged per person): per head, and for them all
   const perHead = [...mentioned, ...(state.focus ? [state.focus] : [])].find((i) => /\b(per person|per pax|per head|seorang)\b/i.test(i.description ?? ""));
   const heads = u.party ?? Number(nt1.match(/\bfor (\d{1,2})\b/)?.[1] ?? 0);
-  if (perHead && heads >= 2 && /\b(share|sharing|kongsi|each|per person|seorang)\b/.test(nt1)) return reply("dish_info", t("assistantReply.perHeadPrice", { dish: name(perHead), price: money(perHead.price), n: heads, total: money(perHead.price * heads) }), [perHead]);
+  if (perHead && heads >= 2 && (/\b(share|sharing|kongsi|each|per person|seorang)\b/.test(nt1) || /[两三四五六七八九十\d]位/.test(u.text))) {
+    // (with the choice said: "茶要菊花，四位" is four chrysanthemum teas)
+    const unit = perHead.price + optionsSaid(u.text, perHead, true).add.reduce((n, o) => n + o.price, 0);
+    return reply("dish_info", t("assistantReply.perHeadPrice", { dish: name(perHead), price: money(unit), n: heads, total: money(unit * heads) }), [perHead]);
+  }
   // ("veg thali, can the naan be cheese naan?"): a choice asked of a set's part that isn't one of its choices
   const beAsked = nt1.match(/\b(?:can|could|boleh) (?:the|its|my) ([a-z]+) (?:be|jadi|tukar|change to|tukar jadi) ([a-z]+(?: [a-z]+){0,2}?)\s*$/);
   const beHost = beAsked ? mentioned.find((i) => (i.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name).split(" ").some((w) => sameWord(w, beAsked[1]))))) : undefined;
