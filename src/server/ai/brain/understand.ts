@@ -401,7 +401,14 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
         // (or said alone: "唔该，啤酒有冇？" of the 老虎啤酒)
         if (end.length === 2 && ((!/[罐瓶杯碗碟]/.test(raw[at - 1] ?? "") && /[\u4e00-\u9fff]/.test(raw[at - 1] ?? "")) || /[\u4e00-\u9fff]/.test(raw[at + 2] ?? "") && !/[有冇吗呢几要来和跟是好辣贵可含会]/.test(raw[at + 2]))) continue;
         if (at > 0 && /[\u4e00-\u9fff]/.test(raw[at - 1]) && !/[个份杯碗碟盘罐瓶两一二三四五六七八九十的要来加和与跟及还]/.test(raw[at - 1])) continue;
-        if (items.filter((o) => Object.values(o.translations ?? {}).some((x) => x?.name?.endsWith(end))).length === 1) return void found.push({ dish, at: raw.indexOf(end) / 100, covered: [], score: 1.8, zh: end });
+        const ending = items.filter((o) => Object.values(o.translations ?? {}).some((x) => x?.name?.endsWith(end)));
+        if (ending.length === 1) return void found.push({ dish, at: raw.indexOf(end) / 100, covered: [], score: 1.8, zh: end });
+        // ("烧鸡可以选鸡胸吗？" of 椰汁烧鸡 and 蓝花饭烧鸡: the dish itself, Ayam Percik, not the rice it comes on)
+        if (end.length >= 2 && ending.length === 2) {
+          const [a, b] = ending.map((o) => normalize(o.name));
+          const plain = ` ${b} `.includes(` ${a} `) ? ending[0] : ` ${a} `.includes(` ${b} `) ? ending[1] : null;
+          if (plain === dish) return void found.push({ dish, at: raw.indexOf(end) / 100, covered: [], score: 1.6, zh: end });
+        }
         break;
       }
     }

@@ -1973,7 +1973,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "can I add pudding?", "can make less spicy?", "boleh tambah telur?", "可以加奶盖吗？", "can I get it hot?":
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
-    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang|ambik|ambil|dapat)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?( or not| ah| ar| boh| anot)?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b|\bif (i|we) (add|tambah|put)\b/.test(nt1) || /\bcan [a-z]+ (one|ones)\s*[?？]|\bada yang [a-z]+\s*[?？]/i.test(u.text) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走|不要)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
+    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang|ambik|ambil|dapat)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?( or not| ah| ar| boh| anot)?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b|\bif (i|we) (add|tambah|put)\b/.test(nt1) || /\bcan [a-z]+ (one|ones)\s*[?？]|\bada yang [a-z]+\s*[?？]/i.test(u.text) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走|不要)|有(冰|热|大|小|凍|冻)的吗|有没有(冰|热|冻)的|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
     !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text) &&
     // ("can I have the second one with an iced lemon tea? total?": an order, its total asked)
     !(pointed.length && (/\b(total|altogether|semua|jumlah)\b/.test(nt1) || /一共|总共/.test(u.text)));
@@ -2143,6 +2143,19 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // ("2 of them, one with mushroom sauce, both with egg, how much?" with an order read: its bill, not the add-on's price)
   if (asksOption && optHost && orderable(optHost) && !editsLine && !(byBasket && (howMuch || totalWord || withCharges)) && !u.budget && !(!onHost && mentioned.length >= 2 && mentioned.every((i) => !optionsSaid(u.text, i, true).add.length) && !mentioned.slice(1).some((i) => optionsAsked(name(i), live).length))) {
     const said = optionsSaid(u.text, optHost, true).add;
+    // ("拉茶可以走甜吗？" where it only comes less sweet): not that, but the less of it
+    if (!said.length) {
+      const NO_LESS: [RegExp, RegExp, string, string, string, string][] = [
+        [/\b(no sugar|kosong|tanpa gula|sugar free|unsweetened|zero sugar)\b|走甜|无糖|不要糖|不加糖/, /less (sweet|sugar)|kurang (manis|gula)|siu dai|siew dai/i, "no sugar", "走甜", "less sweet", "少甜"],
+        [/\b(no ice|without ice|tak nak ais|tanpa ais)\b|走冰|去冰|不要冰/, /less ice|kurang ais|siu bing/i, "no ice", "走冰", "less ice", "少冰"],
+      ];
+      for (const [noRe, lessRe, enW, zhW, enL, zhL] of NO_LESS) {
+        if (!(noRe.test(nt1) || noRe.test(u.text))) continue;
+        const less = (optHost.modifiers ?? []).flatMap((g) => g.options).find((o) => lessRe.test(o.name));
+        const none = (optHost.modifiers ?? []).flatMap((g) => g.options).some((o) => noRe.test(normalize(o.name)) || noRe.test(o.name));
+        if (less && !none) return reply("dish_info", t("assistantReply.onlyLess", { dish: name(optHost), asked: en ? enW : zhW, less: en ? enL : zhL, option: optionLabel(less), price: less.price ? ` (+${money(less.price)})` : "" }), [optHost]);
+      }
+    }
     const off = thingAsked ? notOn(optHost, thingAsked) : null;
     if (off) return off;
     // (more than its group takes: "ALL the toppings ... can?")
