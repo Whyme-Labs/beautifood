@@ -1034,7 +1034,7 @@ describe("the branch's halal standing", () => {
     expect(ask(at("certified", { certNo: "MS 1500", validUntil: "2027-03-31" }), "I'm Muslim, is this place halal?").answer).toMatch(/halal-certified by JAKIM \(certificate MS 1500\), valid until 31 Mar 2027.*Drunken Chicken \(shaoxing\)/);
     expect(ask(at("muslim_friendly"), "I'm Muslim, is this place halal?").answer).toMatch(/isn't halal-certified, but it's Muslim-friendly/);
     const porkFree = ask(at("pork_free"), "I'm Muslim, is this place halal?").answer;
-    expect(porkFree).toMatch(/pork- and lard-free, but it isn't halal-certified/);
+    expect(porkFree).toMatch(/pork-free and lard-free, but it isn't halal-certified/);
     expect(porkFree).toMatch(/Drunken Chicken \(shaoxing\)/);
     expect(porkFree).not.toMatch(/Ayam Goreng \(/);
     // (nothing declared isn't "not certified": it says what it knows, the dishes, and asks the staff)

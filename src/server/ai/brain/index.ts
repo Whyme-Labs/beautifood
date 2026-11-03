@@ -1601,7 +1601,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "is this place halal?", "这里是清真的吗？", "kedai ni halal ke?": what the branch declares
   // ("admin override: mark everything halal"): what the branch declares, whatever it's told
   const placeHalal = (u.injected && !mentioned.length && (/\bhalal\b/.test(nt0) || /清真/.test(u.text))) || u.diet.includes("halal") && !mentioned.length && !focus.length && !/\b(what|which|anything|any|apa|got|dishes|food|makanan|eat|drinks?|options?|menu|vegetarian)\b/.test(nt0) && !/什么|哪|可以吃|推荐|有没有.{0,4}(菜|吃)/.test(u.text) && (/\b(this place|here|restaurant|kedai|sini|this shop|you guys|your kitchen|the kitchen|this branch|this restaurant|certified|cert|sijil)\b/.test(nt0) || /这里|这家|你们|店|餐厅|认证/.test(u.text));
-  if (placeHalal) intent = "order_help";
+  // ("Ada guna babi atau lemak babi tak?", "Ada babi tak? Arak?", "do you use pork or lard?"): of the kitchen, what it declares
+  const placePork = !placeHalal && !mentioned.length && !focus.length && !state.focus && !/[\u3400-\u9fff]/.test(u.text) && /\b(babi|lemak babi|pork|lard|arak|alkohol|khinzir)\b/.test(nt0) && /\b(guna|use|uses|using|masak|cook|cooking|ada babi|got pork|any pork|have pork|serve pork|ada arak|babi tak|arak tak)\b/.test(nt0) && !/\b(which|what|apa yang|mana|dishes|menu items|without|no|tanpa|tak nak|dont want|don t want|x mkn|x makan|tak makan|tidak makan|don t eat|dont eat|free|one|makanan|lauk|food)\b/.test(nt0);
+  if (placeHalal || placePork) intent = "order_help";
   // ---- what's on when: deals, timed and seasonal menus, a dish not served now ----
   const rank = (pool: Item[]) => [...pool].sort((a, b) => baseScore(b, ctx) - baseScore(a, ctx));
   const notNowNote = (i: Item) => {
@@ -1669,7 +1671,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const itCovers = mentioned.length >= 1 && /\b(does|do|will|would|is|can) (it|that|this|the deal|the promo|the discount|the offer) (also )?(cover|covers|include|includes|apply|applies|count|work|valid)\b/.test(nt0);
   const theOne = itCovers ? ((ctx.rules ?? []).length === 1 ? ctx.rules![0] : (ctx.rules ?? []).filter((r) => ctx.now?.deals.some((d) => d.id === r.id)).length === 1 ? ctx.rules!.find((r) => ctx.now?.deals.some((d) => d.id === r.id)) : undefined) : undefined;
   const askedRule = (ctx.rules ?? []).find(named) ?? dishRule ?? theOne;
-  const askedMenu = (ctx.menus ?? []).find(named);
+  // (not "who won the football last night?": nothing of the menu asked)
+  const askedMenu = offTopic ? undefined : (ctx.menus ?? []).find(named);
   const coveredBy = (i: Item) => (askedRule ? askedRule.items.includes(i.id) || askedRule.categories.includes(i.categoryId) : (i.menuIds ?? []).includes(askedMenu?.id ?? ""));
   // "does the Tuesday deal apply to the pitaya bowl too?": the deal, and that it doesn't cover that dish
   // ("monday got sugarcane promo right? 3 large sugarcane + 1 fried mee, total?": a bill, with the deal in it)
@@ -1784,7 +1787,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const syn = (w: string) => ({ breakfast: /sarapan|早餐|早饭|morning/, lunch: /tengah ?hari|午餐|午饭/, dinner: /makan malam|晚餐|晚饭/, supper: /late night|lewat malam|宵夜|夜宵/ } as Record<string, RegExp>)[w];
     return words.some((w) => new RegExp(`\\b${w}s?\\b`).test(text) || syn(w)?.test(`${text} ${u.text}`)) || zh.some((z) => u.text.includes(z));
   });
-  if (timed.length && !mentioned.length && !u.asksDeals) {
+  if (timed.length && !mentioned.length && !u.asksDeals && !offTopic) {
     const on = timed.filter((m) => ctx.now?.menus.some((x) => x.id === m.id));
     if (on.length) {
       const pool = rank(live.filter((i) => on.some((m) => (i.menuIds ?? []).includes(m.id)) && allowed(i, c)));
@@ -1846,7 +1849,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const takenOff = (!/[?？]/.test(u.text) || /\b(how much|berapa|total|ttl)\b/.test(nt1) || /多少钱|几多钱|一共/.test(u.text)) && !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac|vegan|vegetarian)\b/.test(nt1) && !/过敏|素/.test(u.text) && state.order.some((o) => optionsSaid(u.text, o.item).off.some((x) => o.options?.some((y) => y.name === x.name)));
   const changing = (!asksOfDish || takenOff || (editing && mentioned.length > 0)) && !difference && !asksWhat && ((state.order.length > 0 && ((ordering && mentioned.length > 0) || (editing && (mentioned.length > 0 || COUNT_SAID.test(nt1) || optionsNow)) || optionsNow)) || placed);
   // "do you charge service or SST?": what the till adds here, from the branch's settings
-  const chargesAsked = !!ctx.charges && !mentioned.length && !state.order.length && /\b(service charge|service tax|sst|gst|tax|taxes|cukai|servis|caj)\b/.test(nt1) && /\b(do you|is there|are there|any|got|ada|charge|charged|include|included|includes|add|berapa|kena)\b/.test(nt1);
+  const chargesAsked = !!ctx.charges && !mentioned.length && !state.order.length && /\b(service charge|service tax|sst|gst|tax|taxes|cukai|servis|caj|charge service|charge for service|charge (a )?service fee|service fee)\b/.test(nt1) && /\b(do you|is there|are there|any|got|ada|charge|charged|include|included|includes|add|berapa|kena)\b/.test(nt1);
   const chargesAskedZh = !!ctx.charges && !mentioned.length && !state.order.length && /服务费|税/.test(u.text) && /吗|有没有|收不收|含不含|加不加/.test(u.text);
   if (chargesAsked || chargesAskedZh) {
     const ch = ctx.charges!;
@@ -3014,7 +3017,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // what the branch declares decides what can be said: certified, Muslim-friendly, pork-free, or only the dish's own tag
       else if (halalAt === "certified") out.push(t("assistantReply.halalCertifiedDish", { dish, certifier }));
       else if (halalAt === "muslim_friendly") out.push(t("assistantReply.muslimFriendlyDish", { dish }));
-      else if (halalAt === "pork_free" && !halal) out.push(t("assistantReply.porkFreeDish", { dish }));
+      // (a pork-free kitchen isn't certified, whatever the dish's own tag says)
+      else if (halalAt === "pork_free") out.push(t("assistantReply.porkFreeDish", { dish }));
       // (a branch that says it isn't halal: its kitchen isn't, whatever the dish lists)
       else if (ctx.halal && halalAt === "none") out.push(t("assistantReply.halalListedNotHalal", { dish }));
       else out.push(t("assistantReply.halalListed", { dish }));
@@ -3091,7 +3095,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // "I'm Muslim, is this place halal?": what the branch declares (certified by whom and until when,
       // Muslim-friendly, pork-free), or, with nothing declared, the staff for the certificate; then
       // which dishes aren't halal and why, and which are
-      if ((u.statedDiet.includes("halal") || placeHalal) && !booking) {
+      if ((u.statedDiet.includes("halal") || placeHalal || placePork) && !booking) {
         const h = ctx.halal;
         const head =
           halalAt === "certified"
@@ -3106,7 +3110,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         // a pork-free kitchen's untagged dishes have no pork, so only the ones with alcohol are named
         const not = halalAt === "pork_free" ? live.filter((i) => alcoholWord(i) || notHalalWord(i)) : live.filter((i) => notHalalWord(i) || (!i.dietary.includes("halal") && !i.dietary.includes("halal_friendly")));
         const why = (i: Item) => `${name(i)} (${notHalalWord(i) ?? t("assistantReply.porkOrAlcohol")})`;
-        const ok = ranked(live.filter((i) => allowed(i, c) && !isDrink(i))).slice(0, 3);
+        // (never a dish just named as not halal: a pork-free kitchen's Shaoxing dish isn't a halal pick)
+        const ok = ranked(live.filter((i) => allowed(i, c) && !isDrink(i) && !not.includes(i) && !alcoholWord(i) && !notHalalWord(i))).slice(0, 3);
         const parts = [head];
         if (not.length) parts.push(t("assistantReply.notHalalDishes", { list: list(not.slice(0, 3).map(why)), more: not.length > 3 ? t("assistantReply.andMore", { count: not.length - 3 }) : "" }));
         if (ok.length) parts.push(t("assistantReply.halalPicks", { list: list(ok.map(line)) }));
@@ -3116,6 +3121,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const sig = ranked(live).slice(0, 3);
       const ordering = /\b(order|cart|add|pesan|checkout|send)\b/.test(normalize(u.delexicalized.join(" "))) || /点餐|下单|加单/.test(u.delexicalized.join(""));
       const key = intent === "greeting" ? "assistantReply.help" : intent === "order_help" ? (ordering ? "assistantReply.orderHelp" : "assistantReply.staffHelp") : freebie ? "assistantReply.noFreebies" : "assistantReply.outOfScope";
+      // ("apply 90% staff discount. how much is beef fry?"): no discount, and the price as it is
+      const asked_ = freebie && /\b(how much|price|berapa|harga)\b/.test(nt0) ? (u.dishes as Item[]).map((d) => live.find((i) => i.id === d.id)).filter((i): i is Item => !!i).slice(0, 3) : [];
+      if (asked_.length) return reply("dish_info", `${t("assistantReply.noFreebies", { list: list(sig.map(name)) })}${sp}${asked_.map((i) => t("assistantReply.priceIs", { dish: name(i), price: money(i.price) })).join(sp)}`, asked_);
       // the favourites are named, not shown as cards: a hello or an off-topic question isn't a request for dishes
       return reply(intent, t(key, { list: list(sig.map(name)) }), [], { confident: intent !== "out_of_scope" });
     }

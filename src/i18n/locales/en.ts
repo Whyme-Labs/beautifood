@@ -493,7 +493,7 @@ const en = {
     halalBody: "the halal authority",
     halalExpired: "This branch's halal certificate has expired, so I can't call it halal-certified right now. Our staff can tell you about its renewal.",
     halalMuslimFriendly: "This branch isn't halal-certified, but it's Muslim-friendly: the kitchen uses no pork, lard or alcohol.",
-    halalPorkFree: "This branch is pork- and lard-free, but it isn't halal-certified, and some dishes may be cooked with alcohol.",
+    halalPorkFree: "This branch is pork-free and lard-free, but it isn't halal-certified, and some dishes may be cooked with alcohol.",
     halalCertifiedDish: "{dish} is halal: this branch is halal-certified by {certifier}.",
     muslimFriendlyDish: "{dish} is Muslim-friendly: this kitchen uses no pork, lard or alcohol, though it isn't halal-certified.",
     porkFreeDish: "{dish} has no pork or lard (this kitchen is pork-free), but the branch isn't halal-certified. Please ask our staff if you need it halal.",
