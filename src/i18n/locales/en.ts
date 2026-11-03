@@ -571,6 +571,7 @@ const en = {
     oneOfGroup: "{dish} takes just one {group}: {list}. Which one would you like?",
     maxChoices: "{dish} takes up to {max} {group}, and that's {count}: which {max} would you like?",
     withoutAddOn: "{dish} itself doesn't list them, so order it without the add-on: {option} is made with {list}.",
+    oneSizeOnly: "{dish} comes in one size only, with no large: {price}.",
     addOnHasOn: "{dish}: the {option} add-on{what} has {list}.",
     drinkChoicesNot: "{drink} isn't one of the drinks that come with {dish}: you can pick {list}.",
     oneSize: "{dish} comes in one size only.",

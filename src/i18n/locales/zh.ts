@@ -569,6 +569,7 @@ const zh = {
     oneOfGroup: "{dish}的{group}只能选一样：{list}。要哪一样？",
     maxChoices: "{dish}的{group}最多选{max}样，你选了{count}样：要哪{max}样？",
     withoutAddOn: "{dish}本身没有列出这些，不加就可以：{option}含有{list}。",
+    oneSizeOnly: "{dish}只有一种份量，没有大份：{price}。",
     addOnHasOn: "{dish}加的{option}{what}含有{list}。",
     drinkChoicesNot: "{dish}配的饮料没有{drink}，可以选：{list}。",
     oneSize: "{dish}只有一种分量。",

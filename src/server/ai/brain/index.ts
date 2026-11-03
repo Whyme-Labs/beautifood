@@ -1763,6 +1763,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return reply("order_help", t("assistantReply.moreFor", { option: list(extra.map(optionLabel)), more: money(more), dish: lineName(withIt), price: money(unitPrice(withIt)) }), [moreOn.item]);
     }
   }
+  // ("fried peanuts got large plate?" of a dish with no sizes): one size only
+  if (mentioned.length === 1 && !state.order.length && !pointedAt(u.text, state.shown).length && !/\b(total|how much|berapa|and|plus|dan)\b/.test(nt1) && (/\b(large|bigger|besar|upsize|big size|big plate|large plate|saiz besar)\b/.test(nt1) || /大份|大碗|加大|大碟|大盘/.test(u.text)) && (/\b(got|ada|have|any|is there|can|or not)\b|[?？]/.test(`${nt1} ${u.text}`) || /有没有|有吗|可以/.test(u.text)) && !(mentioned[0].modifiers ?? []).some((g) => g.options.some((o) => /\b(large|big|besar|full|jumbo|double|大)\b/i.test(o.name)))) return reply("dish_info", t("assistantReply.oneSizeOnly", { dish: name(mentioned[0]), price: money(mentioned[0].price) }), [mentioned[0]]);
   // "most spicy you can do?" of a line ordered with a spice level: its hottest level
   const hotOn = u.superlative === "spiciest" && !mentioned.length ? [...state.order].reverse().map((o) => o.item).find((i) => (i.modifiers ?? []).some((g) => /spic|level|pedas|辣/i.test(g.name))) : undefined;
   if (hotOn) {
