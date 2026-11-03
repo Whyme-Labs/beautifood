@@ -200,10 +200,10 @@
     "expect": {
       "says": [
         "(^|[^0-9])(23\\.64|23\\.65)(?![0-9])",
-        "(^|[^0-9])(26\\.61|26\\.60)(?![0-9])"
+        "(^|[^0-9])(26\\.61|26\\.60|29\\.58|29\\.60)(?![0-9])"
       ]
     },
-    "note": "Me 19.90 -> 23.64 / 23.65; friend 16.90 + 1.00 + 4.50 = 22.40 -> 26.61 / 26.60."
+    "note": "Me 19.90 -> 23.64 / 23.65; friend 16.90 + 1.00 + 4.50 = 22.40 -> 26.61 / 26.60. A separate Garlic Rice (3.50) is the other reading: 24.90 -> 29.58 / 29.60."
   },
   {
     "id": "v13z4-filipino-grill-009",
@@ -761,11 +761,11 @@
     "question": "Kira asing ya. Saya pork sisig dengan garlic rice, kawan saya chicken adobo. Berapa seorang, termasuk service dan cukai?",
     "expect": {
       "says": [
-        "(^|[^0-9])(23\\.64|23\\.65)(?![0-9])",
+        "(^|[^0-9])(23\\.64|23\\.65|26\\.61|26\\.60)(?![0-9])",
         "(^|[^0-9])(18\\.89|18\\.90)(?![0-9])"
       ]
     },
-    "note": "19.90 -> 23.64 / 23.65; 15.90 -> 18.89 / 18.90."
+    "note": "19.90 -> 23.64 / 23.65; 15.90 -> 18.89 / 18.90. A separate Garlic Rice (3.50) is the other reading: 22.40 -> 26.61 / 26.60."
   },
   {
     "id": "v13z4-filipino-grill-031",
@@ -1027,7 +1027,7 @@
         "Arroz Caldo"
       ],
       "says": [
-        "(?<!no )(?<!not )pork|crackling|babi|猪"
+        "\\byes\\b|pork (crackling|skin|rind)|(?<!n't )(?<!not )(is|it'?s|are|they'?re|made (from|of|with)) (fried |crispy |deep-fried )?pork|(?<!bukan )(?<!tiada )(?<!tak ada )(?<!tanpa )(kulit )?babi|(?<![不没])(是|有)猪|猪皮"
       ]
     },
     "note": "Chicharrón = pork crackling (Palabok line)."
@@ -1047,7 +1047,7 @@
         "Calamansi Juice"
       ],
       "says": [
-        "not vegan|isn't vegan|is not vegan|bukan vegan|tidak vegan|不是纯素|非纯素|(from|by|made by) bees|bee product|animal product|cane sugar|unsweetened"
+        "not vegan|isn'?t vegan|is not vegan|no longer vegan|not (suitable|ok|okay) for (a )?vegans?|bukan vegan|tidak vegan|不是纯素|非纯素|(from|by|made by) bees|bee product|animal product"
       ]
     },
     "note": "Base juice (cane sugar) vegan; honey option not vegan."
@@ -1146,7 +1146,7 @@
         "Pork Sisig"
       ],
       "says": [
-        "(?<!tak )(?<!tidak )(?<!not )boleh|\\byes\\b|\\bya\\b|(?<![不])可以|both|dua-dua|mild"
+        "\\byes\\b|\\bcan\\b(?!'?t| ?not)|(?<!tak )(?<!tidak )boleh|(?<![不])可以|spice level|(choose|pick|ask for|order|get|request) (it )?(the )?mild|mild (option|level|version)"
       ]
     }
   },
@@ -1167,7 +1167,7 @@
       ],
       "safetyNote": true,
       "says": [
-        "bagoong[^.]{0,60}(shrimp|prawn|udang|虾)|(?<!no )shrimp paste|(?<!no )(?<!without )alamang|虾酱"
+        "bagoong[^.]{0,60}(shrimp|prawn|udang|虾)|(?<!no )shrimp paste|(?<!no )(?<!without )alamang|虾酱|(no|without|skip|minus|tanpa) (the )?bagoong|不要虾酱|不加虾酱|去掉虾酱"
       ],
       "excludes": [
         "Liempo",
@@ -1176,7 +1176,7 @@
         "Arroz Caldo"
       ]
     },
-    "note": "Default bagoong alamang = crustaceans; not shown (convention a); the peanut sauce itself names no shrimp."
+    "note": "Default bagoong alamang = crustaceans, so the dish is not shown (convention a, v12 ruling 1); the says accepts the shrimp-paste fact or an answer that names the no-bagoong option."
   },
   {
     "id": "v13z4-filipino-grill-049",
@@ -1703,10 +1703,10 @@
         "Pancit Palabok",
         "Barbecue Platter",
         "Kare-Kare",
-        "Liempo",
         "Turon",
         "Banana Cue",
-        "Arroz Caldo"
+        "Arroz Caldo",
+        "Buko Pandan"
       ],
       "includesAny": [
         "Chicken Inasal",
@@ -1718,7 +1718,7 @@
         "Pancit Canton"
       ]
     },
-    "note": "Narrow no-pork: Kare-Kare excluded too (bagoong sautéed with pork fat)."
+    "note": "Narrow no-pork: Kare-Kare excluded too (bagoong sautéed with pork fat), and Buko Pandan (gelatine of unstated source, most often porcine; rule n)."
   },
   {
     "id": "v13z4-filipino-grill-070",
@@ -1742,10 +1742,10 @@
         "Pancit Palabok",
         "Barbecue Platter",
         "Kare-Kare",
-        "Liempo",
         "Turon",
         "Banana Cue",
-        "Arroz Caldo"
+        "Arroz Caldo",
+        "Buko Pandan"
       ],
       "includesAny": [
         "Chicken Inasal",
@@ -1756,7 +1756,8 @@
         "Inasal Meal",
         "Pancit Canton"
       ]
-    }
+    },
+    "note": "Narrow no-pork: Kare-Kare excluded too (bagoong sautéed with pork fat), and Buko Pandan (gelatine of unstated source, most often porcine; rule n)."
   },
   {
     "id": "v13z4-filipino-grill-071",
@@ -2106,7 +2107,7 @@
         "Pancit Canton"
       ],
       "says": [
-        "(?<![没不])有蚝油|(?<!没有)(?<!不含)(?<!不用)蚝油|oyster sauce|\\byes\\b"
+        "(?<![没不])有蚝油|(?<!没有)(?<!不含)(?<!不用)(?<!不加)(?<!没)(?<!无)蚝油|(?<!no )oyster sauce|\\byes\\b"
       ]
     }
   },
@@ -2132,7 +2133,7 @@
         "Halo-Halo"
       ],
       "says": [
-        "(?<![没不])(有|含)(淡)?奶|淡奶|炼奶|牛奶|冰淇淋|evaporated milk|ice cream"
+        "(?<![没不])(有|含|加)(淡|炼)?奶|(?<!没有)(?<!不含)(?<!没)(?<!无)(淡奶|炼奶|牛奶|冰淇淋)|(?<!no )evaporated milk|(?<!no )ice cream"
       ]
     }
   },
@@ -2151,7 +2152,7 @@
         "Pancit Canton"
       ],
       "says": [
-        "(?<!tiada )(?<!tak ada )(?<!tanpa )(?<!no )(udang|prawns?|shrimp)|\\bada\\b|\\bya\\b|yes"
+        "(?<!tiada )(?<!tak ada )(?<!tanpa )(?<!no )(udang|prawns?|shrimp)|(?<!tak )(?<!tidak )(?<!bukan )\\bada\\b|\\bya\\b|yes"
       ]
     }
   },
@@ -2239,7 +2240,7 @@
         "Pork Sisig"
       ],
       "says": [
-        "(?<!not )(?<!n't )(?<!tak )(?<!tidak )spicy|pedas|辣|\\byes\\b"
+        "(?<!not )(?<!n't )(?<!tak )(?<!tidak )(?<!not very )(?<!not that )(?<!not too )spicy|(?<!tak )(?<!tidak )(?<!kurang )(?<!bukan )pedas|(?<![不没])辣|\\byes\\b"
       ]
     }
   },
@@ -2289,7 +2290,7 @@
         "Pancit Canton"
       ],
       "says": [
-        "no pork|(?<!has )(?<!got )without pork|pork.?free|chicken|tiada babi|tak ada babi|没有猪"
+        "no pork|(?<!has )(?<!got )without pork|pork.?free|(only|just) chicken|chicken and prawns?,? no pork|tiada babi|tak ada babi|takde babi|tidak ada babi|没有猪|不含猪"
       ]
     }
   },
@@ -2344,7 +2345,7 @@
         "Sinigang na Hipon"
       ],
       "says": [
-        "(?<![没不])有虾|(?<!没有)(?<!不含)虾(?!吗)|prawns?|shrimp|udang"
+        "(?<![没不])有虾|(?<![没不])有[，,。!！ ]|(?<![没不])(是|用|加)(大|鲜)?虾|虾仁|大虾|鲜虾|prawns?|shrimp|udang|当然"
       ]
     }
   },
@@ -2516,7 +2517,7 @@
         "assistant": "House Iced Tea is RM5.50 (black tea with calamansi), Calamansi Juice is RM6.50."
       }
     ],
-    "question": "2 of the cheaper one",
+    "question": "2 of the cheaper one, how much?",
     "expect": {
       "says": [
         "(^|[^0-9])(11\\.00|13\\.07|13\\.05)(?![0-9])"

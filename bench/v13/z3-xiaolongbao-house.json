@@ -2150,8 +2150,6 @@
         "Truffle Xiaolongbao",
         "Pan-fried Shengjian Bao",
         "Wontons in Chilli Oil",
-        "Drunken Chicken",
-        "Shanghai Smoked Fish",
         "Dan Dan Noodles",
         "Shanghai Fried Noodles",
         "Braised Pork Belly",
@@ -2159,14 +2157,13 @@
         "Dumpling Set for Two",
         "Pork Wonton Soup",
         "Century Egg Congee",
-        "Black Sesame Tang Yuan",
-        "Tsingtao Beer"
+        "Black Sesame Tang Yuan"
       ],
       "says": [
         "tiada babi|tak ada babi|takde babi|tidak (mengandungi|ada) (daging )?babi|tanpa babi|bukan babi|(daging )?ayam (sahaja|saja|je)|no pork|pork.?free|without pork|chicken only"
       ]
     },
-    "note": "No pork in the chicken XLB."
+    "note": "No pork in the chicken XLB. A pork question with no Muslim or halal statement keeps the narrow no-pork excludes (rule k): pork and lard dishes only, not the alcohol dishes."
   },
   {
     "id": "v13z3-xiaolongbao-house-082",
@@ -2568,10 +2565,7 @@
         "Pork Wonton Soup",
         "Century Egg Congee",
         "Black Sesame Tang Yuan",
-        "Truffle Xiaolongbao",
-        "Spicy Beef Noodle Soup",
-        "Pork Wonton Soup",
-        "Century Egg Congee"
+        "Spicy Beef Noodle Soup"
       ],
       "includesAny": [
         "Chicken Xiaolongbao",

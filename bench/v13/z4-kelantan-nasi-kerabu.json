@@ -896,8 +896,7 @@
     "lang": "en",
     "tags": [
       "deal",
-      "bill",
-      "followup"
+      "bill"
     ],
     "question": "last week akok was RM2.50, today still same price?",
     "at": {
@@ -954,7 +953,7 @@
     "question": "Kuah boleh ambik budu dengan sambal dua-dua ke?",
     "expect": {
       "says": [
-        "(?<!tak )(?<!tidak )(?<!not )boleh|\\byes\\b|\\bya\\b|(?<![不])可以|both|dua-dua|kedua-dua"
+        "(?<!tak )(?<!tidak )(?<!not )boleh|\\byes\\b|\\bya\\b|(?<![不])可以|up to (two|2)|max(imum)? (of )?(two|2)|maksimum (dua|2)|sampai dua|dua (kuah|jenis|pilihan)|(two|2) (kuah|sauces|choices)|最多(两|2)"
       ]
     },
     "note": "Kuah group max 2."
@@ -1214,7 +1213,7 @@
       ],
       "safetyNote": true,
       "says": [
-        "(?<!no )(?<!without )(?<!tanpa )(?<!tiada )(?<!tak ada )belacan|(?<!no )shrimp paste|(?<!no )dried shrimp|(?<!tiada )udang kering|(?<!没有)(?<!不含)(?<!没)(峇拉煎|虾膏|虾酱|虾米)"
+        "(?<!no )(?<!without )(?<!tanpa )(?<!tiada )(?<!tak ada )belacan|(?<!no )shrimp paste|(?<!no )dried shrimp|(?<!tiada )udang kering|(?<!没有)(?<!不含)(?<!没)(峇拉煎|虾膏|虾酱|虾米)|kuah percik"
       ],
       "excludes": [
         "Nasi Dagang Ikan Tongkol",
@@ -1663,7 +1662,7 @@
     "question": "Ada babi tak? Arak?",
     "expect": {
       "says": [
-        "tiada (babi|arak|alkohol)|tak ada (babi|arak)|takde (babi|arak)|tidak (ada|menggunakan|guna) (babi|arak)|no (pork|alcohol)|JAKIM|Jabatan Kemajuan Islam|伊斯兰发展局|bersijil halal|disahkan halal|sijil halal"
+        "tiada (babi|arak|alkohol)|tak ada (babi|arak)|takde (babi|arak)|tidak (ada|menggunakan|guna) (babi|arak)|no (pork|alcohol)|JAKIM|Jabatan Kemajuan Islam|伊斯兰发展局|(?<!tidak )(?<!belum )bersijil halal|(?<!tidak )(?<!belum )disahkan halal|(?<!tiada )(?<!tak ada )(?<!takde )(?<!tidak ada )(?<!no )sijil halal"
       ]
     }
   },
@@ -2336,7 +2335,7 @@
         "Pulut Panggang"
       ],
       "says": [
-        "(?<!tiada )(?<!tak ada )(?<!tanpa )(?<!no )(udang kering|dried shrimp)|\\bya\\b|\\bada\\b(?! ?apa)|yes"
+        "(?<!tiada )(?<!tak ada )(?<!tanpa )(?<!no )(udang kering|dried shrimp)|\\bya\\b|(?<!tak )(?<!tidak )(?<!bukan )\\bada\\b(?! ?apa)|yes"
       ]
     }
   },
@@ -2358,14 +2357,15 @@
     ],
     "question": "那个辣吗？",
     "expect": {
-      "includes": [
-        "Nasi Kerabu Daging Bakar"
-      ],
       "says": [
-        "(?<![不没])(会|很|比较|挺|有点|是)辣|(?<![不没])辣的|(?<![不没])辣[。！!，,]|spicy|pedas"
+        "(?<![不没])(会|很|比较|挺|有点|是)辣|(?<![不没])辣的|(?<![不没])辣[。！!，,]|spicy|pedas|微辣|小辣|mild"
+      ],
+      "includesAny": [
+        "Nasi Kerabu Daging Bakar",
+        "Gulai Daging Kawah"
       ]
     },
-    "note": "'那个' after a two-item list: the first-named Daging Bakar is spice 2. Gulai is mild (1)."
+    "note": "'那个' after a two-item list can mean either dish: Daging Bakar (spicy, 2) or Gulai Daging Kawah (mild, 1); both accepted."
   },
   {
     "id": "v13z4-kelantan-nasi-kerabu-093",

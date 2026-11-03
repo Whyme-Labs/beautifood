@@ -1564,3 +1564,13 @@ performance, and the next held-out read needs a fresh set. Baseline as dev: 363/
     rounding 5; a Pagi (morning) timed menu; a dated promotion on kuih; one dish sold out.
   - z4 `filipino-grill`: halal none; 10% service, 8% tax; a Merienda timed menu; a weekend percent
     deal on grilled skewers; one dish sold out.
+
+## v13 held-out set: frozen (2026-11-03, before scoring)
+
+- Written blind by z3 (`xiaolongbao-house` 120 cases, `kerala-kitchen` 119) and z4
+  (`kelantan-nasi-kerabu` 116, `filipino-grill` 117), then reviewed blind: no gold entry changed, 25
+  cases fixed, none deleted (`bench/v13/REVIEW-z3z4.md`). 472 cases, all `test`.
+- A slip in the author briefs named `bench/v13/REVIEW-z1z2.md` (meant `bench/v12/`), so the authors
+  didn't see v12's rulings; the reviewer did and checked every case against them.
+- No change in `src/` since `d6c8bbd`.
+- Fingerprints (`npx tsx bench/freeze.ts`): `v13 472 1e34451317af3fbc`, `v13 menus 12 b8e866e20b03908a`.

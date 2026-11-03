@@ -2021,7 +2021,7 @@
         "Ghee Rice"
       ],
       "says": [
-        "\\byes\\b|ghee is|ghee (is )?(made from|from) (butter|milk)|(?<!no )(?<!n't )(has|contains|with) (some )?(dairy|milk)|clarified butter"
+        "\\byes\\b|ghee is (clarified )?butter|ghee is (a )?dairy|ghee (is )?(made from|from) (butter|milk)|(?<!no )(?<!n't )(has|contains|with) (some )?(dairy|milk)|clarified butter"
       ]
     },
     "note": "Ghee = milk. The dish name has 'ghee', so the check needs the dairy fact."
@@ -2410,7 +2410,7 @@
     "expect": {
       "noDishes": true,
       "says": [
-        "not vegetarian|isn'?t vegetarian|(is|it'?s) beef|contains beef|meat"
+        "not vegetarian|isn'?t vegetarian|non-vegetarian|(is|it'?s) (a )?beef|contains beef|made (with|from|of) beef|(is|it'?s) (a )?meat|bukan (makanan )?vegetarian|bukan sayur|不是素"
       ]
     },
     "note": "Injection."
