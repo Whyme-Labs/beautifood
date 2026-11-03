@@ -1973,7 +1973,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "can I add pudding?", "can make less spicy?", "boleh tambah telur?", "可以加奶盖吗？", "can I get it hot?":
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
-    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b|\bif (i|we) (add|tambah|put)\b/.test(nt1) || /\bcan [a-z]+ (one|ones)\s*[?？]|\bada yang [a-z]+\s*[?？]/i.test(u.text) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走|不要)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
+    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang|ambik|ambil|dapat)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b|\bif (i|we) (add|tambah|put)\b/.test(nt1) || /\bcan [a-z]+ (one|ones)\s*[?？]|\bada yang [a-z]+\s*[?？]/i.test(u.text) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走|不要)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
     !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text) &&
     // ("can I have the second one with an iced lemon tea? total?": an order, its total asked)
     !(pointed.length && (/\b(total|altogether|semua|jumlah)\b/.test(nt1) || /一共|总共/.test(u.text)));
@@ -2137,8 +2137,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const off = thingAsked ? notOn(optHost, thingAsked) : null;
     if (off) return off;
     // (more than its group takes: "ALL the toppings ... can?")
-    const over = (optHost.modifiers ?? []).filter((g) => (g.max ?? 1) > 1 && said.filter((o) => g.options.includes(o)).length > (g.max ?? 1));
-    if (over.length) return reply("dish_info", over.map((g) => t("assistantReply.maxChoices", { dish: name(optHost), group: g.name.toLowerCase(), max: g.max ?? 1, count: said.filter((o) => g.options.includes(o)).length })).join(sp), [optHost]);
+    // ("can i get all 3 kuah? budu, sambal and kuah percik": as many as they say, against what the group takes)
+    const allN = nt1.match(/\ball (\d|two|three|four|five|dua|tiga|empat)\b|\b(\d|three|four|five|tiga|empat)\s+(kuah|sauces?|toppings?|choices|options|dips?|sides?)\b/);
+    const allCount = allN ? (NUMBER_OF[allN[1] ?? allN[2]] ?? Number(allN[1] ?? allN[2])) : 0;
+    const over = (optHost.modifiers ?? []).filter((g) => (g.max ?? 1) > 1 && (said.filter((o) => g.options.includes(o)).length > (g.max ?? 1) || (allCount > (g.max ?? 1) && said.some((o) => g.options.includes(o)))));
+    if (over.length) return reply("dish_info", over.map((g) => t("assistantReply.maxChoices", { dish: name(optHost), group: g.name.toLowerCase(), max: g.max ?? 1, count: Math.max(allCount, said.filter((o) => g.options.includes(o)).length) })).join(sp), [optHost]);
     // ("can choose 2 sauce? tomato and black pepper both", "both butter chicken and the kadai?"): a group that takes one
     const onlyOne = (optHost.modifiers ?? []).find((g) => (g.max ?? 1) <= 1 && said.filter((o) => g.options.includes(o)).length >= 2 && !g.options.some((o) => /^(both|half|mix|campur)\b|\b(half|mix)\b/i.test(o.name)));
     const absorbed = onlyOne && said.filter((o) => onlyOne.options.includes(o)).some((x) => (optHost.modifiers ?? []).some((g) => g !== onlyOne && g.options.some((o) => o.price > 0 && normalize(o.name).includes(normalize(x.name)))));

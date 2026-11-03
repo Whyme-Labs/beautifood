@@ -144,7 +144,8 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     // (not one before a break with someone else's name after it: "Siti burger ayam special, me double chicken")
     const owner = /^(me|i|saya|aku|my|for)$/.test(toks[x.from - 1] ?? "") || /^[A-Z][a-z]+$/.test(toks[x.from - 1] ?? "");
     // (nor across a comma when its own count follows it: "satu beef fry, parotta 3 keping" is a parotta of three)
-    const countAfter = !cued && /^(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)$/.test(toks[x.to] ?? "");
+    // (not "dua-dua", both of them)
+    const countAfter = !cued && /^(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)$/.test(toks[x.to] ?? "") && toks[x.to + 1] !== toks[x.to];
     const hosts = [...spots.filter((y) => y !== spot && y.from >= 0 && y.from < x.from && !((owner || countAfter) && breaks.some((b) => b > y.from && b <= x.from))).map((y) => y.dish), ...(cued ? spots.filter((y) => y !== spot && y.from > x.to).map((y) => y.dish) : []), ...(countAfter ? [] : others)].filter((d) => d.id !== x.dish.id && d.modifiers?.length);
     // (with the words just before it: "extra chili sauce" asks for the Extra chilli sauce)
     const lead = [x.from - 2, x.from - 1].filter((i) => i >= 0 && !spots.some((y) => y !== spot && y.covered.includes(i))).map((i) => toks[i]);

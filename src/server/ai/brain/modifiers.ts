@@ -323,7 +323,16 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     const addOn = of.filter((o) => /add|extra|topping/i.test((dish.modifiers ?? []).find((g) => g.options.includes(o))?.name ?? ""));
     if (addOn.length === 1 && of.every((o) => o.price === addOn[0].price)) out.push(addOn[0]);
   }
-  return { add: out, off };
+  // ("Kuah boleh ambik budu dengan sambal": the group's own name, Kuah, isn't its Kuah percik)
+  const groupWordOnly = (o: ModifierOption) => {
+    const g = (dish.modifiers ?? []).find((x) => x.options.includes(o));
+    const gw = g ? normalize(g.name).split(" ") : [];
+    const kw = keyWords(o);
+    const saidK = (k: string) => ` ${t} `.includes(` ${k} `) || ` ${t} `.includes(` ${k}s `) || !!ALSO_ZH[k]?.test(raw) || (ALSO[k] ?? []).some((x) => ` ${t} `.includes(` ${x} `));
+    // (the group's word heading the option's name: Kuah percik in Kuah; not the Steamed rice of Rice & bread)
+    return !phraseOf(o) && kw.length >= 2 && gw.includes(kw[0]) && kw.filter((k) => !gw.includes(k)).every((k) => !saidK(k));
+  };
+  return { add: out.filter((o) => !groupWordOnly(o)), off };
 }
 // an option whose words are all ones others share, said together: "sos cili dengan mayo, tambah cheese"
 // isn't also the Cheese sauce
