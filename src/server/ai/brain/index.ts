@@ -1838,9 +1838,16 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const notOn = (optHost: Item, thingAsked: string) => {
     // (not "can add how many things?": a question, not a thing)
     if (/^(how|what|which|berapa|apa)\b/.test(thingAsked)) return null;
+    // (said whole, it's one of its choices: "telur goreng" is the Fried egg, though neither word alone is)
+    // (said strictly, the whole phrase: not "fish balls" loosely as the Fish cake)
+    // (a word of it that is a menu word the choice doesn't have says it's something else: "fish balls" isn't the Fish cake)
+    const menuVocab_ = new Set(ctx.items.flatMap((i) => normalize(`${i.name} ${i.description ?? ""}`).split(" ")));
+    const strict_ = optionsSaid(thingAsked, optHost, true).add;
+    const whole_ = strict_.length === 1 && thingAsked.split(" ").filter((w) => w.length > 2).every((w) => normalize(strict_[0].name).split(" ").some((x) => sameWord(x, w)) || !menuVocab_.has(w));
+    if (whole_) return null;
     // (nor a word of its choices' own headings: "can add protein?" of an "Add Protein" group)
     const nameWords = new Set([...normalize(optHost.name).split(" "), ...(optHost.modifiers ?? []).flatMap((g) => normalize(g.name).split(" "))]);
-    const unknown = thingAsked.split(" ").filter((w) => w.length > 2 && !/^(it|them|more|one|two|the|some|also|too|again|lagi|sikit|sedikit|and|with|this|that|any|got|can|boleh|please|pls|extra|charge|cost|caj|how|much|price|free|all|everything|those|these|first|second|third|fourth|last|other|another|normal|same|things|thing|stuff|anything|something|else|toppings|topping|addons)$/.test(w) && !nameWords.has(w) && !nameWords.has(w.replace(/s$/, "")) && !optionsSaid(w, optHost, true).add.length && !optionsSaid(`add ${w}`, optHost, true, true).add.length);
+    const unknown = thingAsked.split(" ").filter((w) => w.length > 2 && !/^(it|them|more|one|two|the|some|also|too|again|lagi|sikit|sedikit|and|with|this|that|any|got|can|boleh|please|pls|extra|charge|cost|caj|how|much|price|free|all|everything|those|these|first|second|third|fourth|last|other|another|normal|same|things|thing|stuff|anything|something|else|toppings|topping|addons|sekali|juga|jugak|pun|lah|sikit)$/.test(w) && !nameWords.has(w) && !nameWords.has(w.replace(/s$/, "")) && !optionsSaid(w, optHost, true).add.length && !optionsSaid(`add ${w}`, optHost, true, true).add.length);
     if (unknown.length) {
       const own_ = (optHost.modifiers ?? []).flatMap((g) => g.options.filter((o) => o.price > 0));
       const tail = own_.length ? `${sp}${t("assistantReply.itsAddOns", { dish: name(optHost), list: list(own_.map((o) => `${optionLabel(o)} (+${money(o.price)})`)) })}` : "";
