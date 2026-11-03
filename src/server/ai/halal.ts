@@ -10,6 +10,8 @@ export type Halal = HalalInfo & { standing: HalalStatus | "expired" };
 const PORK =
   /\b(pork|lard|bacon|ham|babi|char siu|lap cheong|chinese sausage|pork floss|siu yuk|bak kut teh)\b|猪|叉烧|腊肠|烧肉|肉骨茶/i;
 const BEEF_OR_CHICKEN_HAM = /\b(beef|chicken|turkey|duck)\s+(bacon|ham)\b/gi;
+// ("our halal take on the pork classic", "made with chicken instead of pork", "the pork version is…"): pork named as what it isn't
+const INSTEAD_OF_PORK = /\b(?:halal (?:take|version|twist) on (?:the |a )?(?:\w+ )?|instead of (?:the )?|in place of (?:the )?|replaces? (?:the )?|rather than (?:the )?|swaps? (?:out )?(?:the )?)(?:pork|lard|bacon|ham|babi|char siu)\b(?: (?:classic|original|version|dish|recipe))?/gi;
 const ALCOHOL =
   // (not root beer or ginger beer, which are sodas)
   /\b(wine|shaoxing|hua tiao|(?<!\b(?:root|ginger) )beer|lager|stout|sake|soju|mirin|rum|brandy|whisky|whiskey|liqueur|baileys|cocktail|gin|vodka|tequila|champagne|prosecco)\b|酒/i;
@@ -30,7 +32,7 @@ export function notHalalWord(
   },
 ): string | null {
   // ("no pork, no alcohol" in a description says what it hasn't)
-  const s = unsaid(text(i)).replace(BEEF_OR_CHICKEN_HAM, "");
+  const s = unsaid(text(i)).replace(BEEF_OR_CHICKEN_HAM, "").replace(INSTEAD_OF_PORK, "");
   return s.match(PORK)?.[0] ?? s.match(ALCOHOL)?.[0] ?? null;
 }
 

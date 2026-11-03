@@ -1946,3 +1946,12 @@ describe("several changes to an order in one message", () => {
     expect(editSteps("make the naan 5 and drop one lime soda", false)).toBeNull();
   });
 });
+
+describe("pork named as what a dish isn't", () => {
+  it("doesn't call a halal take on a pork classic pork", async () => {
+    const { notHalalWord } = await import("../../src/server/ai/halal");
+    expect(notHalalWord({ name: "Ayam Pongteh", description: "our halal take on the pork classic: chicken and potato braised with taucu" })).toBeNull();
+    expect(notHalalWord({ name: "Chicken Siew Mai", description: "chicken instead of pork, steamed" })).toBeNull();
+    expect(notHalalWord({ name: "Char Siu Rice", description: "roast pork with honey glaze" })).not.toBeNull();
+  });
+});
