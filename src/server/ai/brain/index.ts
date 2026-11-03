@@ -2667,7 +2667,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "small hokkien mee + fish ball + kopi ais, cheaper if I take the set?", "burger ayam + fries + sirap ais, take
   // the meal or order separately?", "is the platter cheaper than ordering the same things separately?": the set (or
   // a dish's meal add-on) against its parts one by one, as they listed them or as its description lists them
-  const setWord = /\b(set|sets|combo|meal|platter|package|pakej)\b/.test(nt1) || /套餐|配套/.test(u.text);
+  // (or a dish that is others together by its description, "Kuih Campur: one serving each of akok, jala mas, tahi itik and putu halba")
+  const partsNamed = (i: Item) => live.filter((d) => d.id !== i.id && new RegExp(`\\b${normalize(d.name)}\\b`).test(normalize(i.description ?? ""))).length;
+  const bundle = mentioned.find((i) => partsNamed(i) >= 2 && /\b(each of|one of each|assorted|mixed|campur)\b/i.test(`${i.name} ${i.description ?? ""}`));
+  const setWord = /\b(set|sets|combo|meal|platter|package|pakej)\b/.test(nt1) || /套餐|配套/.test(u.text) || !!bundle;
   // (ordering them one by one, not paying apart, "bayar asing-asing"; nor "anything cheaper?", something else)
   // ("ayam penyet and es teh, combo cheaper or not?")
   const vsWord = /\b(set|combo|meal|platter)s? (cheaper|lagi murah|murah|worth it)\b/.test(nt1) || (/\b(separate|separately|ala carte|one by one|individually)\b/.test(nt1) && !/\b(pay|paying|bayar|bill|bills|bil)\s+(separate|separately)\b/.test(nt1)) || /\b(cheaper|worth|save|jimat|murah)\b.*\b(if|to)\s+(i |we )?(take|get|order|ambil|beli)\b/.test(nt1) || /单点|单叫|分开点|分开叫/.test(u.text);
@@ -2690,12 +2693,19 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const key = apart > price ? "assistantReply.setSaves" : apart < price ? "assistantReply.setDearer" : "assistantReply.setEven";
       return reply("order_help", t(key, { set: label, price: money(price), lines: shownLines(parts), apart: money(apart), diff: money(Math.abs(apart - price)) }), kept);
     };
-    const others = mentioned.filter((i) => !SETLIKE.test(i.name));
+    const others = mentioned.filter((i) => !SETLIKE.test(i.name) && i !== bundle);
     // a set: named, or the one whose description names most of what they listed
-    const set = mentioned.find((i) => SETLIKE.test(i.name) && orderable(i)) ??
+    const set = mentioned.find((i) => SETLIKE.test(i.name) && orderable(i)) ?? (bundle && orderable(bundle) ? bundle : undefined) ??
       (others.length >= 2 ? live.filter((i) => SETLIKE.test(i.name)).map((i) => ({ i, n: others.filter((d) => ` ${normalize(i.description ?? "")} `.includes(` ${normalize(d.name)} `)).length })).filter((x) => x.n >= 2).sort((a, b) => b.n - a.n)[0]?.i : undefined);
     if (set) {
-      const parts = others.length >= 2 ? asLines(u.text, [set]) : asLines(set.description ?? "", [set]);
+      const parts = others.length >= 2 ? asLines(u.text, [set]) : asLines((set.description ?? "").replace(/\(\s*\d+\s*(?:pieces?|pcs|pc|biji|ketul)\s*\)/gi, " "), [set]);
+      // ("pork xlb, shengjian, … and tea each" of a set with "2 Chinese Tea"): a thing said by a word several dishes
+      // share is the set's own one of it, as many as the set has
+      if (others.length >= 2) {
+        const saidWords = new Set(nt1.split(" "));
+        for (const dp of asLines((set.description ?? "").replace(/\(\s*\d+\s*(?:pieces?|pcs|pc|biji|ketul)\s*\)/gi, " "), [set]))
+          if (!parts.some((o) => o.item.id === dp.item.id) && !others.some((i) => i.id === dp.item.id) && normalize(dp.item.name.replace(/\(.*?\)/g, " ")).split(" ").some((w) => w.length >= 3 && saidWords.has(w) && !parts.some((o) => normalize(o.item.name).split(" ").includes(w)))) parts.push(dp);
+      }
       if (parts.length >= 2) return verdict(name(set), set.price, parts, [set, ...parts.map((o) => o.item)]);
     }
     // ("1 wantan mee dry, 1 hot kopi" … "better take the set or order separately?": the order so far, against the set its dishes make)
