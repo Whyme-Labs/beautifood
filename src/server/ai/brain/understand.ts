@@ -479,7 +479,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       if (zh && !addOn) return void found.push({ dish, at: raw.indexOf(zh) / 100, covered: [], score: 1.9, zh });
     }
     // one letter can be the whole difference: Kopi O is black, Kopi C has evaporated milk
-    let name = ix.names[n].filter((w) => w.length > 1 || /\d/.test(w) || !/^[ai]$/.test(w));
+    // (not its joining words: the "for" of Dumpling Set for Two)
+    let name = ix.names[n].filter((w) => (w.length > 1 || /\d/.test(w) || !/^[ai]$/.test(w)) && !/^(for|to)$/.test(w));
     if (!name.length) return;
     // two of its words typed as one ("kungpao" for Kung Pao): one word, as rare as the rarer
     const df = (w: string) => ix.df.get(w) ?? Math.min(...name.filter((x) => w.startsWith(x) || w.endsWith(x)).map((x) => ix.df.get(x) ?? 1), 1);
@@ -558,7 +559,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const inOrder = [...covered].sort((a, b) => a - b);
     const adjacent = inOrder.length >= 2 && inOrder.every((c, i) => i === 0 || c === inOrder[i - 1] + 1);
     // ...unless they're the course's own words ("fruit teas" asks for the Fruit teas)
-    const FUNCTION = /^(the|and|with|of|a|an|in|on|n|dan|style)$/;
+    const FUNCTION = /^(the|and|with|of|a|an|in|on|n|dan|style|for|to)$/;
     const adjacentNamed = adjacent && covered.filter((i) => !FUNCTION.test(toks[i])).length >= 2 && !covered.every((i) => ix.courseWords.has(toks[i]) || ix.courseWords.has(toks[i].replace(/s$/, "")));
     if (adjacentNamed) strong = true;
     const coverage = weight / total;
@@ -1227,8 +1228,11 @@ export function read(items: Dish[], asked: string): Reading {
     if (ws.length >= 3) initials.set(ws.map((w) => w[0]).join(""), [...(initials.get(ws.map((w) => w[0]).join("")) ?? []), ws.join(" ")]);
   }
   for (const [ini, ns] of initials) if (ns.length === 1) aliasedInitials.push([new RegExp(`\\b${ini}\\b`, "gi"), ns[0]]);
+  // (a long word of a dish's name said in its parts: "xiao long bao" of Xiaolongbao)
+  const longWords = [...new Set(items.flatMap((i) => i.name.toLowerCase().split(/[^a-z]+/)).filter((w) => w.length >= 8))];
+  const spaced = longWords.map((w) => [new RegExp(`\\b${[...w].join("[ -]?")}\\b`, "gi"), w] as [RegExp, string]).filter(([re, w]) => re.source.length > 0 && w.length >= 8);
   const aliased = [[/\b(siu yuk|siu yoke|siew yoke|siew yuk|sio bak)\b/gi, "roast pork"], [/\b(char siew|cha siu|char sio)\b/gi, "char siu"], ...aliasedInitials] as [RegExp, string][];
-  const question = aliased.reduce((q, [re, to]) => (menuText.includes(to) && !items.some((i) => re.test(i.name)) ? q.replace(re, to) : q), items.some((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes("养乐多"))) ? said.replace(/(?<!养乐)多多/g, "养乐多") : said);
+  const question = spaced.reduce((q, [re, to]) => q.replace(re, to), aliased.reduce((q, [re, to]) => (menuText.includes(to) && !items.some((i) => re.test(i.name)) ? q.replace(re, to) : q), items.some((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes("养乐多"))) ? said.replace(/(?<!养乐)多多/g, "养乐多") : said));
   const raw = question.normalize("NFKC").toLowerCase();
   const ix = dishIndex(items);
   // fix typos in the words we read constraints from, but never in a word of a dish's name
@@ -1357,7 +1361,7 @@ export function read(items: Dish[], asked: string): Reading {
               : null;
   if (superlative === "spiciest" && spice.min === 2) spice.min = null;
 
-  const refersBack = /\b(those|these|them|that one|this one|the first|the second|the last one|it|yang tu|yang itu|yang ini|yang mana|out of)\b|^(does|is|has|did|can) (that|this)\b/.test(restText) || /那个|这个|那些|这些|它|哪个|哪一个/.test(restRaw) || (/(?:可以|能|可不可以)吃(?:吗|不)|吃得(?:吗|了吗)/.test(restRaw) && !mentions.length);
+  const refersBack = /\b(those|these|them|that one|this one|the first|the second|the last one|it|yang tu|yang itu|yang ini|yang mana|out of)\b|^(does|is|has|did|can) (that|this)\b/.test(restText) || /那个|这个|那些|这些|它|哪个|哪一个/.test(restRaw) || (/(?:可以|能|可不可以)吃(?:吗|不)|吃得(?:吗|了吗)|^(?:那)?(?:里面|里头)/.test(restRaw) && !mentions.length);
 
   const ORD: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, fourth: 3, "4th": 3, last: -1, pertama: 0, kedua: 1, ketiga: 2, keempat: 3, terakhir: -1 };
   const ordWord = restText.match(/\b(?:the|that|this|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|4th|last|pertama|kedua|ketiga|keempat|terakhir)\b/);

@@ -41,7 +41,7 @@ export const alcoholWord = (
   i: Pick<MenuItem, "name" | "description"> & {
     translations?: MenuItem["translations"];
   },
-) => text(i).match(ALCOHOL)?.[0] ?? null;
+) => unsaid(text(i)).match(ALCOHOL)?.[0] ?? null;
 
 /**
  * The menu as the branch's halal standing has it: at a certified branch every dish that names no

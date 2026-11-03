@@ -1427,7 +1427,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // "kids curry plate got any alcohol?", "有酒精吗？": what the menu says it's made with
   // (not "non-alcoholic drink to go with the nachos?": a drink asked for)
-  if (focus.length === 1 && (/\b(alcohol|alcoholic|alkohol|arak)\b/.test(nt0) || /酒精|含酒/.test(u.text)) && (/[?？吗]/.test(u.text) || /\b(got|any|is there|does|ada|contain|contains)\b/.test(nt0)) && !/\b(non|no|without|free|tanpa|tak)\s*(alcohol|alcoholic|alkohol)|\b(go with|goes with|pair|drink to|drinks to)\b/.test(nt0)) {
+  if (focus.length === 1 && (/\b(alcohol|alcoholic|alkohol|arak)\b/.test(nt0) || /酒精|含酒|有酒|有没有酒|会不会有酒/.test(u.text)) && (/[?？吗]/.test(u.text) || /\b(got|any|is there|does|ada|contain|contains)\b/.test(nt0)) && !/\b(non|no|without|free|tanpa|tak)\s*(alcohol|alcoholic|alkohol)|\b(go with|goes with|pair|drink to|drinks to)\b/.test(nt0)) {
     const d = focus[0];
     // ("the jiu niang one got alcohol?": the choice said, its rice wine)
     const optBooze = optionsSaid(u.text, d, true).add.find((o) => alcoholWord({ name: o.name, description: "" }));
@@ -1435,7 +1435,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const w = alcoholWord(d);
     // (the menu's own words when it says: "naturally contains trace alcohol (under 0.5%)")
     const own = /alcohol/i.test(d.description ?? "") ? desc(d) : "";
-    const text = own ? `${name(d)}: ${own.replace(/[.。]+$/, "")}${stop}` : w ? t("assistantReply.hasAlcohol", { dish: name(d), word: w }) : t("assistantReply.noAlcoholListed", { dish: name(d) });
+    // ("black silkie chicken double-boiled …, no wine": the menu saying so)
+    const saysNone = /\b(no|without|non)[\s-]+(rice )?(wine|alcohol|alcoholic|shaoxing|liquor)\b/i.test(`${d.description ?? ""}`);
+    const text = own && !saysNone ? `${name(d)}: ${own.replace(/[.。]+$/, "")}${stop}` : w ? t("assistantReply.hasAlcohol", { dish: name(d), word: w }) : saysNone ? t("assistantReply.noAlcoholSaid", { dish: name(d) }) : t("assistantReply.noAlcoholListed", { dish: name(d) });
     return { ...reply("dish_allergen", text, [d]), safetyNote: allyNote(locale) };
   }
   // ("any alcohol in your cooking? like shaoxing or rice wine?"): of the kitchen, the dishes made with it, or none
@@ -2891,7 +2893,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const byCourse = (pool: Item[], courses: Course[]) => {
     // the menu's own categories first ("bowls", "skewers", 奶茶): they say exactly what's meant; a
     // course they don't cover is added ("mains + drinks" with a "Soft drinks & shakes" category)
-    const inCategory = new Set(ctx.items.filter((i) => u.categories.includes(i.category ?? "")).map((i) => i.id));
+    // (and the dishes that are that by their own words: "which dumplings" takes the Xiaolongbao, "soup dumplings",
+    // beside the Dumplings & buns)
+    // (a kind of dish, not a course: not "sides", "sweets", "pasta", "noodles")
+    const COURSE_W = /^(steamed|fried|grilled|roasted|braised|baked|claypot|boiled|stir|sides?|sweets?|desserts?|drinks?|mains?|starters?|snacks?|pastas?|noodles?|soups?|vegetables?|rice|pizzas?|sets?|meals?|breads?|curries|curry|grills?|specials?|beverages?|kuih|bowls?)$/;
+    const catSaid = normalize(u.text).split(" ").filter((w) => w.length >= 5 && !COURSE_W.test(w) && u.categories.some((c) => normalize(c).split(" ").some((x) => x === w || x.replace(/s$/, "") === w.replace(/s$/, ""))));
+    const ownWords = (i: Item) => normalize(`${i.name} ${i.description ?? ""}`).split(" ");
+    const inCategory = new Set(ctx.items.filter((i) => u.categories.includes(i.category ?? "") || (catSaid.length && ownWords(i).some((x) => catSaid.includes(x)) && !/\b(set|combo|platter)\b/i.test(i.name))).map((i) => i.id));
     const joined = courses.length >= 2 && /\+|&|\band\b|\bdan\b|和/.test(u.text) && !/\b(go with|goes with|with my|with the|with it)\b/i.test(u.text);
     // "a main under RM25" when the Mains are all dearer: the tacos and burritos are mains too (and
     // the milk teas are drinks when the Special drinks are all dearer)
@@ -3028,6 +3036,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   }
   // (a narrowing of what was just shown stays one, whatever the filters made of it)
   if (ofShown && intent === "recommend") intent = "refine";
+  // ("our signature is …" → "that one spicy ah? my kid also eating"): how spicy the one pointed at is, not a list
+  if (intent === "recommend" && u.refersBack && focus.length === 1 && !mentioned.length && (/\b(spicy|pedas|hot)\b/.test(nt0) || /辣/.test(u.text)) && (/[?？]|\b(ah|ke|tak)\b/.test(u.text) || /吗|不辣/.test(u.text)) && !/\b(which|what|other|another|less|milder|something)\b/.test(nt0)) intent = "dish_info";
   switch (intent) {
     case "greeting":
     case "out_of_scope":
@@ -3144,7 +3154,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // ("可乐饼是什么做的？": the main ingredients in Chinese, when the description is English)
       if (!en && description && !/[\u4e00-\u9fff]/.test(description) && ingredientsZh(description).length) parts.splice(1, 0, t("assistantReply.mainIngredients", { list: ingredientsZh(description).slice(0, 6).join("、") }));
       parts.push(`${money(item.price)}${stop}`);
-      parts.push(item.spiceLevel ? t("assistantReply.spiceLevel", { level: item.spiceLevel }) : t("assistantReply.notSpicySentence"));
+      parts.push(item.spiceLevel === 1 ? t("assistantReply.spiceMild") : item.spiceLevel ? t("assistantReply.spiceLevel", { level: item.spiceLevel }) : t("assistantReply.notSpicySentence"));
       // ("可以不要辣吗？", "can I have it no chilli?": the dish's own free "No X" choice)
       const without = optionsSaid(u.text, item, true).add.filter((o) => !o.price && /^(no|without|less|tanpa|kurang)\b/i.test(o.name));
       if (without.length) parts.push(t("assistantReply.freeChoice", { dish: name(item), option: list(without.map(optionLabel)), price: money(item.price) }));
