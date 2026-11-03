@@ -275,6 +275,9 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     else if (/\(/.test(o.name) && (() => { const out_ = keyWords({ ...o, name: o.name.replace(/\([^)]*\)/g, " ") }); return out_.length === 1 && (count.get(out_[0]) ?? 0) < 2 && said(out_[0], words, joined, zhLeft); })()) add.push(o);
     else if (own.length ? saysOption(own, words, joined, zhLeft) : ks.every((k) => said(k, words, joined, zhLeft)) && (/[\u3400-\u9fff]/.test(raw) || together(named.length > ks.length ? named.filter((w) => w.length > 1) : ks, t, raw))) add.push(o);
   }
+  // ("做辣一点", "more spicy", "lebih pedas" of a spice-level group): the next level up from its first
+  if (/辣一点|更辣|加辣|多辣|辣些/.test(raw) || /\b(more spicy|spicier|lebih pedas|extra pedas)\b/.test(t))
+    for (const g of dish.modifiers ?? []) if (/spic|pedas|辣|level|heat/i.test(g.name) && g.options.length >= 2 && !g.options.some((o) => add.includes(o))) add.push(g.options[1]);
   // ("iced milk tea" of a set's Iced HK Milk Tea): said without the style word of its name, the one option of its group so said
   for (const g of dish.modifiers ?? []) {
     if (g.options.some((o) => add.includes(o))) continue;
