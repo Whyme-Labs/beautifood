@@ -1604,3 +1604,59 @@ stays in the same 70–76% band as v10–v12, and bills and add-ons on unseen me
 short (modifier 55.7%). What did carry over is safety: no unsafe answer, and allergy questions at
 92.9%. Rule-by-rule fixes on dev cases raise dev, not this. Whether v13 becomes dev is the owner's call;
 until then it stays unread.
+
+## v13 made a dev set (owner's choice, 2026-11-03), after its one scoring above
+
+The owner asked for v13 to become dev and its failures fixed. The case files moved to `split: "dev"`
+at `0ccad2d`; from then on v13 cases were read one by one, so nothing below is held-out evidence. The
+one blind score stays 72.9%.
+
+**Dev pass 1** (`c04dd14` … `1522f9f`, 20 commits, each scored on every dev set before it went in, and
+none committed with a dev case broken):
+
+| | baseline (`0ccad2d`) | after pass 1 (`1522f9f`) |
+|---|---|---|
+| v13 | 344/472 (72.9%) | **447/472 (94.7%)** |
+| All dev sets (v1, v8–v13) | 3877/4146 (93.5%) | **3990/4146 (96.2%)** |
+| Unsafe, any set | 0 | **0** |
+
+- By menu: `kerala-kitchen` 99.2%, `filipino-grill` 95.7%, `xiaolongbao-house` 94.2%,
+  `kelantan-nasi-kerabu` 89.7%.
+- Other dev sets only gained: v1 505, v8 444 (+2), v9 736 (+2), v10 917 (+3), v11 462 (+5), v12 479.
+- What changed, by kind:
+  - Chinese part names: after a count (烤猪肉, 葱饼, 荤蕉叶饭); X的 of the dish just shown, or of a
+    kind the message names (两份素的, 四片的, 蟹粉的); a meal kind as each dish (蕉叶饭); 笼 and 打包 in
+    counts; 白饭 of 白饭／红米饭; 烧鸡 as the plain dish, not the rice it comes on.
+  - Words for choices: 少糖, 油条, 麦粉, 生蛋, 辣油, 辣椒酱, 鸡胸, 有冰的; keju, kekwa, teh cina, upsize,
+    "Sharing (2-3 pax)", "Large pot for 4-6"; a group's own name isn't its option (Kuah ≠ Kuah percik).
+  - Orders: earlier turns are now read exactly as the current one (split into changes, what they
+    point at put in words); take away, make the tea 4, only 1 beer, cancel one then change, jadikan
+    dua, a swap of one dish for another; parotta/rice by the plain dish, sets said in parts, numbered
+    options, xlb/ckt/bkt, san mig.
+  - Safety: raita, yoghurt and whey read as dairy (it was answered "lists no dairy"); budu, patis and
+    bagoong as fish; chicharrón as pork; a pork-free branch is never called halal-certified; halal
+    picks never include a dish named for pork or alcohol; add-ons asked of the dish talked about are
+    checked against an allergy or vegetarian/vegan said.
+  - Deals and timed menus: "does it cover X?", day runs, hours now, what a timed menu has.
+- Wording changed on purpose (two unit-test expectations updated with it): a deal's days in a row read
+  "Mon–Thu" instead of "Mon, Tue, Wed, Thu"; "pork-free and lard-free"; spice level 1 is "mildly
+  spicy"; option labels keep a "(side)"-style note; the add-on-not-vegan line now says both "isn't
+  vegan" and "not vegan"; a deal on now gives its hours with its end.
+- Cost: replaying earlier turns this way takes ~5% longer on a 30-turn conversation (~400 ms at turn
+  30, as before).
+
+**Left (25), by kind**, for a later pass:
+- Plans to a budget or a party: `kerala-kitchen-109`, `xiaolongbao-house-035`,
+  `kelantan-nasi-kerabu-014`, `-027`, `filipino-grill-102`.
+- A set against what it holds, bought one by one: `xiaolongbao-house-014`, `kelantan-nasi-kerabu-012`.
+- Pointing at what was said: `xiaolongbao-house-023` ("2 yang ayam"), `-041` ("the 2nd and 3rd one"),
+  `filipino-grill-099` ("same as him, but chicken sisig instead"), `kelantan-nasi-kerabu-033`.
+- Bills: `xiaolongbao-house-009` (per-person tea in a split), `kelantan-nasi-kerabu-015` (the large
+  keropok said two turns back), `filipino-grill-012`, `-116` (the beer bucket).
+- What a dish is, beyond its menu line: `kelantan-nasi-kerabu-078` (kerisik is coconut), `-114` (blue
+  from bunga telang), `-107`, `-113` (comparisons), `xiaolongbao-house-113`.
+- Others: `xiaolongbao-house-048` (8 pcs when it comes in 6 or 10), `kelantan-nasi-kerabu-043` (no
+  cheese on roti titab), `-075`, `-099`, `filipino-grill-057`.
+- Two that pass but not as asked: `kerala-kitchen-107` (蕉叶饭现在多少钱 sums both meals as a bill,
+  though it names both prices) and `kerala-kitchen-048` (the kadala gravy answered only as the
+  parotta being vegetarian).
