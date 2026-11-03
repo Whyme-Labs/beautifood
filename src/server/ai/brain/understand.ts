@@ -1189,6 +1189,12 @@ export function read(items: Dish[], asked: string): Reading {
     return top.length === 1 ? top[0] : undefined;
   };
   const toks = tokens(normalize(question, ix.own), true).map((t) => (ix.df.has(t) || MALAY_FOOD[t] ? t : correct(t) !== t ? correct(t) : menuFix(t) ?? t));
+  // ("brased duk": a three-letter word one letter short of the word that, after the one before it, names a dish)
+  toks.forEach((t, i) => {
+    if (i === 0 || t.length !== 3 || ix.df.has(t) || !/^[a-z]+$/.test(t)) return;
+    const pair = items.map((d) => normalize(d.name).split(" ")).find((ws) => ws.some((w, k) => k > 0 && ws[k - 1] === toks[i - 1] && w.length === 4 && w[0] === t[0] && [...Array(4).keys()].some((j) => w.slice(0, j) + w.slice(j + 1) === t)));
+    if (pair) toks[i] = pair[pair.indexOf(toks[i - 1]) + 1];
+  });
   // "saya alergi kacang", "allergic to nuts": the word after is an allergen, not a dish (Ais Kacang)
   const skip = new Set<number>();
   toks.forEach((t, i) => {
