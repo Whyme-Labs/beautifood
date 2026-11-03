@@ -469,6 +469,8 @@ const zh = {
     tasteIntroPlain: "这一带{liked}的粉丝偏爱这类菜：",
     tasteNote: "（来自 Qloo：{liked}粉丝整体的口味倾向，不是对你个人的推测。）",
     allergyStaff: "你的过敏原比较多，点餐前请先问店员：他们清楚每道菜的用料，也可以向厨房确认。",
+    termIs: "{term}是{what}。",
+    colouredWith: "{dish}的颜色来自{what}。",
     weHave: "我们有这些：",
     noHave: "抱歉，今天的菜单上没有{thing}。大家最爱的是{list}。",
     noHaveClosest: "抱歉，今天的菜单上没有{thing}。最接近的是：",

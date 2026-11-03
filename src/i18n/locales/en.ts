@@ -471,6 +471,8 @@ const en = {
     tasteIntroPlain: "Fans of {liked} around here lean towards dishes like these:",
     tasteNote: "(From Qloo: what fans of {liked} tend to like, in aggregate. It's not a guess about you.)",
     allergyStaff: "With allergies to that many things, please talk to our staff before you order: they know exactly what goes into each dish and can check with the kitchen.",
+    termIs: "{term} is {what}.",
+    colouredWith: "{dish} gets its colour from {what}.",
     weHave: "Here's what we have:",
     noHave: "We don't have {thing} on today's menu, sorry. Our favourites are {list}.",
     noHaveClosest: "We don't have {thing} on today's menu, sorry. The closest we have:",

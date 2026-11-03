@@ -1070,7 +1070,8 @@ function search(question: string, live: Item[], knownWord: (w: string) => boolea
   // "do you have Korean fried chicken?", "do you serve roast goose?", "got pork pepperoni pizza?": a
   // dish asked for by name is on the menu only when a dish's name has all its words (else it's the
   // closest we have); "anything with chicken and rice?" asks for the ingredients instead
-  const byName = /^(do you have|do you serve|do you sell|have you got|you got|got|ada|any chance)\b/.test(toks.join(" ")) && !/\b(anything|something|any dish|dishes|with|without)\b/.test(toks.join(" "));
+  // (or with the asking last: "nasi lemak ada?", "roti canai got or not?")
+  const byName = (/^(do you have|do you serve|do you sell|have you got|you got|got|ada|any chance)\b/.test(toks.join(" ")) || (toks.length <= 5 && /\b(ada|got|have)( tak| ke| x| tidak| or not| or no)?$/.test(toks.join(" ")))) && !/\b(anything|something|any dish|dishes|with|without)\b/.test(toks.join(" "));
   if (byName && !missing.length && content.length >= 2 && !live.some((i) => content.every((w) => hasTerm({ ...i, description: "" }, w))))
     missing.push(...content.filter((w) => w.length >= 3));
   if (!found.length && !missing.length) return null;
@@ -1460,9 +1461,23 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const also = instead.length ? `${sp}${t("assistantReply.insteadTry", { list: list(instead.map(line)) })}` : "";
     return replied(intent, `${off.map(offNote).join(sp)}${sp}${answer}${also}`, cards([...rest, ...instead]), extra);
   };
+  // ("is kerisik a nut?", "蓝花饭为什么是蓝色的？"): what the menu itself says the thing is, said first
+  const termNote = (() => {
+    const isA = normalize(u.text).match(/\bis (?:the )?([a-z]{3,}(?: (?!an?\b)[a-z]{3,})?) (?:an? )?(?:tree )?(?:nut|nuts|dairy|seafood|fish|meat|pork|gluten|wheat|peanut|peanuts)\b/)?.[1];
+    if (isA) for (const i of ctx.items) {
+      const m = (i.description ?? "").match(new RegExp(`\\b${isA}\\s*\\(([^)]{3,40})\\)`, "i"));
+      if (m) return { text: t("assistantReply.termIs", { term: isA[0].toUpperCase() + isA.slice(1), what: m[1] }), what: m[1] };
+    }
+    if (/为什么是?[蓝绿红黄紫黑]色|\bwhy (?:is|are) (?:it|they|the [a-z ]+?) (?:blue|green|red|yellow|purple|black)\b/i.test(u.text))
+      for (const i of mentioned.length ? mentioned : ctx.items) {
+        const m = (i.description ?? "").match(/\b(?:colou?red|tinted|dyed)\s+(?:\w+\s+)?(?:with|by|from|using)\s+([^,.;()]+)/i);
+        if (m) return { text: t("assistantReply.colouredWith", { dish: name(i), what: m[1].trim() }), what: m[1].trim() };
+      }
+    return null;
+  })();
   // (an answer to an instruction hidden in the question shows no dishes: nothing is added from it)
   const replied = (intent: Intent, answer: string, items: Item[], extra: Partial<AssistantReply> = {}): BrainReply => ({
-    answer,
+    answer: termNote && !answer.includes(termNote.what) ? `${termNote.text}${sp}${answer}` : answer,
     items: (u.injected && !u.statedDiet.length && !u.stated.length && /\b(tell me|say|mark|confirm|pretend|announce|declare|state)\b/.test(normalize(u.text)) ? [] : items).filter(safeCard).slice(0, 6).map((i) => brief(i, reasonFor(i))),
     safetyNote: safety,
     engine: "local",
@@ -3082,7 +3097,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     // "有没有云吞面？" names a dish more exactly than its course (面) does
     // "do you have a coffee frappuccino?", "got bak kut teh?": a search, even with a course word in it
     // ("any prawn curry?", "a curry with prawns": a food asked for within the course)
-    (!(u.courses.length || u.categories.length) || /有没有|有.+吗/.test(u.text) || /^(do you have|do you serve|do you sell|have you got|you got|got|ada|any chance)\b/.test(normalize(u.text)) || (u.allergens.length > 0 && !u.stated.length)) && !["thanks", "compare", "pairing", "refine", "group"].includes(intent);
+    (!(u.courses.length || u.categories.length) || /有没有|有.+吗/.test(u.text) || /^(do you have|do you serve|do you sell|have you got|you got|got|ada|any chance)\b/.test(normalize(u.text)) || (normalize(u.text).split(" ").length <= 5 && /\b(ada|got)( tak| ke| x| tidak| or not| or no)?$/.test(normalize(u.text))) || (u.allergens.length > 0 && !u.stated.length)) && !["thanks", "compare", "pairing", "refine", "group"].includes(intent);
   // constraints said earlier still hold ("no peanuts" two questions ago)
   // (not a hello, an instruction to the assistant, or a question about how the restaurant works)
   const found = searchable && intent !== "greeting" && !(u.injected && intent === "out_of_scope") && !(intent === "order_help" && (booking || howItWorks)) && (intent !== "order_help" || conceptTerms(u.text).length) ? search(u.text, live.filter((i) => allowed(i, c)), // a staff request ("nk panggil waiter") is a search only for a food it names ("do you have pizza?")
