@@ -1852,6 +1852,14 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
     return null;
   };
+  // ("chicken thali, can i take both butter chicken and the kadai?"): two picks of a group that takes one, though one is also a dish
+  if (/\bboth\b.+\band\b|\bdua dua\b|\bkedua dua\b/.test(nt1) || /两个都|都要/.test(u.text)) {
+    for (const h of mentioned) {
+      const said_ = (o: ModifierOption) => { const ws = normalize(o.name).split(" ").filter((w) => w.length > 2); return ws.length > 0 && ws.some((w) => !normalize(h.name).split(" ").includes(w) && ` ${nt1} `.includes(` ${w} `)); };
+      const g = (h.modifiers ?? []).find((x) => (x.max ?? 1) <= 1 && x.options.filter(said_).length >= 2 && x.options.some((o) => said_(o) && ctx.items.some((i) => normalize(i.name) === normalize(o.name))));
+      if (g) return reply("dish_info", t("assistantReply.oneOfGroup", { dish: name(h), group: g.name.toLowerCase(), list: list(g.options.map((o) => (o.price ? `${optionLabel(o)} (+${money(o.price)})` : optionLabel(o)))) }), [h]);
+    }
+  }
   // ("veg thali, can the naan be cheese naan?"): a choice asked of a set's part that isn't one of its choices
   const beAsked = nt1.match(/\b(?:can|could|boleh) (?:the|its|my) ([a-z]+) (?:be|jadi|tukar|change to|tukar jadi) ([a-z]+(?: [a-z]+){0,2}?)\s*$/);
   const beHost = beAsked ? mentioned.find((i) => (i.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name).split(" ").some((w) => sameWord(w, beAsked[1]))))) : undefined;
