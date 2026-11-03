@@ -1150,15 +1150,26 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
     });
   // ("两份素的" of the two banana leaf meals just shown, "四片的" of the parotta, "两份麦粉的" of the puttu): "X的" in an
   // order is the one dish just shown whose name holds X, or else the one with X as its option
-  if (/[㐀-鿿]/.test(asked) && state.shown.length && state.shown.length <= 4)
-    asked = asked.replace(/((?:[一二两三四五六七八九十\d]+\s*[份个杯碗碟盘串笼支只块])?)([一-鿿]{1,4}?)的(?=[，,。、\s]|$)/g, (m, count: string, x: string) => {
+  // (or, nothing shown, of the kind the message names: "现在小笼包有打折吗？蟹粉的多少钱？" of the 小笼包)
+  const kindOf_ = (() => {
+    if (!/[\u3400-\u9fff]/.test(asked) || state.shown.length) return [];
+    for (const m of asked.matchAll(/[\u4e00-\u9fff]{3,}/g)) for (let k = 0; k + 3 <= m[0].length; k++) {
+      const w = m[0].slice(k, k + 3);
+      const kin = ctx.items.filter((i) => zhNames(i).some((z) => z.endsWith(w)));
+      if (kin.length >= 2 && kin.length <= 6) return kin;
+    }
+    return [];
+  })();
+  const pool_ = state.shown.length ? state.shown : kindOf_;
+  if (/[\u3400-\u9fff]/.test(asked) && pool_.length && pool_.length <= 6)
+    asked = asked.replace(/((?:[一二两三四五六七八九十\d]+\s*[份个杯碗碟盘串笼支只块])?)([\u4e00-\u9fff]{1,4}?)的(?=[，,。、\s]|$|多少|几多|几钱)/g, (m, count: string, x: string) => {
       if (!count && !/要|来|多少钱|几多钱|几钱|多少/.test(asked)) return m;
       if (ctx.items.some((i) => zhNames(i).some((z) => z.includes(`${x}的`)))) return m;
-      const byName = state.shown.filter((d) => zhNames(d).some((z) => z.includes(x)));
-      if (byName.length === 1) return `${count}${zhNames(byName[0])[0]}`;
-      if (byName.length) return m;
-      const byOption = state.shown.filter((d) => optionsSaid(x, d, true).add.length > 0);
-      return byOption.length === 1 ? `${count || "一份"}${zhNames(byOption[0])[0]}${x}` : m;
+      // (a choice first: "冰的" of several drinks is iced, not the one named 冰柠檬茶)
+      const byOption = pool_.filter((d) => optionsSaid(x, d, true).add.length > 0);
+      if (byOption.length) return byOption.length === 1 && pool_.length <= 4 ? `${count || "一份"}${zhNames(byOption[0])[0]}${x}` : m;
+      const byName = pool_.filter((d) => zhNames(d).some((z) => z.includes(x)));
+      return byName.length === 1 ? `${count}${zhNames(byName[0])[0]}` : m;
     });
   // ("prawn roast big portion or small?" … "ok boss large one, 2 matta rice"): "the large one" is the one dish just
   // asked about, with that choice
@@ -1247,7 +1258,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         const d = [...w.days].sort().join(",");
         // (one day by its whole name: "Monday", not "Mon")
         const whole = (x: number) => new Intl.DateTimeFormat(locale, { weekday: "long", timeZone: "UTC" }).format(Date.UTC(2023, 0, 1 + x));
-        const days = d === "0,1,2,3,4,5,6" ? t("assistantReply.daily") : d === "1,2,3,4,5" ? t("assistantReply.weekdays") : d === "0,6" ? t("assistantReply.weekends") : w.days.length === 1 ? whole(w.days[0]) : list(w.days.map((x) => weekdayNames(locale)[x]));
+        // (three days or more in a row as a run: "Mon–Thu")
+        const sorted_ = [...w.days].sort((a, b) => a - b);
+        const run = sorted_.length >= 3 && sorted_.every((x, k) => !k || x === sorted_[k - 1] + 1);
+        const days = d === "0,1,2,3,4,5,6" ? t("assistantReply.daily") : d === "1,2,3,4,5" ? t("assistantReply.weekdays") : d === "0,6" ? t("assistantReply.weekends") : w.days.length === 1 ? whole(w.days[0]) : run ? `${weekdayNames(locale)[sorted_[0]]}–${weekdayNames(locale)[sorted_[sorted_.length - 1]]}` : list(w.days.map((x) => weekdayNames(locale)[x]));
         // ("00:00" to "23:59" is the whole day)
         const hours = w.from === "00:00" && /^(23:59|24:00|00:00)$/.test(w.to) ? t("assistantReply.allDay") : t("assistantReply.timeRange", { from: clockLabel(w.from, locale), to: clockLabel(w.to, locale) });
         const season = w.start || w.end ? `${t("assistantReply.seasonDates", { start: w.start ? f.date(Date.parse(`${w.start}T12:00:00Z`), "UTC") : "", end: w.end ? f.date(Date.parse(`${w.end}T12:00:00Z`), "UTC") : "" })}, ` : "";
@@ -1636,7 +1650,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const named = (x: { name: string; translations?: Record<string, { name?: string }> }) => {
     const n = normalize(x.name);
     const zh = Object.values(x.translations ?? {}).map((y) => y?.name ?? "").filter((y) => y.length >= 2);
-    const syn: Record<string, RegExp> = { brunch: /早午餐/, breakfast: /早餐|sarapan/, lunch: /午餐|tengah hari/, supper: /宵夜|夜宵/, "tea time": /下午茶|minum petang/, kuih: /娘惹糕|糕点|糕粿|kueh/i, opening: /开张|开幕|开业|grand opening|pembukaan/i };
+    const syn: Record<string, RegExp> = { brunch: /早午餐/, breakfast: /早餐|sarapan/, pagi: /\b(breakfast|morning)\b|早餐|早上|sarapan/i, sarapan: /\b(breakfast|morning)\b|早餐/i, lunch: /午餐|tengah hari/, "tengah hari": /\blunch\b|午餐/i, supper: /宵夜|夜宵/, "late night": /\b(supper|late)\b|宵夜|夜宵/i, merienda: /下午茶|\b(tea ?time|afternoon snacks?|merienda)\b|minum petang/i, "tea time": /下午茶|minum petang/, kuih: /娘惹糕|糕点|糕粿|kueh/i, opening: /开张|开幕|开业|grand opening|pembukaan/i };
     // ("the Tuesday acai deal" is the Tuesday deal: its words, in any order)
     const ws = n.split(" ").filter((w) => w.length >= 3);
     // (or by what it takes off: "the 15% off drinks", "now got 10%?", "the RM1 off")
@@ -1651,7 +1665,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // (not "anything cheaper?": something else is asked for)
   const dealWords = (/\b(murah|cheap|promo|promotion|discount|diskaun|potongan|off|deal|offer|sen off)\b/.test(normalize(u.text)) || /优惠|便宜|折扣|打折/.test(u.text)) && !/\b(anything|something|other|else|instead|budget|cheaper|lain)\b/.test(normalize(u.text)) && !/其他|别的|更便宜/.test(u.text);
   const dishRule = mentioned.length === 1 && dealWords && asksWhen ? (ctx.rules ?? []).find((r) => r.items.includes(mentioned[0].id) || r.categories.includes(mentioned[0].categoryId)) : undefined;
-  const askedRule = (ctx.rules ?? []).find(named) ?? dishRule;
+  // ("got lunch deal?" … "does it cover the biryani too?": the one deal there is, or the one on now)
+  const itCovers = mentioned.length >= 1 && /\b(does|do|will|would|is|can) (it|that|this|the deal|the promo|the discount|the offer) (also )?(cover|covers|include|includes|apply|applies|count|work|valid)\b/.test(nt0);
+  const theOne = itCovers ? ((ctx.rules ?? []).length === 1 ? ctx.rules![0] : (ctx.rules ?? []).filter((r) => ctx.now?.deals.some((d) => d.id === r.id)).length === 1 ? ctx.rules!.find((r) => ctx.now?.deals.some((d) => d.id === r.id)) : undefined) : undefined;
+  const askedRule = (ctx.rules ?? []).find(named) ?? dishRule ?? theOne;
   const askedMenu = (ctx.menus ?? []).find(named);
   const coveredBy = (i: Item) => (askedRule ? askedRule.items.includes(i.id) || askedRule.categories.includes(i.categoryId) : (i.menuIds ?? []).includes(askedMenu?.id ?? ""));
   // "does the Tuesday deal apply to the pitaya bowl too?": the deal, and that it doesn't cover that dish
@@ -1679,7 +1696,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const pricedToo = mentioned.length > 0 && (/\b(how much|berapa|total)\b/.test(nt0) || /多少|几钱/.test(u.text));
   // ("kirin how much? got happy hour now?": one dish's price is in the deal's answer)
   const onePriced = pricedToo && mentioned.length === 1 && [...countsOf(u.text, mentioned as Dish[]).values()].every((n) => n <= 1) && orderedLines(u, mentioned).reduce((n, l) => n + l.count, 0) <= 1 && !/\b(total|altogether|jumlah)\b/.test(nt0);
-  if ((askedRule || askedMenu) && (!pricedToo || onePriced) && (asksWhen || (!!askedRule && (asksValue || /\b(on|apply|applies|valid)\b/.test(nt0)))) && (!mentioned.length || mentioned.every(coveredBy))) {
+  // ("what's for breakfast?": what the timed menu has)
+  const menuWhat = !!askedMenu && /\b(what s for|whats for|what is for|what do you have for|what s on|whats on|apa ada untuk|ada apa untuk)\b/.test(nt0);
+  if ((askedRule || askedMenu) && (!pricedToo || onePriced) && (asksWhen || menuWhat || (!!askedRule && (asksValue || /\b(on|apply|applies|valid)\b/.test(nt0)))) && (!mentioned.length || mentioned.every(coveredBy))) {
     const on = askedRule ? ctx.now?.deals.find((d) => d.id === askedRule.id) : ctx.now?.menus.find((m) => m.id === askedMenu!.id);
     const next = askedRule ? ctx.now?.dealsNext?.find((d) => d.id === askedRule.id) : ctx.items.find((i) => (i.menuIds ?? []).includes(askedMenu!.id) && i.nextServed?.menuId === askedMenu!.id)?.nextServed;
     const head = askedRule ? t("assistantReply.dealIs", { deal: scheduleName(askedRule, locale), value: dealValue(askedRule), window: windowText(askedRule.windows) }) : t("assistantReply.menuIs", { menu: menuName(askedMenu!), window: windowText(askedMenu!.windows) });
@@ -1691,13 +1710,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const covered = askedRule ? live.filter((i) => i.deal?.id === askedRule.id || askedRule.items.includes(i.id) || askedRule.categories.includes(i.categoryId)) : live.filter((i) => (i.menuIds ?? []).includes(askedMenu!.id));
     // ("the tea time price for the 6 piece set?": that dish, at its price now)
     // ("bir apa yang paling murah masa tu?": of what it covers, the cheapest, on or not)
-    const picks = mentioned.length ? mentioned : u.superlative === "cheapest" || u.superlative === "priciest" ? (() => { const s_ = covered.filter((i) => allowed(i, c)).sort((a, b) => (u.superlative === "cheapest" ? a.price - b.price : b.price - a.price)); return s_.filter((i) => i.price === s_[0]?.price).slice(0, 3); })() : on ? rank(covered.filter((i) => allowed(i, c))).slice(0, 4) : [];
+    const picks0 = mentioned.length ? mentioned : u.superlative === "cheapest" || u.superlative === "priciest" ? (() => { const s_ = covered.filter((i) => allowed(i, c)).sort((a, b) => (u.superlative === "cheapest" ? a.price - b.price : b.price - a.price)); return s_.filter((i) => i.price === s_[0]?.price).slice(0, 3); })() : on ? rank(covered.filter((i) => allowed(i, c))).slice(0, 4) : [];
+    // ("what time does the late night menu start, and what's on it?": what it has, too)
+    const picks = !picks0.length && (menuWhat || /\b(what s on|whats on|what is on|on it|what do you have|what s in it|what dishes|which dishes|apa ada|apa yang ada)\b/.test(nt0) || /有什么|有哪些|卖什么/.test(u.text)) ? (askedRule ? covered : ctx.items.filter((i) => i.active && !i.soldOut && (i.menuIds ?? []).includes(askedMenu!.id))).filter((i) => allowed(i, c)).sort((a, b) => baseScore(b, ctx) - baseScore(a, ctx)).slice(0, 4) : picks0;
+    // (named, not as cards, when it can't be ordered yet)
+    const listedOnly = picks !== picks0 && !on;
     // ("still 15% off? 2 milo dinosaur": as many as they said, at today's price)
     const howMany = mentioned.length === 1 ? countsOf(u.text, mentioned as Dish[]).get(mentioned[0] as Dish) ?? 1 : 1;
     const total_ = howMany > 1 ? `${sp}${t("assistantReply.pricedWith", { dish: `${howMany} × ${name(picks[0])}`, price: money(picks[0].price * howMany) })}` : "";
     // ("how much is cendol original now, and how much during tea time?": with the deal's price when it isn't on now)
     const dealLine = (i: Item) => (askedRule && !on && coveredBy(i) ? `${name(i)} (${t("assistantReply.nowThen", { now: money(i.price), then: money(ruledPrice(i.listPrice ?? i.price, askedRule)), deal: scheduleName(askedRule, locale) })})` : line(i));
-    return reply("recommend", `${head}${sp}${now}${picks.length ? `${sp}${picks.map(dealLine).join(t("assistantReply.itemSep"))}${stop}` : ""}${total_}`, picks);
+    return reply("recommend", `${head}${sp}${now}${picks.length ? `${sp}${picks.map(dealLine).join(t("assistantReply.itemSep"))}${stop}` : ""}${total_}`, listedOnly ? [] : picks);
   }
   // ("bitter gourd fish soup how much today, and tomorrow?", "下午四点…一杯美禄恐龙多少？"): its price at that time, by the deals then
   const ZH_N: Record<string, number> = { 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10, 十一: 11, 十二: 12 };
@@ -1738,7 +1761,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const parts = [...byDeal].map(([id, xs]) => {
         const d = ctx.now?.deals.find((x) => x.id === id);
         const rule = ctx.rules?.find((r) => r.id === id);
-        return `${t("assistantReply.dealsNow", { deal: `${d?.name ?? xs[0].deal!.name}${rule ? ` (${dealValue(rule)})` : ""}`, until: until(d?.until) })}${sp}${rank(xs).slice(0, 4).map(line).join(t("assistantReply.itemSep"))}${stop}`;
+        // (with its hours, "12:00 PM–3:00 PM", not only when it ends)
+        return `${t("assistantReply.dealsNow", { deal: `${d?.name ?? xs[0].deal!.name}${rule ? ` (${dealValue(rule)})` : ""}`, until: `${until(d?.until)}${rule?.windows?.length ? `${en ? ", " : "，"}${windowText(rule.windows)}` : ""}` })}${sp}${rank(xs).slice(0, 4).map(line).join(t("assistantReply.itemSep"))}${stop}`;
       });
       return reply("recommend", parts.join(sp), rank(dealt).slice(0, 6));
     }
