@@ -2687,6 +2687,18 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       const same = bill.findIndex((o, j) => j < k && o.item.id === bill[k].item.id && sameOptions(o.options, bill[k].options));
       if (same >= 0) (bill[same].count += bill[k].count), bill.splice(k, 1);
     }
+    // ("2 gulab jamun, one with ice cream one with rabri"): each of the two its own add-ons, not both the first's
+    const perOne = nt1.match(/\b(?:one|satu) (?:with|w|dengan) (.+?),? (?:and )?(?:one|satu|the other) (?:with|w|dengan) (.+?)(?:\s+(?:how much|berapa|total)\b|$)/);
+    if (perOne) {
+      const two = bill.find((o) => o.count >= 2 && (o.options ?? []).length);
+      if (two) {
+        const first = optionsSaid(perOne[1], two.item).add;
+        const second = optionsSaid(perOne[2], two.item).add;
+        two.count -= 1;
+        two.options = second.length ? second : undefined;
+        bill.splice(bill.indexOf(two) + 1, 0, { item: two.item, count: 1, options: first.length ? first : undefined });
+      }
+    }
     if (bill.reduce((n, o) => n + o.count, 0) >= (readBill || edited || cut || after.length || several || changing || mineOnly || mineByOwner || totalWord || withCharges || gone.length || bill.some((o) => o.options?.length) || (pointed.length > 0 && ORDERING_OK.test(nt1) && !/[?？]/.test(u.text) && !QUESTION.test(nt1)) ? 1 : 2)) {
       const total = bill.reduce((sum, o) => sum + unitPrice(o) * o.count, 0);
       // "Teh Tarik with iced (RM3.10)": a line's add-ons and its price with them
