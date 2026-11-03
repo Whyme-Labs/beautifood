@@ -1137,6 +1137,56 @@ function rewriteTurn(ctx: AssistantContext, question: string, state: DialogueSta
   // ("no need the egg, just the duck" with a Braised Egg ordered): a line taken off by one word of its name is that line,
   // not an egg allergy
   let asked = question;
+  // ("pork vs crab roe xlb", "ayam percik vs daging bakar"): one side of a "vs" said short of the family the other
+  // names in full is the one of that family ("Pork Xiaolongbao", "Nasi Kerabu Ayam Percik", not the Ayam Percik side)
+  {
+    const ws = normalize(asked.replace(/\bxlbs?\b/gi, "xiaolongbao")).split(" ").filter(Boolean);
+    const v = ws.findIndex((w) => w === "vs" || w === "versus");
+    if (v > 0 && ws.filter((w) => w === "vs" || w === "versus").length === 1) {
+      const names = ctx.items.map((i) => ({ i, ws: normalize(i.name.replace(/\(.*?\)/g, " ")).split(" ").filter(Boolean) }));
+      const STOP = /^(the|a|an|which|what|whats|is|are|one|ones|more|better|spicier|cheaper|difference|mana|lagi|yang|and|or|s|between|compare|beza|tak|ke|can|i|nak)$/;
+      const side = (from: number, step: number) => { const out: string[] = []; for (let k = from; k >= 0 && k < ws.length && out.length < 4; k += step) { if (STOP.test(ws[k])) break; out.push(ws[k]); } return step < 0 ? out.reverse() : out; };
+      const fits = (n: { ws: string[] }, words: string[]) => words.every((w) => n.ws.some((x) => sameWord(x, w)));
+      const exact = (words: string[]) => names.filter((n) => n.ws.length === words.length && fits(n, words));
+      const short_ = (full: string[], part: string[], partFirst: boolean) => {
+        const of = names.filter((n) => fits(n, full));
+        if (of.length !== 1) return null;
+        // (the family's words: those left unsaid, or, all said, those other dishes share: the "xiaolongbao" of "crab roe xlb")
+        const unsaid_ = of[0].ws.filter((x) => !full.some((w) => sameWord(x, w)));
+        const residue = unsaid_.length ? unsaid_ : of[0].ws.filter((x) => names.filter((n) => n.ws.includes(x)).length >= 2);
+        if (!residue.length) return null;
+        for (let len = part.length; len >= 1; len--) {
+          const said = partFirst ? part.slice(part.length - len) : part.slice(0, len);
+          const hit = exact([...residue.filter((x) => !said.some((w) => sameWord(x, w))), ...said]);
+          // (not when what's said already names that one alone: "8 piece set" of the Ampang 8-Piece Set)
+          const alone = said.length >= 2 && names.filter((n) => fits(n, said)).length === 1;
+          if (hit.length === 1 && hit[0].i !== of[0].i && !fits(of[0], said) && !alone) return { said, to: hit[0].i.name };
+        }
+        return null;
+      };
+      const A = side(v - 1, -1);
+      const B = side(v + 1, 1);
+      const swap = A.length && B.length ? short_(B, A, true) ?? short_(A, B, false) : null;
+      if (swap) {
+        const re = new RegExp(`\\b${swap.said.map((w) => w.replace(/[^a-z0-9]/g, "")).join("\\W+")}\\b`, "i");
+        if (re.test(asked)) asked = asked.replace(re, swap.to);
+      }
+    }
+  }
+  // ("炸鱼和烧鸡的蓝花饭"): two said of one family are the family's two, "蓝花饭炸鱼和蓝花饭烧鸡"
+  asked = asked.replace(/([\u4e00-\u9fff]{1,4})(和|跟|与|还是|或)([\u4e00-\u9fff]{1,4})的([\u4e00-\u9fff]{2,4})/g, (m, a: string, and: string, b: string, kin: string) => {
+    const zh = ctx.items.flatMap((i) => zhNames(i));
+    // (the family the shortest run of what follows the 的, each side the longest run before its joiner)
+    for (let k = 2; k <= kin.length; k++) {
+      const fam = kin.slice(0, k);
+      const named = (x: string) => [fam + x, x + fam].find((z) => zh.includes(z));
+      for (let j = 0; j < a.length; j++) {
+        const na = named(a.slice(j)), nb = named(b);
+        if (na && nb && na !== nb) return `${a.slice(0, j)}${na}${and}${nb}${kin.slice(k)}`;
+      }
+    }
+    return m;
+  });
   const offWord = !/\b(allerg\w*|alergi|alah|intolerant)\b|过敏/i.test(question) ? normalize(question).match(/\b(?:no need(?: the)?|don t need(?: the)?|remove(?: the)?|cancel(?: the)?|drop(?: the)?|take out(?: the)?|tak nak|tak payah|buang)\s+([a-z]{3,})\b/)?.[1] : undefined;
   if (offWord && state.order.length) {
     const has = state.order.filter((o) => normalize(o.item.name).split(" ").some((w) => w === offWord || w === offWord.replace(/s$/, "")));
