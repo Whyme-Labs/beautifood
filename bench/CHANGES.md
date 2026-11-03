@@ -1525,3 +1525,10 @@ performance, and the next held-out read needs a fresh set. Baseline as dev: 363/
   focus compared; "the ones without egg?" filters the dishes just shown; Chinese allowances (都可以)
   and 饼 for breads. The 31 left are single cases (per-unit add-ons, explanations such as which pot a
   dish is braised in, comparisons of a pointed dish with one named).
+- **v12 dev, third pass.** 449 → 465 of 480 (96.9%), unsafe 0; all dev 3502 → 3519 of 3674 (95.8%), none
+  broke. An unsafe add-on on a dish fine without it ("order it without the add-on"); one size only; 鸭
+  alone; an owner by a shared word; "the naan" / "1 more rice" as the ordered one; a swap avoids nothing
+  and replays as a change; pork named as what a dish replaces isn't pork ("halal take on the pork
+  classic"); 有冇 asks; an injected halal claim answered with the real standing; a choice a set doesn't
+  offer; both of a one-choice group when a choice is also a dish; 做辣一点; "telur goreng sekali". The 15
+  left need explanations (which pot, why cheese) or per-unit add-ons.
