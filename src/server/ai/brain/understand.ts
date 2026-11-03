@@ -574,6 +574,8 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const w = own.reduce((sum, i) => sum + 1 / df(toks[i]), 0);
       return void found.push({ dish, at: Math.min(...own), covered: own, score: w / total + own.length * 0.01 });
     }
+    // ("satu beef fry, parotta 3 keping": the dishes said each in its own clause, not the combo of them, unless one is asked for)
+    if (SET_NAME.test(dish.name) && new Set(covered.map(clauseOf)).size >= 2 && !toks.some((t) => /^(set|sets|combo|combos|meal|meals|pakej)$/.test(t)) && !/套餐|配套/.test(raw)) return;
     found.push({ dish, at: Math.min(...covered), covered, score: (all ? 1 : coverage) + covered.length * 0.01 });
   });
   // ("1 ice watr": a two-word name with one word said and the other typed a letter off beside it)
@@ -602,7 +604,10 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // (or the one called plain among them: "porridge" of Plain Teochew Porridge and Sweet Potato Porridge)
     // (only of a kind they all end in, said on its own: not "acai bowl" of the Classic Acai Bowl, nor "nasi lemak" of Nasi Lemak Biasa)
     const headOnly = !/^(the|that|this|those|these|my|our|his|her)$/.test(toks[i - 1] ?? "") && family.every((d) => same(t, normalize(d.name).split(" ").slice(-1)[0])) && ![toks[i - 1], toks[i + 1]].some((w) => w && w.length > 2 && family.some((d) => normalize(d.name).split(" ").some((x) => same(w, x))));
-    const called = plain.length ? plain : headOnly ? family.filter((d) => normalize(d.name).split(" ").some((w) => /^(plain|original|classic|biasa|asli|kosong)$/.test(w))) : [];
+    // (or the one dish of them that isn't a set of it: "parotta" of Malabar Parotta, not the Parotta Beef Fry Combo)
+    const SET_OF = (d: Dish) => /\b(combo|set|sets|platter|bundle|package|pakej)\b/.test(normalize(d.name)) || /\b(combos?|sets?|platters?)\b/i.test(d.category ?? "");
+    const notSet = family.filter((d) => !SET_OF(d));
+    const called = plain.length ? plain : headOnly ? family.filter((d) => normalize(d.name).split(" ").some((w) => /^(plain|original|classic|biasa|asli|kosong)$/.test(w))) : notSet.length === 1 && family.some(SET_OF) && normalize(notSet[0].name).split(" ").length === 2 ? notSet : [];
     if (called.length === 1) found.push({ dish: called[0], at: i, covered: [i], score: 0.6 });
   });
   // ("char siu noodles and char siu rice, the rice also got discount?": "the rice" is the char siu rice named, not the Plain Rice)
@@ -731,7 +736,7 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const hostHas = (w: string) => found.some((o) => o !== m && (o.dish.modifiers ?? []).some((g) => g.options.some((x) => normalize(x.name) === w)));
     // (only when the add-on's word is all it has of its own: its other words another dish named claims)
     const alone = (i: number) => m.covered.every((c) => c === i || found.some((o) => o !== m && o.covered.includes(c)));
-    if (m.covered.some((i) => alone(i) && ((toks[i + 1] && !own.includes(toks[i + 1]) && optionNames.some((o) => o.includes(` ${toks[i]} ${toks[i + 1]} `))) || hostHas(toks[i])))) found.splice(k, 1);
+    if (m.covered.some((i) => alone(i) && ((toks[i + 1] && clauseOf(i + 1) === clauseOf(i) && !own.includes(toks[i + 1]) && optionNames.some((o) => o.includes(` ${toks[i]} ${toks[i + 1]} `))) || hostHas(toks[i])))) found.splice(k, 1);
   }
   // two dishes claiming the same words: the better match keeps them
   found.sort((a, b) => b.score - a.score);
@@ -758,8 +763,10 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   const PLAIN_WORD = /^(french|plain|original|classic|regular|steamed|white|fresh|house|normal|biasa|kosong)$/;
   toks.forEach((t, i) => {
     // (not "the naan", "that rice": the one already said or ordered)
-    if (t.length < 3 || GENERIC.has(t) || kept.some((m) => m.covered.includes(i)) || skip.has(i) || /^(the|that|this|my|our)$/.test(toks[i - 1] ?? "")) return;
+    if (t.length < 3 || kept.some((m) => m.covered.includes(i)) || skip.has(i) || /^(the|that|this|my|our)$/.test(toks[i - 1] ?? "")) return;
     const ends = items.filter((d) => { const w = normalize(d.name).split(" "); return w.length === 2 && same(t, w[1]) && PLAIN_WORD.test(w[0]); });
+    // (a common word only counted, or as the plain dish's own choice: "2 rice", "2 matta rice" of the Steamed Rice)
+    if (GENERIC.has(t) && !(/^(\d+|one|two|three|four|five|satu|dua|tiga|empat|lima)$/.test(toks[i - 1] ?? "") || (ends.length === 1 && (ends[0].modifiers ?? []).some((g) => (g.min ?? 0) >= 1 && g.options.some((o) => normalize(o.name) === `${toks[i - 1]} ${t}`))))) return;
     const any = items.filter((d) => normalize(d.name).split(" ").some((w) => same(t, w)));
     if (ends.length === 1 && any.length >= 2 && !kept.some((m) => m.dish === ends[0])) kept.push({ dish: ends[0], at: i, covered: [i], score: 0.5 });
   });
@@ -1207,7 +1214,9 @@ export function read(items: Dish[], asked: string): Reading {
     const top = near.filter((w) => osaDistance(t, w, max) === best);
     return top.length === 1 ? top[0] : undefined;
   };
-  const toks = tokens(normalize(question, ix.own), true).map((t) => (ix.df.has(t) || MALAY_FOOD[t] ? t : correct(t) !== t ? correct(t) : menuFix(t) ?? t));
+  // (nor a word of an option this menu has: "fresh lime soda" isn't soya)
+  const optWords = new Set(items.flatMap((i) => (i.modifiers ?? []).flatMap((g) => g.options.flatMap((o) => normalize(o.name).split(" ")))).filter((w) => w.length >= 3));
+  const toks = tokens(normalize(question, ix.own), true).map((t) => (ix.df.has(t) || optWords.has(t) || MALAY_FOOD[t] ? t : correct(t) !== t ? correct(t) : menuFix(t) ?? t));
   // ("brased duk": a three-letter word one letter short of the word that, after the one before it, names a dish)
   toks.forEach((t, i) => {
     if (i === 0 || t.length !== 3 || ix.df.has(t) || !/^[a-z]+$/.test(t)) return;
@@ -1257,7 +1266,7 @@ export function read(items: Dish[], asked: string): Reading {
   // prawns", "哪个没有虾", "nut free"); without one the guest is asking for it ("milk tea",
   // "what seafood should we get?", "我不吃辣，海鲜推荐哪个" negates the spice, not the seafood)
   // read with the typos put right ("alergic to egs"), punctuation kept for the clauses
-  const fixed = question.replace(/[A-Za-z']+/g, (w) => (ix.df.has(w.toLowerCase()) ? w : correct(w.toLowerCase().replace(/'/g, ""))));
+  const fixed = question.replace(/[A-Za-z']+/g, (w) => (ix.df.has(w.toLowerCase()) || optWords.has(w.toLowerCase()) ? w : correct(w.toLowerCase().replace(/'/g, ""))));
   // the errors aren't equal: wrongly avoiding hides a dish, wrongly wanting can harm someone. So an
   // allergen is avoided unless the guest plainly asks for it (a request word, and no cue governing it)
   // ...and not when they say they have it ("fish is fine", "eggs and milk are ok", "I eat fish")

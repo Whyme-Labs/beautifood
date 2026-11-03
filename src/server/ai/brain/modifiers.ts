@@ -227,7 +227,11 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
       continue;
     }
     if (nums.length) {
-      if (nums.every((k) => numberSaid(k, t, raw))) add.push(o);
+      // ("1 extra appam", "2 extra appams": the number said with its word, not "1 with 2 extra appam")
+      const ow = normalize(o.name).split(" ");
+      const nextOf = (k: string) => ow[ow.indexOf(k) + 1];
+      const UNIT_W = /^(pcs|pc|pieces?|ketul|inch|inches|in|wings?|keping|biji)$/;
+      if (nums.every((k) => numberSaid(k, t, raw) && (!nextOf(k) || UNIT_W.test(nextOf(k)) || /\d/.test(nextOf(k)) || !/[a-z]/.test(t) || new RegExp(`(^| )${k} ${nextOf(k).replace(/s$/, "")}`).test(normalize(t))))) add.push(o);
       continue;
     }
     const own = ks.filter((k) => (count.get(k) ?? 0) < 2);

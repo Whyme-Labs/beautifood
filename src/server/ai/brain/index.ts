@@ -612,12 +612,17 @@ function editOne(order: OrderLine[], text: string, named: Item[]): boolean {
   }
   if (swappedOption) return true;
   // ("make it two, and add one hot teh o": the count of what's ordered, in its own clause, whatever comes after)
-  const makeIt = text.split(/[,;，；]|\band\b|\bdan\b/i)[0];
+  // ("2 more friends coming, make it 5": the clause that sets it, after one that says why)
+  const clauses_ = text.split(/[,;，；]|\band\b|\bdan\b/i);
+  const makeIt = clauses_.find((c, k) => k > 0 && /^\s*(?:so |then |ok |okay )?make (?:it|that|them)\s+(?:\d{1,2}|two|three|four|five)\b/i.test(c) && !clauses_.slice(0, k).some((x) => named.some((i) => normalize(x).includes(normalize(i.name).split(" ")[0])))) ?? clauses_[0];
   // ("改成两份": the same in Chinese)
   const zhSet = makeIt.match(/^\s*(?:那就|那)?(?:改成|改为|变成|换成)([两二三四五\d])(?:份|个|碗|杯|碟|盘)/)?.[1];
-  const setTo = normalize(makeIt).match(/^(?:actually |ok |okay )?(?:make (?:it|that|them)|jadikan|jadi)\s+(\d{1,2}|two|three|four|five|dua|tiga|empat|lima)\b/)?.[1] ?? (zhSet ? String({ 两: 2, 二: 2, 三: 3, 四: 4, 五: 5 }[zhSet] ?? Number(zhSet)) : undefined);
+  const setTo = normalize(makeIt).match(/^(?:actually |ok |okay |so |then )?(?:make (?:it|that|them)|jadikan|jadi)\s+(\d{1,2}|two|three|four|five|dua|tiga|empat|lima)\b/)?.[1] ?? (zhSet ? String({ 两: 2, 二: 2, 三: 3, 四: 4, 五: 5 }[zhSet] ?? Number(zhSet)) : undefined);
   if (setTo && !named.some((i) => normalize(makeIt).includes(normalize(i.name).split(" ")[0]))) {
-    order[order.length - 1].count = ({ two: 2, three: 3, four: 4, five: 5, dua: 2, tiga: 3, empat: 4, lima: 5 } as Record<string, number>)[setTo] ?? Number(setTo);
+    const to = ({ two: 2, three: 3, four: 4, five: 5, dua: 2, tiga: 3, empat: 4, lima: 5 } as Record<string, number>)[setTo] ?? Number(setTo);
+    // ("satu kerala chai dan satu pazham pori" … "jadikan dua": each of the ones ordered)
+    if (order.length >= 2 && order.length <= 3 && order.every((o) => o.count === 1) && /^(?:ok |okay )?jadikan\b/.test(normalize(makeIt))) for (const o of order) o.count = to;
+    else order[order.length - 1].count = to;
     return false;
   }
   // ("change the original to snow cheese and add a corn cheese": the change is an add-on's, the corn cheese is added)
@@ -1131,6 +1136,17 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
       const byOption = state.shown.filter((d) => optionsSaid(x, d, true).add.length > 0);
       return byOption.length === 1 ? `${count || "一份"}${zhNames(byOption[0])[0]}${x}` : m;
     });
+  // ("prawn roast big portion or small?" … "ok boss large one, 2 matta rice"): "the large one" is the one dish just
+  // asked about, with that choice
+  const only = state.shown.length === 1 ? state.shown[0] : null;
+  // (asked of it, not ordered: "the jiu niang one got alcohol?" is the tang yuan with that syrup)
+  const ordering_ = /\b(how much|berapa|total|order|i ll have|i want|give me|nak|ok|okay)\b|\d/.test(normalize(asked));
+  if (only && !/[\u3400-\u9fff]/.test(asked) && !normalize(asked).split(" ").some((w) => w.length > 3 && normalize(only.name).split(" ").includes(w)))
+    asked = asked.replace(/\b(?:the |a |one )?((?:[a-z]+ ){0,2}[a-z]+)\s+one\b(?!\s+(?:of|more))/i, (m, p: string) => {
+      const ws = p.toLowerCase().split(" ").filter((w) => !/^(the|a|one|that|this)$/.test(w));
+      if (!ws.length || ws.some((w) => /^(and|or|with|but|then|also|dan|atau|make|change|of|them|it)$/.test(w)) || !optionsSaid(ws.join(" "), only, true).add.length || ws.some((w) => ctx.items.some((i) => normalize(i.name).split(" ").includes(w)))) return m;
+      return ordering_ ? `1 ${only.name} ${ws.join(" ")}` : `the ${only.name} ${ws.join(" ")}`;
+    });
   const u = understand(ctx.items as Dish[], asked);
   return { ...respond(ctx, u, state, locale, taste ?? undefined), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
 }
@@ -1391,6 +1407,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // (not "non-alcoholic drink to go with the nachos?": a drink asked for)
   if (focus.length === 1 && (/\b(alcohol|alcoholic|alkohol|arak)\b/.test(nt0) || /酒精|含酒/.test(u.text)) && (/[?？吗]/.test(u.text) || /\b(got|any|is there|does|ada|contain|contains)\b/.test(nt0)) && !/\b(non|no|without|free|tanpa|tak)\s*(alcohol|alcoholic|alkohol)|\b(go with|goes with|pair|drink to|drinks to)\b/.test(nt0)) {
     const d = focus[0];
+    // ("the jiu niang one got alcohol?": the choice said, its rice wine)
+    const optBooze = optionsSaid(u.text, d, true).add.find((o) => alcoholWord({ name: o.name, description: "" }));
+    if (optBooze) return { ...reply("dish_allergen", t("assistantReply.hasAlcohol", { dish: `${name(d)} (${optionLabel(optBooze)})`, word: alcoholWord({ name: optBooze.name, description: "" })! }), [d]), safetyNote: allyNote(locale) };
     const w = alcoholWord(d);
     // (the menu's own words when it says: "naturally contains trace alcohol (under 0.5%)")
     const own = /alcohol/i.test(d.description ?? "") ? desc(d) : "";
@@ -1723,10 +1742,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // each" is a count per person instead)
   const nt1 = normalize(u.text);
   const oneEach = /\b(one|1|a|satu)\s+(\w+\s+){0,4}each\b|\beach (have|get|having|getting|take|one)\b|\bsatu (seorang|sorang)\b/.test(nt1) || /每人一|一人一/.test(u.text);
-  const perPerson = !oneEach && (/\b(how much|berapa)\b.*\b(each|per person|per head|per pax|seorang|sorang)\b|\b(each|per person|per head|per pax) (pay|pays|paying)\b|\b(per person|per head|per pax|each of us)\b/.test(nt1) || /每人|每个人|一人多少/.test(u.text));
+  const perPerson = !oneEach && (/\b(how much|berapa)\b.*\b(each|per person|per head|per pax|seorang|sorang)\b|\b(each|per person|per head|per pax) (pay|pays|paying)\b|\b(per person|per head|per pax|each of us)\b|\b(seorang|sorang|setiap orang|each one|each)\s+(berapa|how much)\b/.test(nt1) || /每人|每个人|一人多少/.test(u.text));
   const party = u.party ?? state.party ?? null;
   // ("4 of us ... split equally": the party)
-  const evenly = /\b(split|splitting|share the bill|bahagi)\b/.test(nt1) || /平分|分摊/.test(u.text);
+  const evenly = /\b(split|splitting|share the bill|bahagi|sama rata)\b/.test(nt1) || /平分|分摊/.test(u.text);
   const shares = ways ?? ((perPerson || evenly) && party && party >= 2 ? party : null);
   // "including tax", "after service charge", "nett": the bill as the till will total it
   const withCharges = /\b(bayar tunai|pay cash|paying cash|pay in cash|in cash|berapa tepat|exact amount|tax|taxes|sst|gst|service charge|service|(?<!extra |additional |any )charges|nett|after tax|incl|including tax|including service|plus tax|with tax|all in|final (amount|bill|total|price)|pay at the (counter|cashier)|servis|cukai|caj perkhidmatan|semua sekali|grand total|with everything)\b/.test(nt1) || /税|服务费|最后要付|一共要付|埋单|买单|结账/.test(u.text);
