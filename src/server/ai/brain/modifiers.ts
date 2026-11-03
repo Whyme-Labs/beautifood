@@ -8,6 +8,7 @@ type WithOptions = { name: string; translations?: Record<string, { name?: string
 
 // a guest's words for an option's own words (as menus name them: "Ais (iced)", "Oat milk", "Besar (large)")
 const ALSO: Record<string, string[]> = {
+  raw: ["mentah"], buko: ["coconut water", "kelapa muda", "air kelapa"],
   ais: ["ice", "iced", "cold", "peng", "sejuk"], iced: ["ice", "ais", "cold", "peng", "sejuk"], cold: ["ice", "iced", "ais", "peng", "sejuk"],
   panas: ["hot", "warm"], hot: ["panas", "warm"], suam: ["warm"],
   besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger", "lrg", "lg"],
@@ -37,7 +38,7 @@ const ALSO: Record<string, string[]> = {
 };
 // ...and in Chinese, as a guest writes it
 const ALSO_ZH: Record<string, RegExp> = {
-  youtiao: /油条|油炸鬼/, white: /白饭|白米/, matta: /红米/, wheat: /麦粉|小麦|(?<!燕)麦(?!芽|片|当劳)/, ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻|冷的|冷饮/, sui: /水饺|水餃/, kow: /水饺|水餃/, pok: /豆卜|豆泡|豆腐泡/, uduk: /椰香饭|椰浆饭|椰饭/, fried: /荷包蛋|煎蛋|加蛋|加个蛋|加粒蛋/, petai: /臭豆/, char: /叉烧/, mushroom: /香菇|蘑菇|冬菇/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)|辣一点|更辣|加辣|大辣|多辣/, suam: /温/, condensed: /茶走|炼奶|练奶/, salted: /咸/, lemon: /柠檬|柠(?!檬)/, yuen: /鸳鸯/, yeung: /鸳鸯/, horlicks: /好立克/, coffee: /咖啡/, tea: /茶/, chrysanthemum: /菊花/, tieguanyin: /铁观音/, pu: /普洱/, erh: /普洱/,
+  youtiao: /油条|油炸鬼/, raw: /生蛋|生鸡蛋/, buko: /椰子水|椰青|椰水/, white: /白饭|白米/, matta: /红米/, wheat: /麦粉|小麦|(?<!燕)麦(?!芽|片|当劳)/, ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻|冷的|冷饮/, sui: /水饺|水餃/, kow: /水饺|水餃/, pok: /豆卜|豆泡|豆腐泡/, uduk: /椰香饭|椰浆饭|椰饭/, fried: /荷包蛋|煎蛋|加蛋|加个蛋|加粒蛋/, petai: /臭豆/, char: /叉烧/, mushroom: /香菇|蘑菇|冬菇/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)|辣一点|更辣|加辣|大辣|多辣/, suam: /温/, condensed: /茶走|炼奶|练奶/, salted: /咸/, lemon: /柠檬|柠(?!檬)/, yuen: /鸳鸯/, yeung: /鸳鸯/, horlicks: /好立克/, coffee: /咖啡/, tea: /茶/, chrysanthemum: /菊花/, tieguanyin: /铁观音/, pu: /普洱/, erh: /普洱/,
   besar: /大杯|大份|加大|大的|大碗|大包|大号|大碟|大盘/, large: /大杯|大份|加大|大的|大碗|大包|大号|大碟|大盘/,
   full: /整只|全只|一整只|整份|大份/, half: /半只|半份/,
   regular: /中碗|中份|(?<!其)中的|中杯|普通|正常份/, small: /小碗|小的|小份|小杯|小碟|小号|小包/, kecil: /小碗|小的|小份|小杯|小碟|小号|小包/,
@@ -49,7 +50,7 @@ const ALSO_ZH: Record<string, RegExp> = {
   duck: /鸭蛋|鸭/, natto: /纳豆/, corn: /玉米/, spinach: /菠菜/, onsen: /温泉蛋/, cockles: /蚶|血蛤|鲜蛤/, cheong: /腊肠|臘腸/, taugeh: /豆芽/, puffs: /豆卜|豆泡/,
   noodles: /加面|多面|面加倍/, mushrooms: /蘑菇|香菇/, skin: /腐竹|豆皮/, peanuts: /花生/, tofu: /豆腐/, milo: /美禄/,
   pearls: /珍珠|波霸/, pudding: /布丁/, durian: /榴莲|榴槤/, ginger: /姜/, milky: /奶白|浓汤|白汤/, clear: /清汤/, sua: /面线|麵線/, mashed: /薯泥|马铃薯泥/, gula: /椰糖|马六甲糖|棕榈糖/, melaka: /椰糖|马六甲糖|棕榈糖/, grass: /仙草/, coconut: /椰果|椰子片|椰丝/, bean: /红豆/, foam: /奶盖/,
-  cheese: /芝士|起司|奶酪/, ramyeon: /拉面|泡面|快熟面/, rice: /年糕/, cake: /年糕|鱼饼/, fries: /薯条/, coleslaw: /凉拌|卷心菜沙拉/, soft: /饮料|汽水|饮品/,
+  cheese: /芝士|起司|奶酪/, ramyeon: /拉面|泡面|快熟面/, rice: /年糕|饭/, cake: /年糕|鱼饼/, fries: /薯条/, coleslaw: /凉拌|卷心菜沙拉/, soft: /饮料|汽水|饮品/,
   kimchi: /泡菜/, yangnyeom: /甜辣/, garlic: /蒜/, butter: /黄油|牛油/, snow: /雪花/, honey: /蜂蜜/,
   pineapple: /菠萝|黄梨/, pepperoni: /意大利辣香肠|辣香肠/, parmesan: /帕玛森|帕马森/, cream: /冰淇淋|雪糕/, whey: /乳清/, plant: /植物蛋白/,
   chia: /奇亚籽/, peanut: /花生/, granola: /燕麦脆片|格兰诺拉|燕麦片/, flakes: /椰子片|椰丝/, nuts: /坚果/, cacao: /可可/, spirulina: /螺旋藻/,
@@ -123,7 +124,10 @@ const said = (w: string, words: Set<string>, joined: string, raw: string) => dir
 // words of size, temperature and sweetness, said beside an option's word ("large iced", "kurang manis")
 const SIZE_TEMP = /^(large|small|medium|regular|big|besar|kecil|hot|iced|ice|cold|warm|panas|ais|peng|sejuk|less|kurang|sweet|manis|sugar|gula|upsize|double|single|kosong)$/;
 const LEAD = /^(extra|add|more|some|a|an|the|with|and|no|less|tambah|lebih|dengan|dan|plus|on|of|any|got|ada|nak|want|two|one|three|2|1|3|both|all|semua|kedua|please|pls|also|too|then|but|just|only|make|it|them|get|have|can|could|i|we|me|my|for|to|in|or|is|are|be|bagi|mau|dua|satu|tiga|sekali|juga|pun|yes|ok|okay|sure|that|this|those|these|one|each|lagi|jadi|and|or|ya|tu|ni|kasi|letak|put|request|order|cup|glass|bowl|plate|piece|pieces|pcs|x|times)$/;
-const saysOption = (ks: string[], words: Set<string>, joined: string, raw: string) => {
+// (how it's made, not what: "Grated cheese" is the cheese, "keju" for it)
+const PREPARED = /^(grated|shredded|sliced|diced|crushed|toasted|melted|chopped|minced|whipped|pickled|smoked)$/;
+const saysOption = (ks0: string[], words: Set<string>, joined: string, raw: string) => {
+  const ks = ks0.length >= 2 && ks0.filter((k) => !PREPARED.test(k)).length === 1 && !ks0.some((k) => PREPARED.test(k) && direct(k, words, joined, raw)) ? ks0.filter((k) => !PREPARED.test(k)) : ks0;
   if (ks.length === 1) return said(ks[0], words, joined, raw);
   const hit = ks.filter((k) => direct(k, words, joined, raw));
   // ("a drink for her" isn't the combo's Soft drink: a course's word alone)
@@ -257,7 +261,7 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
       const forms = [need[0], `${need[0]}s`, ...(ALSO[need[0]] ?? []).filter((x) => !x.includes(" "))];
       const at = toks.findIndex((x) => forms.includes(x));
       const near = [toks[at + 1], toks[at - 1]];
-      const food = (x: string | undefined) => !!x && x.length > 2 && !named.includes(x) && !LEAD.test(x) && !GENERIC.has(x) && !SIZE_TEMP.test(x) && !/^(need|perlu|payah|mau|nak|want|on|top|please|pls|and|or|to|in|for|with|inside|dalam|lah|la|ah|ok|boleh|too|also|one|the|how|berapa|not|tak|can|plus|then|extra|more|instead|nak|mau|want|add|put|letak|tambah|large|besar|cup|hot|iced|ais|panas|dengan|dan)$/.test(x) && !(/^(sos|sauce)$/.test(x) && named.includes("sauce"));
+      const food = (x: string | undefined) => !!x && x.length > 2 && !named.includes(x) && !LEAD.test(x) && !GENERIC.has(x) && !SIZE_TEMP.test(x) && !/^(need|perlu|payah|mau|nak|want|on|top|please|pls|and|or|to|in|for|with|dengan|serta|sama|inside|dalam|lah|la|ah|ok|boleh|too|also|one|the|how|berapa|not|tak|can|plus|then|extra|more|instead|nak|mau|want|add|put|letak|tambah|large|besar|cup|hot|iced|ais|panas|dengan|dan)$/.test(x) && !(/^(sos|sauce)$/.test(x) && named.includes("sauce"));
       // (beside it, not across a comma: "tambah cheese, sos cili")
       const apart = (x: string | undefined) => !!x && forms.some((f) => new RegExp(`\\b${f}\\s*[,;.]\\s*${x}\\b|\\b${x}\\s*[,;.]\\s*${f}\\b`).test(raw.toLowerCase()));
       if (at >= 0 && near.some((x) => food(x) && !apart(x))) continue;

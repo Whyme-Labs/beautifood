@@ -8,7 +8,7 @@ import { unsaid } from "../../shared/brain/text";
 export type Halal = HalalInfo & { standing: HalalStatus | "expired" };
 
 const PORK =
-  /\b(pork|lard|bacon|ham|babi|char siu|lap cheong|chinese sausage|pork floss|siu yuk|bak kut teh)\b|猪|叉烧|腊肠|烧肉|肉骨茶/i;
+  /\b(pork|lard|bacon|ham|babi|char siu|lap cheong|chinese sausage|pork floss|siu yuk|bak kut teh|chicharr[oó]n|lechon|longganisa|tocino)\b|chicharr|猪|叉烧|腊肠|烧肉|肉骨茶/i;
 const BEEF_OR_CHICKEN_HAM = /\b(beef|chicken|turkey|duck)\s+(bacon|ham)\b/gi;
 // ("our halal take on the pork classic", "made with chicken instead of pork", "the pork version is…"): pork named as what it isn't
 const INSTEAD_OF_PORK = /\b(?:halal (?:take|version|twist) on (?:the |a )?(?:\w+ )?|instead of (?:the )?|in place of (?:the )?|replaces? (?:the )?|rather than (?:the )?|swaps? (?:out )?(?:the )?)(?:pork|lard|bacon|ham|babi|char siu)\b(?: (?:classic|original|version|dish|recipe))?/gi;

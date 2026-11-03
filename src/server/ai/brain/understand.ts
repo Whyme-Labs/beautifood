@@ -773,10 +773,17 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   const claimed = new Set<number>();
   // ...unless what they share is only a common word ("mee" of "kolo mee vs kampua mee") and each has
   // a word not generic of its own ("kolo")
+  // (two dishes the words fit as well, "the sisig" of Pork Sisig and Chicken Sisig: both, for the answer to say which)
+  const keptSoFar: Mention[] = [];
+  // (only two-word names alike but for their first word, the word said their last: not a set or a longer name)
+  const twoWord = (d: Dish) => normalize(d.name).split(" ");
+  const tie = (m: Mention) => m.covered.length === 1 && !SET_NAME.test(m.dish.name) && keptSoFar.some((o) => o.covered.length === 1 && o.covered[0] === m.covered[0] && !SET_NAME.test(o.dish.name) && Math.abs(o.score - m.score) < 0.1 && !o.zh && !m.zh && twoWord(o.dish).length === 2 && twoWord(m.dish).length === 2 && twoWord(o.dish)[1] === twoWord(m.dish)[1] && same(toks[m.covered[0]], twoWord(m.dish)[1]));
   const kept = found.filter((m) => {
-    if (m.covered.length && m.covered.every((i) => claimed.has(i))) return false;
+    const tied = tie(m);
+    if (m.covered.length && m.covered.every((i) => claimed.has(i)) && !tied) return false;
+    keptSoFar.push(m);
     const shared = m.covered.filter((i) => claimed.has(i));
-    if (shared.length && m.score < 1 && !(shared.every(common) && m.covered.some((i) => !claimed.has(i) && !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))) return false;
+    if (shared.length && m.score < 1 && !tied && !(shared.every(common) && m.covered.some((i) => !claimed.has(i) && !GENERIC.has(toks[i]) && !ORIGIN.has(toks[i])))) return false;
     m.covered.forEach((i) => claimed.add(i));
     return true;
   });

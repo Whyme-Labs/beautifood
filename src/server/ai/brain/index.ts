@@ -546,6 +546,7 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
 }
 
 const NUMBER_OF: Record<string, number> = { two: 2, three: 3, four: 4, five: 5, six: 6, dua: 2, tiga: 3, empat: 4, lima: 5 };
+const GENERIC_FOOD = /^(rice|nasi|noodles?|mee|soup|drink|drinks|sauce|egg|chicken|beef|pork|fish|tea|coffee|juice|water|bread)$/;
 const REMOVE = /\b(cancel|remove|drop|scratch|delete|don ?t want|no more|skip the|take out|take off|take away|minus|less one|kurang satu|tolak|batal|buang|keluarkan|tak nak|tak jadi|no need|dont need|don t need|tak payah|tak mahu|tak mau|taknak|takmau|tak perlu)\b|取消|不要了|不要那|删掉|拿掉|去掉|不用了/;
 // "kopi ais 2 only", "barley 2 je", "只要两杯": the count it is now
 const ONLY_N = /\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s*(only|je|jer|sahaja|saja|sudah|cukup)\b|只要([一两二三四五\d])\s*[杯份个碗碟盘]/;
@@ -1853,7 +1854,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // each" is a count per person instead)
   const nt1 = normalize(u.text);
   // (not "… and a soft drink. each pay how much": each person's share)
-  const oneEach = /\b(one|1|a|satu)\s+(\w+\s+){0,4}each\b(?!\s+(pay|pays|paying|owe|owes|person|one pay))|\beach (have|get|having|getting|take|one)\b|\bsatu (seorang|sorang)\b/.test(nt1) || /每人一|一人一/.test(u.text);
+  const oneEach = /\b(one|1|a|satu)\s+((?!(?:bill|bills|separate|separately|pay|paying)\b)\w+\s+){0,4}each\b(?!\s+(pay|pays|paying|owe|owes|person|one pay))|\beach (have|get|having|getting|take|one)\b|\bsatu (seorang|sorang)\b/.test(nt1) || /每人一|一人一/.test(u.text);
   const perPerson = !oneEach && (/\b(how much|berapa)\b.*\b(each|per person|per head|per pax|seorang|sorang)\b|\b(each|per person|per head|per pax) (pay|pays|paying)\b|\b(per person|per head|per pax|each of us)\b|\b(seorang|sorang|setiap orang|each one|each)\s+(berapa|how much)\b/.test(nt1) || /每人|每个人|一人多少/.test(u.text));
   const party = u.party ?? state.party ?? null;
   // ("4 of us ... split equally": the party)
@@ -2182,7 +2183,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
     // (at the price of the line ordered: "1 iced milk tea" … "less sweet, still the same price?" stays RM6.60)
     const ordered_ = state.order.find((o) => o.item.id === optHost.id);
-    if (free.length) return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.freeChoice", { dish: name(optHost), option: list(free.map(optionLabel)), price: money(ordered_ ? unitPrice(ordered_) : optHost.price) })}`, [optHost]);
+    // (the same free choice on the others named as well: "sisig … can make mild?" of the Pork and Chicken Sisig)
+    const alsoFree = mentioned.filter((i) => i.id !== optHost.id && free.every((o) => (i.modifiers ?? []).some((g) => g.options.some((x) => x.name === o.name && !x.price))));
+    if (free.length) return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${[optHost, ...alsoFree].map((h) => t("assistantReply.freeChoice", { dish: name(h), option: list(free.map(optionLabel)), price: money(h === optHost && ordered_ ? unitPrice(ordered_) : h.price) })).join(sp)}`, [optHost, ...alsoFree]);
     // ("can add protein or not?" with whey and plant protein): each of its choices that word names
     const alike = (optHost.modifiers ?? []).flatMap((g) => g.options).filter((o) => normalize(o.name).split(" ").some((w) => w.length > 3 && ` ${nt1} `.includes(` ${w} `)));
     if (alike.length >= 2) return reply("dish_info", `${t("assistantReply.optionYes")}${sp}${t("assistantReply.itsAddOns", { dish: name(optHost), list: list(alike.map((o) => (o.price ? `${optionLabel(o)} (+${money(o.price)})` : optionLabel(o)))) })}`, [optHost]);
@@ -2316,6 +2319,14 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
   }
   // "is aloe vera available today?", "芦荟还有吗？": an add-on (or anything) asked after by name, when no dish is it
+  // ("java rice available instead of garlic rice?"): a thing the menu nowhere has, asked for in place of one it does
+  const insteadOf = nt1.match(/^(?:got |any |ada |do you have |can i get |can i have )?([a-z]+(?: [a-z]+)?) (?:available |ada |got |can |boleh )?(?:instead of|instead|rather than|ganti|replace)\b/)?.[1];
+  if (insteadOf && !/^(it|that|this|one|them)$/.test(insteadOf)) {
+    const menuWords_ = new Set(ctx.items.flatMap((i) => normalize(`${i.name} ${i.description ?? ""} ${(i.modifiers ?? []).flatMap((g) => g.options.map((o) => o.name)).join(" ")}`).split(" ")));
+    const own_ = insteadOf.split(" ").filter((w) => w.length > 2 && !GENERIC_FOOD.test(w));
+    if (own_.length && own_.every((w) => !menuWords_.has(w) && !menuWords_.has(w.replace(/s$/, ""))))
+      return reply("dish_info", t("assistantReply.notAvailable", { thing: en ? insteadOf.charAt(0).toUpperCase() + insteadOf.slice(1) : insteadOf }), []);
+  }
   const availAsked = !mentioned.length && !u.stated.length && !u.statedDiet.length && u.budget === null && !u.courses.length && !u.categories.length && !u.noWords.length ? (nt1.match(/^(?:is|are) (?:the |your )?([a-z]+(?: [a-z]+){0,2}?) (?:still )?(?:available|in stock)( today| now)?$/)?.[1] ?? nt1.match(/^(?:do you )?still (?:have|got) ([a-z]+(?: [a-z]+){0,2}?)( today| now)?$/)?.[1] ?? u.text.match(/^([\u4e00-\u9fff]{1,5}?)(?:今天)?还有(?:吗|没有|卖吗)[?？]?$/)?.[1]) : undefined;
   if (availAsked && !/^(wifi|parking|toilet|table|seat|seats|delivery|grab|foodpanda|card|cash|reservation|booking|space|room|staff|it|this|that|they|them)$/.test(availAsked)) {
     const asked = optionsAsked(availAsked, live);
@@ -2438,9 +2449,12 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // (asked of it: "got shrimp inside?", "ok for me?", "got gluten?"; not "with vanilla ice cream, how much?" or "which ones?")
   const askedOfIt = (/\b(got|contain\w*|has|have|inside|ada|ok for me|safe|can i eat|can she eat|can he eat|vegan|vegetarian)\b/.test(nt1) || /含|有没有|可以吃/.test(u.text)) && !/\b(which|how much|berapa|price)\b/.test(nt1) && !/哪|多少钱/.test(u.text);
   // ("the lard crisps add on — that one pork ah?"): an add-on that's pork, said so
-  if (!mentioned.length && !state.order.length && (/\b(pork|babi)\b/.test(nt1) || /猪肉|是猪/.test(u.text))) {
-    const porky = optionsAsked(u.text, live).filter((x) => named_(x.option) > 0 && /\b(lard|bacon|char siu|siu yuk|pork|babi|ham|lap cheong|chinese sausage)\b|猪/i.test(x.option.name));
-    if (porky.length) return reply("dish_info", t("assistantReply.addOnPork", { option: optionLabel(porky[0].option) }), []);
+  // (or of the dish named: "the chicharrón add-on for arroz caldo is pork?")
+  if ((!mentioned.length || (mentioned.length === 1 && /\b(add on|addon|add ons|topping|the [a-z]+ (add on|topping))\b/.test(nt1))) && !state.order.length && (/\b(pork|babi)\b/.test(nt1) || /猪肉|是猪/.test(u.text))) {
+    const porky = optionsAsked(u.text, mentioned.length ? mentioned : live).filter((x) => named_(x.option) > 0 && /\b(lard|bacon|char siu|siu yuk|pork|babi|ham|lap cheong|chinese sausage|chicharr[oó]n|crackling|cracklings|lechon|longganisa|tocino|chorizo)\b|chicharr|猪/i.test(x.option.name));
+    // (asked of it, not its own name's word: "extra pork katsu topping got egg ah?" asks of the egg)
+    const leftOver = (o: ModifierOption) => normalize(nt1.split(" ").filter((w) => !normalize(o.name).split(" ").includes(w)).join(" "));
+    if (porky.length && /\b(pork|babi)\b/.test(leftOver(porky[0].option))) return reply("dish_info", t("assistantReply.addOnPork", { option: optionLabel(porky[0].option) }), mentioned.slice(0, 1));
   }
   // (not an allergen word that is the add-on itself: "with extra cheese" for a fish allergy said before is about the fish)
   // ("the raita got dairy?": the word asked about, not the add-on's own name, says the allergen)
@@ -3064,7 +3078,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       else if (ctx.halal && halalAt === "none") out.push(t("assistantReply.halalListedNotHalal", { dish }));
       else out.push(t("assistantReply.halalListed", { dish }));
     }
-    if (u.diet.includes("vegan")) out.push(t(item.dietary.includes("vegan") ? "assistantReply.isVegan" : "assistantReply.notVegan", { dish: name(item) }));
+    // ("calamansi juice with honey still vegan?": the choice said takes it off vegan)
+    const unVegan = u.diet.includes("vegan") ? optionsSaid(u.text, item, true).add.filter((o) => /\b(honey|egg|telur|chicken|beef|pork|fish|prawn|meat|cheese|butter|ghee|milk|cream|mayo|bacon|chicharr[oó]n)\b/i.test(o.name) || optionAllergens(o, item, ctx.items).some((a) => a === "egg" || a === "milk" || a === "fish" || a === "crustaceans" || a === "molluscs")) : [];
+    if (u.diet.includes("vegan") && unVegan.length && item.dietary.includes("vegan")) out.push(t("assistantReply.addOnNotVegan", { option: list(unVegan.map(optionLabel)), dish: name(item) }));
+    else if (u.diet.includes("vegan")) out.push(t(item.dietary.includes("vegan") ? "assistantReply.isVegan" : "assistantReply.notVegan", { dish: name(item) }));
     else if (u.diet.includes("vegetarian")) out.push(t(item.dietary.includes("vegetarian") || item.dietary.includes("vegan") ? "assistantReply.isVegetarian" : "assistantReply.notVegetarian", { dish: name(item) }));
     return out.join(sp);
   };
