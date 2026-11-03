@@ -975,7 +975,7 @@ const CATEGORY_SYNONYMS: [RegExp, string[]][] = [
   [/^(soups?|sup)$/, ["soup"]],
 ];
 const CATEGORY_ZH: [RegExp, string[]][] = [
-  [/奶茶/, ["milk tea"]], [/果茶/, ["fruit tea"]], [/卤嘢|卤味|卤水|卤的|卤料|卤菜/, ["braised"]], [/小吃|零食/, ["snack", "small plate", "side"]], [/海鲜/, ["seafood"]], [/肉类|肉菜/, ["meat"]],
+  [/奶茶/, ["milk tea"]], [/果茶/, ["fruit tea"]], [/(?<!月|煎|蛋|薄|肉|鸡蛋)饼|馕/, ["bread", "naan", "roti"]], [/卤嘢|卤味|卤水|卤的|卤料|卤菜/, ["braised"]], [/小吃|零食/, ["snack", "small plate", "side"]], [/海鲜/, ["seafood"]], [/肉类|肉菜/, ["meat"]],
   [/蔬菜|青菜|素菜/, ["vegetable"]], [/咖啡/, ["coffee"]], [/甜品|甜点|糖水/, ["dessert", "sweet"]], [/饮料|饮品|喝的/, ["drink", "beverage"]],
   [/串烧|烤串|串/, ["skewer", "yakitori"]], [/丼|盖饭/, ["donburi", "don"]], [/拉面|面/, ["noodle", "ramen"]], [/饭/, ["rice"]], [/咖喱/, ["curr"]],
   [/早餐|早午餐/, ["breakfast", "brunch"]], [/粥/, ["congee", "porridge", "bubur"]], [/锅底/, ["soup base", "broth", "soup"]], [/饭团/, ["onigiri", "rice ball"]], [/(?<![奶果擂骨凉])茶(?!饭|餐)/, ["tea"]], [/主菜|主食/, ["main"]], [/汤/, ["soup"]], [/炸/, ["fried"]], [/汉堡/, ["burger"]], [/披萨(?!片)|比萨(?!片)/, ["pizza"]], [/寿司/, ["sushi"]], [/塔可/, ["taco"]], [/卷饼/, ["wrap", "burrito"]], [/沙拉/, ["salad"]], [/意面|意大利面/, ["pasta"]], [/点心/, ["dim sum"]], [/蒸/, ["steamed"]], [/烧烤|烤肉/, ["grill", "bbq", "barbecue"]], [/酱|蘸料/, ["sauce", "dip"]],
@@ -1077,7 +1077,7 @@ function requested(question: string, a: Allergen): boolean {
 // "fish is fine", "eggs and milk are ok", "I eat fish", "seafood boleh": a food the guest says they
 // do have. Only an explicit word of it, in a clause with no avoid cue for it, counts
 const ALLOW = /\b(fine|ok|okay|alright|all right|no problem|no issue|not a problem|tak apa|takpe|takpa)\b|(?<!\b(can|could|may|should|do|boleh)\s)\bi (do |still |only )?eat\b|(?<!\b(can|could|may|should|do|boleh|you|u)\s(i|we)\s)\b(she|he|they|we) (eat|eats|makan)\b/;
-const ALLOW_ZH = /可以吃|能吃|没问题|没关系|吃(鱼|海鲜|蛋|鸡蛋|奶)/;
+const ALLOW_ZH = /可以吃|能吃|没问题|没关系|吃(鱼|海鲜|蛋|鸡蛋|奶)|都可以|都行|都得|食得|可以接受/;
 function allowedSaid(question: string, a: Allergen): boolean {
   return question.split(/[,;.!?，。；、]+|\s[-–—]\s|\b(?:but|tapi|then|though|although)\b|但是|不过/i).some((clause) => {
     if (!clause || !mentionedAllergens(clause).includes(a) || ALLERGY_WORD.test(clause)) return false;
