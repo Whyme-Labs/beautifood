@@ -1859,6 +1859,15 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
     return null;
   };
+  // ("my daughter is allergic to fish" … "can she have number 2 with extra cheese?"): whether it's safe, add-ons and all
+  const canHave_ = /\bcan (she|he|i|we|they|my \w+|the kids?|kids) (have|eat|take)\b|\bboleh (dia |saya |anak )?makan\b/.test(nt1);
+  const pointed_ = !mentioned.length ? pointedAt(u.text, state.shown) : [];
+  if (canHave_ && state.avoid.length && pointed_.length === 1) {
+    const d = pointed_[0].item;
+    const add = optionsSaid(u.text, d, true).add;
+    const bad = [...new Set([...d.allergens, ...add.flatMap((o) => optionAllergens(o, d, ctx.items))])].filter((a) => state.avoid.includes(a as Allergen));
+    if (!bad.length) return { ...reply("dish_allergen", t("assistantReply.canHaveYes", { dish: add.length ? t("assistantReply.withOptions", { dish: name(d), options: list(add.map(optionLabel)) }) : name(d), list: list(state.avoid.map((a) => (en ? allergen(a).toLowerCase() : allergen(a)))), price: money(d.price + add.reduce((n, o) => n + o.price, 0)) }), [d]), safetyNote: allyNote(locale) };
+  }
   // ("chicken thali, can i take both butter chicken and the kadai?"): two picks of a group that takes one, though one is also a dish
   if (/\bboth\b.+\band\b|\bdua dua\b|\bkedua dua\b/.test(nt1) || /两个都|都要/.test(u.text)) {
     for (const h of mentioned) {
@@ -2243,7 +2252,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const porky = optionsAsked(u.text, live).filter((x) => named_(x.option) > 0 && /\b(lard|bacon|char siu|siu yuk|pork|babi|ham|lap cheong|chinese sausage)\b|猪/i.test(x.option.name));
     if (porky.length) return reply("dish_info", t("assistantReply.addOnPork", { option: optionLabel(porky[0].option) }), []);
   }
-  if (askedOpt && !madeOf && named_(askedOpt.option) > 0 && askedOfIt && (u.allergens.length || u.diet.length)) {
+  // (not an allergen word that is the add-on itself: "with extra cheese" for a fish allergy said before is about the fish)
+  const ownAllergy_ = u.allergens.filter((a) => u.stated.includes(a) || state.avoid.includes(a) || !optionAllergens(askedOpt?.option ?? { name: "", price: 0 }).includes(a));
+  if (askedOpt && !madeOf && named_(askedOpt.option) > 0 && askedOfIt && (ownAllergy_.length || u.diet.length)) {
     const host_ = askedOpt.dishes[0];
     const has = optionAllergens(askedOpt.option, host_).filter((a) => !u.allergens.length || u.allergens.includes(a));
     const label = optionLabel(askedOpt.option);

@@ -573,6 +573,7 @@ const zh = {
     comesWithYes: "有的，{dish}配{what}：{desc}（{price}）。",
     comesWithNo: "没有，{dish}不配{what}：{desc}，单点（{price}）。",
     perHeadPrice: "{dish}按人数算：每人{price}，{n}位共{total}。",
+    canHaveYes: "可以：{dish}没有列出{list}，加了也一样（{price}）。",
     addOnHasOn: "{dish}加的{option}{what}含有{list}。",
     drinkChoicesNot: "{dish}配的饮料没有{drink}，可以选：{list}。",
     oneSize: "{dish}只有一种分量。",

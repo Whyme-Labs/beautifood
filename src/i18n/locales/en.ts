@@ -575,6 +575,7 @@ const en = {
     comesWithYes: "Yes, {dish} comes with {what}: {desc} ({price}).",
     comesWithNo: "No, {dish} doesn't come with {what}: it's {desc}, on its own ({price}).",
     perHeadPrice: "{dish} is charged per person: {price} each, so {total} for {n}.",
+    canHaveYes: "Yes: {dish} lists no {list}, with the add-ons said too ({price}).",
     addOnHasOn: "{dish}: the {option} add-on{what} has {list}.",
     drinkChoicesNot: "{drink} isn't one of the drinks that come with {dish}: you can pick {list}.",
     oneSize: "{dish} comes in one size only.",
