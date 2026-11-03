@@ -1439,7 +1439,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       ? u.superlative === "cheapest" ? byPrice[0] : byPrice.at(-1)
       // ("does the cheaper one have egg?": the one of those just shown it points at)
       // ("is the curry one halal?", "那个豆的有麸质吗？" too)
-      : !mentioned.length && !nth && aboutContents && state.shown.length >= 2 && pointedAt(u.text, state.shown).length === 1
+      // ("got tofu?" … "this tofu one pork or not ah?": the one shown, by its word)
+      : !mentioned.length && !nth && (aboutContents || /\b(pork|babi|lard|alcohol|halal)\b/.test(nt0)) && state.shown.length >= 1 && pointedAt(u.text, state.shown).length === 1 && (state.shown.length >= 2 || /\b(the|that|this) [a-z]+(?: [a-z]+)? one\b/.test(nt0))
         ? pointedAt(u.text, state.shown)[0].item
         // ("noodles got what?" … "this one got pork or not ah?": the one the last answer led with)
         : !mentioned.length && !nth && aboutContents && state.shown.length >= 2 && state.shown.length <= 3 && /\b(this one|this|yang ni|yang ini)\b/.test(nt0) && !/\b(these|those|them|both|either)\b/.test(nt0)

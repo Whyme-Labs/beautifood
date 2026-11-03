@@ -126,8 +126,10 @@ const SIZE_TEMP = /^(large|small|medium|regular|big|besar|kecil|hot|iced|ice|col
 const LEAD = /^(extra|add|more|some|a|an|the|with|and|no|less|tambah|lebih|dengan|dan|plus|on|of|any|got|ada|nak|want|two|one|three|2|1|3|both|all|semua|kedua|please|pls|also|too|then|but|just|only|make|it|them|get|have|can|could|i|we|me|my|for|to|in|or|is|are|be|bagi|mau|dua|satu|tiga|sekali|juga|pun|yes|ok|okay|sure|that|this|those|these|one|each|lagi|jadi|and|or|ya|tu|ni|kasi|letak|put|request|order|cup|glass|bowl|plate|piece|pieces|pcs|x|times)$/;
 // (how it's made, not what: "Grated cheese" is the cheese, "keju" for it)
 const PREPARED = /^(grated|shredded|sliced|diced|crushed|toasted|melted|chopped|minced|whipped|pickled|smoked)$/;
-const saysOption = (ks0: string[], words: Set<string>, joined: string, raw: string) => {
-  const ks = ks0.length >= 2 && ks0.filter((k) => !PREPARED.test(k)).length === 1 && !ks0.some((k) => PREPARED.test(k) && direct(k, words, joined, raw)) ? ks0.filter((k) => !PREPARED.test(k)) : ks0;
+const saysOption = (ks: string[], words: Set<string>, joined: string, raw: string) => {
+  // (only its food in the guest's own word: "tambah keju"; "pork" alone stays short of Minced pork)
+  const food_ = ks.length >= 2 ? ks.filter((k) => !PREPARED.test(k)) : [];
+  if (food_.length === 1 && food_.length < ks.length && alias(food_[0], words, joined) && !direct(food_[0], words, joined, raw)) return true;
   if (ks.length === 1) return said(ks[0], words, joined, raw);
   const hit = ks.filter((k) => direct(k, words, joined, raw));
   // ("a drink for her" isn't the combo's Soft drink: a course's word alone)
