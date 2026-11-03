@@ -1090,6 +1090,17 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
     // (only where the word would read as an allergy: "the egg", "the prawns"; "the perut" already finds its satay)
     if (has.length === 1 && !whole && !asOption && mentionedAllergens(offWord).length) asked = question.replace(new RegExp(`\\b${offWord}\\b`, "i"), has[0].item.name);
   }
+  // ("make the naan 5" with Garlic Naan ordered): "the" + a word several dishes share is the one ordered
+  if (state.order.length && !/[\u3400-\u9fff]/.test(asked))
+    asked = asked.replace(/\b(the|that|my)\s+([a-z]{3,})\b(?!\s+(?:one|ones)\b)(\s+[a-z]+)?/gi, (m, the, w, next = "") => {
+      const word = w.toLowerCase();
+      // (only the kind's last word said alone: "the naan", not "the teh o ais", "the tom yam one")
+      const nextWord = next.trim().toLowerCase();
+      if (nextWord && ctx.items.some((i) => normalize(i.name).split(" ").includes(nextWord))) return m;
+      const kin = ctx.items.filter((i) => normalize(i.name).split(" ").some((x) => sameWord(x, word)));
+      const ordered = state.order.filter((o) => { const ws = normalize(o.item.name).split(" "); return sameWord(ws[ws.length - 1], word); });
+      return kin.length >= 2 && ordered.length === 1 && normalize(ordered[0].item.name) !== word && !mentionedAllergens(word).length ? `${the} ${ordered[0].item.name}${next}` : m;
+    });
   const u = understand(ctx.items as Dish[], asked);
   return { ...respond(ctx, u, state, locale, taste ?? undefined), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
 }
