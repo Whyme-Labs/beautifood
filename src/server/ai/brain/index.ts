@@ -426,6 +426,11 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
         applyOptions(s.order, h.content, picked.map((p) => p.item));
         continue;
       }
+      // ("change the fish to pomfret" of the Assam Pedas Ikan ordered): its choice changed, not another of it
+      if (own.length && (SWAP.test(normalize(h.content)) || SWAP.test(h.content)) && own.every((i) => s.order.some((o) => o.item.id === i.id)) && !COUNT_SAID.test(normalize(h.content))) {
+        applyOptions(s.order, h.content, own);
+        continue;
+      }
       // (not "rojak can add extra things?": asked whether it can, not added)
       const canAdd = asks && /\b(can|could|may|boleh)( i| we| you)? (add|tambah)\b/.test(normalize(h.content)) && !ORDERING.test(normalize(h.content).replace(/\b(can|could|may|boleh)( i| we| you)? (add|tambah)\b/g, " "));
       // (nor "with egg add-on or roti telur, which is cheaper?": "add-on" is the thing, not an order)
@@ -1092,7 +1097,7 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
   }
   // ("make the naan 5" with Garlic Naan ordered): "the" + a word several dishes share is the one ordered
   if (state.order.length && !/[\u3400-\u9fff]/.test(asked))
-    asked = asked.replace(/\b(the|that|my)\s+([a-z]{3,})\b(?!\s+(?:one|ones)\b)(\s+[a-z]+)?/gi, (m, the, w, next = "") => {
+    asked = asked.replace(/\b(the|that|my|\d+ more|one more|another|more)\s+([a-z]{3,})\b(?!\s+(?:one|ones)\b)(\s+[a-z]+)?/gi, (m, the, w, next = "") => {
       const word = w.toLowerCase();
       // (only the kind's last word said alone: "the naan", not "the teh o ais", "the tom yam one")
       const nextWord = next.trim().toLowerCase();

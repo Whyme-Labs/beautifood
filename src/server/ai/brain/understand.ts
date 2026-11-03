@@ -1222,7 +1222,9 @@ export function read(items: Dish[], asked: string): Reading {
   // "takoyaki can no bonito?": a dish's own "No bonito flakes" choice, not an allergy said
   const offChoice = (a: Allergen) => !ALLERGY_WORD.test(question) && mentions.some((m) => (m.dish.modifiers ?? []).some((g) => g.options.some((o) => /^(no|without|less|tanpa|kurang|tak nak)\b/i.test(o.name) && mentionedAllergens(o.name).includes(a) && optionsSaid(question, m.dish, true).add.some((x) => x.name === o.name))));
   // (it still counts as avoided, safety first: only that dish's own card may show, `choiceOff`)
-  const avoid = allergens.filter((a) => !allowedFoods.includes(a) && (governed(fixed, a) || !requested(fixed, a)));
+  // ("change the fish to pomfret", "tukar ikan ke bawal"): the food changed on a dish, not one avoided
+  const swappedOut = (a: Allergen) => [...normalize(question).matchAll(/\b(?:change|swap|switch|replace|tukar|ganti)\s+(?:the |my )?((?:\w+ ){0,2}?\w+)\s+(?:to|for|with|kepada|ke|jadi|dengan)\b/g)].some((m) => mentionedAllergens(m[1]).includes(a)) && !ALLERGY_WORD.test(question);
+  const avoid = allergens.filter((a) => !allowedFoods.includes(a) && !swappedOut(a) && (governed(fixed, a) || !requested(fixed, a)));
   // "anything 100% allergen free?": none of them at all
   if (/\b(allergen|allergy|allergic|alergen)[\s-]*free\b|\bno allergens?\b|\bwithout (any )?allergens?\b|\bfree (of|from) (all |any )?allergens\b|\btiada alergen\b/.test(restText) || /无过敏原|不含过敏原|没有过敏原/.test(restRaw)) avoid.push(...ALLERGENS);
 
