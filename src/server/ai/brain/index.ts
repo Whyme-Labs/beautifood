@@ -1852,6 +1852,14 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
     return null;
   };
+  // ("veg thali, can the naan be cheese naan?"): a choice asked of a set's part that isn't one of its choices
+  const beAsked = nt1.match(/\b(?:can|could|boleh) (?:the|its|my) ([a-z]+) (?:be|jadi|tukar|change to|tukar jadi) ([a-z]+(?: [a-z]+){0,2}?)\s*$/);
+  const beHost = beAsked ? mentioned.find((i) => (i.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name).split(" ").some((w) => sameWord(w, beAsked[1]))))) : undefined;
+  if (beAsked && beHost && !optionsSaid(beAsked[2], beHost, true).add.length) {
+    const g = (beHost.modifiers ?? []).find((x) => x.options.some((o) => normalize(o.name).split(" ").some((w) => sameWord(w, beAsked[1]))))!;
+    const shown_ = en ? beAsked[2].charAt(0).toUpperCase() + beAsked[2].slice(1) : beAsked[2];
+    return reply("dish_info", `${t("assistantReply.optionNotOnNone", { option: shown_, dish: name(beHost) })}${sp}${t("assistantReply.oneOfGroup", { dish: name(beHost), group: g.name.toLowerCase(), list: list(g.options.map((o) => (o.price ? `${optionLabel(o)} (+${money(o.price)})` : optionLabel(o)))) })}`, [beHost]);
+  }
   // ("add char siu to my loh mee", with nothing ordered: told it's not on it, when it isn't)
   if (!asksOption && thingAsked && optHost && orderable(optHost) && !state.order.some((o) => o.item.id === optHost.id) && (nt1.match(/\b(?:to|for|on|in|into) (?:my|the) ([a-z ]+)/)?.[1] ?? "").split(" ").some((w) => w.length > 2 && normalize(optHost.name).split(" ").includes(w))) {
     const off = notOn(optHost, thingAsked);
