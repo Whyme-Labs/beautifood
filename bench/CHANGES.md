@@ -1532,3 +1532,10 @@ performance, and the next held-out read needs a fresh set. Baseline as dev: 363/
   classic"); 有冇 asks; an injected halal claim answered with the real standing; a choice a set doesn't
   offer; both of a one-choice group when a choice is also a dish; 做辣一点; "telur goreng sekali". The 15
   left need explanations (which pot, why cheese) or per-unit add-ons.
+- **v12 dev, fourth pass.** 465 → 479 of 480 (99.8%), unsafe 0; all dev 3519 → 3533 of 3674 (96.2%), none
+  broke. "Comes with rice?", tea charged per head (and 茶要菊花，四位), "the ones with X" of those shown, a dish
+  named whole before "add", "can she have number 2 with extra cheese?" after an allergy, a plainer free
+  choice for an allergy ("garlic only"), the third dish's own line asked of ("用卤猪肉的锅"), dishes read by
+  their usual Chinese names in an answer, a dish named inside a longer one and again with its price, sizes
+  weighed not listed, per-one add-ons, "brased duk", and one of two sets changed. The one left asks for a
+  Malay yes ("Ada lemak babi tak?") that the English answer can't give.
