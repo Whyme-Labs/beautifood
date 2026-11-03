@@ -69,7 +69,7 @@ const OFF_ZH = /走(冰|蛋|甜)|不要(冰|蛋|糖)|去冰|(?:去掉|拿掉|取
 const PHRASES: [RegExp, RegExp][] = [
   [/^less ice$|^kurang ais$/, /\b(less ice|kurang ais|sikit ais|little ice|siu bing)\b|少冰/],
   [/^no ice$|^tanpa ais$/, /\b(no ice|without ice|tak nak ais|tak mau ais|xnak ais|tanpa ais|ice free)\b|走冰|去冰|不要冰|不加冰/],
-  [/^less sweet$|^kurang manis$/, /\b(less sweet|kurang manis|less sugar|siew dai|siu dai|siu tai|not so sweet|not too sweet)\b|少甜|少糖|甜少|微糖/],
+  [/^less sweet$|^less sugar$|^kurang manis$|^kurang gula$/, /\b(less sweet|kurang manis|less sugar|siew dai|siu dai|siu tai|not so sweet|not too sweet)\b|少甜|少糖|甜少|微糖/],
   [/^no sugar$|^kosong$|^no added sugar$|^0 ?%$/, /\b(no sugar|kosong|tanpa gula|sugar free|no added sugar|unsweetened|zero sugar|0 ?%)\b|走甜|无糖|不要糖|不加糖|零糖/],
   [/^lebih manis$/, /\b(lebih manis|extra sweet|more sweet|sweeter)\b|多糖|加甜/],
   [/^50 ?%$/, /\b(50 ?%|50 percent|half sugar|half sweet|separuh manis)\b|半糖|五分糖/],
@@ -344,7 +344,8 @@ export function optionsAsked<T extends WithOptions>(text: string, dishes: T[]): 
 }
 
 /** An option's name as a guest reads it: "Ais (iced)" is "iced", "Oat milk" and "Sui kow (2 pcs)" stay. */
-export const optionLabel = (o: ModifierOption) => (/\(\s*\d/.test(o.name) ? o.name : (o.name.match(/\(([^)]+)\)/)?.[1] ?? o.name));
+// (a note on its size or use keeps the name: "Beef fry (side)", "Payasam (small cup)")
+export const optionLabel = (o: ModifierOption) => (/\(\s*\d|\((side|half portion|small cup|small|large|regular|portion|each|per piece|per person)\)/i.test(o.name) ? o.name : (o.name.match(/\(([^)]+)\)/)?.[1] ?? o.name));
 
 // Common add-on words in Chinese, longest first, for answering in Chinese ("Extra braised pork" → 加卤肉)
 const OPTION_ZH: [RegExp, string][] = ([

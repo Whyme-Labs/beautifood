@@ -777,10 +777,18 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
   });
   // "1 coke", "a sprite": a required choice of exactly one dish (the Canned Soft Drink's Flavour) names it
   toks.forEach((t, i) => {
-    if (t.length < 3 || GENERIC.has(t) || kept.some((m) => m.covered.includes(i)) || skip.has(i)) return;
+    // (not a measure: "a bowl of rice" isn't the soup's Bowl size)
+    if (t.length < 3 || GENERIC.has(t) || kept.some((m) => m.covered.includes(i)) || skip.has(i) || toks[i + 1] === "of") return;
     const forms = [t, t.replace(/s$/, "")];
     const hosts = items.filter((d) => (d.modifiers ?? []).some((g) => (g.min ?? 0) >= 1 && g.options.some((o) => forms.includes(normalize(o.name)))));
     if (hosts.length === 1 && !kept.some((m) => m.dish === hosts[0])) kept.push({ dish: hosts[0], at: i, covered: [i], score: 0.5 });
+  });
+  // ("the combo drink can change to chai?"): "the combo", "the set" of the one dish so called
+  toks.forEach((t, i) => {
+    // (not asking what's in it: "if i take the set with nasi ulam, got seafood inside?" is of the set's choice)
+    if (!/^(combo|set|platter)$/.test(t) || !/^(the|that|this|your|ur)$/.test(toks[i - 1] ?? "") || kept.some((m) => m.covered.includes(i)) || skip.has(i) || toks.some((x) => allergenWord(x))) return;
+    const sets = items.filter((d) => normalize(d.name).split(" ").includes(t));
+    if (sets.length === 1 && !kept.some((m) => m.dish === sets[0])) kept.push({ dish: sets[0], at: i, covered: [i], score: 0.8 });
   });
   // "large fries", "a rice": a word several dishes end in names the plain one ("French Fries",
   // "Steamed Rice"), when nothing else took it

@@ -1862,7 +1862,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // "can I add pudding?", "can make less spicy?", "boleh tambah telur?", "可以加奶盖吗？", "can I get it hot?":
   // whether the dish has that choice, and what it costs; if not, what it does have
   const asksOption =
-    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b/.test(nt1) || /\bcan [a-z]+ (one|ones)\s*[?？]|\bada yang [a-z]+\s*[?？]/i.test(u.text) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走|不要)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
+    (/\b(can|could|may) (i|we|you)? ?(please )?(add|get|have|change|swap|switch|make|put|choose|pick|request|top)\b|\bcan (add|make|put|change|swap|less|more|no|mix|combine|campur|pour|serve)\b|\b(boleh|bole|leh|blh) (tambah|letak|tukar|buat|minta|pilih|kurang)\b|\b(tambah|kurang|add|put|letak) [\w ]{1,30}(boleh|or not|ok)\b|\bwith [\w ]{1,30} (ok|okay|can|safe)( for (me|her|him|us|them|my \w+))?$|\binstead\b.*\b(extra charge|charge|cost more|how much|berapa)\b|\bhow many (\w+ )?can (i|we)\b|\bcan\s*$|\bsame price\b|\bif (i|we) (add|tambah|put)\b/.test(nt1) || /\bcan [a-z]+ (one|ones)\s*[?？]|\bada yang [a-z]+\s*[?？]/i.test(u.text) || /\bcan\s*[?？]/.test(u.text.toLowerCase()) || /\bboleh\b\s*[?？]/.test(u.text.toLowerCase()) || /可以(加|换|做|要|选|改|少|走|不要)|能不能(加|换|做|少)|可不可以(加|换|做)|能(加|换|做)|加.{1,6}(可以吗|行吗|吗)|要不要钱|要钱吗|收钱吗|另外收费吗|加钱吗/.test(u.text)) &&
     !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac)\b|过敏/.test(u.text.toLowerCase()) && !u.stated.some((a) => !u.choiceOff.includes(a)) && !u.party && !/\b(what|which|apa)\b/.test(nt1) && !/什么|哪/.test(u.text) &&
     // ("can I have the second one with an iced lemon tea? total?": an order, its total asked)
     !(pointed.length && (/\b(total|altogether|semua|jumlah)\b/.test(nt1) || /一共|总共/.test(u.text)));
@@ -2009,6 +2009,16 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (asksOption && !optHost && !mentioned.length && state.shown.length >= 2 && [...state.diet, ...u.diet].includes("vegan")) {
     const asked = optionsAsked(u.text, state.shown).filter((x) => optionAllergens(x.option, x.dishes[0], ctx.items).some((a) => a === "egg" || a === "milk") || /\b(egg|telur|milk|susu|cheese|butter|ghee|cream)\b/i.test(x.option.name));
     if (asked.length) return reply("dish_info", t("assistantReply.addOnNotVegan", { option: optionLabel(asked[0].option), dish: asked[0].dishes.slice(0, 3).map(name).join(t("assistantReply.orSep")) }), asked[0].dishes.slice(0, 3));
+  }
+  // ("is the rice add-on the same price as ordering a plate of rice?", "if i add steamed rice from the add-ons is it cheaper
+  // than a bowl of rice separately?"): the add-on against the dish it is
+  if (/\b(add on|add ons|addon|addons|if (i|we) add)\b/.test(nt1) && /\b(same price|cheaper|more expensive|pricier|separately|than ordering|than order|compared|versus)\b/.test(nt1) && !/\b(separate bills?|pay separately|bill separately)\b/.test(nt1)) {
+    const vs = mentioned.flatMap((h) => optionsSaid(u.text, h, true).add.map((o) => ({ h, o, d: optionDish(o, live) }))).find((x) => x.d && x.d.id !== x.h.id);
+    if (vs) {
+      const [a, b] = [vs.o.price, vs.d!.price];
+      const key = a === b ? "assistantReply.addOnVsDishSame" : a < b ? "assistantReply.addOnVsDishAddOn" : "assistantReply.addOnVsDishApart";
+      return reply("dish_info", t(key, { option: optionLabel(vs.o), dish: name(vs.h), addPrice: money(a), item: name(vs.d!), itemPrice: money(b), diff: money(Math.abs(a - b)) }), [vs.h, vs.d!]);
+    }
   }
   // ("2 of them, one with mushroom sauce, both with egg, how much?" with an order read: its bill, not the add-on's price)
   if (asksOption && optHost && orderable(optHost) && !editsLine && !(byBasket && (howMuch || totalWord || withCharges)) && !u.budget && !(!onHost && mentioned.length >= 2 && mentioned.every((i) => !optionsSaid(u.text, i, true).add.length) && !mentioned.slice(1).some((i) => optionsAsked(name(i), live).length))) {
@@ -3094,7 +3104,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
         const inCourse = u.courses.length || u.categories.length ? byCourse(live.filter(fits), u.courses) : [];
         // (its own kind first: Kopi O for the Kopi, by a word of its name)
         const kin = (i: Item) => normalize(i.name).split(" ").some((w) => w.length > 2 && normalize(unsafe[0].name).split(" ").includes(w));
-        const alt = [...ranked(sameCategory.length ? sameCategory : inCourse)].sort((a, b) => Number(kin(b)) - Number(kin(a))).slice(0, 2);
+        let alt = [...ranked(sameCategory.length ? sameCategory : inCourse)].sort((a, b) => Number(kin(b)) - Number(kin(a))).slice(0, 2);
+        // ("vegan here, can i do the veg sadya or what else?" with none of its kind vegan): what on the menu is
+        if (!alt.length && /\b(what else|or what|anything else|something else|other)\b/.test(nt1)) alt = ranked(live.filter(fits)).slice(0, 4);
         if (alt.length) parts.push(t("assistantReply.insteadTry", { list: list(alt.map(line)) }));
         return { ...reply(intent, parts.join(sp), [...focus, ...alt]), safetyNote: allyNote(locale) };
       }
