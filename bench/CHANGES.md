@@ -1517,3 +1517,11 @@ performance, and the next held-out read needs a fresh set. Baseline as dev: 363/
     asked for twice; add-ons a dish's line names but doesn't offer;
   - off-topic questions, injected instructions (no cards; the real halal standing), takeaway;
   - two dishes pointed at and compared; "number 2".
+- **v12 dev, the next pass.** 428 → 449 of 480 (93.5%), unsafe 0; all dev 3479 → 3502 of 3674 (95.3%),
+  none broke. A set's drink said beside it (English and Chinese); a set unasked for gives way to the
+  dish of the same words; "bill for 4:" is the party; tea by the head (三位茶); a dish's later words
+  not taken back across a clause; one more of the same; cash totals; "no need the egg" of a Braised
+  Egg ordered; alcohol asked of the kitchen; 菜脯蛋, 娘惹糕; "large size"; two sizes of the dish in
+  focus compared; "the ones without egg?" filters the dishes just shown; Chinese allowances (都可以)
+  and 饼 for breads. The 31 left are single cases (per-unit add-ons, explanations such as which pot a
+  dish is braised in, comparisons of a pointed dish with one named).
