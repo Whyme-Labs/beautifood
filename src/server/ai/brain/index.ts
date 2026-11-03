@@ -2015,7 +2015,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const takenOff = (!/[?？]/.test(u.text) || /\b(how much|berapa|total|ttl)\b/.test(nt1) || /多少钱|几多钱|一共/.test(u.text)) && !/\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac|vegan|vegetarian)\b/.test(nt1) && !/过敏|素/.test(u.text) && state.order.some((o) => optionsSaid(u.text, o.item).off.some((x) => o.options?.some((y) => y.name === x.name)));
   const changing = (!asksOfDish || takenOff || (editing && mentioned.length > 0)) && !difference && !asksWhat && ((state.order.length > 0 && ((ordering && mentioned.length > 0) || (editing && (mentioned.length > 0 || COUNT_SAID.test(nt1) || optionsNow)) || optionsNow)) || placed);
   // "do you charge service or SST?": what the till adds here, from the branch's settings
-  const chargesAsked = !!ctx.charges && !mentioned.length && !state.order.length && /\b(service charge|service tax|sst|gst|tax|taxes|cukai|servis|caj|charge service|charge for service|charge (a )?service fee|service fee)\b/.test(nt1) && /\b(do you|is there|are there|any|got|ada|charge|charged|include|included|includes|add|berapa|kena)\b/.test(nt1);
+  // (not money they have with the charges in it: "Saya ada RM15 je, termasuk cukai")
+  const chargesAsked = !!ctx.charges && !mentioned.length && !state.order.length && !((u.amount ?? u.budget) !== null && /\b(termasuk|incl|including|included|all in)\b/.test(nt1)) && /\b(service charge|service tax|sst|gst|tax|taxes|cukai|servis|caj|charge service|charge for service|charge (a )?service fee|service fee)\b/.test(nt1) && /\b(do you|is there|are there|any|got|ada|charge|charged|include|included|includes|add|berapa|kena)\b/.test(nt1);
   const chargesAskedZh = !!ctx.charges && !mentioned.length && !state.order.length && /服务费|税/.test(u.text) && /吗|有没有|收不收|含不含|加不加/.test(u.text);
   if (chargesAsked || chargesAskedZh) {
     const ch = ctx.charges!;
@@ -3269,7 +3270,11 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   // dish for each, within what they have to spend, and the total
   // ("RM20 for a laksa and a drink" is an order with the money said, not a pairing)
   if (basket && !(intent === "dish_allergen" && focus.length && u.asksContents) && !["order_help", "out_of_scope"].includes(intent) && (intent !== "compare" || ((u.amount ?? u.budget) !== null && mentioned.length < 2)) && !/\b(compare|vs|versus|difference|beza|bandingkan)\b/.test(normalize(u.text)) && (intent !== "pairing" || (u.amount ?? u.budget) !== null)) {
-    const spend = u.amount ?? u.budget;
+    // ("RM40 all in", "RM15 je, termasuk cukai"): the food can be what the charges leave
+    const allInB = withCharges || /\b(everything included|all included|all in|nett|termasuk (cukai|servis|caj))\b/.test(nt0) || /含税|包括服务费|全部包括/.test(u.text);
+    const foodOf = (x: number) => { let lo = 0; let hi = x; while (lo < hi) { const mid = Math.ceil((lo + hi) / 2); if (till(mid).due <= x) lo = mid; else hi = mid - 1; } return lo; };
+    const spend0 = u.amount ?? u.budget;
+    const spend = spend0 !== null && allInB ? foodOf(spend0) : spend0;
     // "toast, eggs and two kopi": an allergen named as an item is asked for, unless they said they avoid it
     const items = new Set(basket.flatMap((b) => mentionedAllergens(b.term)));
     const diet = c.diet.filter(notVeg);
@@ -3279,7 +3284,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     if (!order) return { ...reply("recommend", spend !== null ? t("assistantReply.basketNoFit", { list: asked, budget: money(spend) }) : t("assistantReply.noneFound", { filters: filterWords() || t("assistantReply.whatYouAsked") }), []), safetyNote: safety };
     const total = order.reduce((sum, o) => sum + o.dish.price * o.count, 0);
     const lines = order.map((o) => (o.count > 1 ? `${o.count} × ${line(o.dish)}` : line(o.dish)));
-    const sum = spend !== null ? t("assistantReply.basketWithin", { total: money(total), budget: money(spend) }) : t("assistantReply.basketTotal", { total: money(total) });
+    const sum = spend !== null ? t("assistantReply.basketWithin", spend0 !== spend ? { total: t("assistantReply.allIn", { total: money(till(total).due) }), budget: money(spend0!) } : { total: money(total), budget: money(spend) }) : t("assistantReply.basketTotal", { total: money(total) });
     return { ...reply("recommend", `${t("assistantReply.basketIntro")}${sp}${lines.join(t("assistantReply.itemSep"))}${stop}${sp}${sum}`, order.map((o) => o.dish)), safetyNote: safety };
   }
   // "anything cheaper than those?", "something cheaper but still noodles?", "有没有更便宜的？": below the

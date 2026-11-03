@@ -104,8 +104,22 @@ export function basketOf(question: string, items: Dish[], spend = false, party: 
     // "4 of us, two pizzas": a category's word counted for a party is that many different ones
     const asCategory = catWords.get(singular(w));
     if (asCategory && party && count > 1 && !each) { const nx = after(j + 1); return { slot: { count, term: singular(w), course: true, counted: true, fits: (d) => asCategory.has(d.category ?? "") }, next: nx }; }
-    const dishes = nameWords.get(singular(w.replace(/_/g, " ")));
-    if (dishes) { const nx = after(j + 1); return { slot: { count, term: singular(w), course: false, counted: n !== undefined, fits: (d) => dishes.includes(d) }, next: nx }; }
+    let dishes = nameWords.get(singular(w.replace(/_/g, " ")));
+    if (dishes) {
+      // ("one nasi kerabu"): the words after it that go on with the same dishes' names are that one item
+      let k = j + 1;
+      let term = singular(w);
+      while (k < toks.length && !SEP.test(toks[k])) {
+        const more = nameWords.get(singular(toks[k]))?.filter((d) => dishes!.includes(d));
+        if (!more?.length) break;
+        dishes = more;
+        term = `${term} ${singular(toks[k])}`;
+        k++;
+      }
+      const these = dishes;
+      const nx = after(k);
+      return { slot: { count, term, course: false, counted: n !== undefined, fits: (d) => these.includes(d) }, next: nx };
+    }
     // a word of the menu's own categories ("bingsu and a drink" on a menu with Bingsu & shaved ice)
     const inCats = catWords.get(singular(w));
     if (inCats) { const nx = after(j + 1); return { slot: { count, term: singular(w), course: !each, counted: n !== undefined, fits: (d) => inCats.has(d.category ?? "") }, next: nx }; }
@@ -123,6 +137,15 @@ export function basketOf(question: string, items: Dish[], spend = false, party: 
     while (j < toks.length && joined) {
       const s = slotAt(j);
       if (!s) break;
+      // ("1 noodle or rice"): either of two, one item
+      if (/^(or|atau)$/.test(toks[s.next] ?? "")) {
+        const alt = slotAt(s.next + 1);
+        if (alt && !alt.slot.counted) {
+          const a = s.slot.fits, b = alt.slot.fits;
+          s.slot = { ...s.slot, term: `${s.slot.term} or ${alt.slot.term}`, course: s.slot.course || alt.slot.course, fits: (d) => a(d) || b(d) };
+          s.next = alt.next;
+        }
+      }
       run.push(s.slot);
       j = s.next;
       // the next item: after "and", or straight after a counted one ("one meat two veg")
@@ -134,6 +157,8 @@ export function basketOf(question: string, items: Dish[], spend = false, party: 
     const counted = run.filter((s) => s.course || s.count > 1).length;
     if (run.length >= 2 && (counted >= 1 || run.length >= 3 || spend) && run.length > best.length) best = run;
   }
+  // ("we 4 ppl … each one nasi kerabu + air"): one of each for every one of them
+  if (party && party >= 2 && /\b(each|each one|masing masing|seorang satu|sorang satu|sorang 1|seorang 1)\b/.test(text)) best = best.map((s) => (s.count === 1 ? { ...s, count: party, counted: true } : s));
   return best.length >= 2 ? best : null;
 }
 
@@ -144,12 +169,22 @@ export function basketOf(question: string, items: Dish[], spend = false, party: 
 export function compose<T extends Dish>(asked: Slot[], ranked: T[], budget: number | null): { dish: T; count: number }[] | null {
   const slots = asked.flatMap((s) => (s.course ? Array.from({ length: s.count }, () => ({ ...s, count: 1 })) : [s]));
   const chosen: { dish: T; count: number }[] = [];
-  const left = (k: number) => slots.slice(k).reduce((sum, s) => sum + s.count * Math.min(...ranked.filter((d) => s.fits(d)).map((d) => d.price)), 0);
+  // (the cheapest the rest can come to, each a different dish from those already taken: two drinks are two drinks)
+  const left = (k: number, taking?: T) => {
+    const used = new Set([...chosen.map((c) => c.dish), ...(taking ? [taking] : [])]);
+    let sum = 0;
+    for (const s of slots.slice(k)) {
+      const cheapest = ranked.filter((d) => s.fits(d) && !used.has(d)).sort((a, b) => a.price - b.price)[0] ?? ranked.filter((d) => s.fits(d)).sort((a, b) => a.price - b.price)[0];
+      if (!cheapest) return Infinity;
+      used.add(cheapest);
+      sum += s.count * cheapest.price;
+    }
+    return sum;
+  };
   let spent = 0;
   for (let k = 0; k < slots.length; k++) {
     const s = slots[k];
-    const rest = left(k + 1);
-    const pick = ranked.find((d) => s.fits(d) && !chosen.some((c) => c.dish === d) && (budget === null || spent + d.price * s.count + rest <= budget));
+    const pick = ranked.find((d) => s.fits(d) && !chosen.some((c) => c.dish === d) && (budget === null || spent + d.price * s.count + left(k + 1, d) <= budget));
     if (!pick) return null;
     chosen.push({ dish: pick, count: s.count });
     spent += pick.price * s.count;
