@@ -8,7 +8,7 @@ type WithOptions = { name: string; translations?: Record<string, { name?: string
 
 // a guest's words for an option's own words (as menus name them: "Ais (iced)", "Oat milk", "Besar (large)")
 const ALSO: Record<string, string[]> = {
-  raw: ["mentah"], buko: ["coconut water", "kelapa muda", "air kelapa"],
+  raw: ["mentah"], chrysanthemum: ["kekwa", "bunga kekwa"], buko: ["coconut water", "kelapa muda", "air kelapa"],
   ais: ["ice", "iced", "cold", "peng", "sejuk"], iced: ["ice", "ais", "cold", "peng", "sejuk"], cold: ["ice", "iced", "ais", "peng", "sejuk"],
   panas: ["hot", "warm"], hot: ["panas", "warm"], suam: ["warm"],
   besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger", "lrg", "lg"],
@@ -223,7 +223,9 @@ export function optionsSaid(text: string, dish: WithOptions, free = false, loose
     // (nor a note on who it's for, "Large (shares 3-4)", "Family (serves 4)": its name is the size)
     // (a note of who it's for: "Sharing (2-3 pax)", "(serves 4)", "(for 2)")
     const noted = /\(\s*(shares?|serves?|for|feeds?|untuk|good for)\b[^)]*\)|\(\s*\d+(\s*[-–]\s*\d+)?\s*(pax|persons?|people|orang|ppl)\s*\)/i.test(o.name);
-    const ks = (noted ? keyWords({ ...o, name: o.name.replace(/\([^)]*\)/g, " ") }) : keyWords(o)).filter((k) => !counted || (!/^\d+$/.test(k) && !/^(pcs|pc|pieces?|ketul|biji)$/.test(k)));
+    // (and who it's for said plainly at its end: "Large pot for 4-6")
+    const forWho = /\s+for\s+\d+(\s*[-–]\s*\d+)?(\s*(pax|people|persons|ppl))?\s*$/i;
+    const ks = (noted ? keyWords({ ...o, name: o.name.replace(/\([^)]*\)/g, " ") }) : forWho.test(o.name) ? keyWords({ ...o, name: o.name.replace(forWho, "") }) : keyWords(o)).filter((k) => !counted || (!/^\d+$/.test(k) && !/^(pcs|pc|pieces?|ketul|biji)$/.test(k)));
     if (!ks.length) continue;
     // ("12 pcs", "12 inch": its number, said as a count of pieces or a size)
     const nums = ks.filter((k) => /^\d+$/.test(k));

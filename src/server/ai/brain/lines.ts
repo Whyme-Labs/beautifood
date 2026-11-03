@@ -251,7 +251,9 @@ export function linesOf(toks: string[], spots: Spot[], breaks: number[]): Line[]
         // after it: "teh tarik panas dua", "咖啡乌冰两杯", "nasi lemak x2"
         if (count === null) {
           let j = s.to;
-          while (j < to && (DESCRIBES.test(toks[j]) || /^(x|×|times)$/.test(toks[j]) || optionsSaid(toks[j], s.dish, true).add.length) && !numberAfter(toks, j)) j++;
+          // (and "打包", "tapau", "take away" said between: "鲜肉小笼包打包三笼")
+          const TAKEAWAY_W = (k: number) => (toks[k] === "打" && toks[k + 1] === "包") || (toks[k] === "包" && toks[k - 1] === "打") || /^(tapau|bungkus|takeaway)$/.test(toks[k]);
+          while (j < to && (DESCRIBES.test(toks[j]) || /^(x|×|times)$/.test(toks[j]) || TAKEAWAY_W(j) || optionsSaid(toks[j], s.dish, true).add.length) && !numberAfter(toks, j)) j++;
           const n = j < to ? numberAfter(toks, j) : null;
           // (not "mixed grill for 2": a number of its own name, or after "for")
           const ownNumber = normalize(s.dish.name).split(" ").some((w) => w === String(n?.n) || NUM[w] === n?.n);
