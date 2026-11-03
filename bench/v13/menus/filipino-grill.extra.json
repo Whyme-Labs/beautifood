@@ -1,0 +1,805 @@
+{
+  "soldOut": [
+    "Liempo"
+  ],
+  "menus": [
+    {
+      "name": "Merienda",
+      "dishes": [
+        "Turon",
+        "Banana Cue",
+        "Arroz Caldo",
+        "Pancit Palabok"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "15:00",
+          "to": "18:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Weekend grill",
+      "kind": "percent",
+      "value": 10,
+      "categories": [],
+      "dishes": [
+        "Pork Barbecue",
+        "Chicken Barbecue",
+        "Isaw"
+      ],
+      "windows": [
+        {
+          "days": [
+            5,
+            6,
+            0
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Pork Barbecue": [
+      {
+        "name": "Dip",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sweet glaze",
+            "price": 0
+          },
+          {
+            "name": "Spiced vinegar",
+            "price": 0
+          },
+          {
+            "name": "Garlic mayo",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Chicken Barbecue": [
+      {
+        "name": "Dip",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sweet glaze",
+            "price": 0
+          },
+          {
+            "name": "Spiced vinegar",
+            "price": 0
+          },
+          {
+            "name": "Garlic mayo",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Isaw": [
+      {
+        "name": "Dip",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Spiced vinegar",
+            "price": 0
+          },
+          {
+            "name": "Sweet glaze",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Chicken Inasal": [
+      {
+        "name": "Cut",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Paa (leg quarter)",
+            "price": 0
+          },
+          {
+            "name": "Pecho (breast)",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Plain rice",
+            "price": 0
+          },
+          {
+            "name": "Garlic rice",
+            "price": 100
+          },
+          {
+            "name": "Large plain rice",
+            "price": 150
+          },
+          {
+            "name": "Large garlic rice",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Liempo": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Plain rice",
+            "price": 0
+          },
+          {
+            "name": "Garlic rice",
+            "price": 100
+          },
+          {
+            "name": "Large plain rice",
+            "price": 150
+          },
+          {
+            "name": "Large garlic rice",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Pork Sisig": [
+      {
+        "name": "Egg on top",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Raw egg",
+            "price": 150
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Plain rice",
+            "price": 0
+          },
+          {
+            "name": "Garlic rice",
+            "price": 100
+          },
+          {
+            "name": "Large plain rice",
+            "price": 150
+          },
+          {
+            "name": "Large garlic rice",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Chicken Sisig": [
+      {
+        "name": "Egg on top",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Raw egg",
+            "price": 150
+          },
+          {
+            "name": "Fried egg",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Plain rice",
+            "price": 0
+          },
+          {
+            "name": "Garlic rice",
+            "price": 100
+          },
+          {
+            "name": "Large plain rice",
+            "price": 150
+          },
+          {
+            "name": "Large garlic rice",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Chicken Adobo": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Plain rice",
+            "price": 0
+          },
+          {
+            "name": "Garlic rice",
+            "price": 100
+          },
+          {
+            "name": "Large plain rice",
+            "price": 150
+          },
+          {
+            "name": "Large garlic rice",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Boiled egg",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Pork Adobo": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Plain rice",
+            "price": 0
+          },
+          {
+            "name": "Garlic rice",
+            "price": 100
+          },
+          {
+            "name": "Large plain rice",
+            "price": 150
+          },
+          {
+            "name": "Large garlic rice",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Boiled egg",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Kare-Kare": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Solo",
+            "price": 0
+          },
+          {
+            "name": "Sharing (2-3 pax)",
+            "price": 2200
+          }
+        ]
+      },
+      {
+        "name": "Bagoong",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Bagoong on the side",
+            "price": 0
+          },
+          {
+            "name": "No bagoong",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sinigang na Baboy": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Solo",
+            "price": 0
+          },
+          {
+            "name": "Sharing (2-3 pax)",
+            "price": 1800
+          }
+        ]
+      },
+      {
+        "name": "Sourness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Extra sour",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Sinigang na Hipon": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Solo",
+            "price": 0
+          },
+          {
+            "name": "Sharing (2-3 pax)",
+            "price": 2000
+          }
+        ]
+      },
+      {
+        "name": "Sourness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Extra sour",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Lumpia Shanghai": [
+      {
+        "name": "Pieces",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "8 pcs",
+            "price": 0
+          },
+          {
+            "name": "12 pcs",
+            "price": 550
+          }
+        ]
+      }
+    ],
+    "Pancit Canton": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Family (3-4 pax)",
+            "price": 1600
+          }
+        ]
+      },
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra prawns",
+            "price": 400
+          },
+          {
+            "name": "Hard-boiled egg",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Garlic Rice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Arroz Caldo": [
+      {
+        "name": "Add-on",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra egg",
+            "price": 150
+          },
+          {
+            "name": "Chicharrón",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Halo-Halo": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra leche flan",
+            "price": 300
+          },
+          {
+            "name": "Extra ube ice cream",
+            "price": 300
+          },
+          {
+            "name": "Grated cheese",
+            "price": 150
+          },
+          {
+            "name": "Extra pinipig",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Buko Juice": [
+      {
+        "name": "Serve",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "In a glass",
+            "price": 0
+          },
+          {
+            "name": "In the whole buko",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Add sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Calamansi Juice": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Iced",
+            "price": 0
+          },
+          {
+            "name": "Hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sweetener",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Cane sugar",
+            "price": 0
+          },
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Unsweetened",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "House Iced Tea": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Soft Drink": [
+      {
+        "name": "Flavour",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Cola",
+            "price": 0
+          },
+          {
+            "name": "Orange",
+            "price": 0
+          },
+          {
+            "name": "Lemon-lime",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "San Miguel Pale Pilsen": [
+      {
+        "name": "Bottles",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "1 bottle",
+            "price": 0
+          },
+          {
+            "name": "Bucket of 5",
+            "price": 5400
+          }
+        ]
+      }
+    ],
+    "Barbecue Platter": [
+      {
+        "name": "Extra skewers",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra pork skewer",
+            "price": 450
+          },
+          {
+            "name": "Extra chicken skewer",
+            "price": 450
+          },
+          {
+            "name": "Extra isaw",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Garlic rice",
+            "price": 0
+          },
+          {
+            "name": "Plain rice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Inasal Meal": [
+      {
+        "name": "Cut",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Paa (leg quarter)",
+            "price": 0
+          },
+          {
+            "name": "Pecho (breast)",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "House Iced Tea",
+            "price": 0
+          },
+          {
+            "name": "Calamansi Juice",
+            "price": 100
+          },
+          {
+            "name": "Buko Juice",
+            "price": 340
+          }
+        ]
+      },
+      {
+        "name": "Rice size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 8,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

@@ -1,0 +1,309 @@
+{
+  "Appam with Stew": {
+    "allergens": [
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Rice and coconut batter raised with yeast (no toddy); coconut milk is not milk; cashew nuts = tree nuts; chicken. Mild = 1. Breakfast only."
+  },
+  "Puttu and Kadala Curry": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Rice flour puttu (no gluten by default; wheat puttu is an option); mustard seeds = mustard (rule m); coconut is not a tree nut. Mildly spicy. Breakfast only."
+  },
+  "Idiyappam with Egg Curry": {
+    "allergens": [
+      "egg",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Rice flour string hoppers; boiled eggs; mustard seeds; coconut gravy. Spicy. Breakfast only."
+  },
+  "Rava Upma": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "mustard",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Semolina = wheat; ghee = milk; mustard seeds; cashew nuts; urad dal is not soy. Mild. Breakfast only."
+  },
+  "Kerala Fish Curry": {
+    "allergens": [
+      "fish",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Tenggiri; mustard seeds; fenugreek (not a regulated allergen); coconut oil. Very spicy."
+  },
+  "Fish Moilee": {
+    "allergens": [
+      "fish",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Tenggiri; mustard seeds; coconut milk (not milk). 'Mild' gravy with green chilli = 1. Sold out."
+  },
+  "Prawn Roast": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns = crustaceans; coconut slivers are not tree nuts. Spicy."
+  },
+  "Chicken Roast": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Chicken, onion, ginger, garlic, chilli, fennel, coconut oil. No listed allergen. Spicy."
+  },
+  "Beef Fry": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Beef, coconut slivers, pepper, fennel, garlic, coconut oil. No listed allergen. Pork-free branch, no alcohol: halal by ingredients. Spicy."
+  },
+  "Egg Roast": {
+    "allergens": [
+      "egg",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Eggs; mustard seeds. Mild."
+  },
+  "Vegetable Avial": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt = milk; coconut is not milk. Not spicy."
+  },
+  "Sambar": {
+    "allergens": [
+      "gluten",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Asafoetida stated with wheat flour = gluten; mustard seeds; toor dal is not soy. Mildly spicy."
+  },
+  "Rasam": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Mustard seeds; no asafoetida named. Peppery and mildly spicy = 1."
+  },
+  "Cabbage Thoran": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Mustard seeds; urad dal; coconut. Mild = 1."
+  },
+  "Papadam": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Urad dal flour, coconut oil. No listed allergen."
+  },
+  "Malabar Parotta": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Maida = wheat; egg; milk; ghee."
+  },
+  "Steamed Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "White or matta rice."
+  },
+  "Ghee Rice": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ghee = milk; cashew nuts. Fried onion. Not spicy."
+  },
+  "Thalassery Chicken Biryani": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ghee and yoghurt = milk; cashew nuts; chicken. Mild."
+  },
+  "Veg Sadya Meal": {
+    "allergens": [
+      "gluten",
+      "mustard",
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Union of components: sambar (wheat asafoetida, mustard), rasam and thoran (mustard), avial and pachadi (yoghurt), payasam (ghee, cashews). Stated mildly spicy."
+  },
+  "Non-Veg Meal": {
+    "allergens": [
+      "fish",
+      "gluten",
+      "mustard",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Union: fish fry (tenggiri), sambar (wheat asafoetida, mustard), thoran (mustard), moru buttermilk = milk; chicken curry. Stated spicy."
+  },
+  "Parotta Beef Fry Combo": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Union: Malabar Parotta (wheat, egg, milk, ghee), Beef Fry (spicy), Sulaimani Tea."
+  },
+  "Pazham Pori": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat and rice flour batter; coconut oil. Beef fry side and ice cream are add-ons, not counted; the ice cream is the add-on that is out."
+  },
+  "Payasam": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Ghee = milk; cashew nuts; coconut milk is not milk."
+  },
+  "Sulaimani Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Black tea, lemon, spices, sugar; stated no milk."
+  },
+  "Kerala Chai": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Fresh milk."
+  },
+  "Buttermilk": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Buttermilk = milk; green chilli, stated mild = 1."
+  },
+  "Fresh Lime": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Lime, sugar or salt."
+  },
+  "Mango Lassi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt = milk."
+  },
+  "Tender Coconut": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Coconut is not a tree nut."
+  }
+}

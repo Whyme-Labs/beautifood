@@ -1,0 +1,345 @@
+{
+  "Pork Xiaolongbao": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat skin; light soy sauce = soy + gluten; Shaoxing = sulphites + gluten, not halal; pork and pork aspic. Chinkiang vinegar dip (wheat bran) = gluten. Ginger is not spicy."
+  },
+  "Crab Roe Xiaolongbao": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sulphites",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "As Pork Xiaolongbao plus hairy crab roe = crustaceans."
+  },
+  "Truffle Xiaolongbao": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat skin, light soy sauce, pork. No wine named. Sold out."
+  },
+  "Chicken Xiaolongbao": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat skin, light soy sauce, Chinkiang vinegar dip. Chicken aspic stated no pork, no wine: halal by ingredients at a halal 'none' branch (v8 ruling 1)."
+  },
+  "Pan-fried Shengjian Bao": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat yeast dough, soy sauce, sesame seeds; pork."
+  },
+  "Wontons in Chilli Oil": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Egg-dough wheat wrappers; prawn = crustaceans; chilli oil with sesame; soy sauce; Chinkiang vinegar; pork. Described spicy."
+  },
+  "Vegetable & Mushroom Dumplings": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat skin, tofu = soy, sesame oil. Mung bean glass noodles have no gluten. Stated no onion or garlic. Shiitake is not a mollusc."
+  },
+  "Drunken Chicken": {
+    "allergens": [
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Shaoxing wine = sulphites + gluten, not halal. Goji berries no allergen. Not spicy."
+  },
+  "Smacked Cucumber": {
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Chinkiang black vinegar (wheat bran) = gluten (v7); sesame oil. 'A little chilli oil, mildly spicy' = 1. Garlic (allium)."
+  },
+  "Scallion Pancake": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour, vegetable oil (no lard), spring onion (allium)."
+  },
+  "Shanghai Smoked Fish": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Fish; dark soy = soy + gluten; Shaoxing = sulphites + gluten, not halal."
+  },
+  "Dan Dan Noodles": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame",
+      "peanuts"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Wheat noodles (no egg stated); sesame paste; roasted peanuts; soy sauce; pork. Ya cai is preserved mustard greens, not the mustard allergen (rule m). Spicy."
+  },
+  "Shanghai Fried Noodles": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "molluscs"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Wheat noodles; dark soy = soy + gluten; oyster sauce = molluscs + gluten (g); pork. Default protein pork."
+  },
+  "Egg Fried Rice": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg only; white pepper not spicy. Add-ons (prawns, chicken, pork floss) are not counted; crab meat is the add-on that is out."
+  },
+  "Steamed Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Braised Pork Belly": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "sulphites"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork; Shaoxing = sulphites + gluten; soy sauce."
+  },
+  "Hot and Sour Soup": {
+    "allergens": [
+      "soy",
+      "egg",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Tofu = soy; egg ribbons; Chinkiang vinegar = gluten; shredded pork. Mildly spicy = 1."
+  },
+  "Stir-fried Bok Choy": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Bok choy, garlic, salt, vegetable oil. No oyster sauce."
+  },
+  "Dumpling Set for Two": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sulphites",
+      "sesame",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Union of its default parts: Pork Xiaolongbao, Shengjian Bao, Wontons in Chilli Oil (spicy, prawn, egg), Smacked Cucumber, Chinese Tea."
+  },
+  "Spicy Beef Noodle Soup": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat noodles; doubanjiang = soy + gluten; chilli oil with sesame. Beef, no pork or alcohol: halal by ingredients at a 'none' branch. Spicy. Late night only."
+  },
+  "Pork Wonton Soup": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Egg-dough wheat wrappers; shrimp and dried shrimp = crustaceans; pork bone broth. Late night only."
+  },
+  "Century Egg Congee": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Century egg (duck egg); pork; rice congee has no gluten. Late night only."
+  },
+  "Red Bean Pancake": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flour and egg crepe; red bean paste. No lard stated."
+  },
+  "Black Sesame Tang Yuan": {
+    "allergens": [
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Glutinous rice (no gluten); black sesame; pork lard = not vegetarian, not halal. Ginger syrup not spicy."
+  },
+  "Soy Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy milk."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea, lemon, cane sugar."
+  },
+  "Sour Plum Drink": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Smoked plum, hawthorn, osmanthus, rock sugar."
+  },
+  "Chinese Tea (per person)": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea."
+  },
+  "Jasmine Tea Pot": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea."
+  },
+  "Longjing Tea Pot": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea."
+  },
+  "Pu'er Tea Pot": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea."
+  },
+  "Tsingtao Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol, not halal; vegan as v7/v8 lagers."
+  }
+}

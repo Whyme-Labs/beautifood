@@ -1,0 +1,635 @@
+{
+  "soldOut": [
+    "Fish Moilee"
+  ],
+  "menus": [
+    {
+      "name": "Breakfast",
+      "dishes": [
+        "Appam with Stew",
+        "Puttu and Kadala Curry",
+        "Idiyappam with Egg Curry",
+        "Rava Upma"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "07:00",
+          "to": "10:30"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Lunch leaf deal",
+      "kind": "amount",
+      "value": 200,
+      "categories": [
+        "BANANA LEAF MEALS"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "from": "12:00",
+          "to": "15:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Appam with Stew": [
+      {
+        "name": "Extra appam",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "1 extra appam",
+            "price": 200
+          },
+          {
+            "name": "2 extra appams",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Puttu and Kadala Curry": [
+      {
+        "name": "Puttu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Rice puttu",
+            "price": 0
+          },
+          {
+            "name": "Wheat puttu",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Idiyappam with Egg Curry": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Kerala hot",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kerala Fish Curry": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Kerala hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice & bread",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Steamed rice",
+            "price": 300
+          },
+          {
+            "name": "Malabar parotta (2 pieces)",
+            "price": 500
+          }
+        ]
+      }
+    ],
+    "Prawn Roast": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Kerala hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 1000
+          }
+        ]
+      },
+      {
+        "name": "Rice & bread",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Steamed rice",
+            "price": 300
+          },
+          {
+            "name": "Malabar parotta (2 pieces)",
+            "price": 500
+          }
+        ]
+      }
+    ],
+    "Chicken Roast": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Kerala hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice & bread",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Steamed rice",
+            "price": 300
+          },
+          {
+            "name": "Malabar parotta (2 pieces)",
+            "price": 500
+          }
+        ]
+      }
+    ],
+    "Beef Fry": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Kerala hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 800
+          }
+        ]
+      },
+      {
+        "name": "Rice & bread",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Steamed rice",
+            "price": 300
+          },
+          {
+            "name": "Malabar parotta (2 pieces)",
+            "price": 500
+          }
+        ]
+      }
+    ],
+    "Egg Roast": [
+      {
+        "name": "Extra egg",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Malabar Parotta": [
+      {
+        "name": "Pieces",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "2 pieces",
+            "price": 0
+          },
+          {
+            "name": "3 pieces",
+            "price": 250
+          },
+          {
+            "name": "4 pieces",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Side gravy",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Chicken curry gravy",
+            "price": 200
+          },
+          {
+            "name": "Kadala curry gravy",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Steamed Rice": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Matta rice",
+            "price": 50
+          }
+        ]
+      }
+    ],
+    "Thalassery Chicken Biryani": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Boiled egg",
+            "price": 200
+          },
+          {
+            "name": "Raita",
+            "price": 200
+          },
+          {
+            "name": "Papadam",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Veg Sadya Meal": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Matta rice",
+            "price": 0
+          },
+          {
+            "name": "White rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra payasam",
+            "price": 400
+          },
+          {
+            "name": "Papadam",
+            "price": 200
+          },
+          {
+            "name": "Extra avial",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Non-Veg Meal": [
+      {
+        "name": "Rice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Matta rice",
+            "price": 0
+          },
+          {
+            "name": "White rice",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra fish fry",
+            "price": 700
+          },
+          {
+            "name": "Extra chicken curry",
+            "price": 600
+          },
+          {
+            "name": "Beef fry (half portion)",
+            "price": 1200
+          },
+          {
+            "name": "Papadam",
+            "price": 200
+          },
+          {
+            "name": "Payasam (small cup)",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Parotta Beef Fry Combo": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sulaimani Tea",
+            "price": 0
+          },
+          {
+            "name": "Kerala Chai",
+            "price": 0
+          },
+          {
+            "name": "Fresh Lime",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Pazham Pori": [
+      {
+        "name": "Pieces",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "3 pieces",
+            "price": 0
+          },
+          {
+            "name": "5 pieces",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Side",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Beef fry (side)",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Sulaimani Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kerala Chai": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Fresh Lime": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sweet",
+            "price": 0
+          },
+          {
+            "name": "Salted",
+            "price": 0
+          },
+          {
+            "name": "Sweet and salted",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Mixer",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Water",
+            "price": 0
+          },
+          {
+            "name": "Soda",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Mango Lassi": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 6,
+    "taxInclusive": true,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "pork_free"
+  }
+}

@@ -1,0 +1,785 @@
+{
+  "soldOut": [
+    "Solok Lada"
+  ],
+  "menus": [
+    {
+      "name": "Pagi",
+      "dishes": [
+        "Nasi Dagang Ikan Tongkol",
+        "Nasi Dagang Ayam",
+        "Nasi Tumpang",
+        "Roti Titab"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "06:30",
+          "to": "11:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Bulan Kuih",
+      "kind": "amount",
+      "value": 50,
+      "categories": [
+        "KUIH"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "00:00",
+          "to": "23:59",
+          "start": "2026-11-01",
+          "end": "2026-11-30"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Nasi Kerabu Ayam Percik": [
+      {
+        "name": "Kuah",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Budu",
+            "price": 0
+          },
+          {
+            "name": "Sambal tumis",
+            "price": 0
+          },
+          {
+            "name": "Kuah percik",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz nasi",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Nasi lebih",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Tambah lauk",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Telur masin",
+            "price": 150
+          },
+          {
+            "name": "Telur dadar",
+            "price": 150
+          },
+          {
+            "name": "Ayam percik",
+            "price": 850
+          },
+          {
+            "name": "Ikan kembung goreng",
+            "price": 500
+          },
+          {
+            "name": "Keropok keping",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Nasi Kerabu Ikan Goreng": [
+      {
+        "name": "Kuah",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Budu",
+            "price": 0
+          },
+          {
+            "name": "Sambal tumis",
+            "price": 0
+          },
+          {
+            "name": "Kuah percik",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz nasi",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Nasi lebih",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Tambah lauk",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Telur masin",
+            "price": 150
+          },
+          {
+            "name": "Telur dadar",
+            "price": 150
+          },
+          {
+            "name": "Ayam percik",
+            "price": 850
+          },
+          {
+            "name": "Ikan kembung goreng",
+            "price": 500
+          },
+          {
+            "name": "Keropok keping",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Nasi Kerabu Daging Bakar": [
+      {
+        "name": "Kuah",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Budu",
+            "price": 0
+          },
+          {
+            "name": "Air asam",
+            "price": 0
+          },
+          {
+            "name": "Sambal tumis",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz nasi",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Nasi lebih",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Tambah lauk",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Telur masin",
+            "price": 150
+          },
+          {
+            "name": "Telur dadar",
+            "price": 150
+          },
+          {
+            "name": "Ayam percik",
+            "price": 850
+          },
+          {
+            "name": "Ikan kembung goreng",
+            "price": 500
+          },
+          {
+            "name": "Keropok keping",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Nasi Kerabu Sayur": [
+      {
+        "name": "Sambal",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Sambal tumis tanpa belacan",
+            "price": 0
+          },
+          {
+            "name": "Budu",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz nasi",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Nasi lebih",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Tambah lauk",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Tauhu goreng",
+            "price": 150
+          },
+          {
+            "name": "Tempe goreng",
+            "price": 150
+          },
+          {
+            "name": "Telur dadar",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Laksam": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Sambal",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Lebih sambal",
+            "price": 50
+          },
+          {
+            "name": "Tanpa sambal",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Tambah",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Telur rebus",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Nasi Dagang Ikan Tongkol": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Tambah lauk",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Telur masin",
+            "price": 150
+          },
+          {
+            "name": "Ikan tongkol lebih",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Nasi Dagang Ayam": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Tambah lauk",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Telur masin",
+            "price": 150
+          },
+          {
+            "name": "Ayam lebih",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Nasi Tumpang": [
+      {
+        "name": "Tambah",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Gulai udang lebih",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Roti Titab": [
+      {
+        "name": "Telur",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Separuh masak",
+            "price": 0
+          },
+          {
+            "name": "Telur goreng",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Ayam Percik": [
+      {
+        "name": "Bahagian",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Peha",
+            "price": 0
+          },
+          {
+            "name": "Dada",
+            "price": 0
+          },
+          {
+            "name": "Suku ayam",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Keropok Lekor": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa (5 batang)",
+            "price": 0
+          },
+          {
+            "name": "Besar (10 batang)",
+            "price": 450
+          }
+        ]
+      },
+      {
+        "name": "Sos",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Sos cili",
+            "price": 0
+          },
+          {
+            "name": "Budu",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Set Nasi Kerabu": [
+      {
+        "name": "Minuman",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Teh tarik panas",
+            "price": 0
+          },
+          {
+            "name": "Teh tarik ais",
+            "price": 0
+          },
+          {
+            "name": "Kopi O",
+            "price": 0
+          },
+          {
+            "name": "Air kelapa",
+            "price": 220
+          }
+        ]
+      },
+      {
+        "name": "Kuah",
+        "min": 1,
+        "max": 2,
+        "options": [
+          {
+            "name": "Budu",
+            "price": 0
+          },
+          {
+            "name": "Sambal tumis",
+            "price": 0
+          },
+          {
+            "name": "Kuah percik",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Gula",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Gula",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Kopi O": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Gula",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Kurang manis",
+            "price": 0
+          },
+          {
+            "name": "Tanpa gula",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Teh O Limau": [
+      {
+        "name": "Suhu",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Panas",
+            "price": 0
+          },
+          {
+            "name": "Ais",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Milo Ais": [
+      {
+        "name": "Tambah",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Milo dinosaur",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Air Sirap Selasih": [
+      {
+        "name": "Saiz",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Biasa",
+            "price": 0
+          },
+          {
+            "name": "Besar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Air Kelapa": [
+      {
+        "name": "Hidangan",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Dalam kelapa",
+            "price": 0
+          },
+          {
+            "name": "Dalam jag",
+            "price": 700
+          }
+        ]
+      },
+      {
+        "name": "Ais",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Tambah ais",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "certified",
+    "certifier": "JAKIM",
+    "certNo": "JAKIM.700-2/3/1 KTN 0387-04/2025",
+    "validUntil": "2027-06-30"
+  }
+}

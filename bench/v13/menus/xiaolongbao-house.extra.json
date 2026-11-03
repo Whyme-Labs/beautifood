@@ -1,0 +1,777 @@
+{
+  "soldOut": [
+    "Truffle Xiaolongbao"
+  ],
+  "menus": [
+    {
+      "name": "Late night",
+      "dishes": [
+        "Spicy Beef Noodle Soup",
+        "Pork Wonton Soup",
+        "Century Egg Congee"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "22:00",
+          "to": "02:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Dumpling hour",
+      "kind": "percent",
+      "value": 20,
+      "categories": [
+        "XIAOLONGBAO"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "15:00",
+          "to": "17:30"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Pork Xiaolongbao": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pieces",
+            "price": 0
+          },
+          {
+            "name": "10 pieces",
+            "price": 900
+          }
+        ]
+      },
+      {
+        "name": "Dips",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra black vinegar & ginger",
+            "price": 0
+          },
+          {
+            "name": "Chilli oil",
+            "price": 100
+          },
+          {
+            "name": "Garlic soy dip",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Crab Roe Xiaolongbao": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pieces",
+            "price": 0
+          },
+          {
+            "name": "10 pieces",
+            "price": 1400
+          }
+        ]
+      },
+      {
+        "name": "Dips",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra black vinegar & ginger",
+            "price": 0
+          },
+          {
+            "name": "Chilli oil",
+            "price": 100
+          },
+          {
+            "name": "Garlic soy dip",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Truffle Xiaolongbao": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pieces",
+            "price": 0
+          },
+          {
+            "name": "10 pieces",
+            "price": 1600
+          }
+        ]
+      },
+      {
+        "name": "Dips",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra black vinegar & ginger",
+            "price": 0
+          },
+          {
+            "name": "Chilli oil",
+            "price": 100
+          },
+          {
+            "name": "Garlic soy dip",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Chicken Xiaolongbao": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pieces",
+            "price": 0
+          },
+          {
+            "name": "10 pieces",
+            "price": 800
+          }
+        ]
+      },
+      {
+        "name": "Dips",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra black vinegar & ginger",
+            "price": 0
+          },
+          {
+            "name": "Chilli oil",
+            "price": 100
+          },
+          {
+            "name": "Garlic soy dip",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Pan-fried Shengjian Bao": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "4 pieces",
+            "price": 0
+          },
+          {
+            "name": "8 pieces",
+            "price": 1300
+          }
+        ]
+      },
+      {
+        "name": "Dips",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra black vinegar & ginger",
+            "price": 0
+          },
+          {
+            "name": "Chilli oil",
+            "price": 100
+          },
+          {
+            "name": "Garlic soy dip",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Vegetable & Mushroom Dumplings": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "6 pieces",
+            "price": 0
+          },
+          {
+            "name": "10 pieces",
+            "price": 700
+          }
+        ]
+      },
+      {
+        "name": "Dips",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra black vinegar & ginger",
+            "price": 0
+          },
+          {
+            "name": "Chilli oil",
+            "price": 100
+          },
+          {
+            "name": "Garlic soy dip",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Wontons in Chilli Oil": [
+      {
+        "name": "Chilli oil level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Portion",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "8 pieces",
+            "price": 0
+          },
+          {
+            "name": "12 pieces",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Crushed peanuts",
+            "price": 100
+          },
+          {
+            "name": "Egg noodles",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Dan Dan Noodles": [
+      {
+        "name": "Chilli oil level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra minced pork",
+            "price": 400
+          },
+          {
+            "name": "Onsen egg",
+            "price": 250
+          },
+          {
+            "name": "Extra noodles",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Spicy Beef Noodle Soup": [
+      {
+        "name": "Chilli oil level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra beef",
+            "price": 600
+          },
+          {
+            "name": "Braised egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Smacked Cucumber": [
+      {
+        "name": "Chilli oil level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Shanghai Fried Noodles": [
+      {
+        "name": "Protein",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Pork",
+            "price": 0
+          },
+          {
+            "name": "Chicken",
+            "price": 0
+          },
+          {
+            "name": "Prawns",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Extra bok choy",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Egg Fried Rice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Prawns",
+            "price": 500
+          },
+          {
+            "name": "Shredded chicken",
+            "price": 300
+          },
+          {
+            "name": "Pork floss",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Scallion Pancake": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Egg",
+            "price": 200
+          },
+          {
+            "name": "Sweet bean sauce",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Braised Pork Belly": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Braised egg",
+            "price": 200
+          },
+          {
+            "name": "Tofu knots",
+            "price": 300
+          },
+          {
+            "name": "Steamed rice",
+            "price": 250
+          }
+        ]
+      }
+    ],
+    "Hot and Sour Soup": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Bowl",
+            "price": 0
+          },
+          {
+            "name": "Pot for sharing",
+            "price": 1000
+          }
+        ]
+      }
+    ],
+    "Century Egg Congee": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Youtiao (fried dough stick)",
+            "price": 200
+          },
+          {
+            "name": "Extra century egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Black Sesame Tang Yuan": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "4 pieces",
+            "price": 0
+          },
+          {
+            "name": "6 pieces",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Syrup",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Ginger syrup",
+            "price": 0
+          },
+          {
+            "name": "Fermented rice wine (jiu niang)",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Red Bean Pancake": [
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Vanilla ice cream",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Soy Milk": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Iced Lemon Tea": [
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Chinese Tea (per person)": [
+      {
+        "name": "Tea",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Jasmine",
+            "price": 0
+          },
+          {
+            "name": "Pu'er",
+            "price": 0
+          },
+          {
+            "name": "Chrysanthemum",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Jasmine Tea Pot": [
+      {
+        "name": "Pot size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Pot for 2-3",
+            "price": 0
+          },
+          {
+            "name": "Large pot for 4-6",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Pu'er Tea Pot": [
+      {
+        "name": "Pot size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Pot for 2-3",
+            "price": 0
+          },
+          {
+            "name": "Large pot for 4-6",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Dumpling Set for Two": [
+      {
+        "name": "Drinks",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "2 Chinese Tea",
+            "price": 0
+          },
+          {
+            "name": "2 Soy Milk",
+            "price": 300
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 10,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}
