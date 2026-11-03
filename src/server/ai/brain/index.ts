@@ -378,8 +378,12 @@ export function dishesIn(ctx: AssistantContext, text: string): Item[] {
         .map((x) => (/[a-z]/i.test(x) ? { at: n.indexOf(` ${normalize(x.replace(/\(.*?\)/g, ""))} `), len: normalize(x.replace(/\(.*?\)/g, "")).length + 1, latin: true } : { at: t.indexOf(x.toLowerCase()), len: x.length, latin: false }))
         .filter((h) => h.at >= 0)
         .sort((a, b) => a.at - b.at);
-      return { i, at: hits[0]?.at ?? Infinity, len: hits[0]?.len ?? 0, latin: hits[0]?.latin ?? true };
+      // (a later mention on its own, priced right after: "Pineapple Bun with Butter (RM6.50), Pineapple Bun (RM4.50)")
+      const alone = /[a-z]/i.test(i.name) ? new RegExp(`(^|[^a-z])${i.name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\(?\\s*rm\\s?\\d`).exec(t) : null;
+      const aloneAt = alone ? normalize(text.slice(0, alone.index + alone[1].length)).length + 1 : -1;
+      return { i, at: hits[0]?.at ?? Infinity, len: hits[0]?.len ?? 0, latin: hits[0]?.latin ?? true, aloneAt };
     })
+    .map((x, _, all) => (x.aloneAt >= 0 && Number.isFinite(x.at) && all.some((y) => y !== x && y.latin === x.latin && Number.isFinite(y.at) && y.len > x.len && y.at <= x.at && y.at + y.len >= x.at + x.len) && !all.some((y) => y !== x && y.latin && Number.isFinite(y.at) && y.len > x.len && y.at <= x.aloneAt && y.at + y.len >= x.aloneAt + x.len) ? { ...x, at: x.aloneAt } : x))
     .filter((x, _, all) => Number.isFinite(x.at) && !all.some((y) => y !== x && y.latin === x.latin && Number.isFinite(y.at) && y.len > x.len && y.at <= x.at && y.at + y.len >= x.at + x.len))
     .sort((a, b) => a.at - b.at)
     .map((x) => x.i);
