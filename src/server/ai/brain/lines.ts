@@ -17,7 +17,7 @@ const NUM: Record<string, number> = {
 };
 const ZH_DIGIT = /^[一两二三四五六七八九十]$/;
 // a count's measure word, said between the count and the dish ("2 cups of", "两杯", "dua pinggan")
-const COUNTER = /^(个|份|位|壶|杯|碗|碟|盘|包|块|粒|只|支|串|根|罐|瓶|件|条|片|盒|客|套|樽|寸|吋|inch|inches|in|x|×|of|the|cups?|glass|glasses|plates?|bowls?|pieces?|pcs|orders?|servings?|portions?|sets?|packets?|packs?|bungkus|pinggan|mangkuk|cawan|gelas|biji|ketul|cucuk|sticks?|cans?|bottles?|tin|botol|ekor|keping)$/;
+const COUNTER = /^(个|份|位|壶|杯|碗|笼|碟|盘|包|块|粒|只|支|串|根|罐|瓶|件|条|片|盒|客|套|樽|寸|吋|inch|inches|in|x|×|of|the|cups?|glass|glasses|plates?|bowls?|pieces?|pcs|orders?|servings?|portions?|sets?|packets?|packs?|bungkus|pinggan|mangkuk|cawan|gelas|biji|ketul|cucuk|sticks?|cans?|bottles?|tin|botol|ekor|keping)$/;
 // words that join two lines of an order
 const JOIN = /^(and|dan|n|plus|then|also|lepas|和|跟|还有|再|以及|另外|&)$/;
 // words that describe the dish, not count it ("2 large iced", "两杯大杯", "dua besar")

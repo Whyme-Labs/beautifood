@@ -355,6 +355,10 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     // a translated name (炒粿条) anywhere in the question
     for (const tr of Object.values(dish.translations ?? {}))
       if (tr?.name && tr.name.length > 1 && raw.includes(tr.name)) return void found.push({ dish, at: raw.indexOf(tr.name) / 100, covered: [], score: 2, zh: tr.name });
+    // (one of a name of two, "白饭" of 白饭／红米饭)
+    for (const tr of Object.values(dish.translations ?? {}))
+      for (const alt of /[／/]/.test(tr?.name ?? "") ? tr!.name!.split(/\s*[／/]\s*/) : [])
+        if (alt.length > 1 && raw.includes(alt) && !items.some((o) => o !== dish && Object.values(o.translations ?? {}).some((x) => x?.name?.includes(alt)))) return void found.push({ dish, at: raw.indexOf(alt) / 100, covered: [], score: 2, zh: alt });
     // (a name of one character, after its counter and alone: "一杯茶" of the 茶)
     for (const tr of Object.values(dish.translations ?? {})) {
       const one = tr?.name?.length === 1 ? raw.match(new RegExp(`[杯壶碗份个]${tr.name}(?![\u4e00-\u9fff])|[杯壶碗份个]${tr.name}(?=[和跟与，、。？！])`)) : null;
@@ -433,6 +437,21 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
         const starts = items.map((o) => Object.values(o.translations ?? {}).map((x) => x?.name ?? "").find((z) => z.startsWith(head))).filter((z): z is string => !!z);
         if (starts.filter((z) => z.length <= zh.length).length === 1) return void found.push({ dish, at: at / 100, covered: [], score: 1.6, zh: head });
         break;
+      }
+    }
+    // (part of its Chinese name after a count, "三串烤猪肉" of 菲式烤猪肉串, "一份葱饼" of 葱油饼, "三份荤蕉叶饭" of
+    // 荤食蕉叶餐: in order, first and last kept or a run of it, and no other dish's name holds it)
+    if (HAN_RE.test(raw)) {
+      const zhs = (d: Dish) => Object.values(d.translations ?? {}).map((x) => (x?.name ?? "").replace(/[（(].*?[)）]/g, "")).filter((z) => z.length >= 3);
+      const holds = (z: string, s: string) => { const a = z.replace(/餐$/, "饭"); const b = s.replace(/餐$/, "饭"); if (a.includes(b)) return true; let k = 0; for (const ch of a) if (ch === b[k]) k++; return k === b.length && a[0] === b[0] && a[a.length - 1] === b[b.length - 1]; };
+      for (const m of raw.matchAll(/(?:[一二两三四五六七八九十\d]+\s*[个份杯碗碟盘串笼支只片块包瓶罐位]|(?:再)?来(?![一二两三四五六七八九十\d])|要(?![一二两三四五六七八九十\d]))([\u4e00-\u9fff]{2,5})/g)) {
+        const run = m[1].replace(/[，、。？！和跟与同加再要的]+.*$/, "");
+        // ("两笼鲜肉的": a basket is of 小笼包)
+        const kind = (o: Dish) => !/^\S*笼/.test(m[0]) || zhs(o).some((z) => z.includes("笼"));
+        for (let len = run.length; len >= 2; len--) {
+          const s_ = run.slice(0, len);
+          if (kind(dish) && zhs(dish).some((z) => z !== s_ && holds(z, s_)) && items.filter((o) => kind(o) && zhs(o).some((z) => holds(z, s_))).length === 1 && !items.some((o) => Object.values(o.translations ?? {}).some((x) => x?.name === s_))) return void found.push({ dish, at: (m.index ?? 0) / 100, covered: [], score: 1.5, zh: s_ });
+        }
       }
     }
     // what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice), also when the menu's own
@@ -1222,6 +1241,8 @@ export function read(items: Dish[], asked: string): Reading {
   const restText = mentions.reduce((r, m) => (m.zh ? ` ${r} `.split(` ${[...m.zh].join(" ")} `).join(" ").trim() : r), rest.join(" "));
   let restRaw = raw;
   for (const m of mentions) for (const tr of Object.values(m.dish.translations ?? {})) if (tr?.name) restRaw = restRaw.split(tr.name).join(" ");
+  // (and the part of it said: "咖喱鱼一份" of 喀拉拉红咖喱鱼 says nothing of fish)
+  for (const m of mentions) if (m.zh && m.zh.length >= 2) restRaw = restRaw.split(m.zh).join(" ");
 
   // English is read from the tokens left after the dish names ("Hokkaido Milk Tea" asks nothing
   // about milk); only the CJK text, with translated names taken out, is read from the raw string

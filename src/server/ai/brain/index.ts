@@ -1079,6 +1079,9 @@ const TERM_NEG = /^(no|not|non|without|tanpa|tak|takde|tiada|x|tidak|bukan|janga
 
 // ---- answering ----
 
+/** A dish's Chinese names: its own translation, else what it is usually called. */
+const zhNames = (i: MenuItem) => { const o = Object.values(i.translations ?? {}).map((x) => (x?.name ?? "").replace(/[（(].*?[)）]/g, "")).filter(Boolean); return o.length ? o : (zhNamesOf(i.name)?.names ?? []).filter((z) => z.length >= 2); };
+
 export function answerGuest(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale = "en", taste?: TasteHint | null): BrainReply {
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
   const earlier = history.slice(0, history.map((h) => h.content).lastIndexOf(question));
@@ -1115,6 +1118,18 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
       const kin = ctx.items.filter((i) => normalize(i.name).split(" ").some((x) => sameWord(x, word)));
       const ordered = state.order.filter((o) => { const ws = normalize(o.item.name).split(" "); return sameWord(ws[ws.length - 1], word); });
       return kin.length >= 2 && ordered.length === 1 && normalize(ordered[0].item.name) !== word && !mentionedAllergens(word).length ? `${the} ${ordered[0].item.name}${next}` : m;
+    });
+  // ("两份素的" of the two banana leaf meals just shown, "四片的" of the parotta, "两份麦粉的" of the puttu): "X的" in an
+  // order is the one dish just shown whose name holds X, or else the one with X as its option
+  if (/[㐀-鿿]/.test(asked) && state.shown.length && state.shown.length <= 4)
+    asked = asked.replace(/((?:[一二两三四五六七八九十\d]+\s*[份个杯碗碟盘串笼支只块])?)([一-鿿]{1,4}?)的(?=[，,。、\s]|$)/g, (m, count: string, x: string) => {
+      if (!count && !/要|来|多少钱|几多钱|几钱|多少/.test(asked)) return m;
+      if (ctx.items.some((i) => zhNames(i).some((z) => z.includes(`${x}的`)))) return m;
+      const byName = state.shown.filter((d) => zhNames(d).some((z) => z.includes(x)));
+      if (byName.length === 1) return `${count}${zhNames(byName[0])[0]}`;
+      if (byName.length) return m;
+      const byOption = state.shown.filter((d) => optionsSaid(x, d, true).add.length > 0);
+      return byOption.length === 1 ? `${count || "一份"}${zhNames(byOption[0])[0]}${x}` : m;
     });
   const u = understand(ctx.items as Dish[], asked);
   return { ...respond(ctx, u, state, locale, taste ?? undefined), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
