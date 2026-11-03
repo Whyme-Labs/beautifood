@@ -1539,3 +1539,28 @@ performance, and the next held-out read needs a fresh set. Baseline as dev: 363/
   their usual Chinese names in an answer, a dish named inside a longer one and again with its price, sizes
   weighed not listed, per-one add-ons, "brased duk", and one of two sets changed. The one left asks for a
   Malay yes ("Ada lemak babi tak?") that the English answer can't give.
+
+## v13 held-out set: pre-registration (2026-11-03, before any v13 file exists)
+
+- **What is measured.** The deployed brain at `d6c8bbd` (rules; the reader off), scored once on v13's
+  `test` split, with the claim checker unchanged. Nothing in the engine (`src/`) changes between this
+  entry and that scoring. v13's failures will not be read case by case.
+- **Why.** Dev is 96.2% after the v12 dev passes (v12 itself 479/480). The last held-out reads, each
+  scored once by the brain of its day: v10 67.6%, v11 71.1%, v12 75.6% (bill/modifier 69.3%, 2 unsafe).
+- **What the numbers would mean (written before scoring):**
+  - unsafe 0 on the whole set (a hard requirement);
+  - headline ≥ 85% and cases tagged bill or modifier ≥ 80%: most of the dev gain carries over;
+  - headline near v12's 75–78%: the v12 dev work was fitted to v12, not general.
+- **How v13 is written.** As v12: 4 new menus by 2 new authors (z3, z4) who never see the engine, its
+  code, any earlier case file or any result, briefed with v12's brief unchanged except for the set name,
+  paths, the read list (adding `bench/v12/REVIEW-z1z2.md`) and their menus; then a third, blind reviewer
+  checks every case and gold entry. No coverage was added to the brief.
+- **Menus and branch settings (chosen for distance from v1–v12, and for settings used less):**
+  - z3 `xiaolongbao-house`: halal none; 10% service, 6% tax, cash rounding 5; a Late night timed menu
+    across midnight; a weekday-afternoon percent deal on dumplings; one dish sold out.
+  - z3 `kerala-kitchen`: halal pork_free; no service, 6% tax inclusive; a Breakfast timed menu; an
+    amount deal on thalis on some weekdays; one dish sold out.
+  - z4 `kelantan-nasi-kerabu`: halal certified with a valid certificate; no service, 6% tax, cash
+    rounding 5; a Pagi (morning) timed menu; a dated promotion on kuih; one dish sold out.
+  - z4 `filipino-grill`: halal none; 10% service, 8% tax; a Merienda timed menu; a weekend percent
+    deal on grilled skewers; one dish sold out.
