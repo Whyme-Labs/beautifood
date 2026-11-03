@@ -549,6 +549,7 @@ const en = {
     ofThoseNoneWithout: "All of those have {what}.",
     onlyLess: "{dish} can't be made {asked}, but it can be {less}: {option}{price}.",
     addOnNotVegetarian: "You can add {option}, but it isn't vegetarian, so {dish} with it is not vegetarian any more.",
+    notThatSize: "{dish}: only {sizes}, not {asked}.",
     oneFreeOtherExtra: "{dish} comes with one: take {first}, and add the other as {extra} for {more} more ({price} in all).",
     ofThose: "Of those, here's what's {filters}:",
     notHalal: "{dish} is not halal: it has {what}.",

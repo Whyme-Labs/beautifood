@@ -1485,6 +1485,23 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     return { ...reply("dish_allergen", t(without_ ? "assistantReply.ofThoseNoneWithout" : "assistantReply.ofThoseNoneWith", { what }), []), safetyNote: allyNote(locale) };
   }
   const focus = mentioned.length ? mentioned : twoNth.length >= 2 ? twoNth.map((p) => p.item) : nth ? [nth] : pickedBack ? [pickedBack] : allBack.length ? allBack : u.refersBack && state.focus && !choiceLines.length ? [state.focus] : [];
+  // ("xlb can do 8 pcs one ah?" of xiaolongbao in 6 or 10): the pieces it comes in, not those
+  {
+    const pcs_ = nt0.match(/\b(\d{1,2})\s*(pcs|pc|pieces?|biji|ketul|keping)\b/) ?? u.text.match(/(?<![第\d一二三四五六七八九十])([\d三四五六七八九十]+)\s*(个|粒|件)(?!都)/);
+    // (or of a kind they all end in: "xlb" of the xiaolongbao)
+    const kindToks_ = nt0.replace(/\bxlbs?\b/g, "xiaolongbao").split(" ");
+    const kind_ = live.filter((i) => { const ws = normalize(i.name).split(" "); return kindToks_.some((w) => w.length > 3 && sameWord(ws[ws.length - 1], w)); });
+    const pool_ = mentioned.length ? mentioned : focus.length ? focus : kind_.length >= 2 ? kind_ : [];
+    if (pcs_ && pool_.length >= 1 && pool_.length <= 4 && (/[?？]|\b(can|boleh|got|ada|ah|or not)\b/.test(u.text) || /吗|可以|有没有/.test(u.text))) {
+      const n_ = Number(pcs_[1]) || ({ 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 } as Record<string, number>)[pcs_[1]] || 0;
+      const sizes_ = (d: Item) => (d.modifiers ?? []).find((g) => (g.min ?? 0) >= 1 && g.options.length >= 2 && g.options.every((o) => /^\s*\d+\s*(pcs|pc|pieces?|biji|ketul|keping)\b/i.test(o.name)));
+      const all_ = pool_.map((d) => ({ d, g: sizes_(d) })).filter((x) => x.g);
+      if (n_ && all_.length === pool_.length && all_.every((x) => !x.g!.options.some((o) => parseInt(o.name, 10) === n_))) {
+        const sizesText = list([...new Set(all_.flatMap((x) => x.g!.options.map((o) => optionLabel(o))))]);
+        return reply("dish_info", t("assistantReply.notThatSize", { dish: list(pool_.map(name)), sizes: sizesText, asked: en ? `${n_} pieces` : `${n_}个` }), pool_);
+      }
+    }
+  }
 
   // ("prawn mee got 'no pork' option, so if I choose that it becomes halal right?"): a choice doesn't make it halal
   if ((/\bhalal\b/.test(nt0) || /清真/.test(u.text)) && (/\b(no pork|without pork|tanpa babi|tak nak babi)\b/.test(nt0) || /不要猪|走猪|无猪/.test(u.text)) && halalAt !== "certified" && halalAt !== "muslim_friendly" && halalAt !== "pork_free")

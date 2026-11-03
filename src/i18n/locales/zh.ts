@@ -547,6 +547,7 @@ const zh = {
     ofThoseNoneWithout: "这些都含有{what}。",
     onlyLess: "{dish}不能{asked}，可以{less}：{option}{price}。",
     addOnNotVegetarian: "可以加{option}，但它不是素的，{dish}加了就不是素食了。",
+    notThatSize: "{dish}只有{sizes}，没有{asked}。",
     oneFreeOtherExtra: "{dish}只配一种：选{first}，另一种加{extra}，多 {more}（一共 {price}）。",
     ofThose: "其中{filters}的有：",
     notHalal: "{dish}不是清真：含有{what}。",
