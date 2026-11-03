@@ -1919,6 +1919,10 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const risky = cue_ ? optionsSaid(u.text, d, true).add.filter((o) => ownWords(o).length).map((o) => ({ o, has: optionAllergens(o, d, ctx.items).filter((a) => u.stated.includes(a)) })).filter((x) => x.has.length) : [];
     // (the dish fine on its own: order it without the add-on)
     const swapped_ = /\b(instead|change|swap|switch|tukar|ganti|replace)\b/.test(nt1) || /换/.test(u.text);
+    // ("shellfish allergy - the kailan can make garlic only instead?"): a free choice that is a plainer way of it
+    const plainer = (/\b(can|could|boleh)\b/.test(nt1) || /可以|能不能/.test(u.text)) && !/\b(how much|berapa|total|price)\b/.test(nt1) && !/多少|几钱/.test(u.text) ? optionsSaid(u.text, d, true).add.filter((o) => !o.price && /\b(only|plain|kosong)\b/i.test(o.name) && !/^(no|without|tanpa|less)\b/i.test(o.name)) : [];
+    const has_ = d.allergens.filter((a) => u.stated.includes(a as Allergen));
+    if (plainer.length && has_.length) return { ...reply("dish_allergen", t("assistantReply.choiceMakesIt", { dish: name(d), list: list(has_.map(allergen)), option: optionLabel(plainer[0]).toLowerCase(), price: money(d.price) }), []), safetyNote: allyNote(locale) };
     const withoutR = risky.length && !swapped_ && risky.every((x) => !x.has.some((a) => d.allergens.includes(a))) && allowed(d, { ...c, maxSpice: null, minSpice: null, budget: null }) ? `${sp}${risky.map((x) => t("assistantReply.withoutAddOn", { dish: name(d), option: optionLabel(x.o), list: list(x.has.map(allergen)) })).join(sp)}` : "";
     if (risky.length) return { ...reply("dish_info", `${risky.map((x) => t("assistantReply.addOnHasOn", { option: optionLabel(x.o), what: "", dish: name(d), list: list(x.has.map(allergen)) })).join(sp)}${t("assistantReply.notSuitable", { list: list([...new Set(risky.flatMap((x) => x.has))].map(allergen)) })}${withoutR}`, [d]), safetyNote: allyNote(locale) };
   }
