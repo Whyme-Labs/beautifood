@@ -791,7 +791,9 @@ export function pointedAt(text: string, shown: Item[]): { item: Item; count: num
   const both = (/\b(?<!of )(those two|these two|the two)\b|\b(both of (them|those)|kedua dua|dua dua tu|yang dua tu)\b/.test(t) || (/\bboth\b/.test(t) && !(bothOf && can.some((i) => normalize(i.name).split(" ")[0] === bothOf)))) || /这两|那两|两个都|两样/.test(text);
   // ("those two with seafood", "the cheaper egg"): of the ones its words name
   const SEAFOOD = /\b(seafood|shellfish|makanan laut)\b/.test(t) || /海鲜/.test(text);
-  const wordOf = t.match(/\b(?:with|got|ada|yang ada)\s+([a-z]+)\b/)?.[1] ?? t.match(/\b(?:cheaper|cheapest|pricier|murah|mahal)\s+([a-z]+)\b/)?.[1];
+  // (not what's asked of the one picked: "the cheaper one got peanuts?")
+  const asksOfOne = /\b(cheaper|cheapest|pricier|priciest|more expensive|first|second|last|murah|mahal)\s+(one|ones|tu|itu)\s+(got|ada|has|have|contain|contains)\b/.test(t);
+  const wordOf = (asksOfOne ? undefined : t.match(/\b(?:with|got|ada|yang ada)\s+([a-z]+)\b/)?.[1]) ?? t.match(/\b(?:cheaper|cheapest|pricier|murah|mahal)\s+([a-z]+)\b/)?.[1];
   // (when every one of them has some, as nasi lemak's ikan bilis and belacan: the ones with more)
   const sea = (i: Item) => i.allergens.filter((a) => a === "crustaceans" || a === "molluscs" || a === "fish");
   const withSea = can.filter((i) => sea(i).length > 0);
@@ -811,7 +813,9 @@ export function pointedAt(text: string, shown: Item[]): { item: Item; count: num
   }
   if (!out.length && can.length >= 2) {
     const byPrice = [...pool].sort((a, b) => a.price - b.price);
-    if (/\b(the )?(cheaper|cheapest|lower priced|less expensive|yang murah|lebih murah|paling murah)( one)?\b/.test(t) || /便宜的|便宜那|最便宜/.test(text)) push(byPrice[0], 0);
+    // ("the cheaper ones got milk?": those at the lower price, two at least)
+    if (/\b(cheaper|cheapest) ones\b/.test(t)) for (const i of byPrice.filter((x, k) => k < 2 || x.price === byPrice[0].price)) push(i, 0);
+    else if (/\b(the )?(cheaper|cheapest|lower priced|less expensive|yang murah|lebih murah|paling murah)( one)?\b/.test(t) || /便宜的|便宜那|最便宜/.test(text)) push(byPrice[0], 0);
     else if (/\b(the )?(pricier|priciest|more expensive|dearer|yang mahal|lebih mahal)( one)?\b/.test(t) || /贵的|贵那|最贵/.test(text)) push(byPrice[byPrice.length - 1], 0);
   }
   // "2 specials", "two of the rendang": the one just shown its word names, that many
@@ -1013,7 +1017,8 @@ function search(question: string, live: Item[], knownWord: (w: string) => boolea
     const hits = kind.length ? live.filter((i) => kind.some((w) => hasTerm(i, w))) : [];
     return { hits: hits.sort((a, b) => base(b) - base(a)), missing: hits.length ? null : thing };
   }
-  const toks = normalize(question).split(" ").filter(Boolean);
+  // ("got pork or not ah?": the asking, not the thing)
+  const toks = normalize(question).replace(/\b(or not|or no|ke tak|ke tidak|atau tidak)\b/g, " ").split(" ").filter(Boolean);
   const content = toks.filter((w) => !NOT_SEARCH.has(w) && !/^\d/.test(w) && w.length > 1);
   if (!content.length || content.length > 4) return null;
   // a search is a short question or one that asks for something by name ("do you have", "got", "ada")
@@ -1364,11 +1369,24 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       // ("is the curry one halal?", "那个豆的有麸质吗？" too)
       : !mentioned.length && !nth && aboutContents && state.shown.length >= 2 && pointedAt(u.text, state.shown).length === 1
         ? pointedAt(u.text, state.shown)[0].item
-        : undefined;
+        // ("noodles got what?" … "this one got pork or not ah?": the one the last answer led with)
+        : !mentioned.length && !nth && aboutContents && state.shown.length >= 2 && state.shown.length <= 3 && /\b(this one|this|yang ni|yang ini)\b/.test(nt0) && !/\b(these|those|them|both|either)\b/.test(nt0)
+          ? state.shown[0]
+          : undefined;
   // "do either of them have peanuts?", "这两个有没有虾？": each of the dishes just shown
-  const allBack = !mentioned.length && !nth && !pickedBack && state.shown.length >= 2 && aboutContents && (/\b(either|both|them|those|these|any of)\b/.test(nt0) || /它们|这些|那些|两个|两道|都/.test(u.text)) ? state.shown.slice(0, 4) : [];
+  // ("the cheaper ones got milk?": the ones pointed at)
+  const pointedSome = !mentioned.length && !nth && !pickedBack && state.shown.length >= 2 && aboutContents && /\bones\b/.test(nt0) ? pointedAt(u.text, state.shown).map((p) => p.item) : [];
+  const allBack = pointedSome.length >= 2 ? pointedSome : !mentioned.length && !nth && !pickedBack && state.shown.length >= 2 && aboutContents && (/\b(either|both|them|those|these|any of)\b/.test(nt0) || /它们|这些|那些|两个|两道|都/.test(u.text)) ? state.shown.slice(0, 4) : [];
   // ("第二个同第三个有咩分别？", "difference between the first and the last?"): the two pointed at, weighed
   const twoNth = !mentioned.length && state.shown.length >= 2 && (/\b(difference|differences|different|compare|vs|versus|beza|bandingkan)\b/.test(normalize(u.text)) || /分别|区别|比较|差别|唔同|不同|差在/.test(u.text)) ? pointedAt(u.text, state.shown) : [];
+  // ("cheap drinks under RM3?" … "those with milk, which?"): of those just shown, the ones that have it (or haven't, when avoided)
+  if (allBack.length >= 2 && u.allergens.length && (/\b(which|which ones|mana|yang mana)\b/.test(nt0) || /哪些|哪个|哪几/.test(u.text))) {
+    const without_ = u.allergens.every((a) => avoid.includes(a));
+    const sel = state.shown.filter((i) => u.allergens.some((a) => i.allergens.includes(a)) !== without_);
+    const what = list(u.allergens.map((a) => (en ? allergen(a).toLowerCase() : allergen(a))));
+    if (sel.length) return { ...reply("dish_allergen", t(without_ ? "assistantReply.ofThoseWithout" : "assistantReply.ofThoseWith", { what, list: list(sel.map(line)) }), sel), safetyNote: allyNote(locale) };
+    return { ...reply("dish_allergen", t(without_ ? "assistantReply.ofThoseNoneWithout" : "assistantReply.ofThoseNoneWith", { what }), []), safetyNote: allyNote(locale) };
+  }
   const focus = mentioned.length ? mentioned : twoNth.length >= 2 ? twoNth.map((p) => p.item) : nth ? [nth] : pickedBack ? [pickedBack] : allBack.length ? allBack : u.refersBack && state.focus && !choiceLines.length ? [state.focus] : [];
 
   // ("prawn mee got 'no pork' option, so if I choose that it becomes halal right?"): a choice doesn't make it halal

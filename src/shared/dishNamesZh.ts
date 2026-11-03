@@ -121,6 +121,7 @@ export const DISH_NAMES_ZH: Record<string, string[]> = {
   "iced barley": ["冰薏米水", "薏米水"],
   "barley lime": ["薏米酸柑"],
   "lime juice": ["酸柑汁", "酸柑水", "桔仔水", "青柠汁", "桔子水"],
+  "halo halo": ["哈啰哈啰", "哈罗哈罗", "哈露哈露", "菲式刨冰"],
   "fresh lime": ["青柠水", "酸柑水", "青柠汁", "柠檬水"],
   "soya bean milk": ["豆浆"],
   "soy milk": ["豆浆"],

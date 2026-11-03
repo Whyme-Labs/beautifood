@@ -1357,7 +1357,7 @@ export function read(items: Dish[], asked: string): Reading {
               : null;
   if (superlative === "spiciest" && spice.min === 2) spice.min = null;
 
-  const refersBack = /\b(those|these|them|that one|this one|the first|the second|the last one|it|yang tu|yang itu|yang ini|yang mana|out of)\b|^(does|is|has|did|can) (that|this)\b/.test(restText) || /那个|这个|那些|这些|它|哪个|哪一个/.test(restRaw);
+  const refersBack = /\b(those|these|them|that one|this one|the first|the second|the last one|it|yang tu|yang itu|yang ini|yang mana|out of)\b|^(does|is|has|did|can) (that|this)\b/.test(restText) || /那个|这个|那些|这些|它|哪个|哪一个/.test(restRaw) || (/(?:可以|能|可不可以)吃(?:吗|不)|吃得(?:吗|了吗)/.test(restRaw) && !mentions.length);
 
   const ORD: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, fourth: 3, "4th": 3, last: -1, pertama: 0, kedua: 1, ketiga: 2, keempat: 3, terakhir: -1 };
   const ordWord = restText.match(/\b(?:the|that|this|yang|yg)\s+(first|1st|second|2nd|third|3rd|fourth|4th|last|pertama|kedua|ketiga|keempat|terakhir)\b/);
