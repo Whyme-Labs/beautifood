@@ -454,6 +454,22 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
         }
       }
     }
+    // (a kind the Chinese names of a few dishes end in, "蕉叶饭" of 素食蕉叶餐 and 荤食蕉叶餐: each of them, when none is named whole)
+    if (HAN_RE.test(raw)) {
+      const nz = (z: string) => z.replace(/[（(].*?[)）]/g, "").replace(/餐$/, "饭");
+      const zall = (d: Dish) => Object.values(d.translations ?? {}).map((x) => nz(x?.name ?? "")).filter((z) => z.length >= 4);
+      const r = raw.replace(/餐/g, "饭");
+      for (const z of zall(dish))
+        for (let cut = 1; z.length - cut >= 3; cut++) {
+          const end = z.slice(cut);
+          const at = r.indexOf(end);
+          // (a kind of meal, "…饭", "…面": not "养乐多也要大杯" of the one ordered)
+          if (at < 0 || !/[饭面粥汤]$/.test(end) || (at > 0 && /[\u4e00-\u9fff]/.test(r[at - 1]) && !/[个份杯碗碟盘的要来和与跟及还]/.test(r[at - 1]))) continue;
+          const kin = items.filter((o) => zall(o).some((y) => y.endsWith(end) && y !== end));
+          if (kin.length >= 2 && kin.length <= 4 && !items.some((o) => zall(o).some((y) => r.includes(y)))) return void found.push({ dish, at: at / 100, covered: [], score: 1.4, zh: end });
+          break;
+        }
+    }
     // what the dish is usually called (海南鸡饭 for Hainanese Chicken Rice), also when the menu's own
     // name is longer than what a guest says (三杯鸡 for its 三杯鸡饭, 千层面 for its 牛肉千层面)
     if (HAN_RE.test(raw)) {
@@ -560,6 +576,16 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
     const ofFamily = withWord.filter((o) => { const ws = normalize(o.name).split(" "); return ws.length === 2 && ws.some((x) => !same(toks[covered[0]], x) && (ix.df.get(x) ?? 0) >= 3); });
     const countedOnly = counted_ && ofFamily.length === 1 && ofFamily[0] === dish;
     if (!(all || countedOnly || ((coverage >= 0.6 || unique || adjacentNamed) && strong))) return;
+    // ("satu beef fry, parotta 3 keping": the dishes said each in its own clause, not the combo of them, unless one is asked for)
+    // (its own set word said apart, "i want 3 parotta, beef fry and a sulaimani. is the combo cheaper": the combo by that word)
+    const SET_W = /^(set|sets|combo|combos|pakej)$/;
+    const setAt = covered.filter((i) => SET_W.test(toks[i]));
+    const rest_ = covered.filter((i) => !SET_W.test(toks[i]));
+    if (/\b(set|combo|platter|package|pakej)\b/i.test(dish.name) && !/套餐|配套/.test(raw) && (setAt.length ? rest_.length > 0 && rest_.every((i) => !setAt.some((k) => clauseOf(k) === clauseOf(i))) : new Set(covered.map(clauseOf)).size >= 2)) {
+      const own = setAt[0] ?? toks.findIndex((t, i) => !skip.has(i) && /^(set|combo)$/.test(t) && normalize(dish.name).split(" ").includes(t));
+      if (own >= 0 && items.filter((d) => normalize(d.name).split(" ").includes(toks[own])).length === 1) found.push({ dish, at: own, covered: [own], score: 1 });
+      return;
+    }
     if (spread > name.length + 2) {
       // "tonkotsu vs shoyu chicken ramen": its own word names it; the "ramen" far off is the other's
       const own = covered.filter((i) => !common(i));
@@ -574,8 +600,6 @@ export function findDishes(items: Dish[], raw: string, toks: string[], skip = ne
       const w = own.reduce((sum, i) => sum + 1 / df(toks[i]), 0);
       return void found.push({ dish, at: Math.min(...own), covered: own, score: w / total + own.length * 0.01 });
     }
-    // ("satu beef fry, parotta 3 keping": the dishes said each in its own clause, not the combo of them, unless one is asked for)
-    if (SET_NAME.test(dish.name) && new Set(covered.map(clauseOf)).size >= 2 && !toks.some((t) => /^(set|sets|combo|combos|meal|meals|pakej)$/.test(t)) && !/套餐|配套/.test(raw)) return;
     found.push({ dish, at: Math.min(...covered), covered, score: (all ? 1 : coverage) + covered.length * 0.01 });
   });
   // ("1 ice watr": a two-word name with one word said and the other typed a letter off beside it)

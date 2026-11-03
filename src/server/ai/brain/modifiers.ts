@@ -37,7 +37,7 @@ const ALSO: Record<string, string[]> = {
 };
 // ...and in Chinese, as a guest writes it
 const ALSO_ZH: Record<string, RegExp> = {
-  youtiao: /油条|油炸鬼/, wheat: /麦粉|小麦|(?<!燕)麦(?!芽|片|当劳)/, ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻|冷的|冷饮/, sui: /水饺|水餃/, kow: /水饺|水餃/, pok: /豆卜|豆泡|豆腐泡/, uduk: /椰香饭|椰浆饭|椰饭/, fried: /荷包蛋|煎蛋|加蛋|加个蛋|加粒蛋/, petai: /臭豆/, char: /叉烧/, mushroom: /香菇|蘑菇|冬菇/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)|辣一点|更辣|加辣|大辣|多辣/, suam: /温/, condensed: /茶走|炼奶|练奶/, salted: /咸/, lemon: /柠檬|柠(?!檬)/, yuen: /鸳鸯/, yeung: /鸳鸯/, horlicks: /好立克/, coffee: /咖啡/, tea: /茶/, chrysanthemum: /菊花/, tieguanyin: /铁观音/, pu: /普洱/, erh: /普洱/,
+  youtiao: /油条|油炸鬼/, white: /白饭|白米/, matta: /红米/, wheat: /麦粉|小麦|(?<!燕)麦(?!芽|片|当劳)/, ais: /冰|凍|冻/, iced: /冰|凍|冻/, cold: /冰|凍|冻|冷的|冷饮/, sui: /水饺|水餃/, kow: /水饺|水餃/, pok: /豆卜|豆泡|豆腐泡/, uduk: /椰香饭|椰浆饭|椰饭/, fried: /荷包蛋|煎蛋|加蛋|加个蛋|加粒蛋/, petai: /臭豆/, char: /叉烧/, mushroom: /香菇|蘑菇|冬菇/, panas: /热(?!带|狗)/, hot: /热(?!带|狗)|辣一点|更辣|加辣|大辣|多辣/, suam: /温/, condensed: /茶走|炼奶|练奶/, salted: /咸/, lemon: /柠檬|柠(?!檬)/, yuen: /鸳鸯/, yeung: /鸳鸯/, horlicks: /好立克/, coffee: /咖啡/, tea: /茶/, chrysanthemum: /菊花/, tieguanyin: /铁观音/, pu: /普洱/, erh: /普洱/,
   besar: /大杯|大份|加大|大的|大碗|大包|大号|大碟|大盘/, large: /大杯|大份|加大|大的|大碗|大包|大号|大碟|大盘/,
   full: /整只|全只|一整只|整份|大份/, half: /半只|半份/,
   regular: /中碗|中份|(?<!其)中的|中杯|普通|正常份/, small: /小碗|小的|小份|小杯|小碟|小号|小包/, kecil: /小碗|小的|小份|小杯|小碟|小号|小包/,

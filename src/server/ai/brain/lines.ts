@@ -92,7 +92,8 @@ export function optionSpots(toks: string[], spots: Spot[], others: Dish[] = [], 
     while (k >= 0 && (COUNTER.test(toks[k]) || DESCRIBES.test(toks[k]))) k--;
     const counted = k >= 0 && !!numberBefore(toks, k) && (!cued || whole) && !onto;
     // ("10 BBQ wings": an option said just before its dish)
-    const nextHost = spots.find((y) => y !== spot && y.from === x.to && y.dish.modifiers?.length);
+    // (not across a comma: "3 parotta, beef fry" is two dishes)
+    const nextHost = spots.find((y) => y !== spot && y.from === x.to && !breaks.includes(x.to) && y.dish.modifiers?.length);
     if (nextHost && !whole && optionsSaid(phrase(words), nextHost.dish, true, true).add.length) {
       out.add(spot);
       continue;

@@ -205,7 +205,8 @@ export function reanchor<T extends { dishes: Dish[]; toks: string[]; spots: Spot
     const opts = (d: Dish) => optionsSaid(said, d, true).add.length;
     if (!opts(s.dish)) {
       // (not to a set unasked for: "the char siu rice and kopi" isn't the Char Siu Rice Set with its kopi)
-      const setSaid = /\b(set|sets|combo|meal)\b/.test(u.toks.join(" ")) || /套餐/.test(u.text);
+      // (said in its clause: "beef fry and a sulaimani. is the combo cheaper" asks of the combo apart)
+      const setSaid = /\b(set|sets|combo|meal)\b/.test(u.breaks.length > 1 ? clause.join(" ") : u.toks.join(" ")) || /套餐/.test(u.text);
       const better = alike.filter((d) => opts(d) > 0 && (sliceSaid ? /slice/i.test(d.name) : !/slice/i.test(d.name)) && (setSaid || !/\b(set|combo|meal)\b/i.test(d.name)));
       if (better.length === 1 || (better.length > 1 && better.every((d) => d.price === better[0].price))) return { ...s, dish: better[0] as Dish };
     }
