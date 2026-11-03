@@ -410,7 +410,27 @@ export function dishesIn(ctx: AssistantContext, text: string): Item[] {
 
 export function dialogueState(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[]): DialogueState {
   const s: DialogueState = { avoid: [], diet: [], maxSpice: null, noAlcohol: false, noCaffeine: false, noMeat: [], noWords: [], shown: [], focus: null, order: [], party: null, owners: {}, last: [], swapOut: null };
-  for (const h of history) {
+  // (each earlier turn read as the current one is: several changes one after another, and what it points at in words)
+  const queue: { role: "user" | "assistant"; content: string; split?: boolean }[] = [...history];
+  while (queue.length) {
+    let h = queue.shift()!;
+    if (h.role === "user" && !h.split) {
+      let said = h.content;
+      try {
+        const halves = swapHalvesOf(h.content);
+        const steps = editSteps(halves, s.order.length > 0);
+        if (steps && steps.length > 1) {
+          queue.unshift(...steps.map((x) => ({ role: "user" as const, content: x, split: true })));
+          continue;
+        }
+        said = rewriteTurn(ctx, halves, s);
+      } catch {
+        said = h.content;
+      }
+      h = { ...h, content: said };
+    } else if (h.role === "user" && h.split) {
+      try { h = { ...h, content: rewriteTurn(ctx, h.content, s) }; } catch { /* as said */ }
+    }
     // (what this turn added to the order, for "same again")
     const had = new Map(s.order.map((o) => [o, o.count]));
     try {
@@ -1108,26 +1128,12 @@ const TERM_NEG = /^(no|not|non|without|tanpa|tak|takde|tiada|x|tidak|bukan|janga
 /** A dish's Chinese names: its own translation, else what it is usually called. */
 const zhNames = (i: MenuItem) => { const o = Object.values(i.translations ?? {}).map((x) => (x?.name ?? "").replace(/[（(].*?[)）]/g, "")).filter(Boolean); return o.length ? o : (zhNamesOf(i.name)?.names ?? []).filter((z) => z.length >= 2); };
 
-export function answerGuest(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale = "en", taste?: TasteHint | null): BrainReply {
-  const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
-  const earlier = history.slice(0, history.map((h) => h.content).lastIndexOf(question));
-  const state = dialogueState(ctx, earlier);
-  // ("cancel one of the lassi, and make one of the tandoori a full chicken. how much now"): changes to the
-  // order one after another, each as its own turn, the question asked of the last
-  // ("cancel one of the beer lah, change to sour plum"): one of them swapped, said in two halves
-  const swapHalves = question.replace(/\b(?:cancel|remove|drop|buang|batal)\s+(one|1|satu)\s+(?:of\s+)?(?:the\s+)?([a-z][a-z ]*?)(?:\s+(?:lah|la|ah|tu))?\s*[,;]\s*(?:and\s+)?(?:change|swap|switch|tukar|replace|ganti)\s+(?:it\s+|that\s+)?(?:to|for|with|jadi|dengan)\s+/i, (_m, n: string, x: string) => `change ${n} of the ${x} to `);
-  const steps = editSteps(swapHalves, state.order.length > 0);
-  if (steps) {
-    const turns = [...earlier];
-    for (const s of steps.slice(0, -1)) {
-      const r = answerGuest(ctx, [...turns, { role: "user", content: s }], locale);
-      turns.push({ role: "user", content: s }, { role: "assistant", content: r.answer });
-    }
-    return answerGuest(ctx, [...turns, { role: "user", content: steps[steps.length - 1] }], locale, taste);
-  }
+/** A turn as the brain reads it, with what it points at put in words: "the naan" as the one ordered, "两份素的" as the dish
+ * shown, "the large one" as the one dish asked about. */
+function rewriteTurn(ctx: AssistantContext, question: string, state: DialogueState): string {
   // ("no need the egg, just the duck" with a Braised Egg ordered): a line taken off by one word of its name is that line,
   // not an egg allergy
-  let asked = swapHalves;
+  let asked = question;
   const offWord = !/\b(allerg\w*|alergi|alah|intolerant)\b|过敏/i.test(question) ? normalize(question).match(/\b(?:no need(?: the)?|don t need(?: the)?|remove(?: the)?|cancel(?: the)?|drop(?: the)?|take out(?: the)?|tak nak|tak payah|buang)\s+([a-z]{3,})\b/)?.[1] : undefined;
   if (offWord && state.order.length) {
     const has = state.order.filter((o) => normalize(o.item.name).split(" ").some((w) => w === offWord || w === offWord.replace(/s$/, "")));
@@ -1138,8 +1144,14 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
   }
   // ("make the naan 5" with Garlic Naan ordered): "the" + a word several dishes share is the one ordered
   if (state.order.length && !/[\u3400-\u9fff]/.test(asked))
-    asked = asked.replace(/\b(the|that|my|\d+ more|one more|another|more)\s+([a-z]{3,})\b(?!\s+(?:one|ones)\b)(\s+[a-z]+)?/gi, (m, the, w, next = "") => {
+    asked = asked.replace(/\b(the|that|my|\d+ more|one more|another|more|only (?:\d+|one|two|three)|just (?:\d+|one|two))\s+([a-z]{3,})\b(?!\s+(?:one|ones)\b)(\s+[a-z]+)?/gi, (m, the, w, next = "") => {
       const word = w.toLowerCase();
+      // ("only 1 beer" of the San Miguel Pale Pilsen, a lager): the one line of that kind ordered
+      const KIND: Record<string, RegExp> = { beer: /\b(beer|lager|pilsen|pilsner|ale|stout|ipa|bir)\b/i, bbq: /\b(barbecue|bbq)\b/i };
+      if (KIND[word] && !ctx.items.some((i) => normalize(i.name).split(" ").includes(word))) {
+        const ofKind = state.order.filter((o) => KIND[word].test(`${o.item.name} ${o.item.description ?? ""}`));
+        if (ofKind.length === 1) return `${the} ${ofKind[0].item.name}${next}`;
+      }
       // (only the kind's last word said alone: "the naan", not "the teh o ais", "the tom yam one")
       const nextWord = next.trim().toLowerCase();
       if (nextWord && ctx.items.some((i) => normalize(i.name).split(" ").includes(nextWord))) return m;
@@ -1185,6 +1197,30 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
       if (!inChoice && ws.some((w) => ctx.items.some((i) => normalize(i.name).split(" ").includes(w)))) return m;
       return ordering_ ? `1 ${only.name} ${ws.join(" ")}` : `the ${only.name} ${ws.join(" ")}`;
     });
+  return asked;
+}
+
+/** "cancel one of the beer lah, change to sour plum": one of them swapped, said in two halves. */
+const swapHalvesOf = (question: string) => question.replace(/\b(?:cancel|remove|drop|buang|batal)\s+(one|1|satu)\s+(?:of\s+)?(?:the\s+)?([a-z][a-z ]*?)(?:\s+(?:lah|la|ah|tu))?\s*[,;]\s*(?:and\s+)?(?:change|swap|switch|tukar|replace|ganti)\s+(?:it\s+|that\s+)?(?:to|for|with|jadi|dengan)\s+/i, (_m, n: string, x: string) => `change ${n} of the ${x} to `);
+
+export function answerGuest(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale = "en", taste?: TasteHint | null): BrainReply {
+  const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
+  const earlier = history.slice(0, history.map((h) => h.content).lastIndexOf(question));
+  const state = dialogueState(ctx, earlier);
+  // ("cancel one of the lassi, and make one of the tandoori a full chicken. how much now"): changes to the
+  // order one after another, each as its own turn, the question asked of the last
+  // ("cancel one of the beer lah, change to sour plum"): one of them swapped, said in two halves
+  const swapHalves = swapHalvesOf(question);
+  const steps = editSteps(swapHalves, state.order.length > 0);
+  if (steps) {
+    const turns = [...earlier];
+    for (const s of steps.slice(0, -1)) {
+      const r = answerGuest(ctx, [...turns, { role: "user", content: s }], locale);
+      turns.push({ role: "user", content: s }, { role: "assistant", content: r.answer });
+    }
+    return answerGuest(ctx, [...turns, { role: "user", content: steps[steps.length - 1] }], locale, taste);
+  }
+  const asked = rewriteTurn(ctx, swapHalves, state);
   const u = understand(ctx.items as Dish[], asked);
   return { ...respond(ctx, u, state, locale, taste ?? undefined), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
 }
@@ -1836,7 +1872,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (difference) intent = "compare";
   // "add another teh tarik", "make the rice banjir instead", "2 roti canai and a teh tarik": an order
   // being placed or changed, answered with the order as it stands and its total
-  const editing = REMOVE.test(nt1) || REMOVE.test(u.text) || SWAP.test(nt1) || SWAP.test(u.text);
+  // ("actually only 1 beer" of the two ordered: the count set)
+  const editing = REMOVE.test(nt1) || REMOVE.test(u.text) || SWAP.test(nt1) || SWAP.test(u.text) || (state.order.length > 0 && mentioned.some((i) => state.order.some((o) => o.item.id === i.id)) && (ONLY_N.test(onlyForm(u.text)) || ONLY_N.test(u.text)));
   const asksOfDish = u.asksContents || (u.allergens.length > 0 && !choicesOnly) || u.diet.length > 0;
   const placed = mentioned.length > 0 && (ordering || (!/[?？]/.test(u.text) && !QUESTION.test(nt1))) && [...countsOf(u.text, mentioned).values()].reduce((a, b) => a + b, 0) >= 2;
   // (not "what rice bowl can I get?", "add a drink and a dessert", "20 ayam then. what drink goes with it?":
