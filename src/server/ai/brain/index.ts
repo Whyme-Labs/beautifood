@@ -1428,7 +1428,7 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if (intent === "refine" && !state.shown.length) intent = "recommend";
   if (u.superlative && state.shown.length && u.refersBack && intent !== "compare" && !pickedBack) intent = "refine";
   // ("the ones without egg?", "the ones with paneer, which got no cashew?", "of those, which no gluten?"): the dishes just shown, filtered
-  const ofShown = mentioned.every((m) => state.shown.some((x) => x.id === m.id)) && !nth && state.shown.length >= 2 && (/\b(the ones|which ones|of those|of them|among (them|those)|out of (them|those))\b/.test(nt0) || /其中|那些|这些里/.test(u.text)) && (u.avoid.length > 0 || u.diet.length > 0 || u.noAlcohol || u.noMeat.length > 0);
+  const ofShown = (mentioned.every((m) => state.shown.some((x) => x.id === m.id)) || /\bthe ones with\b/.test(nt0)) && !nth && state.shown.length >= 2 && (/\b(the ones|which ones|of those|of them|among (them|those)|out of (them|those))\b/.test(nt0) || /其中|那些|这些里/.test(u.text)) && (u.avoid.length > 0 || u.diet.length > 0 || u.noAlcohol || u.noMeat.length > 0);
   if (ofShown) intent = "refine";
   // "can I book a table for 8 on Saturday?": a booking, for the staff, not a meal for eight
   const booking = /\b(book|booking|bookings|reserve|reserving|reservation|reservations|tempah|tempahan|reserved)\b/.test(normalize(u.text)) || /订位|预订|订桌|订座/.test(u.text);
@@ -1867,6 +1867,17 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       if (g) return reply("dish_info", t("assistantReply.oneOfGroup", { dish: name(h), group: g.name.toLowerCase(), list: list(g.options.map((o) => (o.price ? `${optionLabel(o)} (+${money(o.price)})` : optionLabel(o)))) }), [h]);
     }
   }
+  // ("that one come with rice?"): whether its line says so
+  const comesWith = nt1.match(/\b(?:come|comes|served|got|ada) with ([a-z]{3,})\b/)?.[1];
+  const cwHost = comesWith ? (mentioned.length === 1 ? mentioned[0] : !mentioned.length ? (nth ?? state.focus ?? undefined) : undefined) : undefined;
+  if (comesWith && cwHost && !state.order.length && /[?？]|\b(or not|tak|ke)\b/.test(`${u.text} ${nt1}`) && !(cwHost.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name).split(" ").some((w) => sameWord(w, comesWith))))) {
+    const has = normalize(`${cwHost.name} ${cwHost.description ?? ""}`).split(" ").some((w) => sameWord(w, comesWith));
+    return reply("dish_info", t(has ? "assistantReply.comesWithYes" : "assistantReply.comesWithNo", { dish: name(cwHost), what: comesWith, desc: desc(cwHost), price: money(cwHost.price) }), [cwHost]);
+  }
+  // ("can share 1 pot tea for 3 or must pay each ah?" of a tea charged per person): per head, and for them all
+  const perHead = [...mentioned, ...(state.focus ? [state.focus] : [])].find((i) => /\b(per person|per pax|per head|seorang)\b/i.test(i.description ?? ""));
+  const heads = u.party ?? Number(nt1.match(/\bfor (\d{1,2})\b/)?.[1] ?? 0);
+  if (perHead && heads >= 2 && /\b(share|sharing|kongsi|each|per person|seorang)\b/.test(nt1)) return reply("dish_info", t("assistantReply.perHeadPrice", { dish: name(perHead), price: money(perHead.price), n: heads, total: money(perHead.price * heads) }), [perHead]);
   // ("veg thali, can the naan be cheese naan?"): a choice asked of a set's part that isn't one of its choices
   const beAsked = nt1.match(/\b(?:can|could|boleh) (?:the|its|my) ([a-z]+) (?:be|jadi|tukar|change to|tukar jadi) ([a-z]+(?: [a-z]+){0,2}?)\s*$/);
   const beHost = beAsked ? mentioned.find((i) => (i.modifiers ?? []).some((g) => g.options.some((o) => normalize(o.name).split(" ").some((w) => sameWord(w, beAsked[1]))))) : undefined;
@@ -2872,6 +2883,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const ok_ = !notHalalWord(d) && (d.dietary.includes("halal") || d.dietary.includes("halal_friendly") || halalAt === "pork_free" || halalAt === "certified" || halalAt === "muslim_friendly");
     return { ...reply("dish_info", `${dietVerdict(d)}${sp}${t("assistantReply.priceIs", { dish: name(d), price: money(d.price) })}`, ok_ ? [d] : []), safetyNote: allyNote(locale) };
   }
+  // (a narrowing of what was just shown stays one, whatever the filters made of it)
+  if (ofShown && intent === "recommend") intent = "refine";
   switch (intent) {
     case "greeting":
     case "out_of_scope":
