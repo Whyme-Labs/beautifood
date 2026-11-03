@@ -1404,6 +1404,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   if ((intent === "dish_allergen" || intent === "dish_info") && !focus.length) intent = state.focus && u.refersBack ? intent : "recommend";
   if (intent === "refine" && !state.shown.length) intent = "recommend";
   if (u.superlative && state.shown.length && u.refersBack && intent !== "compare" && !pickedBack) intent = "refine";
+  // ("the ones without egg?", "the ones with paneer, which got no cashew?", "of those, which no gluten?"): the dishes just shown, filtered
+  const ofShown = mentioned.every((m) => state.shown.some((x) => x.id === m.id)) && !nth && state.shown.length >= 2 && (/\b(the ones|which ones|of those|of them|among (them|those)|out of (them|those))\b/.test(nt0) || /其中|那些|这些里/.test(u.text)) && (u.avoid.length > 0 || u.diet.length > 0 || u.noAlcohol || u.noMeat.length > 0);
+  if (ofShown) intent = "refine";
   // "can I book a table for 8 on Saturday?": a booking, for the staff, not a meal for eight
   const booking = /\b(book|booking|bookings|reserve|reserving|reservation|reservations|tempah|tempahan|reserved)\b/.test(normalize(u.text)) || /订位|预订|订桌|订座/.test(u.text);
   // ("Reservation for Sunday brunch, 6 pax at 11am" is a booking, whatever course it names)
@@ -3077,6 +3080,13 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     case "refine": {
       const spiced = bySpice(state.shown);
       let pool = byCourse(spiced.pool, u.courses);
+      if (ofShown) {
+        pool = pool.filter((i) => allowed(i, { ...c, maxSpice: null, minSpice: null }));
+        // ("the ones with fish", "the ones with paneer"): of those whose name or description has it
+        const word_ = nt0.match(/\b(?:with|got|ada|yang ada) ([a-z]{3,})\b/)?.[1];
+        const has_ = word_ ? pool.filter((i) => normalize(`${i.name} ${i.description ?? ""}`).split(" ").some((w) => sameWord(w, word_))) : [];
+        if (has_.length) pool = has_;
+      }
       if (!pool.length) return none();
       const s = u.superlative;
       if (s) {
