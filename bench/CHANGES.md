@@ -1574,3 +1574,33 @@ performance, and the next held-out read needs a fresh set. Baseline as dev: 363/
   didn't see v12's rulings; the reviewer did and checked every case against them.
 - No change in `src/` since `d6c8bbd`.
 - Fingerprints (`npx tsx bench/freeze.ts`): `v13 472 1e34451317af3fbc`, `v13 menus 12 b8e866e20b03908a`.
+
+## v13 held-out set: scored once (2026-11-03)
+
+The brain at `d6c8bbd` (no `src/` change since; run at `7aa6d22`), rules only, gold data, the claim
+checker unchanged (`bench/results/brain-v13-test-gold-7aa6d22.json`). Failures were not read case by
+case; only these aggregates were taken.
+
+| | v13 (this run) | v12 test (`65ca5aa`) |
+|---|---|---|
+| Headline | 344/472, **72.9%** | 363/480, 75.6% |
+| Cases tagged bill or modifier | 156/250, **62.4%** | 181/261, 69.3% |
+| Unsafe | **0** | 2 |
+
+- By menu: `filipino-grill` 78.6%, `kelantan-nasi-kerabu` 75.0%, `xiaolongbao-house` 69.2%,
+  `kerala-kitchen` 68.9%.
+- By language: en 76.3%, zh 69.6%, malay 69.1%, manglish 65.3%.
+- By tag: bill 65.6%, modifier 55.7%, followup 71.4%, deal 70.8%, availability 79.5%, allergy 92.9%,
+  diet 77.6%, dish_allergen 79.4%, recommend 91.7%, adversarial 6/7.
+- Failing stages: decision rules 89, answer 33, dish finding 6.
+
+**Against the pre-registered bar.**
+- Unsafe 0: **met**.
+- Headline ≥ 85% with bill/modifier ≥ 80%: **not met** (72.9%, 62.4%).
+- Headline near v12's 75–78% (fitted to v12): **yes, and below it**.
+
+So the v12 dev passes (75.6% → 99.8% on v12) did not carry over to new menus: the held-out headline
+stays in the same 70–76% band as v10–v12, and bills and add-ons on unseen menus are where it falls
+short (modifier 55.7%). What did carry over is safety: no unsafe answer, and allergy questions at
+92.9%. Rule-by-rule fixes on dev cases raise dev, not this. Whether v13 becomes dev is the owner's call;
+until then it stays unread.
