@@ -1660,3 +1660,40 @@ none committed with a dev case broken):
 - Two that pass but not as asked: `kerala-kitchen-107` (蕉叶饭现在多少钱 sums both meals as a bill,
   though it names both prices) and `kerala-kitchen-048` (the kadala gravy answered only as the
   parotta being vegetarian).
+
+**Dev pass 2** (`a10c180` … `332bdc3`, 9 commits, each scored on every dev set before it went in, none
+committed with a dev case broken):
+
+| | after pass 1 (`1522f9f`) | after pass 2 (`332bdc3`) |
+|---|---|---|
+| v13 | 447/472 (94.7%) | **472/472 (100%)** |
+| All dev sets (v1, v8–v13) | 3990/4146 (96.2%) | **4015/4146 (96.8%)** |
+| Unsafe, any set | 0 | **0** |
+
+- Other dev sets: v1 505, v8 444, v9 736, v10 917, v11 462, v12 479 (unchanged or up; none broken).
+- What changed, by kind:
+  - Plans to a budget: money said "all in", "incl tax" or "termasuk cukai" plans the food within what
+    service and tax leave (and says the total with them); "1 noodle or rice" is one item of either;
+    "each one nasi kerabu + air" for 4 is four of each; "RM15 je, termasuk cukai" is money, not a
+    question about charges; a place word ("kerala lunch") doesn't name a dish. The planner's check of
+    what the rest of an order still costs now counts each item as its own dish (two drinks are two
+    drinks), which also fixed a plan it had wrongly said couldn't fit.
+  - Sets against their parts: a word several dishes share ("tea") is the set's own one of it, as many
+    as the set has; a mixed plate whose description is other dishes ("Kuih Campur: one serving each
+    of …") is weighed like a set; a piece count in brackets isn't a count of the last part.
+  - Pointing at what was said: "2 yang ayam", "the 2nd and 3rd one", "same as him, but chicken sisig
+    instead", "one each … the cheaper one with Y".
+  - Bills: a per-person line is part of a whole order's split, not answered alone; a bucket choice is
+    priced against that many one by one ("Bucket of 5" against five bottles, also in Chinese).
+  - Comparisons: one side said short of the other's family is that family's one ("pork vs crab roe
+    xlb", "ayam percik vs daging bakar", "炸鱼和烧鸡的蓝花饭").
+  - What a dish is: the menu's own gloss said first ("kerisik is toasted coconut"); what colours it
+    ("coloured with bunga telang"); how many a platter is meant for against the party.
+  - Others: the sizes a dish comes in when another is asked (6 or 10, not 8); "can I have cheese on
+    the roti titab?" asks for a choice it doesn't have; "nasi lemak ada?" is a search, an honest "we
+    don't have it"; "daging" is never a typo of "dagang"; a promo asked of a kind with none on shows
+    that kind's dishes.
+- Wording added (en and zh): notThatSize, termIs, colouredWith, bundleSaves/NoSave,
+  servesEnough/Fewer. The all-in total reuses "{total} with service and tax", so a branch with no
+  service charge still reads "with service and tax" (true, at 0%).
+- The two soft passes from pass 1 (`kerala-kitchen-107`, `-048`) still pass the same way.
