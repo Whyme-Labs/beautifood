@@ -802,7 +802,9 @@ const QUESTION_ZH = /吗|呢|什么|哪|多少|有没有|怎么|是不是|能不
  */
 export function pointedAt(text: string, shown: Item[]): { item: Item; count: number }[] {
   // (a level's number isn't a count: "level 3, large rice")
-  const t = normalize(text).replace(/\b(level|lvl|tahap|lv)\s+\d+\b/g, "$1");
+  // ("the 2nd and 3rd one": each of them)
+  const ORDW = "first|1st|second|2nd|third|3rd|fourth|last|pertama|kedua|ketiga|terakhir";
+  const t = normalize(text).replace(/\b(level|lvl|tahap|lv)\s+\d+\b/g, "$1").replace(new RegExp(`\\b(the|yang) (${ORDW}) (and|dan|n) (${ORDW})\\b`, "g"), "$1 $2 one $3 $1 $4");
   const can = shown.filter(orderable);
   if (can.length < 1) return [];
   const ORD: Record<string, number> = { first: 0, "1st": 0, second: 1, "2nd": 1, third: 2, "3rd": 2, fourth: 3, last: -1, pertama: 0, kedua: 1, ketiga: 2, terakhir: -1 };
@@ -1184,6 +1186,25 @@ function rewriteTurn(ctx: AssistantContext, question: string, state: DialogueSta
       const byName = pool_.filter((d) => zhNames(d).some((z) => z.includes(x)));
       return byName.length === 1 ? `${count}${zhNames(byName[0])[0]}` : m;
     });
+  // ("recommend 2 nasi kerabu?" … "ok one each, and the cheaper one with extra rice"): each of those shown, and the
+  // cheaper by its name
+  if (state.shown.length >= 2 && state.shown.length <= 4 && !/[\u3400-\u9fff]/.test(asked) && /^\s*(?:ok |okay |then )?(?:one|1|satu) each\b/i.test(asked)) {
+    const shown_ = state.shown.filter(orderable);
+    const byPrice_ = [...shown_].sort((a, b) => a.price - b.price);
+    // (its choice said with the one it's for goes on that line: "the cheaper one with extra rice")
+    const pick_ = asked.match(/,?\s*(?:and\s+)?the (cheaper|cheapest|pricier|more expensive|dearer) one (with [^.?!,]+)/i);
+    const target_ = pick_ ? (/cheap/i.test(pick_[1]) ? byPrice_[0] : byPrice_[byPrice_.length - 1]) : undefined;
+    if (pick_) asked = asked.replace(pick_[0], "");
+    asked = asked.replace(/\b(?:one|1|satu) each\b/i, shown_.map((d) => `1 ${d.name}${d === target_ ? ` ${pick_![2].trim()}` : ""}`).join(", "));
+  }
+  // ("Ada xiao long bao ayam?" … "nak 2 yang ayam"): "yang X" with a count is the dish just shown that X names
+  if (state.shown.length && !/[\u3400-\u9fff]/.test(asked))
+    asked = asked.replace(/\b(\d{1,2}|satu|dua|tiga|empat|lima)\s+(?:yang|yg)\s+([a-z]+)\b(?!\s+(?:tu|itu|ni|ini)\b\s+[a-z])/gi, (m, n: string, w: string) => {
+      const MS: Record<string, string> = { ayam: "chicken", daging: "beef", ikan: "fish", udang: "prawn", sotong: "squid", babi: "pork", kambing: "mutton", itik: "duck", sayur: "vegetable", telur: "egg" };
+      const ws_ = [w.toLowerCase(), MS[w.toLowerCase()]].filter(Boolean) as string[];
+      const hits = state.shown.filter((d) => normalize(d.name).split(" ").some((x) => ws_.some((y) => x === y || x === `${y}s`)));
+      return hits.length === 1 ? `${n} ${hits[0].name}` : m;
+    });
   // ("prawn roast big portion or small?" … "ok boss large one, 2 matta rice"): "the large one" is the one dish just
   // asked about, with that choice
   const only = state.shown.length === 1 ? state.shown[0] : null;
@@ -1211,7 +1232,10 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
   // ("cancel one of the lassi, and make one of the tandoori a full chicken. how much now"): changes to the
   // order one after another, each as its own turn, the question asked of the last
   // ("cancel one of the beer lah, change to sour plum"): one of them swapped, said in two halves
-  const swapHalves = swapHalvesOf(question);
+  // ("pork sisig with fried egg" … "same as him, but chicken sisig instead"): one more, the other dish, its choices the same
+  const sameBut = state.order.length ? question.match(/^\s*(?:ok |okay )?(?:i(?:'| a)?m |me )?(?:the )?same (?:as|like) (?:him|her|them|his|hers|my \w+|that)\s*,?\s*but (?:a |an |the |with )?([a-z][a-z ]*?) instead\b/i) : null;
+  const last_ = state.order[state.order.length - 1];
+  const swapHalves = sameBut && last_ ? question.replace(sameBut[0], `add 1 ${sameBut[1]}${last_.options?.length ? ` with ${last_.options.map((o) => o.name.toLowerCase()).join(" and ")}` : ""}.`) : swapHalvesOf(question);
   const steps = editSteps(swapHalves, state.order.length > 0);
   if (steps) {
     const turns = [...earlier];

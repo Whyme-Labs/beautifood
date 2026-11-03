@@ -8,7 +8,7 @@ type WithOptions = { name: string; translations?: Record<string, { name?: string
 
 // a guest's words for an option's own words (as menus name them: "Ais (iced)", "Oat milk", "Besar (large)")
 const ALSO: Record<string, string[]> = {
-  raw: ["mentah"], chrysanthemum: ["kekwa", "bunga kekwa"], buko: ["coconut water", "kelapa muda", "air kelapa"],
+  raw: ["mentah"], lebih: ["extra", "more"], nasi: ["rice"], chrysanthemum: ["kekwa", "bunga kekwa"], buko: ["coconut water", "kelapa muda", "air kelapa"],
   ais: ["ice", "iced", "cold", "peng", "sejuk"], iced: ["ice", "ais", "cold", "peng", "sejuk"], cold: ["ice", "iced", "ais", "peng", "sejuk"],
   panas: ["hot", "warm"], hot: ["panas", "warm"], suam: ["warm"],
   besar: ["large", "big", "upsize", "bigger"], large: ["besar", "big", "upsize", "bigger", "lrg", "lg"],
