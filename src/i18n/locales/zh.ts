@@ -471,6 +471,8 @@ const zh = {
     allergyStaff: "你的过敏原比较多，点餐前请先问店员：他们清楚每道菜的用料，也可以向厨房确认。",
     termIs: "{term}是{what}。",
     colouredWith: "{dish}的颜色来自{what}。",
+    bundleSaves: "{dish}（{option}）：{price}，单点{n}个要{apart}，省{saved}。",
+    bundleNoSave: "{dish}（{option}）：{price}；单点{n}个是{apart}。",
     weHave: "我们有这些：",
     noHave: "抱歉，今天的菜单上没有{thing}。大家最爱的是{list}。",
     noHaveClosest: "抱歉，今天的菜单上没有{thing}。最接近的是：",

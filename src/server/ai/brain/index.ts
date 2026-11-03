@@ -1568,6 +1568,21 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     }
   }
 
+  // ("got beer bucket or not? cheaper than 5 bottles?", "一桶五支几多钱？" of the San Miguel just asked about): a choice
+  // that is several of it at once, its price against that many one by one
+  {
+    const BUNDLE_ZH: [RegExp, RegExp][] = [[/桶/, /\bbucket\b/i], [/塔/, /\btower\b/i], [/壶|扎/, /\b(jug|pitcher)\b/i]];
+    const pool_ = mentioned.length ? mentioned : focus.length ? focus : state.focus ? [state.focus] : state.shown.length === 1 ? state.shown : [];
+    const hits_ = pool_.flatMap((d) => (d.modifiers ?? []).flatMap((g) => g.options.map((o) => ({ d, o, n: Number(o.name.match(/\b(?:of|x)\s*(\d{1,2})\b/i)?.[1] ?? o.name.match(/^\s*(\d{1,2})\s*(?:bottles|cans|glasses|pints)\b/i)?.[1] ?? 0) }))))
+      .filter((x) => x.n >= 2 && x.o.price > 0 && (normalize(x.o.name).split(" ").some((w) => w.length >= 4 && !/^(bottles?|cans?)$/.test(w) && nt0.split(" ").some((q) => sameWord(q, w))) || BUNDLE_ZH.some(([zh, word]) => zh.test(u.text) && word.test(x.o.name))));
+    if (hits_.length === 1 && !state.order.length && (/[?？]|\b(how much|price|harga|berapa|cheaper|murah|got|ada|or not)\b/.test(nt0) || /多少|几多|便宜|有没有/.test(u.text))) {
+      const { d, o, n } = hits_[0];
+      const price = d.price + o.price, apart = d.price * n;
+      const key = apart > price ? "assistantReply.bundleSaves" : "assistantReply.bundleNoSave";
+      return reply("dish_info", t(key, { dish: name(d), option: optionLabel(o), price: money(price), n, apart: money(apart), saved: money(apart - price) }), [d]);
+    }
+  }
+
   // ("prawn mee got 'no pork' option, so if I choose that it becomes halal right?"): a choice doesn't make it halal
   if ((/\bhalal\b/.test(nt0) || /清真/.test(u.text)) && (/\b(no pork|without pork|tanpa babi|tak nak babi)\b/.test(nt0) || /不要猪|走猪|无猪/.test(u.text)) && halalAt !== "certified" && halalAt !== "muslim_friendly" && halalAt !== "pork_free")
     return reply("dish_info", t("assistantReply.noPorkNotHalal"), []);
@@ -1917,13 +1932,15 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
       return reply("recommend", parts.join(sp), rank(dealt).slice(0, 6));
     }
     const next = [...(ctx.now?.dealsNext ?? [])].sort((a, b) => Number(b.today) - Number(a.today));
-    const sig = rank(live.filter((i) => !isDrink(i) && allowed(i, c))).slice(0, 3);
+    // ("skewer promo today got?"): of the kind asked about, its dishes shown, as they asked about those
+    const ofKind_ = (u.categories.length || u.courses.length) && course !== live ? rank(course.filter((i) => allowed(i, c))).slice(0, 3) : [];
+    const sig = ofKind_.length ? ofKind_ : rank(live.filter((i) => !isDrink(i) && allowed(i, c))).slice(0, 3);
     // ("Tuesday deal (RM3.00 off Acai bowls) starts from Tue")
     // (and when it runs: "Mon–Fri, 6:00 AM–10:00 AM")
     const valueOf = (id: string) => { const r = ctx.rules?.find((x) => x.id === id); return r ? ` (${[...(/\d/.test(r.name) ? [] : [dealValue(r)]), windowText(r.windows)].join(", ")})` : ""; };
     const ahead = next.length ? `${sp}${next.slice(0, 2).map((d) => t("assistantReply.dealsNext", { deal: `${d.name}${valueOf(d.id)}`, when: when(d) })).join(sp)}` : "";
     // (named, not shown as cards: they asked about deals, not for dishes)
-    return reply("recommend", `${t("assistantReply.dealsNone")}${ahead}${sp}${t("assistantReply.meanwhile", { list: list(sig.map(line)) })}`, []);
+    return reply("recommend", `${t("assistantReply.dealsNone")}${ahead}${sp}${t("assistantReply.meanwhile", { list: list(sig.map(line)) })}`, ofKind_);
   }
   // "breakfast?", "what's for supper?", "anything seasonal?", "早餐": a timed menu of this restaurant
   const timed = (ctx.menus ?? []).filter((m) => {
