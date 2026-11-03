@@ -1231,7 +1231,8 @@ export function read(items: Dish[], asked: string): Reading {
   // (a long word of a dish's name said in its parts: "xiao long bao" of Xiaolongbao)
   const longWords = [...new Set(items.flatMap((i) => i.name.toLowerCase().split(/[^a-z]+/)).filter((w) => w.length >= 8))];
   const spaced = longWords.map((w) => [new RegExp(`\\b${[...w].join("[ -]?")}\\b`, "gi"), w] as [RegExp, string]).filter(([re, w]) => re.source.length > 0 && w.length >= 8);
-  const aliased = [[/\b(siu yuk|siu yoke|siew yoke|siew yuk|sio bak)\b/gi, "roast pork"], [/\b(char siew|cha siu|char sio)\b/gi, "char siu"], ...aliasedInitials] as [RegExp, string][];
+  // (and the ones everyone writes: "xlb", "ckt", "bkt")
+  const aliased = [[/\b(siu yuk|siu yoke|siew yoke|siew yuk|sio bak)\b/gi, "roast pork"], [/\b(char siew|cha siu|char sio)\b/gi, "char siu"], [/\bxlbs?\b/gi, "xiaolongbao"], [/\bckt\b/gi, "char kway teow"], [/\bbkt\b/gi, "bak kut teh"], ...aliasedInitials] as [RegExp, string][];
   const question = spaced.reduce((q, [re, to]) => q.replace(re, to), aliased.reduce((q, [re, to]) => (menuText.includes(to) && !items.some((i) => re.test(i.name)) ? q.replace(re, to) : q), items.some((i) => Object.values(i.translations ?? {}).some((x) => x?.name?.includes("养乐多"))) ? said.replace(/(?<!养乐)多多/g, "养乐多") : said));
   const raw = question.normalize("NFKC").toLowerCase();
   const ix = dishIndex(items);

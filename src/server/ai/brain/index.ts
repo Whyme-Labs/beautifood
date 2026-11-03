@@ -300,7 +300,19 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
   };
   let before: OrderLine[] = [];
   // (and before each "one with": "one with ice cream one with rabri")
-  for (const clause of text.split(/[,;，；。.]|\band\b|\bdan\b|\bthen\b|(?<!\b(?:first|second|third|last|the|that|this|which|same|each|every|pertama|kedua)\s)(?=\b(?:one|satu) (?:with|w|dengan)\b)/i)) {
+  // (a dish named in Chinese isn't another's add-on: "再加一碗蛋炒饭" is no egg for the wontons)
+  const zhNamed = [...named, ...(fresh || [])].flatMap((i) => Object.values(i.translations ?? {}).map((x) => x?.name ?? "")).filter((z) => z.length > 1);
+  for (const clause0 of text.split(/[,;，；。.]|\band\b|\bdan\b|\bthen\b|(?<!\b(?:first|second|third|last|the|that|this|which|same|each|every|pertama|kedua)\s)(?=\b(?:one|satu) (?:with|w|dengan)\b)/i)) {
+    // (nor a run of a named dish's own words: "tukar satu nasi kerabu ikan tu jadi nasi kerabu ayam percik" is two dishes,
+    // no Ayam percik add-on on the one or Ikan kembung on the other)
+    const named_ = [...named, ...(fresh || [])].map((i) => new Set(normalize(i.name).split(" ")));
+    const ws_ = normalize(zhNamed.reduce((x, z) => x.split(z).join(" "), clause0)).split(" ");
+    const drop_ = new Set<number>();
+    for (const set_ of named_) for (let a = 0; a < ws_.length; a++) { let b = a; while (b < ws_.length && set_.has(ws_[b])) b++; if (b - a >= 2) for (let k = a; k < b; k++) drop_.add(k); }
+    // (what the choices are read from; in a swap of one dish for another, what picks the line too)
+    const optC = drop_.size ? ws_.filter((_, k) => !drop_.has(k)).join(" ") : zhNamed.reduce((x, z) => x.split(z).join(" "), clause0);
+    const swapping_ = named_.length >= 2 && (SWAP.test(normalize(clause0)) || SWAP.test(clause0));
+    const clause = swapping_ ? optC : zhNamed.reduce((x, z) => x.split(z).join(" "), clause0);
     const c = normalize(clause);
     // ("我对虾过敏", "allergic to egg": what they can't have is never an add-on)
     if (/\b(allerg\w*|alergi|alah|intoleran\w*|cannot eat|can t eat|cant eat|tak boleh makan)\b/.test(c) || /过敏|不能吃|不吃/.test(clause)) continue;
@@ -311,7 +323,10 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     const inClause = order.filter((o) => (named.some((n) => n.id === o.item.id) ? nameWords(o.item).some((w) => ` ${cOf(o.item)} `.includes(` ${w} `)) : nameWords(o.item).filter((w) => ` ${c} `.includes(` ${w} `)).length >= 2 || nameWords(o.item).some((w) => ` ${c} `.includes(` ${w} one `)) ||
       // ("and the noodle i want large": one of its own words, pointed at)
       nameWords(o.item).some((w) => w.length > 3 && new RegExp(`\\b(the|my|that) ${w.replace(/s$/, "")}s?\\b`).test(c) && order.filter((x) => allWords(x.item).some((y) => y.replace(/s$/, "") === w.replace(/s$/, ""))).length === 1)));
-    const zhIn = order.filter((o) => Object.values(o.item.translations ?? {}).some((x) => x?.name && clause.includes(x.name)));
+    // (or the start of it, of one line only: "生煎改成8个" of the 生煎包)
+    const zhStart = (o: OrderLine) => Object.values(o.item.translations ?? {}).some((x) => x?.name && x.name.length >= 3 && clause.includes(x.name.slice(0, 2)));
+    const zhIn0 = order.filter((o) => Object.values(o.item.translations ?? {}).some((x) => x?.name && clause.includes(x.name)));
+    const zhIn = zhIn0.length ? zhIn0 : order.filter(zhStart).length === 1 ? order.filter(zhStart) : [];
     // ("add another teh tarik, both iced": every line of what's named)
     const both = /\b(both|all|each|semua|kedua|dua dua|masing masing|those two|these two|the two)\b/.test(c) || /都|各|这两|那两/.test(clause);
     // ("upsize all the drinks", "all the pizzas thin crust"): every line of that kind
@@ -319,10 +334,10 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
     const kindLines = allOf ? order.filter((o) => (/drink|minuman|air|beverage|饮料/.test(c + clause) ? isDrink(o.item) : !isDrink(o.item))) : [];
     const lines = kindLines.length ? kindLines : inClause.length || zhIn.length ? [...new Set([...inClause, ...zhIn])] : before.length && !onlyNamed ? before : both ? order.filter((o) => named.some((n) => n.id === o.item.id)) : [];
     // (the line whose choice the words name most fully: "snow cheese" is the chicken's Snow Cheese, not the tteokbokki's Cheese)
-    const fitOf = (i: Item) => Math.max(0, ...optionsSaid(clause, i, true).add.map((x) => Math.max(1, normalize(x.name).split(" ").filter((w) => ` ${c} `.includes(` ${w} `)).length)));
+    const fitOf = (i: Item) => Math.max(0, ...optionsSaid(optC, i, true).add.map((x) => Math.max(1, normalize(x.name).split(" ").filter((w) => ` ${c} `.includes(` ${w} `)).length)));
     // (taking off: the line that has it, "take out the egg" of the laksa's Boiled egg, not the one that could add one)
-    const offOn = (o: OrderLine) => optionsSaid(clause, o.item).off.some((x) => (o.options ?? []).some((y) => y.name === x.name));
-    const fit = (o: OrderLine) => (REMOVE.test(c) || REMOVE.test(clause) ? (offOn(o) ? 1 : 0) : fitOf(o.item) + (optionsSaid(clause, o.item).off.length ? 0.5 : 0));
+    const offOn = (o: OrderLine) => optionsSaid(optC, o.item).off.some((x) => (o.options ?? []).some((y) => y.name === x.name));
+    const fit = (o: OrderLine) => (REMOVE.test(c) || REMOVE.test(clause) ? (offOn(o) ? 1 : 0) : fitOf(o.item) + (optionsSaid(optC, o.item).off.length ? 0.5 : 0));
     const fallback = !onlyNamed || (fresh && Math.max(0, ...order.map(fit)) > Math.max(0, ...fresh.map(fitOf)) && !fresh.some((i) => nameWords(i).every((w) => ` ${c} `.includes(` ${w} `))));
     const targets = [...(lines.length || !fallback ? lines : [...order].reverse().filter((o) => fit(o) > 0).sort((a, b) => fit(b) - fit(a)).slice(0, 1))];
     // ("make one of the nasi lemak large", "one of the teh tarik iced": one of that line, on a line of its own)
@@ -336,7 +351,7 @@ export function applyOptions(order: OrderLine[], text: string, named: Item[], fr
       o.count -= nOf;
       const copy: OrderLine = { item: o.item, count: nOf, options: o.options ? [...o.options] : undefined };
       // (what this clause gives the one isn't the others' too: "2 sets, one change rice to garlic naan")
-      const mine_ = optionsSaid(clause, o.item, true).add;
+      const mine_ = optionsSaid(optC, o.item, true).add;
       if (o.options?.length && mine_.length) o.options = o.options.filter((x) => !mine_.some((y) => y.name === x.name)) || undefined;
       order.splice(order.indexOf(o) + 1, 0, copy);
       targets.splice(0, 1, copy);
@@ -511,7 +526,7 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
 }
 
 const NUMBER_OF: Record<string, number> = { two: 2, three: 3, four: 4, five: 5, six: 6, dua: 2, tiga: 3, empat: 4, lima: 5 };
-const REMOVE = /\b(cancel|remove|drop|scratch|delete|don ?t want|no more|skip the|take out|take off|batal|buang|keluarkan|tak nak|tak jadi|no need|dont need|don t need|tak payah|tak mahu|tak mau|taknak|takmau|tak perlu)\b|取消|不要了|不要那|删掉|拿掉|去掉|不用了/;
+const REMOVE = /\b(cancel|remove|drop|scratch|delete|don ?t want|no more|skip the|take out|take off|take away|minus|less one|kurang satu|tolak|batal|buang|keluarkan|tak nak|tak jadi|no need|dont need|don t need|tak payah|tak mahu|tak mau|taknak|takmau|tak perlu)\b|取消|不要了|不要那|删掉|拿掉|去掉|不用了/;
 // "kopi ais 2 only", "barley 2 je", "只要两杯": the count it is now
 const ONLY_N = /\b(\d{1,2}|one|two|three|four|five|satu|dua|tiga|empat|lima)\s*(only|je|jer|sahaja|saja|sudah|cukup)\b|只要([一两二三四五\d])\s*[杯份个碗碟盘]/;
 const SWAP = /\b(instead|change|swap|replace|switch|make it|make that|make the|rather have|tukar|ganti|jadikan)\b|换成|换|改成|改/;
@@ -1099,7 +1114,9 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
   const state = dialogueState(ctx, earlier);
   // ("cancel one of the lassi, and make one of the tandoori a full chicken. how much now"): changes to the
   // order one after another, each as its own turn, the question asked of the last
-  const steps = editSteps(question, state.order.length > 0);
+  // ("cancel one of the beer lah, change to sour plum"): one of them swapped, said in two halves
+  const swapHalves = question.replace(/\b(?:cancel|remove|drop|buang|batal)\s+(one|1|satu)\s+(?:of\s+)?(?:the\s+)?([a-z][a-z ]*?)(?:\s+(?:lah|la|ah|tu))?\s*[,;]\s*(?:and\s+)?(?:change|swap|switch|tukar|replace|ganti)\s+(?:it\s+|that\s+)?(?:to|for|with|jadi|dengan)\s+/i, (_m, n: string, x: string) => `change ${n} of the ${x} to `);
+  const steps = editSteps(swapHalves, state.order.length > 0);
   if (steps) {
     const turns = [...earlier];
     for (const s of steps.slice(0, -1)) {
@@ -1110,7 +1127,7 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
   }
   // ("no need the egg, just the duck" with a Braised Egg ordered): a line taken off by one word of its name is that line,
   // not an egg allergy
-  let asked = question;
+  let asked = swapHalves;
   const offWord = !/\b(allerg\w*|alergi|alah|intolerant)\b|过敏/i.test(question) ? normalize(question).match(/\b(?:no need(?: the)?|don t need(?: the)?|remove(?: the)?|cancel(?: the)?|drop(?: the)?|take out(?: the)?|tak nak|tak payah|buang)\s+([a-z]{3,})\b/)?.[1] : undefined;
   if (offWord && state.order.length) {
     const has = state.order.filter((o) => normalize(o.item.name).split(" ").some((w) => w === offWord || w === offWord.replace(/s$/, "")));
@@ -1127,7 +1144,8 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
       const nextWord = next.trim().toLowerCase();
       if (nextWord && ctx.items.some((i) => normalize(i.name).split(" ").includes(nextWord))) return m;
       const kin = ctx.items.filter((i) => normalize(i.name).split(" ").some((x) => sameWord(x, word)));
-      const ordered = state.order.filter((o) => { const ws = normalize(o.item.name).split(" "); return sameWord(ws[ws.length - 1], word); });
+      // (its name without a note: "Chinese Tea (per person)" ends in tea)
+      const ordered = state.order.filter((o) => { const ws = normalize(o.item.name.replace(/\(.*?\)/g, " ")).split(" "); return sameWord(ws[ws.length - 1], word); });
       return kin.length >= 2 && ordered.length === 1 && normalize(ordered[0].item.name) !== word && !mentionedAllergens(word).length ? `${the} ${ordered[0].item.name}${next}` : m;
     });
   // ("两份素的" of the two banana leaf meals just shown, "四片的" of the parotta, "两份麦粉的" of the puttu): "X的" in an
@@ -1327,6 +1345,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     intent,
     ...extra,
   });
+  // ("thanks, the xlb damn good!"): praise of a dish had, a thank-you, nothing asked
+  if (!/[?？]/.test(u.text) && (/\b(thanks?|thank you|thx|tq|terima kasih)\b/.test(normalize(u.text)) || /谢谢|多谢/.test(u.text)) && !u.allergens.length && !/\b(and|also|one more|another|lagi|add|tambah|can|boleh|bill|how much|berapa)\b/.test(normalize(u.text)) && (/\b(good|great|nice|delicious|sedap|best|awesome|tasty|love|loved)\b/.test(normalize(u.text)) || /好吃|好味|不错/.test(u.text)))
+    return reply("thanks", t("assistantReply.thanks"), []);
   const reasonFor = (i: Item) =>
     [
       i.isSignature ? t("assistantReply.signature") : (i.popularity ?? 0) > 0 ? t("assistantReply.popularToday") : "",
@@ -2515,7 +2536,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
   const ownersNow = { ...state.owners, ...ownersOf(u.text, mentioned) };
   // "same again for my friend", "一样的再来一份", "tambah satu lagi yang sama": what they last ordered, again;
   // "one more of that", "再来一个": one more of the last thing
-  const sameAgain = /\b(same again|the same|same thing|same one|same order|same for (him|her|them|my)|yang sama|sama lagi|macam tadi|(i|me|we) (also |too )?same|same but|same as (him|her|his|hers|them|my friend|my wife|my husband))\b/.test(nt1) || /一样的|同样的|照样|一模一样/.test(u.text);
+  // (not "is the total still the same?", "same price?": the price asked)
+  const sameAgain = !/\b(still the same|the same price|same price|same total|remain the same|stay the same|still same|sama harga|harga sama)\b/.test(nt1) && /\b(same again|the same|same thing|same one|same order|same for (him|her|them|my)|yang sama|sama lagi|macam tadi|(i|me|we) (also |too )?same|same but|same as (him|her|his|hers|them|my friend|my wife|my husband))\b/.test(nt1) || /一样的|同样的|照样|一模一样/.test(u.text);
   const oneMore = !sameAgain && (/\b(one more of (that|those|it|them)|another of (that|those))\b/.test(nt1) && !mentioned.some((i) => state.order.some((o) => o.item.id === i.id)) || (!mentioned.length && (/\b(one more|another one|satu lagi|lagi satu|tambah satu)\b/.test(nt1) || /再来一[个份杯碗包]|再加一[个份杯碗包]|多一[个份杯碗包]/.test(u.text))));
   const again = (sameAgain || oneMore) && state.last.length > 0;
   // "if I pay with RM50, how much change?", "bayar RM50, baki berapa?": the till's total and the change
