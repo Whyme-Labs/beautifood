@@ -1141,7 +1141,8 @@ export type Reading = Omit<Understanding, "intent" | "confidence" | "guess">;
 export function read(items: Dish[], asked: string): Reading {
   // ("table 4: fish amritsari, …"): a table's number isn't a count
   // ("bill for 4: butter chicken full, …"): the party, not four of the first dish
-  const { text: said, injected } = stripInjection(asked.replace(/\b(table|meja|tbl)\s*(?:no\.?\s*|#\s*)?(\d{1,3})\s*[:\-–]/gi, "$1$2:").replace(/\b(for|untuk)\s+(\d{1,2})\s*[:\-–]\s*/gi, "$1 $2 people: "));
+  // ("有冇虾饺？" in Cantonese is 有没有: a question, not "no shrimp")
+  const { text: said, injected } = stripInjection(asked.replace(/有冇/g, "有没有").replace(/\b(table|meja|tbl)\s*(?:no\.?\s*|#\s*)?(\d{1,3})\s*[:\-–]/gi, "$1$2:").replace(/\b(for|untuk)\s+(\d{1,2})\s*[:\-–]\s*/gi, "$1 $2 people: "));
   // what guests call a menu's drink for short ("柠檬多多" for its 柠檬养乐多)
   // ...and "siu yuk"/"sio bak" for its roast pork, "char siew" for its char siu
   const aliasedInitials: [RegExp, string][] = [];
