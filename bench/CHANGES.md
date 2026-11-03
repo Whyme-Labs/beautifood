@@ -1697,3 +1697,4 @@ committed with a dev case broken):
   servesEnough/Fewer. The all-in total reuses "{total} with service and tax", so a branch with no
   service charge still reads "with service and tax" (true, at 0%).
 - The two soft passes from pass 1 (`kerala-kitchen-107`, `-048`) still pass the same way.
+- Cost: a 30-turn conversation is ~390 ms at turn 30, as after pass 1 (395 ms measured the same way).
