@@ -2056,6 +2056,9 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const groups = (optHost.modifiers ?? []).filter((g) => (addOnsAsked && /add|topping|extra|tambah/i.test(g.name)) || normalize(g.name).split(" ").some((w) => w.length > 2 && !/^(add|ons|extra|extras|pilihan|tambah|make|your|pick|choose|choice|upgrade)$/.test(w) && askedText.includes(` ${w.replace(/s$/, "")}`)) || GROUP_ZH.some(([en_, zh_]) => en_.test(g.name) && zh_.test(u.text)) || g.options.some((o) => normalize(o.name).split(" ").some((w) => w.length > 2 && /^(milk|size|sauce|topping|toppings)$/.test(w) && ` ${nt1} `.includes(` ${w} `))));
     // "can I have two sauces?", "可以要两种酱吗？": as many as it takes
     const twoAsked = /\b(two|2|three|3|four|4|both|half half|half and half|mix|combine|campur)\b/.test(nt1) || /两种|两样|两个酱|一半.{1,8}一半/.test(u.text);
+    // ("pie tee 10 pieces or two plates of 5, which cheaper?"): two ways weighed, priced below, not its choices listed
+    const weighed_ = /\s(or|atau)\s|还是/.test(u.text) && (/\b(cheaper|cheapest|murah|more expensive)\b/.test(nt1) || /便宜|划算/.test(u.text));
+    if (weighed_) groups.length = 0;
     if (groups.length && twoAsked) return reply("dish_info", t(groups[0].max && groups[0].max >= 2 ? "assistantReply.upTo" : "assistantReply.onlyOne", { dish: name(optHost), group: groups[0].name, max: groups[0].max ?? 1 }), [optHost]);
     // "how many toppings can I add?", "可以加几样配料？": as many as the group takes
     if (groups.length && (/\bhow many\b|\bberapa (banyak|jenis|macam)\b|\bup to\b|\bmaximum\b|\bmax\b/.test(nt1) || /几样|几种|几个|最多/.test(u.text))) return reply("dish_info", t("assistantReply.upTo", { dish: name(optHost), group: groups[0].name, max: groups[0].max ?? 1 }), [optHost]);
@@ -2128,7 +2131,8 @@ export function respond(ctx: AssistantContext, u: Understanding, state: Dialogue
     const more = (state.focus.modifiers ?? []).flatMap((g) => g.options).filter((o) => o.price > 0 && /\b(extra|more|tambah|double)\b|加/i.test(o.name));
     return reply("dish_info", `${t("assistantReply.oneSize", { dish: name(state.focus) })}${more.length ? `${sp}${t("assistantReply.oneSizeMore", { list: list(more.slice(0, 3).map((o) => `${optionLabel(o)} (+${money(o.price)})`)) })}` : ""}`, [state.focus]);
   }
-  if (asksChoices) {
+  // ("pie tee 10 pieces or two plates of 5, which cheaper?"): two ways weighed, not its choices listed
+  if (asksChoices && !(/\s(or|atau)\s|还是/.test(u.text) && (/\b(cheaper|cheapest|murah|more expensive)\b/.test(nt1) || /便宜|划算/.test(u.text)))) {
     const groupWord = (g: { name: string }) => normalize(g.name).split(" ").some((w) => w.length > 2 && ` ${nt0} `.includes(` ${w.replace(/s$/, "")}`));
     const of = mentioned.filter((i) => i.modifiers?.length).length ? mentioned.filter((i) => i.modifiers?.length) : [...(state.order.length ? [state.order[state.order.length - 1].item] : []), ...(state.focus ? [state.focus] : [])].filter((i) => i.modifiers?.some(groupWord)).slice(0, 1);
     // (of those, the ones the question names a word of: "milk options for the latte" is the lattes)
