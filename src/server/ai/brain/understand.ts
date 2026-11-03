@@ -173,7 +173,7 @@ const KEYWORDS = (
 ).split(" ");
 
 /** Real words that are one letter off a keyword ("there" and "these", "daily" and "dairy"): never "corrected". */
-const REAL = new Set("cheese cheesy bill bills batter batters there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story carb carbs keto protein calorie calories".split(" "));
+const REAL = new Set("daging dagang kambing cheese cheesy bill bills batter batters there their three these those where while daily dally spice price prices sweet light drink drunk peoples comparing contained budgets hunger starter almost mild mildly mile miles mill fist crap cram write writes wrote writing written poem story carb carbs keto protein calorie calories".split(" "));
 
 /**
  * Allergen words, which are worth correcting even when short ("egs", "nutz"): missing one is the
