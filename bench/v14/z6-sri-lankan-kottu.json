@@ -1056,7 +1056,7 @@
     },
     "expect": {
       "says": [
-        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有(?!问题)|卖完|售罄"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|n't (available|offer|have|carry)|not (offered|an option|one of)|out of stock|ran out|tiada|takde|tak ada|没有(?!问题)|卖完|售罄"
       ]
     },
     "note": "Mutton curry is named 'when available' and is in no group: out."
@@ -1352,7 +1352,7 @@
         "Isso Vadai"
       ],
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "sold out|habis|finished|not available|unavailable|n't available|out of stock|ran out|tiada|takde|tak ada|卖完|售罄|没有了"
       ]
     }
   },
@@ -1377,7 +1377,7 @@
       ],
       "says": [
         "plain hopper|egg hopper|hopper feast",
-        "hopper night|6 ?(pm|p\\.m\\.)|18:00|18\\.00|6:00|6 petang|晚上6|傍晚6|晚上六|六点|6点"
+        "6 ?(pm|p\\.m\\.)|18:00|18\\.00|6:00|6 petang|晚上6|傍晚6|晚上六|六点|6点"
       ]
     }
   },
@@ -2151,7 +2151,7 @@
         "String Hoppers Set"
       ],
       "says": [
-        "gluten.?free|no gluten|(doesn't|does not|don't) (have|contain) (any )?gluten|rice flour|tepung beras|米粉|没有麸质|不含麸质|无麸质"
+        "(?<!not )(?<!n't )(?<!isn't )gluten.?free|no gluten|(doesn't|does not|don't) (have|contain) (any )?gluten|rice flour|tepung beras|米粉|没有麸质|不含麸质|无麸质"
       ]
     }
   },
@@ -2290,7 +2290,7 @@
     "before": [
       {
         "user": "something under RM20, filling?",
-        "assistant": "Under RM20: Chicken Kottu (RM16.90), Devilled Chicken (RM18.90), Fish Ambul Thiyal (RM19.90) and the Kottu Meal (RM19.90, chicken kottu with two vadai and a milk tea)."
+        "assistant": "Under RM20: Chicken Kottu (RM16.90), Cheese Kottu (RM18.90, with chicken curry and cheese), Chicken Curry (RM15.90), Devilled Chicken (RM18.90), Fish Ambul Thiyal (RM19.90) and the Kottu Meal (RM19.90, chicken kottu with two vadai and a milk tea)."
       }
     ],
     "question": "the ones with chicken?",
@@ -2301,12 +2301,16 @@
     "expect": {
       "onlyFrom": [
         "Chicken Kottu",
+        "Cheese Kottu",
+        "Chicken Curry",
         "Devilled Chicken",
         "Fish Ambul Thiyal",
         "Kottu Meal"
       ],
       "includesAny": [
         "Chicken Kottu",
+        "Cheese Kottu",
+        "Chicken Curry",
         "Devilled Chicken",
         "Kottu Meal"
       ]
@@ -2822,7 +2826,7 @@
       ],
       "safetyNote": true,
       "says": [
-        "虾酱|虾膏|blachan|belacan|含虾|(?<![没不无])有虾"
+        "虾酱|虾膏|blachan|belacan|(?<!不)含虾|(?<![没不无])有虾"
       ]
     }
   },

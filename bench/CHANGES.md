@@ -1731,3 +1731,15 @@ committed with a dev case broken):
   - z6 `sri-lankan-kottu`: halal certified with an expired certificate (no certificate now); 5%
     service, 6% tax, rounding 5; an evening Hopper night timed menu; an amount deal on kottu at
     weekday lunch; one dish sold out.
+
+## v14 held-out set: frozen (2026-11-04, before scoring)
+
+- Written blind by z5 (`lanzhou-noodle` 124 cases, `nepali-momo-house` 128) and z6
+  (`kristang-eurasian` 119, `sri-lankan-kottu` 123), then reviewed blind: no gold or branch-settings
+  entry changed, 38 cases fixed (mostly `says` patterns a wrong answer could match), none deleted
+  (`bench/v14/REVIEW-z5z6.md`). 494 cases, all `test`.
+- Both briefs named the right review files this time (`bench/v12/REVIEW-z1z2.md`,
+  `bench/v13/REVIEW-z3z4.md`). The drafts were committed before review (`709727e`, `9abcd66`) so the
+  review's changes are in history.
+- No change in `src/` since `332bdc3` (deployed as `61e79cf`).
+- Fingerprints (`npx tsx bench/freeze.ts`): `v14 494 993dd535f5a189d6`, `v14 menus 12 0bd9361f8f02f52b`.

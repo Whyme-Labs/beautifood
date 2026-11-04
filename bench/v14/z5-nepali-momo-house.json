@@ -982,10 +982,11 @@
     "question": "momo with cheese can?",
     "expect": {
       "says": [
-        "n't (have|offer|come with|available|an option|possible|part of|one of)|not (available|an option|offered|possible|part of|one of|on the)|no (such|egg|cheese|option)|only (comes|offer|extra)|tak (boleh|ada)|tiada|takde|tidak (boleh|ada)|不能|没有|不可以|不提供|只有"
+        "n't (have|offer|come with|available|an option|possible|part of|one of)|not (available|an option|offered|possible|part of|one of|on the)|no (such|egg|cheese|option)|only (comes|offer|extra)|tak (boleh|ada)|tiada|takde|tidak (boleh|ada)|不能|没有|不可以|不提供|只有|paneer|cottage cheese|印度奶酪|印度芝士"
       ],
       "maxDishes": 3
-    }
+    },
+    "note": "No cheese add-on; an answer pointing to the paneer in the Veg Momo is also honest."
   },
   {
     "id": "v14z5-nepali-momo-house-038",
@@ -1293,7 +1294,7 @@
         "Veg Chowmein"
       ],
       "says": [
-        "egg noodles|\\byes\\b|(?<!no )(?<!any )contains? egg|ada telur|(?<![没不])有(鸡)?蛋|含(鸡)?蛋|蛋面"
+        "egg noodles|\\byes\\b|(?<!no )(?<!any )contains? egg|(?<!ti)(?<!tak )(?<!tidak )ada telur|(?<![没不])有(鸡)?蛋|含(鸡)?蛋|蛋面"
       ]
     }
   },
@@ -1843,7 +1844,7 @@
         "Sel Roti"
       ],
       "says": [
-        "no wheat|rice flour|gluten.?free|n't (have|contain) (any )?(gluten|wheat)|no gluten|tiada gluten|tepung beras|不含(麸质|小麦)|没有(麸质|小麦)|米粉"
+        "no wheat|rice flour|(?<!not )(?<!n't )(?<!isn't )gluten.?free|n't (have|contain) (any )?(gluten|wheat)|no gluten|tiada gluten|tepung beras|不含(麸质|小麦)|没有(麸质|小麦)|米粉"
       ]
     }
   },
@@ -1864,7 +1865,7 @@
         "assistant": "Desserts: Kheer RM8.90 (rice pudding with cashews and raisins). Juju Dhau is sold out today, sorry. Sel Roti RM7.90 is a sweet rice bread too."
       }
     ],
-    "question": "那个糖圈要两份",
+    "question": "那个糖圈要两份，多少钱？",
     "at": {
       "day": "Sat",
       "time": "13:00",
@@ -2061,9 +2062,10 @@
     "question": "the cheapest one, 2 sets, one with lime soda. how much?",
     "expect": {
       "says": [
-        "(^|[^0-9])(31\\.80)"
+        "(^|[^0-9])(31\\.80)|(^|[^0-9])(38\\.70)"
       ]
-    }
+    },
+    "note": "Cheapest = Chowmein Lunch Set 15.90 x 2; lime soda as one set's free drink swap (31.80) or as a separate Fresh Lime Soda (38.70): both readings."
   },
   {
     "id": "v14z5-nepali-momo-house-073",
@@ -2132,7 +2134,7 @@
         "Momo Platter"
       ],
       "says": [
-        "(?<!no )(?<!not )\\bbeef\\b|daging lembu|lembu|牛肉|it'?s cow|not (water )?buffalo|bukan kerbau|不是水牛"
+        "(is|it's|it is|uses|use|made (with|from)|minced|actually|just|regular|cow) beef|beef,? not buffalo|daging lembu|(?<!bukan )lembu|是牛肉|用牛肉|it'?s cow|not (water )?buffalo|isn't (water )?buffalo|no buffalo|bukan (daging )?kerbau|不是水牛"
       ]
     },
     "note": "Buff-style Beef Momo is beef cooked buff-style: not buffalo."
@@ -2233,7 +2235,7 @@
         "assistant": "Momo: Chicken RM14.90, Pork RM15.90, Buff-style Beef RM16.90, Veg RM12.90 (8 pieces, steamed or pan-fried), Jhol Momo RM16.90, C-Momo RM17.90 and the Momo Platter RM32.90."
       }
     ],
-    "question": "那个汤的要两份，一份素的",
+    "question": "那个汤的要两份，一份素的，多少钱？",
     "at": {
       "day": "Sat",
       "time": "20:00",
@@ -2345,7 +2347,7 @@
     },
     "expect": {
       "says": [
-        "lunch|11[:.]30|11 ?: ?30|tengah hari|午餐|十一点半|11点半|mon(day)?\\W{0,3}(to|-|–|until)\\W{0,3}fri|weekday|isnin"
+        "11[:.]30|11 ?: ?30|十一点半|11点半|mon(day)?\\W{0,3}(to|-|–|until)\\W{0,3}fri|weekdays?|isnin|hari bekerja|平日|周一至周五|星期一到五|星期一至五|not (available|served|on) (on )?(weekends?|saturdays?|today)|n't (available|served) (on )?(weekends?|saturdays?|today)|not available|unavailable|n't available"
       ],
       "excludes": [
         "Momo Lunch Set",
@@ -2373,7 +2375,7 @@
     },
     "expect": {
       "says": [
-        "lunch|11[:.]30|11 ?: ?30|tengah hari|午餐|十一点半|11点半|mon(day)?\\W{0,3}(to|-|–|until)\\W{0,3}fri|weekday|isnin|2[:.]30|14:30|ended|over|habis|tamat"
+        "11[:.]30|11 ?: ?30|十一点半|11点半|mon(day)?\\W{0,3}(to|-|–|until)\\W{0,3}fri|weekdays?|isnin|2[:.]30|14:30|ended|\\bover\\b|finished|closed|habis|tamat|not available|unavailable|n't available|结束|过了"
       ],
       "excludes": [
         "Momo Lunch Set",
@@ -2442,7 +2444,7 @@
     "question": "when is momo monday?",
     "expect": {
       "says": [
-        "monday|isnin|星期一|周一|礼拜一"
+        "all day|every monday|each monday|mondays|setiap (hari )?isnin|sepanjang hari|全天|整天|每(个)?(星期|周|礼拜)一"
       ]
     }
   },
@@ -3093,7 +3095,7 @@
     "expect": {
       "noDishes": true,
       "says": [
-        "\\bno\\b|n't|tiada|tak (ada|kena)|takde|没有|不收|0 ?%|no service"
+        "no service charge|n't (have|charge|add|take)( any| a)? service|no (extra |additional )?charges?|(^|[^0-9.])0 ?%|tiada (caj|cas|bayaran)|tak (ada|kena) (caj|cas)|takde (caj|cas)|没有服务费|不收服务费|免服务费|^\\W*no\\b"
       ]
     }
   },
@@ -3216,7 +3218,7 @@
         "Masala Chiya"
       ],
       "says": [
-        "\\bya\\b|\\byes\\b|(?<!tiada )(?<!tak ada )(?<!tanpa )susu|milk tea|teh susu"
+        "\\bya\\b|\\byes\\b|(?<!tiada )(?<!tak ada )(?<!tidak ada )(?<!tanpa )(?<!tak )(?<!tak guna )(?<!bukan )susu|milk tea|teh susu"
       ]
     }
   },
@@ -3363,7 +3365,7 @@
         "Veg Momo"
       ],
       "says": [
-        "no egg|egg.?free|n't (have|contain|use) (any )?egg|tiada telur|tak (ada |guna )?telur|没有(鸡)?蛋|不含(鸡)?蛋"
+        "no egg|(?<!not )(?<!n't )egg.?free|n't (have|contain|use) (any )?egg|tiada telur|tak (ada |guna )?telur|没有(鸡)?蛋|不含(鸡)?蛋"
       ]
     }
   },

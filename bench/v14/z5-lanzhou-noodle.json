@@ -954,13 +954,17 @@
     ],
     "question": "must choose noodle thickness ah?",
     "expect": {
-      "includes": [
-        "Lanzhou Beef Noodle Soup"
-      ],
       "says": [
-        "\\byes\\b|\\bya\\b|required|must|need to|have to|perlu|wajib|必须|一定要|要选"
+        "\\byes\\b|\\bya\\b|(?<!not )(?<!n't )required|(?<!not a )(?<!n't )(?<!no )\\bmust\\b|(?<!n't )(?<!no )(?<!not )need to|(?<!n't )have to|(?<!tak )(?<!tidak )(?<!tak payah )perlu|(?<!tak )(?<!tidak )wajib|(?<!不)必须|(?<!不)一定要|(?<!不需)(?<!不一定)(?<!不)要选"
+      ],
+      "includesAny": [
+        "Lanzhou Beef Noodle Soup",
+        "Braised Beef Noodle Soup",
+        "Tomato Egg Noodle Soup",
+        "Noodle & Mo Combo"
       ]
-    }
+    },
+    "note": "Four dishes have a required (min 1) noodle-thickness group; any of them may be shown."
   },
   {
     "id": "v14z5-lanzhou-noodle-036",
@@ -1063,7 +1067,7 @@
     "question": "can add fried egg to the liangpi?",
     "expect": {
       "says": [
-        "n't (have|offer|come with|available|an option|possible|part of|one of)|not (available|an option|offered|possible|part of|one of|on the)|no (such|egg|cheese|option)|only (comes|offer|extra)|tak (boleh|ada)|tiada|takde|tidak (boleh|ada)|不能|没有|不可以|不提供|只有|gluten cubes"
+        "n't (have|offer|come with|available|an option|possible|part of|one of)|not (available|an option|offered|possible|part of|one of|on the)|no (such|egg|cheese|option)|only (comes|offer|extra)|tak (boleh|ada)|tiada|takde|tidak (boleh|ada)|不能|没有|不可以|不提供|只有|only.{0,30}gluten cubes|gluten cubes (only|is the only)|just (the )?(extra )?gluten cubes"
       ]
     },
     "note": "Liangpi's only topping is extra gluten cubes."
@@ -1283,7 +1287,7 @@
     },
     "expect": {
       "says": [
-        "\\byes\\b|\\bya\\b|\\bboleh\\b(?! ?tak)|可以|(?<!不)能|\\bcan\\b(?!'t|not| not)|\\bsure\\b|(?<!n't )(?<!not )option"
+        "\\byes\\b|\\bya\\b|\\bboleh\\b(?! ?tak)|可以|(?<!不)能|\\bcan\\b(?!'t|not| not)|\\bsure\\b|(?<!n't )(?<!not )(?<!no )option"
       ],
       "excludes": [
         "Lamb Noodle Soup"
@@ -1329,7 +1333,7 @@
     "question": "走葱走香菜得唔得？要加钱吗？",
     "expect": {
       "says": [
-        "\\bfree\\b|no (extra |additional )?(charge|cost)|at no (extra )?(charge|cost)|doesn't cost|percuma|tak (kena )?caj|tiada caj|免费|不用(加|另)?(钱|收费)|不加钱|不另收|不收(钱|费)|(^|[^0-9])0\\.00|可以|得"
+        "\\bfree\\b|no (extra |additional )?(charge|cost)|at no (extra )?(charge|cost)|doesn't cost|percuma|tak (kena )?caj|tiada caj|免费|不用(加|另)?(钱|收费)|不加钱|不另收|不收(钱|费)|(^|[^0-9])0\\.00"
       ]
     },
     "note": "Cantonese 走葱 = no spring onion; garnish options are free (beef noodle soup)."
@@ -1352,7 +1356,7 @@
       ],
       "safetyNote": true,
       "says": [
-        "\\byes\\b|walnuts? (is|are) (a )?tree|tree nut|kacang pokok|坚果|树坚果"
+        "\\byes\\b|walnuts? (is|are) (a )?tree|(?<!not a )(?<!n't a )(?<!not )tree nut|kacang pokok|坚果|树坚果"
       ],
       "excludes": [
         "Lamb Noodle Soup",
@@ -1852,8 +1856,7 @@
         "Sour Soup Lamb Dumplings"
       ],
       "says": [
-        "vinegar|醋|cuka",
-        "seaweed|紫菜|海带|rumpai laut"
+        "vinegar|醋|cuka|seaweed|紫菜|海带|rumpai laut|chilli oil|辣油|no fish|n't (have|contain|use) (any )?fish|without fish|tiada ikan|tak (ada )?ikan|没有鱼|不含鱼"
       ]
     },
     "note": "Seaweed is not fish; the soup is black vinegar, chilli oil, coriander, seaweed."
@@ -1941,7 +1944,7 @@
         "assistant": "Beef & Celery Dumplings RM14.90: 12 boiled wheat dumplings with minced beef, Chinese celery and ginger, black vinegar dip."
       }
     ],
-    "question": "两个那个水饺，打包",
+    "question": "两个那个水饺，打包，多少钱？",
     "at": {
       "day": "Sat",
       "time": "12:30",
@@ -2116,7 +2119,7 @@
         "Liangpi"
       ],
       "says": [
-        "\\byes\\b|\\bya\\b|\\bboleh\\b(?! ?tak)|可以|(?<!不)能|\\bcan\\b(?!'t|not| not)|\\bsure\\b|included|termasuk|包括|也有"
+        "\\byes\\b|\\bya\\b|\\bboleh\\b(?! ?tak)|可以|(?<!不)能|\\bcan\\b(?!'t|not| not)|\\bsure\\b|(?<!not )(?<!n't )included|(?<!tak )(?<!tidak )termasuk|(?<!不)包括|也有"
       ]
     }
   },
@@ -2366,7 +2369,7 @@
         "Sesame Paste Noodles"
       ],
       "says": [
-        "(?<!no )(?<!not )peanut butter|\\byes\\b|(?<!no )(?<!any )contains? peanut|ada kacang tanah|(?<![没不])有花生|含花生|花生酱"
+        "(?<!no )(?<!not )peanut butter|\\byes\\b|(?<!no )(?<!any )contains? peanut|ada kacang tanah|(?<![没不])有花生|(?<!不)含花生|(?<!没有)(?<!不含)(?<!没)花生酱"
       ]
     }
   },
@@ -2386,7 +2389,7 @@
         "Eight Treasure Tea"
       ],
       "says": [
-        "(?<!no )walnut|\\byes\\b|(?<![没不])有核桃|核桃|walnut|ada kacang"
+        "(?<!no )(?<!any )(?<!n't have )walnut|\\byes\\b|(?<![没不])有核桃|(?<!没有)(?<!不含)(?<!没)核桃|(?<!ti)(?<!tak )(?<!tidak )ada kacang"
       ]
     }
   },
@@ -2578,7 +2581,7 @@
         "Apricot Juice"
       ],
       "says": [
-        "\\byes\\b|\\bya\\b|(?<!no )(?<!any )(?<!not )preserved with sulphites|(?<!no )contains? sulphites?|(?<![没不])有亚硫酸|含亚硫酸|ada sulfit"
+        "\\byes\\b|\\bya\\b|(?<!no )(?<!any )(?<!not )preserved with sulphites|(?<!no )contains? sulphites?|(?<![没不])有亚硫酸|含亚硫酸|(?<!ti)ada sulfit"
       ]
     }
   },
@@ -3242,7 +3245,7 @@
     },
     "expect": {
       "says": [
-        "supper|9 ?pm|9:00|9\\.00 ?pm|21:00|9 ?malam|晚上9|晚上九|九点|9点|宵夜|夜宵"
+        "9 ?pm|9:00|9\\.00 ?pm|21:00|9 ?malam|晚上9|晚上九|九点|9点"
       ]
     }
   },

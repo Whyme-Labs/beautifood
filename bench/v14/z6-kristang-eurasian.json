@@ -1020,7 +1020,7 @@
     },
     "expect": {
       "says": [
-        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|没有(?!问题)|卖完|售罄"
+        "not available|unavailable|sold out|habis|finished|don't have|do not have|no longer|n't (available|offer|have|carry)|not (offered|an option|one of)|out of stock|ran out|tiada|takde|tak ada|没有(?!问题)|卖完|售罄"
       ]
     },
     "note": "The line offers ice cream for RM3.00 but it is not in the add-on groups: the add-on that is out."
@@ -1105,7 +1105,7 @@
         "Chicken Pong Teh"
       ],
       "says": [
-        "shrimp|prawn|crustacean|udang|虾"
+        "shrimp paste|prawn paste|fermented shrimp|(?<!no )(?<!not )(?<!n't contain )(?<!any )(?<!free of )(shrimp|prawn)s?(?! ?-?free)|(?<!no )(?<!not )crustacean|(?<!tiada )(?<!tanpa )(?<!tak ada )udang|虾酱|虾膏|(?<![没不])有虾|(?<!不)含虾"
       ]
     },
     "note": "Pong teh is shellfish-free; the belacan add-on is shrimp paste."
@@ -1291,7 +1291,7 @@
       ],
       "says": [
         "feng|smoore|fruit cake|猪杂|炖牛肉|水果蛋糕",
-        "christmas|krismas|圣诞|december|disember|十二月|12月|1 dec|dec(ember)? 1|1st dec"
+        "december|disember|十二月|12月|1 dec|dec(ember)? 1|1st dec"
       ]
     },
     "note": "Timed menu asked for in November: names the three dishes and that it starts in December; no cards."
@@ -1336,7 +1336,7 @@
         "Ikan Chuan Chuan"
       ],
       "says": [
-        "sold out|habis|finished|not available|unavailable|卖完|售罄|没有了"
+        "sold out|habis|finished|not available|unavailable|n't available|out of stock|ran out|tiada|takde|tak ada|卖完|售罄|没有了"
       ]
     },
     "note": "Sold out."
@@ -2054,7 +2054,7 @@
         "Sambal Udang"
       ],
       "says": [
-        "gluten.?free|no gluten|(doesn't|does not|don't) (have|contain) (any )?gluten|tiada gluten|tak ada gluten|bebas gluten|没有麸质|不含麸质|无麸质"
+        "(?<!not )(?<!n't )(?<!isn't )gluten.?free|no gluten|(doesn't|does not|don't) (have|contain) (any )?gluten|tiada gluten|tak ada gluten|bebas gluten|没有麸质|不含麸质|无麸质"
       ]
     },
     "note": "Gluten-free by the gold."
@@ -2900,7 +2900,7 @@
     },
     "expect": {
       "says": [
-        "(?<![没不无])有酒精|含酒精|是酒|(?<![没不无])含有酒精|是加强|fortified|(?<!(no |non-|non |without |free of ))alcohol(?!-free| free)"
+        "(?<![没不无])有酒精|含酒精|(?<!不)是酒|(?<![没不无])含有酒精|是加强|fortified|(?<!(no |non-|non |without |free of ))alcohol(?!-free| free)"
       ]
     },
     "note": "Port wine contains alcohol; failing a halal-type fact, not required."
@@ -3096,7 +3096,7 @@
       ],
       "maxDishes": 3,
       "says": [
-        "christmas|krismas|圣诞|december|disember|十二月|12月|1 dec|dec(ember)? 1|1st dec|smoore"
+        "christmas|krismas|圣诞|december|disember|十二月|12月|1 dec|dec(ember)? 1|1st dec"
       ]
     },
     "note": "Only Beef Smoore, a Christmas special not served in Nov."
