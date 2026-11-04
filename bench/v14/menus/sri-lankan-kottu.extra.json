@@ -1,0 +1,836 @@
+{
+  "soldOut": [
+    "Isso Vadai"
+  ],
+  "menus": [
+    {
+      "name": "Hopper night",
+      "dishes": [
+        "Plain Hoppers",
+        "Egg Hoppers",
+        "Hopper Feast"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "18:00",
+          "to": "22:30"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Kottu lunch",
+      "kind": "amount",
+      "value": 100,
+      "categories": [
+        "KOTTU"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "12:00",
+          "to": "14:30"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Chicken Kottu": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Sri Lankan hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 300
+          },
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Extra chicken",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Sambol add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pol sambol",
+            "price": 250
+          },
+          {
+            "name": "Lunu miris",
+            "price": 200
+          },
+          {
+            "name": "Seeni sambol",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Egg Kottu": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Sri Lankan hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 300
+          },
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Extra chicken",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Sambol add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pol sambol",
+            "price": 250
+          },
+          {
+            "name": "Lunu miris",
+            "price": 200
+          },
+          {
+            "name": "Seeni sambol",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Cheese Kottu": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Sri Lankan hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 300
+          },
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Extra chicken",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Sambol add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pol sambol",
+            "price": 250
+          },
+          {
+            "name": "Lunu miris",
+            "price": 200
+          },
+          {
+            "name": "Seeni sambol",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Vegetable Kottu": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Sri Lankan hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 300
+          },
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Extra chicken",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Sambol add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pol sambol",
+            "price": 250
+          },
+          {
+            "name": "Lunu miris",
+            "price": 200
+          },
+          {
+            "name": "Seeni sambol",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Beef Kottu": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 400
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Sri Lankan hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra cheese",
+            "price": 300
+          },
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Extra chicken",
+            "price": 500
+          }
+        ]
+      },
+      {
+        "name": "Sambol add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pol sambol",
+            "price": 250
+          },
+          {
+            "name": "Lunu miris",
+            "price": 200
+          },
+          {
+            "name": "Seeni sambol",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Kottu Meal": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Ceylon milk tea",
+            "price": 0
+          },
+          {
+            "name": "Ginger beer",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Sri Lankan hot",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Plain Hoppers": [
+      {
+        "name": "Sambol add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Pol sambol",
+            "price": 250
+          },
+          {
+            "name": "Lunu miris",
+            "price": 200
+          },
+          {
+            "name": "Seeni sambol",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Curry add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Dhal curry",
+            "price": 400
+          },
+          {
+            "name": "Chicken curry",
+            "price": 700
+          }
+        ]
+      }
+    ],
+    "Egg Hoppers": [
+      {
+        "name": "Yolk",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Runny",
+            "price": 0
+          },
+          {
+            "name": "Well done",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Sambol add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pol sambol",
+            "price": 250
+          },
+          {
+            "name": "Seeni sambol",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Hopper Feast": [
+      {
+        "name": "Curries",
+        "min": 3,
+        "max": 3,
+        "options": [
+          {
+            "name": "Dhal curry",
+            "price": 0
+          },
+          {
+            "name": "Chicken curry",
+            "price": 0
+          },
+          {
+            "name": "Potato curry",
+            "price": 0
+          },
+          {
+            "name": "Fish ambul thiyal",
+            "price": 300
+          },
+          {
+            "name": "Beef curry",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "String Hoppers Set": [
+      {
+        "name": "Curries",
+        "min": 2,
+        "max": 2,
+        "options": [
+          {
+            "name": "Dhal curry",
+            "price": 0
+          },
+          {
+            "name": "Chicken curry",
+            "price": 0
+          },
+          {
+            "name": "Potato curry",
+            "price": 0
+          },
+          {
+            "name": "Fish ambul thiyal",
+            "price": 300
+          },
+          {
+            "name": "Beef curry",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Extra string hoppers",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "5 more string hoppers",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Sambol add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Lunu miris",
+            "price": 200
+          },
+          {
+            "name": "Seeni sambol",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Lamprais": [
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra frikkadel",
+            "price": 350
+          },
+          {
+            "name": "Extra egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Devilled Chicken": [
+      {
+        "name": "Spice level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Mild",
+            "price": 0
+          },
+          {
+            "name": "Medium",
+            "price": 0
+          },
+          {
+            "name": "Sri Lankan hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Side",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Godamba roti",
+            "price": 350
+          },
+          {
+            "name": "Yellow rice",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Fish Ambul Thiyal": [
+      {
+        "name": "Side",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Godamba roti",
+            "price": 350
+          },
+          {
+            "name": "Yellow rice",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Chicken Curry": [
+      {
+        "name": "Side",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Godamba roti",
+            "price": 350
+          },
+          {
+            "name": "Yellow rice",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Kiribath with Lunu Miris": [
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Pol sambol",
+            "price": 250
+          },
+          {
+            "name": "Seeni sambol",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Faluda": [
+      {
+        "name": "Extra",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra ice cream",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Ceylon Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Ceylon Milk Tea": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Woodapple Juice": [
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 5,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "certified",
+    "certifier": "JAKIM",
+    "certNo": "JAKIM-1100-03/2024-0871",
+    "validUntil": "2026-09-30"
+  }
+}

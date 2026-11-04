@@ -1,0 +1,800 @@
+{
+  "soldOut": [
+    "Ikan Chuan Chuan"
+  ],
+  "menus": [
+    {
+      "name": "Christmas specials",
+      "dishes": [
+        "Feng",
+        "Beef Smoore",
+        "Christmas Fruit Cake"
+      ],
+      "windows": [
+        {
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "from": "11:00",
+          "to": "22:00",
+          "start": "2026-12-01",
+          "end": "2026-12-31"
+        }
+      ]
+    },
+    {
+      "name": "Sunday brunch",
+      "dishes": [
+        "Eurasian Big Breakfast",
+        "Debal Bread Bowl",
+        "Seybak Bun"
+      ],
+      "windows": [
+        {
+          "days": [
+            0
+          ],
+          "from": "09:00",
+          "to": "13:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Happy hour",
+      "kind": "percent",
+      "value": 20,
+      "categories": [
+        "DRINKS"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "17:00",
+          "to": "19:00"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Curry Debal": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Turmeric rice",
+            "price": 150
+          },
+          {
+            "name": "Crusty bread roll",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Extra pieces",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra chicken",
+            "price": 500
+          },
+          {
+            "name": "Extra sausage",
+            "price": 300
+          },
+          {
+            "name": "Extra potato",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Achar",
+            "price": 300
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Pork Vindalho": [
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Turmeric rice",
+            "price": 150
+          },
+          {
+            "name": "Crusty bread roll",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Extra pieces",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra pork",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Achar",
+            "price": 300
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Ikan Ambiler": [
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Turmeric rice",
+            "price": 150
+          },
+          {
+            "name": "Crusty bread roll",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Extra pieces",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra fish",
+            "price": 700
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Achar",
+            "price": 300
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Chicken Pong Teh": [
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Turmeric rice",
+            "price": 150
+          },
+          {
+            "name": "Crusty bread roll",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Extra pieces",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra chicken",
+            "price": 500
+          },
+          {
+            "name": "Extra potato",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Achar",
+            "price": 300
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Seybak": [
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Turmeric rice",
+            "price": 150
+          },
+          {
+            "name": "Crusty bread roll",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Achar",
+            "price": 300
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Feng": [
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Turmeric rice",
+            "price": 150
+          },
+          {
+            "name": "Crusty bread roll",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Beef Smoore": [
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Turmeric rice",
+            "price": 150
+          },
+          {
+            "name": "Crusty bread roll",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Sambal Lada with Fried Fish": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Extra hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Turmeric rice",
+            "price": 150
+          },
+          {
+            "name": "Crusty bread roll",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Extra pieces",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra fried fish",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Sambal Udang": [
+      {
+        "name": "Sambal level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less spicy",
+            "price": 0
+          },
+          {
+            "name": "Extra hot",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Rice or bread",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "White rice",
+            "price": 0
+          },
+          {
+            "name": "Turmeric rice",
+            "price": 150
+          },
+          {
+            "name": "Crusty bread roll",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Extra pieces",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra prawns",
+            "price": 800
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Achar",
+            "price": 300
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Eurasian Fried Rice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Sambal belacan",
+            "price": 150
+          },
+          {
+            "name": "Extra prawns",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Debal Lunch Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Lime juice",
+            "price": 0
+          },
+          {
+            "name": "Iced lemon tea",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Eurasian Big Breakfast": [
+      {
+        "name": "Eggs",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Fried",
+            "price": 0
+          },
+          {
+            "name": "Scrambled",
+            "price": 0
+          },
+          {
+            "name": "Poached",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra sausage",
+            "price": 300
+          },
+          {
+            "name": "Extra toast",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Debal Bread Bowl": [
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra sausage",
+            "price": 300
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Lime Juice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Iced Lemon Tea": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 150
+          }
+        ]
+      },
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal sugar",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Kopi": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "Extra sweet",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Teh Tarik": [
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 50
+          }
+        ]
+      },
+      {
+        "name": "Sweetness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "Extra sweet",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "halal": {
+    "status": "none"
+  }
+}

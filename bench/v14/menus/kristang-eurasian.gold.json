@@ -1,0 +1,328 @@
+{
+  "Curry Debal": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "tree_nuts",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Chicken sausages stated with wheat and soy; candlenut read as tree_nuts (v12 safe reading); mustard seeds = mustard. No pork or alcohol, so halal by ingredients at a 'none' branch. The free white rice is the default; turmeric rice and bread roll are priced add-ons (not counted). Very spicy."
+  },
+  "Pork Vindalho": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Pork; mustard seeds. Vinegar, garlic, chilli, cumin add no allergen. Spicy."
+  },
+  "Ikan Ambiler": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Mackerel = fish; belacan = crustaceans. Brinjal, lemongrass, turmeric add nothing. Spicy."
+  },
+  "Chicken Pong Teh": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Taucheo = soy; dark soy sauce = soy + gluten. Gula melaka. Not spicy, no chilli named."
+  },
+  "Seybak": {
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork belly; dark soy sauce = soy + gluten. Not spicy."
+  },
+  "Feng": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork and offal; coriander, cumin, fennel and turmeric are not regulated allergens (fennel is not celery). Mildly spicy."
+  },
+  "Beef Smoore": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "fish"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Dark soy = soy + gluten; Worcestershire = fish + gluten (rule i). No alcohol stated. Not spicy."
+  },
+  "Ikan Chuan Chuan": {
+    "allergens": [
+      "fish",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Pomfret = fish; taucheo = soy; light soy = soy + gluten. Not spicy. Sold out."
+  },
+  "Sambal Lada with Fried Fish": {
+    "allergens": [
+      "fish",
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Ikan selar = fish; belacan in the sambal = crustaceans. Turmeric-fried, no flour stated. Very spicy."
+  },
+  "Sambal Udang": {
+    "allergens": [
+      "crustaceans"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Prawns and belacan = crustaceans. Spicy."
+  },
+  "Eurasian Fried Rice": {
+    "allergens": [
+      "crustaceans",
+      "egg",
+      "soy",
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Prawns; egg; light soy = soy + gluten. Not spicy."
+  },
+  "White Rice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Plain rice."
+  },
+  "Achar": {
+    "allergens": [
+      "peanuts",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Crushed peanuts and sesame seeds; no belacan or dried shrimp named; merchant tags vegan. Mildly spicy."
+  },
+  "Debal Lunch Set": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "tree_nuts",
+      "mustard",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Union of its default parts: Curry Debal (wheat/soy sausages, candlenut, mustard seeds), white rice, Portuguese Egg Tart (butter pastry, eggs, milk, cream) and lime juice or iced lemon tea (both allergen-free). Very spicy from the curry."
+  },
+  "Eurasian Big Breakfast": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "egg",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Eggs; chicken sausages with wheat and soy; buttered toast = gluten + milk. Baked beans and mushrooms add nothing. Halal by ingredients."
+  },
+  "Debal Bread Bowl": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "tree_nuts",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Curry Debal (sausage wheat and soy, candlenut, mustard seeds) in a wheat loaf. Very spicy."
+  },
+  "Seybak Bun": {
+    "allergens": [
+      "soy",
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Pork belly; dark soy = soy + gluten; milk bun = milk + gluten. No egg stated. Not spicy."
+  },
+  "Pang Susi": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Flour, butter, egg dough; minced pork filling, so not vegetarian and not halal."
+  },
+  "Portuguese Egg Tart": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Butter pastry (wheat, butter); custard of eggs, milk, cream."
+  },
+  "Sugee Cake": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Semolina = wheat; butter; egg yolks; ground almonds. No brandy stated."
+  },
+  "Cocada": {
+    "allergens": [
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg yolk. Coconut is not a tree nut or milk."
+  },
+  "Sago Gula Melaka": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Sago, palm sugar, coconut milk (not milk). The vanilla ice cream add-on is out and is not counted."
+  },
+  "Christmas Fruit Cake": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "egg",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Flour, butter, eggs, almonds; rum = not halal, no allergen. Raisins and prunes, no sulphited fruit named."
+  },
+  "Lime Juice": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Calamansi, sugar syrup."
+  },
+  "Iced Lemon Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Tea, lemon, sugar."
+  },
+  "Kopi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk. No butter roast stated (rule o does not apply)."
+  },
+  "Teh Tarik": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Condensed milk."
+  },
+  "Tiger Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Barley malt = gluten; alcohol = not halal. Vegan as earlier lagers (v7 Asahi, v8 Tsingtao)."
+  },
+  "Port Wine": {
+    "allergens": [
+      "sulphites"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": false,
+    "spice": 0,
+    "note": "Grape wine (fortified) = sulphites, not halal (rule h). Fining agents (egg white, casein) are unstated, so vegan is not claimed; vegetarian kept."
+  },
+  "Mineral Water": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Water."
+  }
+}
