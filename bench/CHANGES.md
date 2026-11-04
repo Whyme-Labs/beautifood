@@ -1698,3 +1698,36 @@ committed with a dev case broken):
   service charge still reads "with service and tax" (true, at 0%).
 - The two soft passes from pass 1 (`kerala-kitchen-107`, `-048`) still pass the same way.
 - Cost: a 30-turn conversation is ~390 ms at turn 30, as after pass 1 (395 ms measured the same way).
+
+## v14 held-out set: pre-registration (2026-11-04, before any v14 file exists)
+
+- **What is measured.** The deployed brain at `61e79cf` (no `src/` change since `332bdc3`; rules, the
+  reader off), scored once on v14's `test` split, with the claim checker unchanged. Nothing in the
+  engine (`src/`) changes between this entry and that scoring. v14's failures will not be read case by
+  case.
+- **Why.** v13 dev went 72.9% (its one held-out score) → 100% after two dev passes, all dev 96.8%. The
+  held-out reads so far, each scored once by the brain of its day: v10 67.6%, v11 71.1%, v12 75.6%,
+  v13 72.9% (bill/modifier 62.4%). v14 asks whether the v13 passes, more general in kind than v12's
+  (planning within money that includes charges, sets against their parts, comparisons within a family,
+  the menu's own glosses), carry over.
+- **What the numbers would mean (written before scoring):**
+  - unsafe 0 on the whole set (a hard requirement);
+  - headline ≥ 85% and cases tagged bill or modifier ≥ 80%: most of the dev gain carries over;
+  - headline in the 70–76% band of v10–v13: the v13 dev work was fitted to v13, not general.
+- **How v14 is written.** As v13: 4 new menus by 2 new authors (z5, z6) who never see the engine, its
+  code, any earlier case file or any result, briefed with v13's brief unchanged except for the set name,
+  paths, their menus and the read list (now `bench/v12/REVIEW-z1z2.md`, the slip in v13's brief
+  corrected, and `bench/v13/REVIEW-z3z4.md`); then a third, blind reviewer checks every case and gold
+  entry. No coverage was added to the brief.
+- **Menus and branch settings (chosen for distance from v1–v13, and for settings used less):**
+  - z5 `lanzhou-noodle`: halal muslim_friendly; 5% service, 6% tax, cash rounding 10; a Supper timed
+    menu Fri–Sat across midnight; a whole-menu opening deal on dated weekdays and a noodle deal on
+    Tuesdays, overlapping (the lower price wins); one dish sold out.
+  - z5 `nepali-momo-house`: halal none (pork and alcohol on the menu); no service and no tax; a weekday
+    Lunch set timed menu; an amount deal on every momo plate on Mondays; one dish sold out.
+  - z6 `kristang-eurasian`: halal none; no `charges` block (the defaults: 10% service, 6% tax, rounding
+    5); a dated Christmas timed menu in December only (not yet served in November) and a Sunday brunch
+    menu; a weekday happy hour on drinks; one dish sold out.
+  - z6 `sri-lankan-kottu`: halal certified with an expired certificate (no certificate now); 5%
+    service, 6% tax, rounding 5; an evening Hopper night timed menu; an amount deal on kottu at
+    weekday lunch; one dish sold out.
