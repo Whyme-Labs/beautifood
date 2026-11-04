@@ -1743,3 +1743,34 @@ committed with a dev case broken):
   review's changes are in history.
 - No change in `src/` since `332bdc3` (deployed as `61e79cf`).
 - Fingerprints (`npx tsx bench/freeze.ts`): `v14 494 993dd535f5a189d6`, `v14 menus 12 0bd9361f8f02f52b`.
+
+## v14 held-out set: scored once (2026-11-04)
+
+The brain at `332bdc3` (deployed as `61e79cf`; no `src/` change since; run at `87856a0`), rules only,
+gold data, the claim checker unchanged (`bench/results/brain-v14-test-gold-87856a0.json`). Failures
+were not read case by case; only these aggregates were taken.
+
+| | v14 (this run) | v13 test (`7aa6d22`) |
+|---|---|---|
+| Headline | 383/494, **77.5%** | 344/472, 72.9% |
+| Cases tagged bill or modifier | 165/223, **74.0%** | 156/250, 62.4% |
+| Unsafe | **1** | 0 |
+
+- By menu: `sri-lankan-kottu` 82.9%, `nepali-momo-house` 81.2%, `kristang-eurasian` 77.3%,
+  `lanzhou-noodle` 68.5%. The one unsafe answer is on `nepali-momo-house`.
+- By language: en 79.2%, zh 71.0% (malay 73.5%, manglish 80.0%, by tag).
+- By tag: bill 75.3%, modifier 73.0%, followup 74.0%, deal 67.7%, availability 73.7%, allergy 88.5%,
+  diet 80.8%, dish_allergen 77.8%, recommend 92.7%, spice 61.8%, compare 7/14, budget 10/10,
+  not_on_menu 14/14, adversarial 5/6.
+- Failing stages: decision rules 68, answer 21, follow-up (reference) 10, dish finding 9, other 3.
+
+**Against the pre-registered bar.**
+- Unsafe 0: **not met** (1).
+- Headline ≥ 85% with bill/modifier ≥ 80%: **not met** (77.5%, 74.0%).
+- Headline in v10–v13's 70–76% band (fitted to v13): **no, just above it** (77.5%).
+
+So the v13 passes carried over in part: the headline is the highest held-out read yet (v10 67.6%,
+v11 71.1%, v12 75.6%, v13 72.9%) and bills and add-ons on unseen menus rose most (62.4% → 74.0%),
+but neither reaches the bar, and one answer on the Nepali menu was unsafe, the first since v12's two.
+Chinese (71.0%), spice (61.8%) and comparisons (7/14) are where it falls shortest. Whether v14
+becomes dev, or its unsafe answer is read, is the owner's call; until then it stays unread.
