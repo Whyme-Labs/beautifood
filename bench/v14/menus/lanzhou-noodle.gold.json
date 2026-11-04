@@ -1,0 +1,302 @@
+{
+  "Lanzhou Beef Noodle Soup": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Hand-pulled wheat noodles = gluten; beef broth. House chilli oil with no heat word = 1. Toppings (fried egg, extra beef) are options, not counted; braised egg is named but not offered (out)."
+  },
+  "Braised Beef Noodle Soup": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat noodles; dark soy sauce = soy + gluten; mildly spicy = 1."
+  },
+  "Lamb Noodle Soup": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat noodles, lamb broth; goji is not an allergen; not spicy. Sold out."
+  },
+  "Tomato Egg Noodle Soup": {
+    "allergens": [
+      "gluten",
+      "egg"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat noodles; scrambled egg; vegetable broth, so vegetarian, not vegan."
+  },
+  "Youpo Mian": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat noodles; black vinegar = gluten (v7); light soy = soy + gluten; no animal product; spicy."
+  },
+  "Knife-cut Noodles": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat noodles; dark soy gravy; a little chilli = 1."
+  },
+  "Stir-fried Noodle Pieces": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat noodle pieces; light soy; mildly spicy = 1."
+  },
+  "Sesame Paste Noodles": {
+    "allergens": [
+      "gluten",
+      "sesame",
+      "peanuts",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat noodles; sesame paste; peanut butter = peanuts; light soy; black vinegar; a little chilli oil = 1."
+  },
+  "Liangpi": {
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat starch and gluten cubes (mianjin) = gluten; black vinegar; sesame paste; spicy."
+  },
+  "Smacked Cucumber": {
+    "allergens": [
+      "gluten",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Black vinegar (wheat bran) = gluten (v7); sesame oil; a little chilli oil = 1."
+  },
+  "Cold Beef Shank": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Soy sauce = soy + gluten; chilli oil with no heat word = 1."
+  },
+  "Cumin Lamb Roujiamo": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat flatbread; no soy named; mildly spicy = 1."
+  },
+  "Braised Beef Roujiamo": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat flatbread; soy-braised beef; not spicy."
+  },
+  "Spring Onion Pancake": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat pancake fried in vegetable oil (no lard on a muslim_friendly branch); vegan."
+  },
+  "Beef & Celery Dumplings": {
+    "allergens": [
+      "gluten",
+      "celery"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Wheat wrapper; Chinese celery = celery; black vinegar dip = gluten anyway; not spicy."
+  },
+  "Big Plate Chicken": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Dark soy and broad bean chilli paste (doubanjiang) = soy + gluten; wheat noodles; spicy. No alcohol (muslim_friendly)."
+  },
+  "Cumin Lamb": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Light soy = soy + gluten; spicy."
+  },
+  "Garlic Bok Choy": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Stated no oyster sauce; garlic and salt only."
+  },
+  "Lamb Skewers": {
+    "allergens": [],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Lamb, cumin, chilli flakes, salt; spicy. Priced per stick. Supper menu only."
+  },
+  "Sour Soup Lamb Dumplings": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Wheat wrapper; black vinegar; seaweed is not fish; no soy named; spicy. Supper menu only."
+  },
+  "Toasted Mantou": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Steamed wheat bun; chilli flakes, mildly spicy = 1. Supper menu only."
+  },
+  "Noodle & Mo Combo": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Union of its default parts: beef noodle soup (gluten, chilli oil 1), braised beef roujiamo (gluten, soy), soy milk (soy)."
+  },
+  "Youpo Combo": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "sesame",
+      "sulphites"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Union: Youpo Mian (gluten, soy, spicy), Smacked Cucumber (gluten, sesame), Apricot Juice (sulphites; the line's default drink)."
+  },
+  "Eight Treasure Tea": {
+    "allergens": [
+      "tree_nuts",
+      "sesame"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Walnut pieces = tree nuts; sesame seeds. Red dates, goji, longan, raisins, chrysanthemum are not allergens."
+  },
+  "Apricot Juice": {
+    "allergens": [
+      "sulphites"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Line states dried apricots preserved with sulphites."
+  },
+  "Set Yoghurt": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Cow's milk yoghurt; no gelatine stated."
+  },
+  "Soy Milk": {
+    "allergens": [
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0,
+    "note": "Soy."
+  },
+  "Jasmine Tea": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Mineral Water": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  }
+}

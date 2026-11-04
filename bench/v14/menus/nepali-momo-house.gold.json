@@ -1,0 +1,339 @@
+{
+  "Chicken Momo": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat wrapper; tomato achar on the side with no heat word = 1. Halal by ingredients at a `none` branch (v8 ruling 1)."
+  },
+  "Pork Momo": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Pork; wheat wrapper; timur is not an allergen; tomato achar = 1."
+  },
+  "Buff-style Beef Momo": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Beef cooked buff-style (no buffalo, no pork); halal by ingredients at a `none` branch; tomato achar = 1."
+  },
+  "Veg Momo": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Paneer = milk; wheat wrapper; tomato achar = 1."
+  },
+  "Jhol Momo": {
+    "allergens": [
+      "gluten",
+      "sesame",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken by default (filling is a stated-default group); roasted sesame and soybeans in the jhol; mildly spicy."
+  },
+  "C-Momo": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Chicken by default; soy sauce = soy + gluten; ketchup not an allergen; very spicy."
+  },
+  "Momo Platter": {
+    "allergens": [
+      "gluten",
+      "milk",
+      "sesame"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 1,
+    "note": "Union: pork momo (not halal), veg with paneer (milk), sesame achar; tomato achar = 1."
+  },
+  "Chicken Thukpa": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat noodles; soy sauce; mild."
+  },
+  "Veg Thukpa": {
+    "allergens": [
+      "gluten",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 1,
+    "note": "Wheat noodles; tofu and soy sauce; vegetable broth; mild."
+  },
+  "Chicken Chowmein": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg noodles = gluten + egg; soy sauce; not spicy."
+  },
+  "Veg Chowmein": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Egg noodles: vegetarian, not vegan."
+  },
+  "Dal Bhat Chicken Set": {
+    "allergens": [
+      "milk",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ghee = milk; mustard oil and mustard seeds = mustard; lentil (urad) papad is not gluten; mild. Gundruk soup is named but not offered (out)."
+  },
+  "Dal Bhat Mutton Set": {
+    "allergens": [
+      "milk",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Ghee; mustard oil/seeds; goat mutton; spicy."
+  },
+  "Dal Bhat Veg Set": {
+    "allergens": [
+      "milk",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ghee makes it vegetarian, not vegan; mustard oil/seeds; mild."
+  },
+  "Chicken Sekuwa": {
+    "allergens": [
+      "milk",
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 2,
+    "note": "Yoghurt marinade = milk; mustard oil; chiura (beaten rice) is not gluten; spicy."
+  },
+  "Pork Sekuwa": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": false,
+    "spice": 2,
+    "note": "Pork; mustard oil; spicy."
+  },
+  "Chicken Choila": {
+    "allergens": [
+      "mustard"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 3,
+    "note": "Mustard oil; fenugreek is not a listed allergen; very spicy."
+  },
+  "Aloo Sadeko": {
+    "allergens": [
+      "sesame",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 2,
+    "note": "Sesame seeds; mustard oil; spicy; vegan."
+  },
+  "Sel Roti": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Rice flour, stated no wheat; milk and ghee."
+  },
+  "Momo Lunch Set": {
+    "allergens": [
+      "gluten",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken momo (gluten, achar = 1) + masala chiya (milk), the default drink."
+  },
+  "Thukpa Lunch Set": {
+    "allergens": [
+      "gluten",
+      "soy",
+      "milk"
+    ],
+    "vegetarian": false,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Chicken thukpa + masala chiya (milk)."
+  },
+  "Chowmein Lunch Set": {
+    "allergens": [
+      "gluten",
+      "egg",
+      "soy",
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Veg chowmein (egg noodles, soy) + masala chiya (milk)."
+  },
+  "Dal Bhat Lunch Set": {
+    "allergens": [
+      "milk",
+      "mustard"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 1,
+    "note": "Ghee dal, mustard-oil achar, lentil papad + masala chiya; mild."
+  },
+  "Juju Dhau": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Buffalo-milk yoghurt. Sold out."
+  },
+  "Kheer": {
+    "allergens": [
+      "milk",
+      "tree_nuts"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk; cashews = tree nuts."
+  },
+  "Masala Chiya": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Milk tea."
+  },
+  "Lassi": {
+    "allergens": [
+      "milk"
+    ],
+    "vegetarian": true,
+    "vegan": false,
+    "halal": true,
+    "spice": 0,
+    "note": "Yoghurt."
+  },
+  "Fresh Lime Soda": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  },
+  "Gorkha Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer: barley malt = gluten; alcohol, not halal."
+  },
+  "Everest Beer": {
+    "allergens": [
+      "gluten"
+    ],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Beer: barley malt = gluten; alcohol, not halal."
+  },
+  "Raksi": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": false,
+    "spice": 0,
+    "note": "Distilled millet spirit: no gluten (millet), alcohol, not halal."
+  },
+  "Mineral Water": {
+    "allergens": [],
+    "vegetarian": true,
+    "vegan": true,
+    "halal": true,
+    "spice": 0
+  }
+}

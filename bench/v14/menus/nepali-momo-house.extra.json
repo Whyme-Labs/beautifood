@@ -1,0 +1,843 @@
+{
+  "soldOut": [
+    "Juju Dhau"
+  ],
+  "menus": [
+    {
+      "name": "Lunch set",
+      "dishes": [
+        "Momo Lunch Set",
+        "Thukpa Lunch Set",
+        "Chowmein Lunch Set",
+        "Dal Bhat Lunch Set"
+      ],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "11:30",
+          "to": "14:30"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Momo Monday",
+      "kind": "amount",
+      "value": 300,
+      "categories": [
+        "MOMO"
+      ],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Chicken Momo": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Steamed",
+            "price": 0
+          },
+          {
+            "name": "Pan-fried (kothey)",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Plate",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "8 pieces",
+            "price": 0
+          },
+          {
+            "name": "12 pieces",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra dips",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra tomato achar",
+            "price": 100
+          },
+          {
+            "name": "Sesame achar",
+            "price": 150
+          },
+          {
+            "name": "Chilli achar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Pork Momo": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Steamed",
+            "price": 0
+          },
+          {
+            "name": "Pan-fried (kothey)",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Plate",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "8 pieces",
+            "price": 0
+          },
+          {
+            "name": "12 pieces",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra dips",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra tomato achar",
+            "price": 100
+          },
+          {
+            "name": "Sesame achar",
+            "price": 150
+          },
+          {
+            "name": "Chilli achar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Buff-style Beef Momo": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Steamed",
+            "price": 0
+          },
+          {
+            "name": "Pan-fried (kothey)",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Plate",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "8 pieces",
+            "price": 0
+          },
+          {
+            "name": "12 pieces",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Extra dips",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra tomato achar",
+            "price": 100
+          },
+          {
+            "name": "Sesame achar",
+            "price": 150
+          },
+          {
+            "name": "Chilli achar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Veg Momo": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Steamed",
+            "price": 0
+          },
+          {
+            "name": "Pan-fried (kothey)",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Plate",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "8 pieces",
+            "price": 0
+          },
+          {
+            "name": "12 pieces",
+            "price": 450
+          }
+        ]
+      },
+      {
+        "name": "Extra dips",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra tomato achar",
+            "price": 100
+          },
+          {
+            "name": "Sesame achar",
+            "price": 150
+          },
+          {
+            "name": "Chilli achar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Jhol Momo": [
+      {
+        "name": "Filling",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Chicken",
+            "price": 0
+          },
+          {
+            "name": "Vegetable",
+            "price": 0
+          },
+          {
+            "name": "Pork",
+            "price": 100
+          },
+          {
+            "name": "Buff-style beef",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Plate",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "8 pieces",
+            "price": 0
+          },
+          {
+            "name": "12 pieces",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "C-Momo": [
+      {
+        "name": "Filling",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Chicken",
+            "price": 0
+          },
+          {
+            "name": "Vegetable",
+            "price": 0
+          },
+          {
+            "name": "Pork",
+            "price": 100
+          },
+          {
+            "name": "Buff-style beef",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Plate",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "8 pieces",
+            "price": 0
+          },
+          {
+            "name": "12 pieces",
+            "price": 600
+          }
+        ]
+      },
+      {
+        "name": "Heat",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Less hot",
+            "price": 0
+          },
+          {
+            "name": "Extra hot",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Momo Platter": [
+      {
+        "name": "Extra dips",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra tomato achar",
+            "price": 100
+          },
+          {
+            "name": "Sesame achar",
+            "price": 150
+          },
+          {
+            "name": "Chilli achar",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Chicken Thukpa": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Boiled egg",
+            "price": 250
+          },
+          {
+            "name": "Extra chicken",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Veg Thukpa": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Boiled egg",
+            "price": 250
+          },
+          {
+            "name": "Extra tofu",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Chicken Chowmein": [
+      {
+        "name": "Spice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Not spicy",
+            "price": 0
+          },
+          {
+            "name": "Make it spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 250
+          },
+          {
+            "name": "Extra chicken",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Veg Chowmein": [
+      {
+        "name": "Spice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Not spicy",
+            "price": 0
+          },
+          {
+            "name": "Make it spicy",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 250
+          },
+          {
+            "name": "Extra vegetables",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Dal Bhat Chicken Set": [
+      {
+        "name": "Refills",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Rice refill",
+            "price": 0
+          },
+          {
+            "name": "Dal refill",
+            "price": 0
+          },
+          {
+            "name": "Tarkari refill",
+            "price": 200
+          },
+          {
+            "name": "Extra papad",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 250
+          },
+          {
+            "name": "Extra curry",
+            "price": 600
+          }
+        ]
+      }
+    ],
+    "Dal Bhat Mutton Set": [
+      {
+        "name": "Refills",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Rice refill",
+            "price": 0
+          },
+          {
+            "name": "Dal refill",
+            "price": 0
+          },
+          {
+            "name": "Tarkari refill",
+            "price": 200
+          },
+          {
+            "name": "Extra papad",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 250
+          },
+          {
+            "name": "Extra curry",
+            "price": 800
+          }
+        ]
+      }
+    ],
+    "Dal Bhat Veg Set": [
+      {
+        "name": "Refills",
+        "min": 0,
+        "max": 4,
+        "options": [
+          {
+            "name": "Rice refill",
+            "price": 0
+          },
+          {
+            "name": "Dal refill",
+            "price": 0
+          },
+          {
+            "name": "Tarkari refill",
+            "price": 200
+          },
+          {
+            "name": "Extra papad",
+            "price": 100
+          }
+        ]
+      },
+      {
+        "name": "Add-ons",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 250
+          },
+          {
+            "name": "Extra curry",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "Chicken Sekuwa": [
+      {
+        "name": "Plate",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 700
+          }
+        ]
+      }
+    ],
+    "Pork Sekuwa": [
+      {
+        "name": "Plate",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 700
+          }
+        ]
+      }
+    ],
+    "Momo Lunch Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Masala chiya",
+            "price": 0
+          },
+          {
+            "name": "Fresh lime soda",
+            "price": 0
+          },
+          {
+            "name": "Sweet lassi",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Thukpa Lunch Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Masala chiya",
+            "price": 0
+          },
+          {
+            "name": "Fresh lime soda",
+            "price": 0
+          },
+          {
+            "name": "Sweet lassi",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Chowmein Lunch Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Masala chiya",
+            "price": 0
+          },
+          {
+            "name": "Fresh lime soda",
+            "price": 0
+          },
+          {
+            "name": "Sweet lassi",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Dal Bhat Lunch Set": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Masala chiya",
+            "price": 0
+          },
+          {
+            "name": "Fresh lime soda",
+            "price": 0
+          },
+          {
+            "name": "Sweet lassi",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Masala Chiya": [
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No sugar",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Iced",
+            "price": 100
+          }
+        ]
+      }
+    ],
+    "Lassi": [
+      {
+        "name": "Flavour",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sweet",
+            "price": 0
+          },
+          {
+            "name": "Salted",
+            "price": 0
+          },
+          {
+            "name": "Mango",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Fresh Lime Soda": [
+      {
+        "name": "Style",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sweet",
+            "price": 0
+          },
+          {
+            "name": "Salted",
+            "price": 0
+          },
+          {
+            "name": "Sweet & salted",
+            "price": 0
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 0,
+    "taxPct": 0,
+    "taxInclusive": false,
+    "cashRounding": 5
+  },
+  "halal": {
+    "status": "none"
+  }
+}

@@ -1,0 +1,753 @@
+{
+  "soldOut": [
+    "Lamb Noodle Soup"
+  ],
+  "menus": [
+    {
+      "name": "Supper",
+      "dishes": [
+        "Lamb Skewers",
+        "Sour Soup Lamb Dumplings",
+        "Toasted Mantou"
+      ],
+      "windows": [
+        {
+          "days": [
+            5,
+            6
+          ],
+          "from": "21:00",
+          "to": "01:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "name": "Grand opening",
+      "kind": "percent",
+      "value": 10,
+      "categories": [],
+      "dishes": [],
+      "windows": [
+        {
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "from": "00:00",
+          "to": "23:59",
+          "start": "2026-11-02",
+          "end": "2026-11-20"
+        }
+      ]
+    },
+    {
+      "name": "Noodle Tuesday",
+      "kind": "percent",
+      "value": 15,
+      "categories": [
+        "NOODLE SOUPS",
+        "DRY NOODLES"
+      ],
+      "dishes": [
+        "Liangpi"
+      ],
+      "windows": [
+        {
+          "days": [
+            2
+          ],
+          "from": "00:00",
+          "to": "23:59"
+        }
+      ]
+    }
+  ],
+  "modifiers": {
+    "Lanzhou Beef Noodle Soup": [
+      {
+        "name": "Noodle thickness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hair-thin",
+            "price": 0
+          },
+          {
+            "name": "Thin",
+            "price": 0
+          },
+          {
+            "name": "Flat",
+            "price": 0
+          },
+          {
+            "name": "Wide belt",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Chilli level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "No chilli",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra chilli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra beef",
+            "price": 500
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Extra noodles",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Garnish",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "No coriander",
+            "price": 0
+          },
+          {
+            "name": "No spring onion",
+            "price": 0
+          },
+          {
+            "name": "Extra coriander & spring onion",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Braised Beef Noodle Soup": [
+      {
+        "name": "Noodle thickness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hair-thin",
+            "price": 0
+          },
+          {
+            "name": "Thin",
+            "price": 0
+          },
+          {
+            "name": "Flat",
+            "price": 0
+          },
+          {
+            "name": "Wide belt",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra beef",
+            "price": 600
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Extra noodles",
+            "price": 300
+          },
+          {
+            "name": "Extra bok choy",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Tomato Egg Noodle Soup": [
+      {
+        "name": "Noodle thickness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hair-thin",
+            "price": 0
+          },
+          {
+            "name": "Thin",
+            "price": 0
+          },
+          {
+            "name": "Flat",
+            "price": 0
+          },
+          {
+            "name": "Wide belt",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 250
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Extra egg",
+            "price": 200
+          },
+          {
+            "name": "Extra noodles",
+            "price": 300
+          },
+          {
+            "name": "Extra beef",
+            "price": 500
+          }
+        ]
+      }
+    ],
+    "Youpo Mian": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Chilli level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Less chilli",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra chilli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Fried egg",
+            "price": 200
+          },
+          {
+            "name": "Extra beef",
+            "price": 500
+          },
+          {
+            "name": "Extra noodles",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Knife-cut Noodles": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 300
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra beef",
+            "price": 500
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Stir-fried Noodle Pieces": [
+      {
+        "name": "Chilli level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "No chilli",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra chilli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra beef",
+            "price": 500
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Sesame Paste Noodles": [
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Shredded chicken",
+            "price": 400
+          },
+          {
+            "name": "Extra cucumber",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Liangpi": [
+      {
+        "name": "Chilli level",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "No chilli",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra chilli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 1,
+        "options": [
+          {
+            "name": "Extra gluten cubes",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Cumin Lamb Roujiamo": [
+      {
+        "name": "Chilli",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "No chilli",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra lamb",
+            "price": 400
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Braised Beef Roujiamo": [
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra beef",
+            "price": 400
+          },
+          {
+            "name": "Fried egg",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Big Plate Chicken": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular (2-3 pax)",
+            "price": 0
+          },
+          {
+            "name": "Large (4-5 pax)",
+            "price": 1800
+          }
+        ]
+      },
+      {
+        "name": "Extras",
+        "min": 0,
+        "max": 2,
+        "options": [
+          {
+            "name": "Extra flat noodles",
+            "price": 300
+          },
+          {
+            "name": "Extra potato",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "Lamb Skewers": [
+      {
+        "name": "Spice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Not spicy",
+            "price": 0
+          },
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Extra spicy",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Eight Treasure Tea": [
+      {
+        "name": "Sugar",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal",
+            "price": 0
+          },
+          {
+            "name": "Less sugar",
+            "price": 0
+          },
+          {
+            "name": "No rock sugar",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Apricot Juice": [
+      {
+        "name": "Size",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Regular",
+            "price": 0
+          },
+          {
+            "name": "Large",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "name": "Ice",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Normal ice",
+            "price": 0
+          },
+          {
+            "name": "Less ice",
+            "price": 0
+          },
+          {
+            "name": "No ice",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Set Yoghurt": [
+      {
+        "name": "Toppings",
+        "min": 0,
+        "max": 3,
+        "options": [
+          {
+            "name": "Honey",
+            "price": 100
+          },
+          {
+            "name": "Raisins",
+            "price": 100
+          },
+          {
+            "name": "Walnuts",
+            "price": 150
+          }
+        ]
+      }
+    ],
+    "Soy Milk": [
+      {
+        "name": "Sweetness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Sweet",
+            "price": 0
+          },
+          {
+            "name": "Less sweet",
+            "price": 0
+          },
+          {
+            "name": "Unsweetened",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Temperature",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hot",
+            "price": 0
+          },
+          {
+            "name": "Cold",
+            "price": 0
+          }
+        ]
+      }
+    ],
+    "Noodle & Mo Combo": [
+      {
+        "name": "Noodle thickness",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Hair-thin",
+            "price": 0
+          },
+          {
+            "name": "Thin",
+            "price": 0
+          },
+          {
+            "name": "Flat",
+            "price": 0
+          },
+          {
+            "name": "Wide belt",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Soy Milk",
+            "price": 0
+          },
+          {
+            "name": "Apricot Juice",
+            "price": 150
+          },
+          {
+            "name": "Eight Treasure Tea",
+            "price": 300
+          }
+        ]
+      }
+    ],
+    "Youpo Combo": [
+      {
+        "name": "Drink",
+        "min": 1,
+        "max": 1,
+        "options": [
+          {
+            "name": "Apricot Juice",
+            "price": 0
+          },
+          {
+            "name": "Soy Milk",
+            "price": 0
+          },
+          {
+            "name": "Eight Treasure Tea",
+            "price": 250
+          }
+        ]
+      }
+    ]
+  },
+  "charges": {
+    "serviceChargePct": 5,
+    "taxPct": 6,
+    "taxInclusive": false,
+    "cashRounding": 10
+  },
+  "halal": {
+    "status": "muslim_friendly"
+  }
+}
