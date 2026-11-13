@@ -22,9 +22,10 @@ async function fakeGoogle(page: Page, reading: object = READING) {
 }
 
 test.describe("hybrid avoid reader (browser)", () => {
-  test("off without App Check: the rules alone answer, and say so", async ({ page }) => {
+  test("when the model can't be reached, the rules alone answer, and say so", async ({ page }) => {
+    // (no network to Google: no App Check token, no model)
+    await page.route(/googleapis\.com|google\.com\/recaptcha|gstatic\.com/, (route) => route.abort());
     await open(page, "/hybrid");
-    await expect(page.getByTestId("hybrid-status")).toContainText("switched off");
     await page.getByTestId("hybrid-example").first().click();
     await expect(page.getByTestId("hybrid-readings")).toContainText("Model read: not available here");
     await expect(page.getByTestId("hybrid-answer-rules")).toContainText("Curry Laksa Set");

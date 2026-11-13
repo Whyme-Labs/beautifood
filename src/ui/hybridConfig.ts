@@ -12,7 +12,7 @@ export const FIREBASE_CONFIG = {
 };
 
 /** The reCAPTCHA v3 site key App Check uses on app.beautifood.io. Empty: the reader stays off. */
-export const RECAPTCHA_SITE_KEY = "";
+export const RECAPTCHA_SITE_KEY = "6LeZNB4uAAAAAI0sLeb0CxH9TQC8YSKXPSKg4AFs";
 
 /** The cloud model the reader falls back to (Firebase AI Logic's default for hybrid). */
 export const CLOUD_MODEL = "gemini-3.5-flash-lite";
