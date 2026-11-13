@@ -194,3 +194,26 @@ test.describe("AI for guests and merchants", () => {
     expect(Object.keys(spec.paths)).toEqual(expect.arrayContaining(["/api/public/branches/{branch}/queue"]));
   });
 });
+
+test.describe("hybrid avoid hint (API)", () => {
+  test("a hint is checked, added to the rules' reading for this turn and later ones, and named in the reply", async () => {
+    const s = await seed();
+    const m = await menuItems(s.owner);
+    const chat = async (messages: unknown[]) => json((await guestClient()).post(`/api/public/branches/${s.klcc.ref}/assistant`, { data: { messages } }));
+    const allergens = (it: { id: string }) => m.items.find((x) => x.id === it.id)!.allergens as string[];
+    const said = "doctor says no ocean stuff for me, what's good?";
+    const seafood = { allergens: ["fish", "crustaceans", "molluscs", "shellfish"], diets: ["keto"], meats: [], alcohol: false };
+    const plain = await chat([{ role: "user", content: said }]);
+    expect(plain.hintAdded).toBeUndefined();
+    const hinted = await chat([{ role: "user", content: said, hint: seafood }]);
+    // (the words outside the vocabulary, "shellfish" and "keto", were dropped on the server)
+    expect(hinted.hintAdded).toEqual(["allergen:fish", "allergen:crustaceans", "allergen:molluscs"]);
+    expect(hinted.items.length).toBeGreaterThan(0);
+    for (const it of hinted.items) expect(allergens(it).filter((a) => ["fish", "crustaceans", "molluscs"].includes(a))).toEqual([]);
+    // a later turn keeps it
+    const later = await chat([{ role: "user", content: said, hint: seafood }, { role: "assistant", content: hinted.answer }, { role: "user", content: "what noodles do you have?" }]);
+    for (const it of later.items) expect(allergens(it).filter((a) => ["fish", "crustaceans", "molluscs"].includes(a))).toEqual([]);
+    // garbage is ignored, never an error
+    expect((await chat([{ role: "user", content: said, hint: "drop table" }])).answer).toBe(plain.answer);
+  });
+});
