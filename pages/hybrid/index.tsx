@@ -165,16 +165,19 @@ const LANGS = ["en", "ms", "manglish", "zh"] as const;
 
 /** The a1 test, run here: each message read by the rules and by the model in the chosen mode, scored against its gold. */
 function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
-  const [cases, setCases] = useState<AvoidCase[] | null>(null);
+  const [sets, setSets] = useState<Record<string, AvoidCase[]>>({});
+  const [which, setWhich] = useState<"a1" | "dev">("a1");
   const [mode, setMode] = useState<ReaderMode>("only_on_device");
   const [rows, setRows] = useState<{ c: AvoidCase; rules: string[]; model: string[] | null; source?: HintSource; ms?: number }[]>([]);
   const [running, setRunning] = useState(false);
   useEffect(() => {
-    fetch("/hybrid/a1.json")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((x) => setCases(Array.isArray(x) ? x : null))
-      .catch(() => setCases(null));
+    for (const name of ["a1", "dev"])
+      fetch(`/hybrid/${name}.json`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((x) => Array.isArray(x) && setSets((s) => ({ ...s, [name]: x })))
+        .catch(() => {});
   }, []);
+  const cases = sets[which] ?? sets.dev;
   if (!cases) return null;
 
   const run = async () => {
@@ -206,10 +209,10 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
     );
   };
   const download = () => {
-    const blob = new Blob([JSON.stringify({ mode, at: new Date().toISOString(), rows: rows.map((r) => ({ id: r.c.id, rules: r.rules, model: r.model, source: r.source, ms: r.ms })) })], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ set: which, mode, at: new Date().toISOString(), rows: rows.map((r) => ({ id: r.c.id, rules: r.rules, model: r.model, source: r.source, ms: r.ms })) })], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `a1-${mode}.json`;
+    a.download = `${which}-${mode}.json`;
     a.click();
   };
   const onDevice = read.filter((r) => r.source === "on_device").length;
@@ -217,11 +220,19 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
 
   return (
     <section className="col" style={{ gap: 10 }} data-testid="a1-test">
-      <h2 style={{ margin: 0 }}>The test: {cases.length} messages, written blind</h2>
+      <h2 style={{ margin: 0 }}>{sets[which] && which === "a1" ? `The test: ${cases.length} messages, written blind` : `Try it on ${cases.length} examples`}</h2>
       <p className="muted" style={{ margin: 0 }}>
-        Two authors who never saw this app or its prompt wrote these guest messages, a third checked every label, and the set was frozen before it was first scored. Run it here to see what the rules miss and what the model adds.
+        {which === "a1" && sets.a1
+          ? "Two authors who never saw this app or its prompt wrote these guest messages, a third checked every label, and the set was frozen before it was first scored. Run it here to see what the rules miss and what the model adds."
+          : "Our own examples, used while writing the prompt. The blind test is the one that counts."}
       </p>
       <div className="row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+        {sets.a1 && sets.dev ? (
+          <select value={which} onChange={(e) => (setWhich(e.target.value as "a1" | "dev"), setRows([]))} aria-label="Which messages">
+            <option value="a1">The blind test (a1)</option>
+            <option value="dev">Our own examples (dev)</option>
+          </select>
+        ) : null}
         <select value={mode} onChange={(e) => setMode(e.target.value as ReaderMode)} aria-label="Where the model runs">
           <option value="only_on_device">On this device only</option>
           <option value="only_in_cloud">In the cloud only</option>
