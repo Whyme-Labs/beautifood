@@ -1,7 +1,7 @@
 // The hybrid avoid reader through the real Firebase AI Logic SDK, with Google's App Check and Gemini
 // endpoints stood in for (no key, no network): what the page sends, and what the reading changes.
 import { expect, test, type Page } from "@playwright/test";
-import { open } from "../helpers";
+import { menuItems, open, seed } from "../helpers";
 
 const READING = { allergens: ["fish", "crustaceans", "molluscs"], diets: [], meats: [], alcohol: false };
 
@@ -63,5 +63,36 @@ test.describe("hybrid avoid reader (browser)", () => {
     await expect(page.getByTestId("hybrid-added")).toHaveCount(0);
     const rules = await page.getByTestId("hybrid-answer-rules").innerText();
     await expect(page.getByTestId("hybrid-answer-hybrid")).toContainText(rules.split("\n").slice(1).join("\n").slice(0, 60));
+  });
+});
+
+test.describe("the kiosk answers by itself (browser)", () => {
+  test("on the kiosk: the reading keeps seafood off, and with the network gone it still answers", async ({ page, context }) => {
+    const s = await seed();
+    const m = await menuItems(s.owner);
+    const seafood = new Set(m.items.filter((i) => i.allergens.some((a: string) => ["fish", "crustaceans", "molluscs"].includes(a))).map((i) => i.name));
+    await fakeGoogle(page);
+    await open(page, `/r/${s.klcc.ref}/kiosk`);
+    await page.getByTestId("kiosk-ask").click();
+    const box = page.getByTestId("kiosk-assistant");
+    await expect(box.getByRole("button", { name: /allergic to prawns/ })).toBeEnabled();
+    await box.locator("input").fill("doctor says no ocean stuff for me, what's good?");
+    await box.getByRole("button", { name: "Ask", exact: true }).click();
+    const answer = box.getByTestId("kiosk-answer").last();
+    await expect(answer).toContainText("Answered on this kiosk");
+    await expect(box.getByTestId("kiosk-hint-added")).toContainText("fish");
+    for (const li of await answer.locator("li").allInnerTexts()) expect(seafood.has(li.trim())).toBe(false);
+    if (process.env.SHOTS) await page.setViewportSize({ width: 820, height: 1180 }), await page.screenshot({ path: `${process.env.SHOTS}/kiosk-ask.png`, fullPage: true });
+    // the restaurant's Wi-Fi drops: the kiosk keeps answering from the menu it holds
+    await context.setOffline(true);
+    await expect(box.getByTestId("kiosk-offline")).toBeVisible();
+    await box.locator("input").fill("I'm allergic to peanuts, anything to drink?");
+    await box.getByRole("button", { name: "Ask", exact: true }).click();
+    await expect(box.getByTestId("kiosk-answer")).toHaveCount(2);
+    await expect(box.getByTestId("kiosk-answer").last()).not.toBeEmpty();
+    // the next guest starts fresh
+    await box.getByRole("button", { name: "New guest" }).click();
+    await expect(box.getByTestId("kiosk-answer")).toHaveCount(0);
+    await context.setOffline(false);
   });
 });

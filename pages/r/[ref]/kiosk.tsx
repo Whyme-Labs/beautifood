@@ -5,6 +5,7 @@ import { Ticket } from "lucide-react";
 import { api } from "../../../src/ui/api";
 import { LangSwitch, Logo, Mins, Stub, stockOf, useAction } from "../../../src/ui/components";
 import { useI18n } from "../../../src/i18n/react";
+import { KioskAssistant } from "../../../src/ui/kioskAssistant";
 
 export default function Kiosk() {
   const { t } = useI18n();
@@ -12,6 +13,7 @@ export default function Kiosk() {
   const [party, setParty] = useState<number | null>(null);
   const [name, setName] = useState("");
   const [done, setDone] = useState<{ number: string; eta: number | null; url: string } | null>(null);
+  const [asking, setAsking] = useState(false);
   const { run, pending } = useAction();
   const reset = () => (setParty(null), setName(""), setDone(null));
   return (
@@ -48,6 +50,13 @@ export default function Kiosk() {
               </button>
             ))}
           </div>
+          {!party && (asking ? (
+            <KioskAssistant branch={ref} />
+          ) : (
+            <button className="btn big block" style={{ marginTop: 24, minHeight: 64, fontSize: 20 }} onClick={() => setAsking(true)} data-testid="kiosk-ask">
+              {t("kiosk.askOpen")}
+            </button>
+          ))}
           {party && (
             <form
               className="col"
