@@ -20,6 +20,8 @@ import { allergyNote, type AssistantContext, type AssistantReply, type OrderCard
 import type { TasteHint } from "../../taste/bridge";
 import { conceptsOf, conceptTerms, dishConceptLift, type ConceptId } from "./concepts";
 import { kindOf } from "./reader";
+import { hintAdds, withHint } from "./hint";
+import type { AvoidHint } from "../../../shared/brain/avoidHint";
 import { alcoholWord, notHalalWord, withBranchHalal } from "../halal";
 import { courseDishes, courseOfWord, dishWord, intentModel, isDessert, isDrink, MEAT_WORDS, modelTokens, read, same as sameWord, understand, type Course, type Diet, type Dish, type Meat, type Spot, type Understanding } from "./understand";
 
@@ -29,8 +31,13 @@ type Item = AssistantContext["items"][number];
 const READER_SURE = 0.8;
 const FOOD_INTENTS: Intent[] = ["recommend", "refine", "dish_allergen", "dish_info", "compare", "pairing"];
 
+/** A guest message as the brain reads it; `hint` is a model's reading of what the guest avoids (./hint), added to the rules'. */
+export type GuestTurn = { role: "user" | "assistant"; content: string; hint?: AvoidHint | null };
+
 export interface BrainReply extends AssistantReply {
   intent: Intent;
+  /** What a model's avoid hint added that the rules didn't read ("allergen:fish", …). */
+  hintAdded?: string[];
   /** For the log: the intent model's confidence and the question as it read it. */
   confidence?: number;
   delexicalized?: string;
@@ -408,10 +415,10 @@ export function dishesIn(ctx: AssistantContext, text: string): Item[] {
     .map((x) => x.i);
 }
 
-export function dialogueState(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[]): DialogueState {
+export function dialogueState(ctx: AssistantContext, history: GuestTurn[]): DialogueState {
   const s: DialogueState = { avoid: [], diet: [], maxSpice: null, noAlcohol: false, noCaffeine: false, noMeat: [], noWords: [], shown: [], focus: null, order: [], party: null, owners: {}, last: [], swapOut: null };
   // (each earlier turn read as the current one is: several changes one after another, and what it points at in words)
-  const queue: { role: "user" | "assistant"; content: string; split?: boolean }[] = [...history];
+  const queue: (GuestTurn & { split?: boolean })[] = [...history];
   while (queue.length) {
     let h = queue.shift()!;
     if (h.role === "user" && !h.split) {
@@ -420,7 +427,7 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
         const halves = swapHalvesOf(h.content);
         const steps = editSteps(halves, s.order.length > 0);
         if (steps && steps.length > 1) {
-          queue.unshift(...steps.map((x) => ({ role: "user" as const, content: x, split: true })));
+          queue.unshift(...steps.map((x) => ({ role: "user" as const, content: x, split: true, hint: h.hint })));
           continue;
         }
         said = rewriteTurn(ctx, halves, s);
@@ -435,7 +442,7 @@ export function dialogueState(ctx: AssistantContext, history: { role: "user" | "
     const had = new Map(s.order.map((o) => [o, o.count]));
     try {
     if (h.role === "user") {
-      const u = reanchor(read(ctx.items as Dish[], h.content), ctx.items);
+      const u = withHint(reanchor(read(ctx.items as Dish[], h.content), ctx.items), h.hint);
       const own = ownDishes(u, [...s.order.map((o) => o.item), ...(s.focus ? [s.focus] : [])], s.order.map((o) => o.item));
       // ("actually take out the cheese": an add-on off a line ordered, not milk avoided, unless an allergy is said)
       const offNow = /\b(allerg\w*|alergi|alah|intolerant|coeliac|celiac|cannot eat|can t eat|cant eat)\b|过敏|不能吃/.test(normalize(h.content)) ? [] : s.order.flatMap((o) => optionsSaid(h.content, o.item).off.filter((x) => o.options?.some((y) => y.name === x.name)));
@@ -1276,8 +1283,10 @@ function rewriteTurn(ctx: AssistantContext, question: string, state: DialogueSta
 /** "cancel one of the beer lah, change to sour plum": one of them swapped, said in two halves. */
 const swapHalvesOf = (question: string) => question.replace(/\b(?:cancel|remove|drop|buang|batal)\s+(one|1|satu)\s+(?:of\s+)?(?:the\s+)?([a-z][a-z ]*?)(?:\s+(?:lah|la|ah|tu))?\s*[,;]\s*(?:and\s+)?(?:change|swap|switch|tukar|replace|ganti)\s+(?:it\s+|that\s+)?(?:to|for|with|jadi|dengan)\s+/i, (_m, n: string, x: string) => `change ${n} of the ${x} to `);
 
-export function answerGuest(ctx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], locale = "en", taste?: TasteHint | null): BrainReply {
-  const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
+export function answerGuest(ctx: AssistantContext, history: GuestTurn[], locale = "en", taste?: TasteHint | null): BrainReply {
+  const lastUser = [...history].reverse().find((m) => m.role === "user");
+  const question = lastUser?.content ?? "";
+  const hint = lastUser?.hint;
   const earlier = history.slice(0, history.map((h) => h.content).lastIndexOf(question));
   const state = dialogueState(ctx, earlier);
   // ("cancel one of the lassi, and make one of the tandoori a full chicken. how much now"): changes to the
@@ -1289,16 +1298,18 @@ export function answerGuest(ctx: AssistantContext, history: { role: "user" | "as
   const swapHalves = sameBut && last_ ? question.replace(sameBut[0], `add 1 ${sameBut[1]}${last_.options?.length ? ` with ${last_.options.map((o) => o.name.toLowerCase()).join(" and ")}` : ""}.`) : swapHalvesOf(question);
   const steps = editSteps(swapHalves, state.order.length > 0);
   if (steps) {
-    const turns = [...earlier];
+    const turns: GuestTurn[] = [...earlier];
     for (const s of steps.slice(0, -1)) {
-      const r = answerGuest(ctx, [...turns, { role: "user", content: s }], locale);
-      turns.push({ role: "user", content: s }, { role: "assistant", content: r.answer });
+      const r = answerGuest(ctx, [...turns, { role: "user", content: s, hint }], locale);
+      turns.push({ role: "user", content: s, hint }, { role: "assistant", content: r.answer });
     }
-    return answerGuest(ctx, [...turns, { role: "user", content: steps[steps.length - 1] }], locale, taste);
+    return answerGuest(ctx, [...turns, { role: "user", content: steps[steps.length - 1], hint }], locale, taste);
   }
   const asked = rewriteTurn(ctx, swapHalves, state);
-  const u = understand(ctx.items as Dish[], asked);
-  return { ...respond(ctx, u, state, locale, taste ?? undefined), confidence: u.confidence, delexicalized: u.delexicalized.join(" ") };
+  const read_ = understand(ctx.items as Dish[], asked);
+  const u = withHint(read_, hint);
+  const added = hintAdds(read_, hint);
+  return { ...respond(ctx, u, state, locale, taste ?? undefined), confidence: u.confidence, delexicalized: u.delexicalized.join(" "), ...(added.length ? { hintAdded: added } : {}) };
 }
 
 /** A message of several changes to an open order, as its steps (the question, "total?", with the last); null if it is one. */

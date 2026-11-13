@@ -5,6 +5,8 @@ import { api } from "./api";
 import { Money, errorText } from "./components";
 import { useI18n } from "../i18n/react";
 import { OrderCard, type OrderCardData } from "./orderCard";
+import { prepareDevice, readAvoid, readerEnabled } from "./hybrid";
+import type { AvoidHint, HintSource } from "../shared/brain/avoidHint";
 
 interface Reply {
   answer: string;
@@ -17,11 +19,16 @@ interface Reply {
   taste?: { liked: string; because: string[]; source: string };
   /** The answer's id in the assistant's log, to count what guests add from it. */
   turn?: string;
+  /** What the hybrid reader caught that the rules didn't ("allergen:fish", "meat:beef", "diet:vegan", "alcohol"). */
+  hintAdded?: string[];
 }
+
+type Msg = { role: "user" | "assistant"; content: string; reply?: Reply; hint?: AvoidHint | null; hintSource?: HintSource };
 
 export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch: string; currency: string; onAdd?: (itemId: string) => void; onAddLines?: (lines: OrderCardData["lines"]) => void }) {
   const { t, locale } = useI18n();
-  const [msgs, setMsgs] = useState<{ role: "user" | "assistant"; content: string; reply?: Reply }[]>([]);
+  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const deviceAsked = useRef(false);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
@@ -48,12 +55,22 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
   };
   const ask = async (q: string) => {
     if (!q.trim()) return;
-    const next = [...msgs, { role: "user" as const, content: q.trim() }];
-    setMsgs(next);
+    const said: Msg = { role: "user", content: q.trim() };
+    setMsgs([...msgs, said]);
     setText("");
     setBusy(true);
+    // (Chrome starts its on-device model only on a guest's own tap: this send is one)
+    if (readerEnabled() && !deviceAsked.current) {
+      deviceAsked.current = true;
+      void prepareDevice().catch(() => {});
+    }
+    // what the guest says they avoid, read on this device when it can and in the cloud when it can't;
+    // the menu brain adds it to its own reading, so it can only make the answer more careful
+    const read = await readAvoid(said.content);
+    if (read) Object.assign(said, { hint: read.hint, hintSource: read.source });
+    const next = [...msgs, said];
     try {
-      const r = await api<Reply>(`/api/public/branches/${branch}/assistant`, { body: { messages: next.map(({ role, content }) => ({ role, content })) } });
+      const r = await api<Reply>(`/api/public/branches/${branch}/assistant`, { body: { messages: next.map(({ role, content, hint }) => ({ role, content, ...(role === "user" && hint ? { hint } : {}) })) } });
       setMsgs([...next, { role: "assistant", content: r.answer, reply: r }]);
     } catch (e) {
       setMsgs([...next, { role: "assistant", content: errorText(e, locale) }]);
@@ -61,6 +78,13 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
       setBusy(false);
       setTimeout(() => end.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 50);
     }
+  };
+  const hintLabel = (x: string) => {
+    const [kind, v] = x.split(":");
+    if (kind === "allergen") return t(`allergens.${v}` as never);
+    if (kind === "diet") return v === "halal" ? t("assistant.hintHalal") : t(`diet.${v}` as never);
+    if (kind === "meat") return t("assistant.hintNoMeat", { meat: t(`assistant.hintMeats.${v}` as never) });
+    return t("assistant.hintNoAlcohol");
   };
   const suggestions = [t("assistant.suggest1"), t("assistant.suggest2"), t("assistant.suggest3"), t("assistant.suggest4")];
   return (
@@ -119,6 +143,12 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
             {m.reply?.taste ? (
               <div className="hint" style={{ marginTop: 8 }} data-testid="taste-source">
                 <Sparkles size={12} /> {t("assistant.tasteSource", { liked: m.reply.taste.liked })}
+              </div>
+            ) : null}
+            {m.reply?.hintAdded?.length ? (
+              <div className="hint" style={{ marginTop: 8 }} data-testid="hint-added">
+                <ShieldAlert size={12} /> {t("assistant.hintAdded", { list: m.reply.hintAdded.map(hintLabel).join(", ") })}
+                {msgs[i - 1]?.hintSource ? ` · ${t(msgs[i - 1].hintSource === "on_device" ? "assistant.readOnDevice" : "assistant.readInCloud")}` : ""}
               </div>
             ) : null}
             {m.reply?.safetyNote ? (

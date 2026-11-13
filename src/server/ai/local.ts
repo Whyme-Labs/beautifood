@@ -168,6 +168,8 @@ export function mentionedAllergens(q: string): Allergen[] {
   // "nuts" alone should cover peanuts too
   if (found.includes("tree_nuts") && /\bnuts?\b/i.test(q) && !found.includes("peanuts")) found.push("peanuts");
   if (/seafood/i.test(q)) for (const a of ["crustaceans", "molluscs"] as Allergen[]) if (!found.includes(a)) found.push(a);
+  // "anything from the sea", "sea food", "benda laut", "hasil laut": seafood said another way
+  if (/\b(from the sea|sea ?food|sea creatures?|benda laut|hasil laut|makanan laut)\b/i.test(q)) for (const a of ["fish", "crustaceans", "molluscs"] as Allergen[]) if (!found.includes(a)) found.push(a);
   return found;
 }
 

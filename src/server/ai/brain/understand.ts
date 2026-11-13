@@ -1027,7 +1027,7 @@ export const isDessert = (i: Dish) => DESSERT.test(i.category ?? "") || (!isDrin
 const ASKS_CONTENTS = /\b(allerg\w*|alergi|contain\w*|ingredients?|inside|safe|ada .{0,20}(tak|ke)|got .{0,20}(or not|inside)|does .{0,40}(have|got|use|come with)|is there|any .{0,15} in (it|this|that|the)|made with|cooked (in|with)|boleh makan|free from|\w+ free)\b/;
 const AVOID_CUE = /\b(allerg\w*|alergi|alah|alahan|no|without|tanpa|avoid|cant eat|cannot eat|can t eat|cant have|dont eat|don t eat|not eat|tak boleh makan|tak makan|tak nak|jangan|intolerant|intolerance|free|tak tahan|sensitive|sensitivity|sensitivities|no more|hate|exclude|except|minus|kecuali|tak boleh)\b/;
 
-const ALLERGY_WORD = /\b(allerg\w*|alergi\w*|alahan|alah|intol\w*|coeliac|celiac|sensitive|sensitivity|sensitivities)\b|过[敏民闵抿]|过敏|不耐/i;
+const ALLERGY_WORD = /\b(allerg\w*|alergi\w*|alahan|alah|intol\w*|coeliac|celiac|sensitive|sensitivity|sensitivities|swell\w*|hives|rash\w*|itch\w*|gatal|bengkak|anaphyla\w*|epipen)\b|过[敏民闵抿]|过敏|不耐|起疹|发痒|红疹/i;
 const NEG_CUE = /^(no|not|non|without|tanpa|tak|takde|bukan|jangan|cannot|cant|dont|doesnt|never|avoid|except|kecuali|minus|hate|exclude|skip|free|less|zero|nothing|nak|boleh)$/;
 const ZH_CUE = /不要|不能|不吃|不可以|吃不了|没有|没|无|不含|别|免|戒|避免|不加|走/;
 

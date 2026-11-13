@@ -15,7 +15,7 @@ import type { TableInput } from "../domain/floor";
 import { localParts } from "../ids";
 import { answerWithClaude, claudeEnabled, extractWithClaude, narrateWithClaude, type ClaudeEnv } from "./claude";
 import { guard, type AssistantContext, type AssistantReply } from "./local";
-import { answerGuest } from "./brain";
+import { answerGuest, type GuestTurn } from "./brain";
 import { likedThing, tasteHint } from "../taste/bridge";
 import { tasteEnabled, tasteRunner, type TasteEnv } from "../taste/client";
 import { tasteLocation } from "../taste/brief";
@@ -100,7 +100,7 @@ export async function assistantContext(db: D1Database, ctx: BranchCtx): Promise<
  * is set. Any model failure, or a model answer that puts an allergen the guest named in front of
  * them, falls back to the brain's answer.
  */
-export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & TasteEnv & ReaderEnv & { AI?: AiBinding; READER_POLICY?: string }, ctx: BranchCtx, history: { role: "user" | "assistant"; content: string }[], locale = "en"): Promise<AssistantReply & { turn?: string }> {
+export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSettings & TasteEnv & ReaderEnv & { AI?: AiBinding; READER_POLICY?: string }, ctx: BranchCtx, history: GuestTurn[], locale = "en"): Promise<AssistantReply & { turn?: string; hintAdded?: string[] }> {
   const actx = await assistantContext(db, ctx);
   const question = [...history].reverse().find((m) => m.role === "user")?.content ?? "";
   // A model reader (off unless READER_PROVIDER is set): the latest message read into order lines,
@@ -143,12 +143,13 @@ export async function customerChat(db: D1Database, env: ClaudeEnv & AssistantSet
     shown: items.map((i) => i.id),
     ...(r.order ? { order: r.order.lines.map((l) => ({ id: l.id, count: l.count, options: l.options.map((o) => ({ group: o.group, name: o.name })), ...(l.owner ? { owner: l.owner } : {}) })) } : {}),
   }).catch((e) => (console.warn("assistant log", e), undefined));
-  return { answer: r.answer, items, ...(r.order ? { order: r.order } : {}), safetyNote: r.safetyNote, engine: r.engine, confident: r.confident, taste: r.taste, turn };
+  return { answer: r.answer, items, ...(r.order ? { order: r.order } : {}), safetyNote: r.safetyNote, engine: r.engine, confident: r.confident, taste: r.taste, turn, ...(r === brain && brain.hintAdded ? { hintAdded: brain.hintAdded } : {}) };
 }
 
 /** The brain's answer, or (only for what it can't place, and only when one is configured) a model's. */
 async function answer(db: D1Database, env: ClaudeEnv & AssistantSettings & { AI?: AiBinding }, ctx: BranchCtx, actx: AssistantContext, history: { role: "user" | "assistant"; content: string }[], question: string, local: AssistantReply, locale: string): Promise<AssistantReply> {
-  if (local.confident !== false) return local;
+  // (a model's avoid hint added something the rules missed: the brain's answer keeps it; a model answering instead wouldn't)
+  if (local.confident !== false || (local as { hintAdded?: string[] }).hintAdded?.length) return local;
   const m = guestModel(env);
   if (!m) return local;
   const scope = { tenantId: ctx.tenant.id, branchId: ctx.branch.id };

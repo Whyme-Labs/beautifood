@@ -224,6 +224,13 @@ const zh = {
     addWithPrice: "加入 · {price}",
   },
   assistant: {
+    hintAdded: "也避开：{list}",
+    readOnDevice: "在本设备上读取",
+    readInCloud: "在云端读取",
+    hintHalal: "清真",
+    hintNoMeat: "不吃{meat}",
+    hintNoAlcohol: "不含酒",
+    hintMeats: { pork: "猪肉", beef: "牛肉", chicken: "鸡肉", lamb: "羊肉", duck: "鸭肉" },
     tasteSource: "由 Qloo 根据{liked}粉丝的口味挑选",
     title: "菜单助手",
     open: "问问吃什么",

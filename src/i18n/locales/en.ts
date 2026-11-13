@@ -226,6 +226,13 @@ const en = {
     addWithPrice: "Add · {price}",
   },
   assistant: {
+    hintAdded: "Also keeping off the table: {list}",
+    readOnDevice: "read on this device",
+    readInCloud: "read in the cloud",
+    hintHalal: "Halal",
+    hintNoMeat: "No {meat}",
+    hintNoAlcohol: "No alcohol",
+    hintMeats: { pork: "pork", beef: "beef", chicken: "chicken", lamb: "lamb or mutton", duck: "duck" },
     tasteSource: "Picked with Qloo, from what fans of {liked} tend to love",
     title: "Menu assistant",
     open: "Ask what to eat",
