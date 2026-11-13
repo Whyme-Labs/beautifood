@@ -1774,3 +1774,35 @@ v11 71.1%, v12 75.6%, v13 72.9%) and bills and add-ons on unseen menus rose most
 but neither reaches the bar, and one answer on the Nepali menu was unsafe, the first since v12's two.
 Chinese (71.0%), spice (61.8%) and comparisons (7/14) are where it falls shortest. Whether v14
 becomes dev, or its unsafe answer is read, is the owner's call; until then it stays unread.
+
+## Hybrid avoidance reader (Firebase AI Logic): what it must show (2026-11-13, before any code or data)
+
+For the #BuildHybridAI hackathon: a model reads what a guest says they avoid, on the device when it
+can (Gemini Nano through Firebase AI Logic in desktop Chrome) and in the cloud when it can't.
+
+- **Its job, and only that.** From one guest message, the allergens (the 14 the app knows), diets
+  (vegetarian, vegan, halal), meats not eaten and "no alcohol" the guest says they or their table
+  avoid. It never reads orders, prices or dishes. Its reading is **added** to the rules' own (a
+  union): it can add an avoidance, never remove one, so it can make an answer more careful, never
+  less safe. Anything outside that fixed vocabulary is dropped.
+- **Why a new set.** On the dev cases the rules already catch the expected allergen in 919 of 920
+  (they were fitted to them), so dev can't show what a reader adds. A new set, **a1**, is written
+  blind: two new authors (z7, z8) who never see the engine, the prompt or any case, then a blind
+  reviewer. About 400 single guest messages in English, Malay, Manglish and Chinese, each with its
+  gold avoidances. Roughly 60% state something to avoid, in words people actually use; 40% don't
+  (a food named with no avoidance, a question about a dish, small talk). It is scored once per
+  system, at the end, and not read case by case.
+- **Systems, scored on a1:** rules alone; rules + cloud reader (Firebase AI Logic, in-cloud model);
+  rules + on-device reader (Gemini Nano in desktop Chrome); and each reader alone, for the record.
+- **What counts.** Per message, the gold set of avoidances against the system's set:
+  - *missed*: a message that states an avoidance where the system misses any of it (lower is better);
+  - *false alarm*: a message with no avoidance where the system adds one;
+  - *extra*: avoidances added beyond the gold on messages that state some.
+- **The bar (written before any code or data):**
+  1. rules + on-device misses at most half as many stating messages as rules alone;
+  2. rules + on-device is within 3 points of rules + cloud on *missed* (on-device matches cloud);
+  3. false alarms of rules + either reader at most 5% of the non-stating messages;
+  4. no language where rules + reader misses more than rules alone.
+- **Not measured here.** Whether answers improve end to end; the full-answer benchmarks (dev and
+  the unread v14) are not used to tune the prompt. The prompt is written from the app's allergen
+  vocabulary and hand-made examples only.
