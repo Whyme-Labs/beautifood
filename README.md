@@ -2,6 +2,23 @@
 
 A restaurant platform covering walk-in queues, ordering and the front of house. It runs as one stateless Cloudflare Worker over D1, with a Rust/WASM core shared by the server and the browser.
 
+## Can I eat this? (Firebase AI Logic, hybrid inference)
+
+A guest with a food allergy tells a restaurant what they can't eat in their own words: *"doctor says no ocean stuff for me"*, *"saya tak boleh sentuh benda bersusu"*, *"我老婆碰到带壳的海产就不行"*. Our menu rules miss phrasing like that, and then recommend the laksa. So a small model reads the message too: **Gemini Nano on the device** when Chrome has it, the **cloud model through Firebase AI Logic** when it doesn't. Its reading is **only ever added** to the rules' own, never put in their place, so it can make an answer more careful but never less safe. On the restaurant's own kiosk the whole answer is made on the kiosk, so a guest's allergy never leaves it and answers keep coming when the Wi-Fi drops.
+
+**Judge in 60 seconds**
+1. Open **[app.beautifood.io/hybrid](https://app.beautifood.io/hybrid)** and tap the first example. You see what the rules read, what the model read (and whether *on this device* or *in the cloud*, with its time), and the answer with and without it.
+2. In desktop Chrome 139+ with `chrome://flags/#prompt-api-for-gemini-nano-multimodal-input` enabled, the page says "Gemini Nano is ready" (or offers to download it) and the same reading happens on your device.
+3. Below, **run the blind test**: guest messages in English, Malay, Manglish and Chinese, written by authors who never saw this app or its prompt, scored right there in your browser.
+4. The kiosk: open [app.beautifood.io/r/beautifood-demo-kitchen~klcc/kiosk](https://app.beautifood.io/r/beautifood-demo-kitchen~klcc/kiosk), tap **Ask what you can eat**, then turn your network off and ask again.
+
+**Where Firebase AI Logic runs (imported and called):**
+- [`src/ui/hybrid.ts`](src/ui/hybrid.ts): `getAI` + `getGenerativeModel` with `InferenceMode` (`PREFER_ON_DEVICE`, `ONLY_ON_DEVICE`, `ONLY_IN_CLOUD`), `initializeDeviceModel`, structured output on both sides (`responseJsonSchema` in the cloud, `responseConstraint` on the device), `inferenceSource` to show where it ran; App Check with reCAPTCHA.
+- [`src/shared/brain/avoidHint.ts`](src/shared/brain/avoidHint.ts): the instruction, the JSON schema and the check that keeps only the app's own vocabulary.
+- [`src/server/ai/brain/hint.ts`](src/server/ai/brain/hint.ts): the reading added to the rules' (a union, never a replacement).
+- Used in the guest chat ([`src/ui/chat.tsx`](src/ui/chat.tsx)), the kiosk ([`src/ui/kioskAssistant.tsx`](src/ui/kioskAssistant.tsx)) and [`/hybrid`](pages/hybrid/index.tsx).
+- How it was measured, and the bar written before any code: [`bench/CHANGES.md`](bench/CHANGES.md) ("Hybrid avoidance reader").
+
 ## Features
 
 **For guests**
