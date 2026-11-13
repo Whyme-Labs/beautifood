@@ -1806,3 +1806,20 @@ can (Gemini Nano through Firebase AI Logic in desktop Chrome) and in the cloud w
 - **Not measured here.** Whether answers improve end to end; the full-answer benchmarks (dev and
   the unread v14) are not used to tune the prompt. The prompt is written from the app's allergen
   vocabulary and hand-made examples only.
+
+## a1 (avoidance statements): frozen (2026-11-13, before any system is scored on it)
+
+- Written blind by z7 (205 items) and z8 (214), reviewed blind (`bench/avoid/REVIEW.md`): no gold
+  label changed; 50 messages reworded (most copied the brief's own examples, or each other), 16 near
+  duplicates of the other author's deleted, 1 language label fixed. **403 items**: 247 state
+  something to avoid, 156 don't; en 105, ms 97, manglish 101, zh 100.
+- Files: `bench/avoid/z7.json`, `bench/avoid/z8.json`; the page reads the two together from
+  `public/hybrid/a1.json`. Fingerprint (sha256 of the items sorted by id, keys sorted, compact JSON,
+  first 16): `1d15c5ac869aa7bb`.
+- What changed in the rules while the authors wrote, and why it isn't fitted to a1: two fixes in
+  `cee16a6` (seafood said "from the sea" / "benda laut" / "hasil laut", and a body's reaction, "swell",
+  "hives", "rash", "gatal", 起疹, read as an allergy), made from my own example phrasings before any a1
+  item was seen; all dev sets unchanged by them. No rule or prompt changes after this entry until the
+  scores are in.
+- Nobody working on the engine has read an a1 item. The prompt is checked only on our own 40
+  examples (`public/hybrid/dev.json`).
