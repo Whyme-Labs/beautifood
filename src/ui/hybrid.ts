@@ -8,7 +8,7 @@
 // same call goes to the cloud model.
 import type { GenerativeModel } from "firebase/ai";
 import { HINT_SCHEMA, HINT_SYSTEM, parseHint, type AvoidHint, type HintSource } from "../shared/brain/avoidHint";
-import { CLOUD_MODEL, FIREBASE_CONFIG, RECAPTCHA_SITE_KEY } from "./hybridConfig";
+import { CLOUD_MODEL, FIREBASE_CONFIG, RECAPTCHA_PROVIDER, RECAPTCHA_SITE_KEY } from "./hybridConfig";
 
 export type ReaderMode = "prefer_on_device" | "only_on_device" | "only_in_cloud";
 export interface HintResult {
@@ -33,11 +33,12 @@ function debugToken(): string | boolean | undefined {
 let ready: Promise<typeof import("firebase/ai") & { app: import("firebase/app").FirebaseApp }> | null = null;
 function firebase() {
   ready ??= (async () => {
-    const [{ getApps, initializeApp }, { initializeAppCheck, ReCaptchaV3Provider }, ai] = await Promise.all([import("firebase/app"), import("firebase/app-check"), import("firebase/ai")]);
+    const [{ getApps, initializeApp }, { initializeAppCheck, ReCaptchaEnterpriseProvider, ReCaptchaV3Provider }, ai] = await Promise.all([import("firebase/app"), import("firebase/app-check"), import("firebase/ai")]);
     const app = getApps()[0] ?? initializeApp(FIREBASE_CONFIG);
     const debug = debugToken();
     if (debug !== undefined) (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN?: string | boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = debug;
-    initializeAppCheck(app, { provider: new ReCaptchaV3Provider(RECAPTCHA_SITE_KEY || "debug"), isTokenAutoRefreshEnabled: true });
+    const key = RECAPTCHA_SITE_KEY || "debug";
+    initializeAppCheck(app, { provider: RECAPTCHA_PROVIDER === "enterprise" ? new ReCaptchaEnterpriseProvider(key) : new ReCaptchaV3Provider(key), isTokenAutoRefreshEnabled: true });
     return { ...ai, app };
   })();
   return ready;

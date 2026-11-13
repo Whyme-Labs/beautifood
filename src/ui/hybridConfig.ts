@@ -11,8 +11,14 @@ export const FIREBASE_CONFIG = {
   measurementId: "G-3ME639VLX0",
 };
 
-/** The reCAPTCHA v3 site key App Check uses on app.beautifood.io. Empty: the reader stays off. */
-export const RECAPTCHA_SITE_KEY = "6LeZNB4uAAAAAI0sLeb0CxH9TQC8YSKXPSKg4AFs";
+/**
+ * The key App Check attests with on app.beautifood.io: a score-based Web key from Google Cloud Fraud
+ * Defense (reCAPTCHA Enterprise), registered for this web app in Firebase App Check. Empty: the reader
+ * stays off.
+ */
+export const RECAPTCHA_SITE_KEY = "";
+/** "enterprise" (Fraud Defense, what Firebase recommends) or "v3" (reCAPTCHA classic). */
+export const RECAPTCHA_PROVIDER: "enterprise" | "v3" = "enterprise";
 
 /** The cloud model the reader falls back to (Firebase AI Logic's default for hybrid). */
 export const CLOUD_MODEL = "gemini-3.5-flash-lite";
