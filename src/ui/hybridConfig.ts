@@ -16,7 +16,7 @@ export const FIREBASE_CONFIG = {
  * Defense (reCAPTCHA Enterprise), registered for this web app in Firebase App Check. Empty: the reader
  * stays off.
  */
-export const RECAPTCHA_SITE_KEY = "";
+export const RECAPTCHA_SITE_KEY = "6LcBhR8uAAAAAILVU37Kefhs7nsv_XmNteP3EdzU";
 /** "enterprise" (Fraud Defense, what Firebase recommends) or "v3" (reCAPTCHA classic). */
 export const RECAPTCHA_PROVIDER: "enterprise" | "v3" = "enterprise";
 
