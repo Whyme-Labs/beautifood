@@ -11,7 +11,7 @@ import { understand } from "../../src/server/ai/brain/understand";
 import { contextAt, DEMO_MENUS } from "../../src/server/ai/demoMenus";
 import { hintItems, type AvoidHint, type HintSource } from "../../src/shared/brain/avoidHint";
 import { mark, tally, type AvoidCase, type AvoidMark } from "../../src/shared/brain/avoidScore";
-import { warmReader, deviceModelStatus, prepareDevice, readAvoid, readerEnabled, readerError, type ReaderMode } from "../../src/ui/hybrid";
+import { cloudModel, cloudPause, warmReader, deviceModelStatus, prepareDevice, readAvoid, readerEnabled, readerError, type ReaderMode } from "../../src/ui/hybrid";
 
 const rm = (minor: number) => `RM${(minor / 100).toFixed(2)}`;
 const LUNCH = { weekday: 3, minutes: 12 * 60 + 30, date: "2026-10-21" };
@@ -180,6 +180,7 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
   const [mode, setMode] = useState<ReaderMode>("only_on_device");
   const [rows, setRows] = useState<{ c: AvoidCase; rules: string[]; model: string[] | null; source?: HintSource; ms?: number }[]>([]);
   const [running, setRunning] = useState(false);
+  const [note, setNote] = useState("");
   useEffect(() => {
     for (const name of ["a1", "dev"])
       fetch(`/hybrid/${name}.json`)
@@ -190,14 +191,57 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
   const cases = sets[which] ?? sets.dev;
   if (!cases) return null;
 
+  // (the cloud's free tier allows few requests a minute and a day: calls are spaced, a short pause is waited
+  // out, a long one stops the run, and what's done is kept here so the run picks up where it stopped)
+  const key = `bf-run:${which}:${mode}:${cloudModel()}`;
+  const saved = (): Record<string, { model: string[] | null; source?: HintSource; ms?: number }> => {
+    try {
+      return JSON.parse(localStorage.getItem(key) ?? "{}");
+    } catch {
+      return {};
+    }
+  };
   const run = async () => {
     setRunning(true);
+    setNote("");
+    const done = saved();
     const out: typeof rows = [];
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    let last = 0;
     for (const c of cases) {
-      const read = enabled ? await readAvoid(c.text, mode, 20000) : null;
-      out.push({ c, rules: rulesRead(items, c.text), model: read ? hintItems(read.hint) : null, source: read?.source, ms: read?.ms });
-      if (out.length % 10 === 0 || out.length === cases.length) setRows([...out]);
+      const kept = done[c.id];
+      if (kept?.model) {
+        out.push({ c, rules: rulesRead(items, c.text), ...kept });
+        continue;
+      }
+      let read = null;
+      if (enabled) {
+        for (let tries = 0; tries < 3 && !read; tries++) {
+          if (mode !== "only_on_device") await sleep(Math.max(0, 4500 - (Date.now() - last)));
+          if (cloudPause() > 90_000 && mode === "only_in_cloud") break;
+          if (cloudPause() > 0) await sleep(cloudPause());
+          last = Date.now();
+          read = await readAvoid(c.text, mode, 20000);
+          if (!read && cloudPause() === 0) break;
+        }
+      }
+      if (!read && enabled && cloudPause() > 90_000) {
+        setNote(`The cloud model's free daily quota is used up. ${out.length} of ${cases.length} done and kept; run again after ${new Date(Date.now() + cloudPause()).toLocaleString()} to finish.`);
+        break;
+      }
+      const row = { c, rules: rulesRead(items, c.text), model: read ? hintItems(read.hint) : null, source: read?.source, ms: read?.ms };
+      out.push(row);
+      if (read) {
+        done[c.id] = { model: row.model, source: row.source, ms: row.ms };
+        try {
+          localStorage.setItem(key, JSON.stringify(done));
+        } catch {
+          /* kept for this page only */
+        }
+      }
+      if (out.length % 5 === 0 || out.length === cases.length) setRows([...out]);
     }
+    setRows([...out]);
     setRunning(false);
   };
   const score = (pick: (r: (typeof rows)[number]) => string[], subset = rows) => tally(subset.map((r) => r.c), subset.map((r): AvoidMark => mark(r.c, pick(r))));
@@ -219,7 +263,7 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
     );
   };
   const download = () => {
-    const blob = new Blob([JSON.stringify({ set: which, mode, at: new Date().toISOString(), rows: rows.map((r) => ({ id: r.c.id, rules: r.rules, model: r.model, source: r.source, ms: r.ms })) })], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ set: which, mode, model: cloudModel(), at: new Date().toISOString(), rows: rows.map((r) => ({ id: r.c.id, rules: r.rules, model: r.model, source: r.source, ms: r.ms })) })], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `${which}-${mode}.json`;
@@ -257,10 +301,11 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
           </button>
         ) : null}
       </div>
+      {note ? <div className="alert sun" data-testid="a1-note">{note}</div> : null}
       {rows.length ? (
         <>
           <div className="hint">
-            {read.length} of {rows.length} read by the model ({onDevice} on this device, {read.length - onDevice} in the cloud), {ms} ms each on average.
+            {cloudModel()}: {read.length} of {rows.length} read by the model ({onDevice} on this device, {read.length - onDevice} in the cloud), {ms} ms each on average.
           </div>
           <table className="table" data-testid="a1-table">
             <thead>

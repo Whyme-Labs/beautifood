@@ -77,3 +77,12 @@ describe("avoid hint: in an answer", () => {
     expect(hinted.hintAdded).toBeUndefined();
   });
 });
+
+describe("cloud quota: Google's retry time", () => {
+  it("reads hours, minutes and seconds, and defaults to a minute", async () => {
+    const { retryAfter } = await import("../../src/ui/hybrid");
+    expect(retryAfter("Please retry in 1h18m45.8s.")).toBe((3600 + 18 * 60 + 45.8) * 1000);
+    expect(retryAfter("Please retry in 34.5s")).toBe(34500);
+    expect(retryAfter("quota exceeded")).toBe(60000);
+  });
+});

@@ -31,6 +31,36 @@ function debugToken(): string | boolean | undefined {
 }
 
 let ready: Promise<typeof import("firebase/ai") & { app: import("firebase/app").FirebaseApp; check: import("firebase/app-check").AppCheck; getToken: typeof import("firebase/app-check").getToken }> | null = null;
+// Google's free tier allows few cloud requests a minute and a day, per project. When it says "over quota",
+// the cloud is left alone until its retry time (the device model, which has no quota, carries on), so a
+// guest's answer never waits on a request that will be refused.
+const PAUSE_KEY = "bf-cloud-pause";
+let pausedUntil = (() => {
+  try {
+    return Number(globalThis.localStorage?.getItem(PAUSE_KEY) ?? 0) || 0;
+  } catch {
+    return 0;
+  }
+})();
+/** Milliseconds until the cloud model may be asked again (0: now). */
+export const cloudPause = () => Math.max(0, pausedUntil - Date.now());
+/** Google's "Please retry in 1h18m45.8s" / "retry in 34.5s", in ms (default a minute). */
+export function retryAfter(message: string): number {
+  const m = message.match(/retry in ((?:\d+h)?(?:\d+m)?(?:[\d.]+s)?)/i)?.[1] ?? "";
+  const part = (u: string) => Number(m.match(new RegExp(`([\\d.]+)${u}`))?.[1] ?? 0);
+  const ms = (part("h") * 3600 + part("m") * 60 + part("s")) * 1000;
+  return ms > 0 ? Math.min(ms, 24 * 3600_000) : 60_000;
+}
+function pauseCloud(message: string) {
+  pausedUntil = Date.now() + retryAfter(message);
+  try {
+    globalThis.localStorage?.setItem(PAUSE_KEY, String(pausedUntil));
+  } catch {
+    /* (a private window: the pause lasts this page only) */
+  }
+}
+let deviceReady: boolean | null = null;
+
 /** Why the reader last failed, for the /hybrid page's status (guests never see it). */
 let lastError = "";
 export const readerError = () => lastError;
@@ -106,6 +136,15 @@ export async function prepareDevice(onProgress?: (share: number) => void): Promi
 /** What `message` says the guest avoids, or null when the reader is off, fails or takes too long (the rules answer alone). */
 export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_device", timeoutMs = 8000): Promise<HintResult | null> {
   if (!readerEnabled() || !message.trim()) return null;
+  // the cloud is over its quota: the device model alone, if this device has one
+  if (mode !== "only_on_device" && cloudPause() > 0) {
+    deviceReady ??= (await deviceModelStatus()) === "available";
+    if (!deviceReady) {
+      lastError = `the cloud model's free quota is used up; it is asked again in ${Math.ceil(cloudPause() / 60_000)} min`;
+      return null;
+    }
+    mode = "only_on_device";
+  }
   // one budget for everything (App Check's token, loading Firebase, the model): past it, the rules answer alone
   const deadline = performance.now() + timeoutMs;
   const left = () => Math.max(0, deadline - performance.now());
@@ -125,6 +164,8 @@ export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_d
     return { hint, source: result.response.inferenceSource === "on_device" ? "on_device" : "in_cloud", ms: Math.round(performance.now() - t0) };
   } catch (e) {
     lastError = errorText(e);
+    const full = String((e as { message?: string })?.message ?? e);
+    if (/\b429\b|RESOURCE_EXHAUSTED|exceeded your current quota/i.test(full)) pauseCloud(full);
     return null;
   }
 }
