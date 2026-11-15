@@ -81,6 +81,21 @@ test.describe("hybrid avoid reader (browser)", () => {
 });
 
 test.describe("the kiosk answers by itself (browser)", () => {
+  test("a kiosk whose network drops before its first question still answers", async ({ page, context }) => {
+    const s = await seed();
+    await page.route(/googleapis\.com|google\.com\/recaptcha|gstatic\.com/, (route) => route.abort());
+    await open(page, `/r/${s.klcc.ref}/kiosk`);
+    await page.getByTestId("kiosk-ask").click();
+    const box = page.getByTestId("kiosk-assistant");
+    await expect(box.getByRole("button", { name: /allergic to prawns/ })).toBeEnabled();
+    await page.waitForLoadState("networkidle");
+    await context.setOffline(true);
+    await box.locator("input").fill("my son is allergic to peanuts, anything for him?");
+    await box.getByRole("button", { name: "Ask", exact: true }).click();
+    await expect(box.getByTestId("kiosk-answer").last()).toContainText("Answered on this kiosk", { timeout: 20_000 });
+    await context.setOffline(false);
+  });
+
   test("on the kiosk: the reading keeps seafood off, and with the network gone it still answers", async ({ page, context }) => {
     const s = await seed();
     const m = await menuItems(s.owner);

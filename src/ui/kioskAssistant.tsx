@@ -25,10 +25,15 @@ export function KioskAssistant({ branch }: { branch: string }) {
   const [online, setOnline] = useState(typeof navigator === "undefined" ? true : navigator.onLine);
   const idle = useRef<ReturnType<typeof setTimeout>>(undefined);
   const deviceAsked = useRef(false);
+  // the menu brain, loaded when the assistant opens: a kiosk whose Wi-Fi drops before its first question
+  // must still be able to answer
+  const brain = useRef<Promise<typeof import("../server/ai/brain")> | null>(null);
 
   useEffect(() => {
     const load = () => void api<{ context: AssistantContext }>(`/api/public/branches/${branch}/assistant/context`).then((r) => setCtx(r.context)).catch(() => {});
     load();
+    brain.current ??= import("../server/ai/brain");
+    brain.current.catch(() => (brain.current = null));
     void warmReader().catch(() => {});
     const every = setInterval(load, REFRESH_MS);
     const on = () => setOnline(true);
@@ -47,13 +52,19 @@ export function KioskAssistant({ branch }: { branch: string }) {
       deviceAsked.current = true;
       void prepareDevice().catch(() => {});
     }
-    const read = await readAvoid(text, "prefer_on_device", 6000);
-    const said: Turn = { role: "user", content: text, hint: read?.hint ?? null, source: read?.source };
-    const { answerGuest } = await import("../server/ai/brain");
-    const history = [...turns.map(({ role, content, hint }) => ({ role, content, hint })), { role: "user" as const, content: text, hint: said.hint }];
-    const reply = answerGuest(ctx, history, locale);
-    setTurns([...turns, said, { role: "assistant", content: reply.answer, reply }]);
-    setBusy(false);
+    try {
+      const read = await readAvoid(text, "prefer_on_device", 6000);
+      const said: Turn = { role: "user", content: text, hint: read?.hint ?? null, source: read?.source };
+      const { answerGuest } = await (brain.current ??= import("../server/ai/brain"));
+      const history = [...turns.map(({ role, content, hint }) => ({ role, content, hint })), { role: "user" as const, content: text, hint: said.hint }];
+      const reply = answerGuest(ctx, history, locale);
+      setTurns([...turns, said, { role: "assistant", content: reply.answer, reply }]);
+    } catch {
+      brain.current = null;
+      setDraft(text);
+    } finally {
+      setBusy(false);
+    }
     clearTimeout(idle.current);
     idle.current = setTimeout(() => setTurns([]), IDLE_MS);
   };
