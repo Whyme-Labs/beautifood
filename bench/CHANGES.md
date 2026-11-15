@@ -1869,3 +1869,48 @@ Against the bar:
 
 What this changes, after scoring (nothing was changed before it): the rules' false alarms on
 non-stating messages are now a known weakness, to be fixed on dev and our own examples only, never a1.
+
+## The rules' false alarms on avoidance, fixed on new dev sets (2026-11-15, after a1's cloud score)
+
+Owner: "go fix the rules' false alarms". a1 is not read case by case, so two new authors (d1, d2) wrote
+development sets from the a1 brief, weighted to hard "no avoidance" messages, without seeing the engine,
+a1 or each other: `bench/avoid/d1.json` (163: 75 state, 88 don't), `bench/avoid/d2.json` (160: 72/88).
+Their rules false alarms were 19/88 and 17/88, close to a1's 24%. Read on dev
+(`npx tsx bench/avoid/rules.ts --show`), they were:
+
+- **Said of the past, since outgrown**, **of someone not here**, **denied**, **hypothetical or out of
+  curiosity**: now taken out before the avoidances are read (`src/server/ai/brain/applies.ts`; `read()`
+  reads the avoidances from what applies, and a denied diet is not read from the message's other words).
+- **"No alcohol" for a child at the table** (the under-18 rule, kept for answers): the reading of what the
+  guest said is now `saysNoAlcohol`.
+- **A dish's own leave-off** ("nasi goreng tak nak telur", 炒面不要加蛋, "no egg, I don't like it"): `leaveOff`;
+  the answers still keep it off, but it is not read as something the guest must never be served.
+- Words: "tak makan daging lembu" is no beef, not vegetarian; 鱿鱼/墨鱼/章鱼/鲍鱼 are molluscs, not fish;
+  会肿 / 呼吸困难 (swelling, can't breathe) read as an allergy.
+
+| Dev set | Missed, before → after | False alarms, before → after |
+|---|---|---|
+| our 40 | 5/27 → 5/27 | 0/13 → 0/13 |
+| d1 | 8/75 → 8/75 | 19/88 → 0/88 |
+| d2 | 8/72 → 8/72 | 17/88 → 0/88 |
+
+Full-answer benchmarks, every case against the run before the change (v1, heldout, v3 to v13; v14 not
+run): no case lost, no new unsafe answer, one v8 case gained. Unit tests: `test/unit/applies.test.ts`
+(my own phrasings, including what must still count: "I'm allergic to peanuts, my husband isn't coming").
+
+**On a1, scored once for these rules (totals only, `npx tsx bench/avoid/score-rules.ts`; the cloud
+reader's readings are those on file, not re-run):**
+
+| | Missed (of 247) | False alarms (of 156) | Stating with extras |
+|---|---|---|---|
+| Rules alone, before | 53 | 38 (24.4%) | 64 |
+| Rules alone, now | 56 | 13 (8.3%) | 20 |
+| Rules + cloud reader, before | 0 | 42 (26.9%) | 73 |
+| Rules + cloud reader, now | 0 | 28 (17.9%) | 42 |
+
+- The rules alone now miss 3 more stating messages (en +1, ms +2); with the reader, still none missed
+  in any language. Not looked into: a1 isn't read case by case.
+- Bar (3), false alarms at most 5%, is still **not met**: most of what is left now comes from the cloud
+  reader (20 false alarms alone). Its prompt can be worked on with d1/d2, never a1.
+- The on-device column is scored against the rules' readings frozen in `a1-cloud.json` (the rules as
+  they were), so the pre-registered comparison of the two readers uses the same rules.

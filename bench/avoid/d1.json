@@ -1,0 +1,2125 @@
+[
+  {
+    "id": "d1-001",
+    "lang": "en",
+    "text": "hi is the chicken rice safe for a shrimp allergy? i swell up pretty bad",
+    "gold": {
+      "allergens": [
+        "crustaceans"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-002",
+    "lang": "en",
+    "text": "Table for 4 at 7. Just so the kitchen knows, my daughter is coeliac so she needs to be careful",
+    "gold": {
+      "allergens": [
+        "gluten"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-003",
+    "lang": "en",
+    "text": "We're pescatarian, which of your fish dishes would you recommend?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "pork",
+        "beef",
+        "chicken",
+        "lamb",
+        "duck"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-004",
+    "lang": "en",
+    "text": "anything with sesame oil is a no for me, last time I ended up in A&E",
+    "gold": {
+      "allergens": [
+        "sesame"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-005",
+    "lang": "en",
+    "text": "Bringing a Muslim colleague for lunch today, she'll need everything to be halal",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "halal"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-006",
+    "lang": "en",
+    "text": "my husband has a severe tree nut allergy (cashews, almonds), could you check the curry for him?",
+    "gold": {
+      "allergens": [
+        "tree_nuts"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-007",
+    "lang": "en",
+    "text": "I'm allergic to mustard - does the honey glazed chicken have any in the glaze?",
+    "gold": {
+      "allergens": [
+        "mustard"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-008",
+    "lang": "en",
+    "text": "Can't have celery, it gives me a reaction. Is there celery in the soup of the day?",
+    "gold": {
+      "allergens": [
+        "celery"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-009",
+    "lang": "en",
+    "text": "I react badly to sulphites so I have to skip anything with dried apricots or vinegar pickles, which salads are safe?",
+    "gold": {
+      "allergens": [
+        "sulphites"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-010",
+    "lang": "en",
+    "text": "Lupin allergy here, I know it's rare, but is your gluten free bread made with lupin flour?",
+    "gold": {
+      "allergens": [
+        "lupin"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-011",
+    "lang": "en",
+    "text": "2 pax, neither of us takes beef, we're Hindu. And we don't drink, so no alcohol in anything please",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "beef"
+      ],
+      "alcohol": true
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-012",
+    "lang": "en",
+    "text": "fully vegan, does the dhal use ghee?",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "vegan"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-013",
+    "lang": "en",
+    "text": "no seafud for my mum pls, she gets really itchy",
+    "gold": {
+      "allergens": [
+        "fish",
+        "crustaceans",
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-014",
+    "lang": "en",
+    "text": "My 6yo can't eat egg - is the batter on the fish and chips made with egg?",
+    "gold": {
+      "allergens": [
+        "egg"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-015",
+    "lang": "en",
+    "text": "alergic to shellfish, pls tell the chef",
+    "gold": {
+      "allergens": [
+        "crustaceans",
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-016",
+    "lang": "en",
+    "text": "nut allergy here, what desserts are safe?",
+    "gold": {
+      "allergens": [
+        "peanuts",
+        "tree_nuts"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-017",
+    "lang": "en",
+    "text": "first time trying malaysian food! heads up i'm allergic to soy, which dishes would work?",
+    "gold": {
+      "allergens": [
+        "soy"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-018",
+    "lang": "en",
+    "text": "extra egg on the fried rice and no MSG, oh and I'm allergic to peanuts so nothing with them pls",
+    "gold": {
+      "allergens": [
+        "peanuts"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-019",
+    "lang": "en",
+    "text": "It's Ramadan and we're all Muslim, breaking fast here tonight, so halal only please",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "halal"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-020",
+    "lang": "en",
+    "text": "Can I get extra peanuts on the nasi lemak?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-021",
+    "lang": "en",
+    "text": "is there shrimp paste in the kangkung belacan?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-022",
+    "lang": "en",
+    "text": "No allergies on our table, just bring whatever's good",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-023",
+    "lang": "en",
+    "text": "I had a dairy allergy as a kid but grew out of it years ago, so the cheese naan is fine for me",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-024",
+    "lang": "en",
+    "text": "Not Muslim btw, so pork is totally fine for me if you have any",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-025",
+    "lang": "en",
+    "text": "no MSG and not too spicy please",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-026",
+    "lang": "en",
+    "text": "could you leave out the coriander in my pho, thanks",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-027",
+    "lang": "en",
+    "text": "one nutmeg juice and a donut please",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-028",
+    "lang": "en",
+    "text": "is the eggplant dish spicy?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-029",
+    "lang": "en",
+    "text": "allergic to cats lol, hope there's no restaurant cat",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-030",
+    "lang": "en",
+    "text": "I'm allergic to penicillin but that's not a food thing. anyway, 1 chicken chop please",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-031",
+    "lang": "en",
+    "text": "nasi kerabu with the butterfly pea rice please, and a teh tarik",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-032",
+    "lang": "en",
+    "text": "hold the fried shallots and the peanuts on my nasi lemak pls",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-033",
+    "lang": "en",
+    "text": "what's your most popular seafood dish?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-034",
+    "lang": "en",
+    "text": "is the cheesecake made in-house?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-035",
+    "lang": "en",
+    "text": "do you have anything for someone allergic to strawberries? my niece breaks out from them",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-036",
+    "lang": "en",
+    "text": "do you serve alcohol? would love a beer with my burger",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-037",
+    "lang": "en",
+    "text": "the prawn mee yesterday was amazing, same again please",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-038",
+    "lang": "en",
+    "text": "no sugar in my kopi, I'm diabetic",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-039",
+    "lang": "en",
+    "text": "can u make the tom yum less sour? and extra mushrooms",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-040",
+    "lang": "en",
+    "text": "do you have oat milk? I just prefer the taste, not intolerant or anything",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-041",
+    "lang": "en",
+    "text": "allergic to waiting haha, how long for the food?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-042",
+    "lang": "ms",
+    "text": "Saya ada alahan pada ketam dan udang. Mee rebus ni ada letak udang kering tak?",
+    "gold": {
+      "allergens": [
+        "crustaceans"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-043",
+    "lang": "ms",
+    "text": "Anak saya tak boleh makan telur, nanti naik ruam satu badan",
+    "gold": {
+      "allergens": [
+        "egg"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-044",
+    "lang": "ms",
+    "text": "Kami semua Muslim, makanan kat sini halal ke?",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "halal"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-045",
+    "lang": "ms",
+    "text": "Tolong jangan letak kacang dalam pesanan meja ni, suami saya alah kacang",
+    "gold": {
+      "allergens": [
+        "peanuts"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-046",
+    "lang": "ms",
+    "text": "Saya vegetarian, ada menu sayur-sayuran sahaja?",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "vegetarian"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-047",
+    "lang": "ms",
+    "text": "Isteri saya tak boleh minum susu, perut dia tak tahan. Teh tarik boleh guna susu kacang soya?",
+    "gold": {
+      "allergens": [
+        "milk"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-048",
+    "lang": "ms",
+    "text": "Mak saya tak makan daging lembu. Ada rendang ayam?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "beef"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-049",
+    "lang": "ms",
+    "text": "Saya tak boleh makan sotong, nanti gatal satu badan",
+    "gold": {
+      "allergens": [
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-050",
+    "lang": "ms",
+    "text": "1 nasi lemak biasa tapi jangan letak ikan bilis sebab saya alah ikan. Air teh o ais satu",
+    "gold": {
+      "allergens": [
+        "fish"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-051",
+    "lang": "ms",
+    "text": "Saya ada penyakit seliak, tak boleh makan gandum langsung",
+    "gold": {
+      "allergens": [
+        "gluten"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-052",
+    "lang": "ms",
+    "text": "Kami tak minum arak, jadi jangan masukkan wain dalam masakan ya",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": true
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-053",
+    "lang": "ms",
+    "text": "Adik saya alah kerang dan lala, jadi elakkan ya",
+    "gold": {
+      "allergens": [
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-054",
+    "lang": "ms",
+    "text": "Saya alah makanan laut, semua jenis, ikan pun tak boleh",
+    "gold": {
+      "allergens": [
+        "fish",
+        "crustaceans",
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-055",
+    "lang": "ms",
+    "text": "Ada seorang dalam kumpulan kami vegan, ada pilihan untuk dia?",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "vegan"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-056",
+    "lang": "ms",
+    "text": "Saya alah kacang soya, tauhu dan kicap pun tak boleh",
+    "gold": {
+      "allergens": [
+        "soy"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-057",
+    "lang": "ms",
+    "text": "Doktor larang saya makan ayam. Ada lauk ikan atau daging?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "chicken"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-058",
+    "lang": "ms",
+    "text": "Nenek saya alah kacang gajus, tolong check pencuci mulut ya",
+    "gold": {
+      "allergens": [
+        "tree_nuts"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-059",
+    "lang": "ms",
+    "text": "Sos tu ada mustard tak? Saya alah mustard",
+    "gold": {
+      "allergens": [
+        "mustard"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-060",
+    "lang": "ms",
+    "text": "Nak tambah telur mata satu",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-061",
+    "lang": "ms",
+    "text": "Kurang manis, ais sikit",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-062",
+    "lang": "ms",
+    "text": "Anak saya dulu alah susu masa bayi, sekarang dah ok, boleh bagi dia milo",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-063",
+    "lang": "ms",
+    "text": "Nasi goreng saya tak nak telur ye",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-064",
+    "lang": "ms",
+    "text": "Kalau ada pelanggan alah kacang, menu ada tanda tak? Saja nak tahu",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-065",
+    "lang": "ms",
+    "text": "Ais kacang satu, tambah jagung",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-066",
+    "lang": "ms",
+    "text": "Kacang panjang goreng belacan ada lagi?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-067",
+    "lang": "ms",
+    "text": "Jangan letak daun ketumbar dan bawang, saya tak suka",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-068",
+    "lang": "ms",
+    "text": "Tak nak pedas sangat ya",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-069",
+    "lang": "ms",
+    "text": "Ikan bakar yang paling sedap kat sini yang mana?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-070",
+    "lang": "ms",
+    "text": "Saya alah habuk, kalau boleh nak duduk luar",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-071",
+    "lang": "ms",
+    "text": "Tolong jangan letak ajinomoto",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-072",
+    "lang": "ms",
+    "text": "Roti telur dua, teh tarik satu",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-073",
+    "lang": "ms",
+    "text": "Sambal sotong tu pedas tak?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-074",
+    "lang": "ms",
+    "text": "Abang saya tak makan daging, tapi dia tak ikut hari ni. Saya makan semua.",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-075",
+    "lang": "ms",
+    "text": "Bihun sup tu guna sup tulang lembu ke ayam?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-076",
+    "lang": "ms",
+    "text": "Mee goreng saya tak nak taugeh",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-077",
+    "lang": "ms",
+    "text": "Saya alah durian, tapi kat sini takde durian kan?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-078",
+    "lang": "ms",
+    "text": "Susu segar ada jual?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-079",
+    "lang": "ms",
+    "text": "Boleh tukar nasi putih kepada nasi minyak?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-080",
+    "lang": "ms",
+    "text": "Saya bukan alah kacang, cuma tanya sebab nampak banyak kacang dalam menu",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-081",
+    "lang": "ms",
+    "text": "Berapa lama lagi nak tunggu? Lapar dah ni",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-082",
+    "lang": "manglish",
+    "text": "boss mee goreng 2, one of them no egg ya, my son allergic egg one",
+    "gold": {
+      "allergens": [
+        "egg"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-083",
+    "lang": "manglish",
+    "text": "cannot eat shellfish one lah me, swell like hell. got other choice?",
+    "gold": {
+      "allergens": [
+        "crustaceans",
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-084",
+    "lang": "manglish",
+    "text": "my wife makan vege today, the whole day. got vege dish or not?",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "vegetarian"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-085",
+    "lang": "manglish",
+    "text": "aiyo i lactose intolerant leh, the kopi can use non dairy creamer or not",
+    "gold": {
+      "allergens": [
+        "milk"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-086",
+    "lang": "manglish",
+    "text": "we all Muslim ah, here got halal cert or not?",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "halal"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-087",
+    "lang": "manglish",
+    "text": "no pork for our table lah, and uncle doesn't drink, so no beer for him",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "pork"
+      ],
+      "alcohol": true
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-088",
+    "lang": "manglish",
+    "text": "my girl allergic to kacang one, the satay sauce confirm got right? skip it",
+    "gold": {
+      "allergens": [
+        "peanuts"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-089",
+    "lang": "manglish",
+    "text": "sotong cannot, lala also cannot, my body cannot take these one, itchy whole night",
+    "gold": {
+      "allergens": [
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-090",
+    "lang": "manglish",
+    "text": "bro my friend coeliac, the wantan mee noodle got wheat right? any bihun option",
+    "gold": {
+      "allergens": [
+        "gluten"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-091",
+    "lang": "manglish",
+    "text": "we pantang beef ah, Guanyin follower. the soup base got beef or not?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "beef"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-092",
+    "lang": "manglish",
+    "text": "I don't take seafood at all one, allergic since small",
+    "gold": {
+      "allergens": [
+        "fish",
+        "crustaceans",
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-093",
+    "lang": "manglish",
+    "text": "can make the fried rice without sesame oil? i kena allergy, throat itchy",
+    "gold": {
+      "allergens": [
+        "sesame"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-094",
+    "lang": "manglish",
+    "text": "mother in law vegan ya, very strict one, no egg no milk anything",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "vegan"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-095",
+    "lang": "manglish",
+    "text": "tolong ah, no peanut no cashew for table 5, the small boy allergic to all nuts",
+    "gold": {
+      "allergens": [
+        "peanuts",
+        "tree_nuts"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-096",
+    "lang": "manglish",
+    "text": "boss i x makan mutton, the briyani got chicken version?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "lamb"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-097",
+    "lang": "manglish",
+    "text": "my dad cannot eat duck one, doctor say his uric acid high. so no duck rice for him",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "duck"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-098",
+    "lang": "manglish",
+    "text": "fish allergy wor, got anything without fish sauce?",
+    "gold": {
+      "allergens": [
+        "fish"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-099",
+    "lang": "manglish",
+    "text": "soya allergy lah, so no tauhu, no taukua, no soy sauce",
+    "gold": {
+      "allergens": [
+        "soy"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-100",
+    "lang": "manglish",
+    "text": "pescatarian lah me, fish ok prawn ok but no meat at all",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "pork",
+        "beef",
+        "chicken",
+        "lamb",
+        "duck"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-101",
+    "lang": "manglish",
+    "text": "boss kasi lebih kacang and ikan bilis on my nasi lemak ah",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-102",
+    "lang": "manglish",
+    "text": "the char kuey teow got cockles or not ah?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-103",
+    "lang": "manglish",
+    "text": "i not vegetarian ah, the waiter just now gave me the vege menu by mistake",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-104",
+    "lang": "manglish",
+    "text": "less spicy ya, my mouth cannot tahan",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-105",
+    "lang": "manglish",
+    "text": "kaya butter toast 2 set, extra half boiled egg",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-106",
+    "lang": "manglish",
+    "text": "wah the butter prawn damn nice, one more plate",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-107",
+    "lang": "manglish",
+    "text": "my brother the one allergic to prawn is in Penang this week, so today can order the prawn mee liao",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-108",
+    "lang": "manglish",
+    "text": "last time i vege for one year, now no more liao. give me char siu rice",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-109",
+    "lang": "manglish",
+    "text": "allergic to monday lah haha, ok 1 kopi o kosong",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-110",
+    "lang": "manglish",
+    "text": "the ais kacang got how many flavour ah",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-111",
+    "lang": "manglish",
+    "text": "my colleague vegan but she wfh today, so just us 2",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-112",
+    "lang": "manglish",
+    "text": "the egg tart fresh or not today?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-113",
+    "lang": "manglish",
+    "text": "no taugeh in my char kuey teow can?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-114",
+    "lang": "manglish",
+    "text": "any fish head curry left or habis already?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-115",
+    "lang": "manglish",
+    "text": "no daun bawang pls",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-116",
+    "lang": "manglish",
+    "text": "don't put egg in my maggi goreng ah, just plain",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-117",
+    "lang": "manglish",
+    "text": "the curry mee use santan or milk ah? just curious",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-118",
+    "lang": "manglish",
+    "text": "got beer or not? want 2 tiger",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-119",
+    "lang": "manglish",
+    "text": "chicken rice roasted or steamed better ah",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-120",
+    "lang": "manglish",
+    "text": "dun put ice for my sirap bandung",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-121",
+    "lang": "manglish",
+    "text": "can tapau the leftover satay?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-122",
+    "lang": "manglish",
+    "text": "my wife not allergic to prawn, she just lazy to peel. can help peel?",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-123",
+    "lang": "zh",
+    "text": "我对鸡蛋过敏，炒粿条可以不放蛋吗？",
+    "gold": {
+      "allergens": [
+        "egg"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-124",
+    "lang": "zh",
+    "text": "今天我们全家吃斋，有斋面吗？",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "vegetarian"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-125",
+    "lang": "zh",
+    "text": "今天十五，我吃素，有什么素食？",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "vegetarian"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-126",
+    "lang": "zh",
+    "text": "我儿子花生过敏，很严重，沙爹酱千万不要给他",
+    "gold": {
+      "allergens": [
+        "peanuts"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-127",
+    "lang": "zh",
+    "text": "我不吃牛肉，拜观音的",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "beef"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-128",
+    "lang": "zh",
+    "text": "我乳糖不耐，奶茶可以换成别的吗",
+    "gold": {
+      "allergens": [
+        "milk"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-129",
+    "lang": "zh",
+    "text": "我老婆对海鲜敏感，这个汤有没有放海鲜？",
+    "gold": {
+      "allergens": [
+        "fish",
+        "crustaceans",
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-130",
+    "lang": "zh",
+    "text": "我们是穆斯林，这里是清真的吗？",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "halal"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-131",
+    "lang": "zh",
+    "text": "我们都不喝酒，给我们来两杯椰水就好",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": true
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-132",
+    "lang": "zh",
+    "text": "我有麸质不耐受，不能吃小麦，有米粉吗",
+    "gold": {
+      "allergens": [
+        "gluten"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-133",
+    "lang": "zh",
+    "text": "我不吃猪肉，也不吃羊肉",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "pork",
+        "lamb"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-134",
+    "lang": "zh",
+    "text": "对芝麻过敏，麻油也不能放",
+    "gold": {
+      "allergens": [
+        "sesame"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-135",
+    "lang": "zh",
+    "text": "我女儿吃了鱿鱼会起疹子",
+    "gold": {
+      "allergens": [
+        "molluscs"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-136",
+    "lang": "zh",
+    "text": "我对腰果和杏仁过敏",
+    "gold": {
+      "allergens": [
+        "tree_nuts"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-137",
+    "lang": "zh",
+    "text": "我吃纯素，蛋和奶都不吃",
+    "gold": {
+      "allergens": [],
+      "diets": [
+        "vegan"
+      ],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-138",
+    "lang": "zh",
+    "text": "我爸不能吃鸭，吃了会不舒服",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [
+        "duck"
+      ],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-139",
+    "lang": "zh",
+    "text": "我对黄豆过敏，豆腐和酱油都不行",
+    "gold": {
+      "allergens": [
+        "soy"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-140",
+    "lang": "zh",
+    "text": "我食唔得蟹，会敏感，唔该",
+    "gold": {
+      "allergens": [
+        "crustaceans"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-141",
+    "lang": "zh",
+    "text": "我对芹菜过敏，例汤里面有芹菜吗？",
+    "gold": {
+      "allergens": [
+        "celery"
+      ],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "states"
+  },
+  {
+    "id": "d1-142",
+    "lang": "zh",
+    "text": "沙爹酱可以多给一点吗？",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-143",
+    "lang": "zh",
+    "text": "我老公海鲜过敏，不过他今天在外地出差，我一个人吃",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-144",
+    "lang": "zh",
+    "text": "我没有什么过敏，随便上",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-145",
+    "lang": "zh",
+    "text": "我小时候对虾过敏，长大就好了，现在什么都吃",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-146",
+    "lang": "zh",
+    "text": "鸡仔饼是用鸡肉做的吗？",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-147",
+    "lang": "zh",
+    "text": "不要香菜，谢谢",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-148",
+    "lang": "zh",
+    "text": "两杯奶茶，一个蛋糕",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-149",
+    "lang": "zh",
+    "text": "来一个羊角面包和一杯咖啡",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-150",
+    "lang": "zh",
+    "text": "请问酒楼几点关门？",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-151",
+    "lang": "zh",
+    "text": "我不是穆斯林，猪肉没问题",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-152",
+    "lang": "zh",
+    "text": "你们最受欢迎的鱼是哪一道？",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-153",
+    "lang": "zh",
+    "text": "炒面不要加蛋",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-154",
+    "lang": "zh",
+    "text": "海南鸡饭一份，冰咖啡一杯",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-155",
+    "lang": "zh",
+    "text": "这个汤是用牛奶煮的吗？",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-156",
+    "lang": "zh",
+    "text": "我不是过敏，只是问问花生酱是自己做的吗",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-157",
+    "lang": "zh",
+    "text": "可以加个荷包蛋吗？",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-158",
+    "lang": "zh",
+    "text": "咖喱鸡辣不辣？",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-159",
+    "lang": "zh",
+    "text": "少糖少冰",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-160",
+    "lang": "zh",
+    "text": "老鼠粉一份，加卤蛋",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-161",
+    "lang": "zh",
+    "text": "炒饭不要葱",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-162",
+    "lang": "zh",
+    "text": "菜单上有标明哪些菜含有花生吗？",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  },
+  {
+    "id": "d1-163",
+    "lang": "zh",
+    "text": "螃蟹是今天新鲜的吗？",
+    "gold": {
+      "allergens": [],
+      "diets": [],
+      "meats": [],
+      "alcohol": false
+    },
+    "kind": "none"
+  }
+]

@@ -146,7 +146,8 @@ const ALLERGEN_WORDS_ZH: Partial<Record<Allergen, RegExp>> = {
   gluten: /麸质|麦|乳糜泻|腹腔病/,
   crustaceans: /虾|蟹|甲壳|海鲜/,
   molluscs: /鱿鱼|蚝|贝|蛤|软体|海鲜/,
-  fish: /鱼|海鲜/,
+  // (鱿鱼 squid, 墨鱼 cuttlefish, 章鱼 octopus, 鲍鱼 abalone are molluscs, not fish)
+  fish: /(?<![鱿墨章鲍])鱼|海鲜/,
   egg: /蛋/,
   // 乳 is milk, but not in 乳糜泻 (coeliac disease)
   milk: /奶|乳(?!\s*糜)/,

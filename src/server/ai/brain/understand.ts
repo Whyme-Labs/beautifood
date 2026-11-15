@@ -11,6 +11,7 @@ import { classify, loadModel, type Intent, type IntentGuess, type IntentModel, t
 import { editDistance, normalize, osaDistance, tokens } from "../../../shared/brain/text";
 import { WEIGHTS } from "../../../shared/brain/weights.gen";
 import { mentionedAllergens } from "../local";
+import { applicable, deniedDiets, DISLIKE, LEAVE_OFF } from "./applies";
 import { optionsSaid } from "./modifiers";
 
 export interface Dish {
@@ -92,8 +93,16 @@ export interface Understanding {
   howMany: number | null;
   /** "allergic to everything": no menu data answers that safely; staff can. */
   manyAllergies: boolean;
-  /** "no alcohol", "不要酒", "x minum arak". */
+  /** "no alcohol", "不要酒", "x minum arak", or a guest under 18 or a child ordered for: no drink offered. */
   noAlcohol: boolean;
+  /** Of `noAlcohol`, "no alcohol" said (not inferred from a child at the table). */
+  saysNoAlcohol: boolean;
+  /**
+   * Of `stated`, what is only left off a dish they named, with no allergy or "can't eat" said ("nasi
+   * goreng tak nak telur", "炒面不要加蛋"): kept off that dish and the answer, but not something the
+   * guest says they must never be served.
+   */
+  leaveOff: Allergen[];
   /** "no caffeine, it's late", "decaf", "不要咖啡因": no coffee or tea. */
   noCaffeine: boolean;
   /** Meats the guest doesn't eat ("no pork", "I don't eat beef", "tak makan babi", "不吃猪肉"). */
@@ -1027,7 +1036,7 @@ export const isDessert = (i: Dish) => DESSERT.test(i.category ?? "") || (!isDrin
 const ASKS_CONTENTS = /\b(allerg\w*|alergi|contain\w*|ingredients?|inside|safe|ada .{0,20}(tak|ke)|got .{0,20}(or not|inside)|does .{0,40}(have|got|use|come with)|is there|any .{0,15} in (it|this|that|the)|made with|cooked (in|with)|boleh makan|free from|\w+ free)\b/;
 const AVOID_CUE = /\b(allerg\w*|alergi|alah|alahan|no|without|tanpa|avoid|cant eat|cannot eat|can t eat|cant have|dont eat|don t eat|not eat|tak boleh makan|tak makan|tak nak|jangan|intolerant|intolerance|free|tak tahan|sensitive|sensitivity|sensitivities|no more|hate|exclude|except|minus|kecuali|tak boleh)\b/;
 
-const ALLERGY_WORD = /\b(allerg\w*|alergi\w*|alahan|alah|intol\w*|coeliac|celiac|sensitive|sensitivity|sensitivities|swell\w*|hives|rash\w*|itch\w*|gatal|bengkak|anaphyla\w*|epipen)\b|过[敏民闵抿]|过敏|不耐|起疹|发痒|红疹/i;
+const ALLERGY_WORD = /\b(allerg\w*|alergi\w*|alahan|alah|intol\w*|coeliac|celiac|sensitive|sensitivity|sensitivities|swell\w*|hives|rash\w*|itch\w*|gatal|bengkak|anaphyla\w*|epipen)\b|过[敏民闵抿]|过敏|不耐|起疹|发痒|红疹|[会就]肿|肿起|呼吸困难/i;
 const NEG_CUE = /^(no|not|non|without|tanpa|tak|takde|bukan|jangan|cannot|cant|dont|doesnt|never|avoid|except|kecuali|minus|hate|exclude|skip|free|less|zero|nothing|nak|boleh)$/;
 const ZH_CUE = /不要|不能|不吃|不可以|吃不了|没有|没|无|不含|别|免|戒|避免|不加|走/;
 
@@ -1237,7 +1246,25 @@ function wordsAvoided(items: Dish[], question: string): string[] {
 export type Reading = Omit<Understanding, "intent" | "confidence" | "guess">;
 
 /** Everything but the intent: the slots, and the question as the intent model reads it. */
+/**
+ * What `asked` says, with what it avoids read only from the parts that apply to this meal (not an
+ * allergy outgrown, someone not here, a denial, a hypothetical: `applicable`).
+ */
 export function read(items: Dish[], asked: string): Reading {
+  const r = readOnce(items, asked);
+  const kept = applicable(asked);
+  const k = kept === asked ? r : readOnce(items, kept);
+  const denied = deniedDiets(asked);
+  const k0 = k === r ? r : { ...r, avoid: k.avoid, choiceOff: k.choiceOff, stated: k.stated, statedDiet: k.statedDiet, allergens: k.allergens, diet: k.diet, noMeat: k.noMeat, noAlcohol: k.noAlcohol, saysNoAlcohol: k.saysNoAlcohol, manyAllergies: k.manyAllergies, allergyUnread: k.allergyUnread };
+  const avoids = denied.length ? { ...k0, diet: k0.diet.filter((d) => !denied.includes(d)), statedDiet: k0.statedDiet.filter((d) => !denied.includes(d)) } : k0;
+  const leaveOff = (avoids.dishes.length || LEAVE_OFF.test(normalize(kept)) || LEAVE_OFF.test(kept) || DISLIKE.test(normalize(kept)) || DISLIKE.test(kept)) && !ALLERGY_WORD.test(kept) && !CANT_EAT.test(normalize(kept)) && !avoids.statedDiet.length && !avoids.noMeat.length ? avoids.stated : [];
+  return { ...avoids, leaveOff };
+}
+
+// "can't eat", "tak boleh makan", "不能吃": a must, not a dish's leave-off
+const CANT_EAT = /\b(can t|cant|cannot|can not|couldn t|tak boleh|tk boleh|x boleh|tidak boleh|tak leh|xleh|tak dapat|don t eat|dont eat|do not eat|doesn t eat|doesnt eat|never eat|tak makan|tk makan|x makan|tidak makan|avoid|elak|pantang|must not|mustn t|not allowed|forbidden|larang)\b|不能|不可以|吃不了|不吃|忌口|戒/;
+
+function readOnce(items: Dish[], asked: string): Omit<Reading, "leaveOff"> {
   // ("table 4: fish amritsari, …"): a table's number isn't a count
   // ("bill for 4: butter chicken full, …"): the party, not four of the first dish
   // ("有冇虾饺？" in Cantonese is 有没有: a question, not "no shrimp")
@@ -1349,10 +1376,10 @@ export function read(items: Dish[], asked: string): Reading {
   const diet: Diet[] = [];
   if (/\b(vegan|plant based|plantbased)\b/.test(restText) || /纯素|全素/.test(restRaw)) diet.push("vegan");
   else if (
-    /\b(vegetarian|veggie|vegetarians|vege|veg|no meat|meatless|meat free|tak makan daging|sayur sayuran|sayuran|vegetarian food)\b/.test(restText) ||
+    /\b(vegetarian|veggie|vegetarians|vege|veg|no meat|meatless|meat free|tak makan daging(?! (lembu|babi|kambing|ayam|itik|khinzir|biri))|sayur sayuran|sayuran|vegetarian food)\b/.test(restText) ||
     /素|斋/.test(restRaw) ||
     // "I don't eat meat" (read from the whole question: "meat" may be a word of a dish's name)
-    /\b(don t|dont|do not|never|cannot|can t|cant|doesn t|doesnt|tak|tidak|x) (eat|makan) (any )?(meat|daging)\b/.test(normalize(question))
+    /\b(don t|dont|do not|never|cannot|can t|cant|doesn t|doesnt|tak|tidak|x) (eat|makan) (any )?(meat|daging)\b(?! (lembu|babi|kambing|ayam|itik|khinzir|biri))/.test(normalize(question))
   )
     diet.push("vegetarian");
   // "I don't eat meat but fish is fine", "I eat fish but no meat": a pescatarian, not a vegetarian
@@ -1408,6 +1435,7 @@ export function read(items: Dish[], asked: string): Reading {
   // "is the roti canai vegetarian?" asks of a dish; "I'm vegetarian, roti canai ok?" says who they are
   const asksDiet = /\b(is|are|got|ada|any)\b[^?]*\b(vegetarian|vegan|veg|halal)\b|\b(vegetarian|vegan|halal)\s*(or not|tak|x|ke|kah|ah|\?|$)/.test(restText) || /素(的|吗|不)|是不是素|清真(吗|不)/.test(restRaw);
   const saysDiet = !mentions.length || !asksDiet || /\b(i m|im|i am|we re|we are|were all|saya|sy|kami|aku|i (vegetarian|vegan|veg)|my \w+ (is|are)|for (a|my) \w*\s?(vegetarian|vegan)|(pure |strict )?(vegetarian|vegan|veg|veggie|veggies)s? (here|lah|la|person|people|family|table|guest|guests|only|all))\b/.test(restText) || /我(是|吃|们)|吃素的|吃斋/.test(restRaw);
+  const saysNoAlcohol = /\b(no|not|without|tanpa|tak|takde|tiada|x|tak nak|dont|don t|do not|doesn t|doesnt|does not|non|cannot|cant|tidak|no more|never)\s+(minum\s+|drink\s+|take\s+|touch\s+|have\s+|ada\s+|guna\s+|pakai\s+)?(alcohol|alcoholic|arak|alkohol|beer|booze|liquor|drinking)\b|\b(alcohol free|non alcoholic|nonalcoholic|mocktail|mocktails)\b/.test(restText) || /不要酒|不喝酒|无酒精|不含酒|没有酒精|不能喝酒/.test(restRaw);
   return {
     text: question,
     // "is the X gluten free?", "X有没有花生？", "X ada udang tak?": asking whether a dish they named has
@@ -1451,7 +1479,8 @@ export function read(items: Dish[], asked: string): Reading {
     noMeat: pescatarian ? MEAT_NAMES.map(([m]) => m) : meatsAvoided(question),
     noWords,
     noCaffeine: /\b(no|not|without|tak|x|less|zero|avoid|dont|don t|cannot|cant)\s+(want\s+|take\s+|have\s+|drink\s+|any\s+)?(caffeine|caffein|kafein|coffee|kopi)\b|\b(decaf|decaffeinated|caffeine free|non caffeinated|uncaffeinated)\b/.test(restText) || /不要咖啡因|无咖啡因|不含咖啡因|低咖啡因|不喝咖啡|不能喝咖啡/.test(restRaw),
-    noAlcohol: /\b(no|not|without|tanpa|tak|takde|tiada|x|tak nak|dont|don t|do not|doesn t|doesnt|does not|non|cannot|cant|tidak|no more|never)\s+(minum\s+|drink\s+|take\s+|touch\s+|have\s+|ada\s+|guna\s+|pakai\s+)?(alcohol|alcoholic|arak|alkohol|beer|booze|liquor|drinking)\b|\b(alcohol free|non alcoholic|nonalcoholic|mocktail|mocktails)\b/.test(restText) || /不要酒|不喝酒|无酒精|不含酒|没有酒精|不能喝酒/.test(restRaw) ||
+    saysNoAlcohol,
+    noAlcohol: saysNoAlcohol ||
       // a guest under 18 is never offered a drink, nor is a child ordered for
       /\b(i m|im|i am|we re|we are|she s|he s|my (son|daughter|kid) is)\s+(1[0-7]|underage|under age|a minor|minor)\b|\bunder 18\b|\bbawah umur\b|\bfor (my|the|our) (kid|kids|child|children|son|daughter|boy|girl|little one|baby|toddler)\b|\b(untuk )?(anak|budak) (saya|aku|kecil)\b/.test(restText) || /未成年|小孩|孩子|儿子|女儿/.test(restRaw),
     signatures: /\b(known for|famous for|famous|signature|signatures|specials|speciality|specialty|specialities|starred|must try|must tries|terkenal|istimewa|paling terkenal|house special)\b/.test(restText) || /招牌|拿手|必点|特色菜|最有名|镇店/.test(restRaw),

@@ -29,7 +29,7 @@ const label = (x: string) => LABEL[x] ?? (x.startsWith("meat:") ? `no ${x.slice(
 /** What the rules alone read as avoided in `text`, as flat items. */
 function rulesRead(items: unknown[], text: string): string[] {
   const u = understand(items as never, text);
-  return hintItems({ allergens: u.stated, diets: u.statedDiet, meats: u.noMeat, alcohol: u.noAlcohol });
+  return hintItems({ allergens: u.stated.filter((a) => !u.leaveOff.includes(a)), diets: u.statedDiet, meats: u.noMeat, alcohol: u.saysNoAlcohol });
 }
 
 export default function Hybrid() {
