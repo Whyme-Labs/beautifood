@@ -1823,3 +1823,22 @@ can (Gemini Nano through Firebase AI Logic in desktop Chrome) and in the cloud w
   scores are in.
 - Nobody working on the engine has read an a1 item. The prompt is checked only on our own 40
   examples (`public/hybrid/dev.json`).
+
+## Hybrid reader: checked on our own 40 examples, Gemini Nano on device (2026-11-15; not a1)
+
+The prompt as frozen, run by the owner in desktop Chrome with Gemini Nano (`/hybrid`, "Our own examples",
+on device only; all 40 read on the device, median 3.3 s, first 8 s while the model loaded):
+
+| | Missed (of 27 stating) | False alarms (of 13) | Read beyond the gold |
+|---|---|---|---|
+| Rules alone | 5 | 0 | 3 |
+| Gemini Nano alone | 0 | 0 | 1 |
+| Rules + Gemini Nano | 0 | 0 | 4 |
+
+- The one beyond-the-gold reading: "We're Hindu, no cow please" read as vegetarian and every meat (more
+  careful than asked). The rules' three: a stray "no alcohol" on two egg questions (Malay, Chinese) and
+  vegetarian for "tak makan daging lembu". None changed: no rule or prompt edits until a1 is scored.
+- The cloud model: Gemini 3.5 Flash-Lite at its default (minimal) thinking, chosen over 3.8 Flash and
+  4 Hydrogen: Google's own card for this job ("simple data extraction ... where latency and API cost are
+  the primary constraints"), median ~0.9 s here against ~2 s for Hydrogen, and the most generous free
+  tier (3.8 Flash allows 20 requests a day per project; the project stays on the free tier).
