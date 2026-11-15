@@ -117,7 +117,15 @@ export async function hire(owner: APIRequestContext, role: string, branchIds: st
 }
 
 /** Navigate and wait until React has hydrated, so clicks and typing reach the app. */
+const GOOGLE = /googleapis\.com|google\.com\/recaptcha|gstatic\.com/;
+const offline = new WeakSet<object>();
 export async function open(page: import("@playwright/test").Page, url: string) {
+  // tests never reach Google: the hybrid reader's App Check and Gemini calls fail at once (a test that
+  // wants them registers its own on the page, which Playwright tries before this one on the context)
+  if (!offline.has(page)) {
+    offline.add(page);
+    await page.context().route(GOOGLE, (route) => route.abort()).catch(() => {});
+  }
   await page.goto(url);
   await page.locator("html[data-hydrated]").waitFor();
 }

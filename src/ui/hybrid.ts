@@ -106,15 +106,16 @@ export async function prepareDevice(onProgress?: (share: number) => void): Promi
 /** What `message` says the guest avoids, or null when the reader is off, fails or takes too long (the rules answer alone). */
 export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_device", timeoutMs = 8000): Promise<HintResult | null> {
   if (!readerEnabled() || !message.trim()) return null;
-  // (App Check's first token can take seconds: fetched ahead by warmReader, and not counted against the model)
-  await warmReader();
-  const t0 = performance.now();
+  // one budget for everything (App Check's token, loading Firebase, the model): past it, the rules answer alone
+  const deadline = performance.now() + timeoutMs;
+  const left = () => Math.max(0, deadline - performance.now());
+  const late = <T,>(p: Promise<T>) => Promise.race([p, new Promise<never>((_, no) => setTimeout(() => no(new Error("timeout")), left()))]);
   try {
-    const m = await model(mode);
-    const result = await Promise.race([
-      m.generateContent(`Message: ${message.slice(0, 600)}\nJSON:`),
-      new Promise<never>((_, no) => setTimeout(() => no(new Error("timeout")), timeoutMs)),
-    ]);
+    const ready = await late(warmReader());
+    if (ready !== "ok") throw new Error(ready);
+    const m = await late(model(mode));
+    const t0 = performance.now();
+    const result = await late(m.generateContent(`Message: ${message.slice(0, 600)}\nJSON:`));
     const hint = parseHint(result.response.text());
     if (!hint) {
       lastError = "the model's answer wasn't the JSON asked for";
@@ -134,7 +135,10 @@ let warming: Promise<string> | null = null;
 /** Load Firebase and get App Check's first token ahead of the first question (call when a page that reads opens). */
 export function warmReader(): Promise<string> {
   if (!readerEnabled()) return Promise.resolve("off");
-  warming ??= appCheckStatus();
+  warming ??= appCheckStatus().then((r) => {
+    if (r !== "ok") warming = null;
+    return r;
+  });
   return warming;
 }
 

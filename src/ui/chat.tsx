@@ -68,7 +68,7 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
     }
     // what the guest says they avoid, read on this device when it can and in the cloud when it can't;
     // the menu brain adds it to its own reading, so it can only make the answer more careful
-    const read = await readAvoid(said.content);
+    const read = await readAvoid(said.content, "prefer_on_device", 5000);
     if (read) Object.assign(said, { hint: read.hint, hintSource: read.source });
     const next = [...msgs, said];
     try {
