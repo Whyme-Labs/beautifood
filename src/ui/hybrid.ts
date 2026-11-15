@@ -7,7 +7,8 @@
 // On-device inference needs desktop Chrome 139+ with the Prompt API enabled; everywhere else the
 // same call goes to the cloud model.
 import type { GenerativeModel } from "firebase/ai";
-import { HINT_SCHEMA, HINT_SYSTEM, parseHint, type AvoidHint, type HintSource } from "../shared/brain/avoidHint";
+import { HINT_PROMPT_DEFAULT, HINT_PROMPTS, HINT_SCHEMA, parseHint, type AvoidHint, type HintPromptVersion, type HintSource } from "../shared/brain/avoidHint";
+import { applicable } from "../server/ai/brain/applies";
 import { CLOUD_MODEL, CLOUD_MODELS, FIREBASE_CONFIG, RECAPTCHA_PROVIDER, RECAPTCHA_SITE_KEY } from "./hybridConfig";
 
 export type ReaderMode = "prefer_on_device" | "only_on_device" | "only_in_cloud";
@@ -87,8 +88,19 @@ export function cloudModel(): string {
   }
 }
 
+/** The instruction version in use: the default, or the one named in the page's ?prompt= (for comparing them). */
+export function promptVersion(): HintPromptVersion {
+  try {
+    const asked = new URLSearchParams(globalThis.location?.search ?? "").get("prompt");
+    return asked && asked in HINT_PROMPTS ? (asked as HintPromptVersion) : HINT_PROMPT_DEFAULT;
+  } catch {
+    return HINT_PROMPT_DEFAULT;
+  }
+}
+
 const models = new Map<ReaderMode, Promise<GenerativeModel>>();
 function model(mode: ReaderMode): Promise<GenerativeModel> {
+  const system = HINT_PROMPTS[promptVersion()];
   let m = models.get(mode);
   if (!m) {
     m = firebase().then(({ app, getAI, getGenerativeModel, GoogleAIBackend, ThinkingLevel }) =>
@@ -96,13 +108,13 @@ function model(mode: ReaderMode): Promise<GenerativeModel> {
         mode,
         inCloudParams: {
           model: cloudModel(),
-          systemInstruction: HINT_SYSTEM,
+          systemInstruction: system,
           // (reading a few words into a fixed vocabulary needs no deliberation: with the model's default thinking a reading took ~10 s)
           generationConfig: { temperature: 0, thinkingConfig: { thinkingLevel: ThinkingLevel[CLOUD_MODELS[cloudModel()] ?? "MINIMAL"] }, responseMimeType: "application/json", responseJsonSchema: HINT_SCHEMA as unknown as Record<string, unknown> },
         },
         onDeviceParams: {
           createOptions: {
-            initialPrompts: [{ role: "system", content: [{ type: "text", value: HINT_SYSTEM }] }],
+            initialPrompts: [{ role: "system", content: [{ type: "text", value: system }] }],
             expectedInputs: [{ type: "text", languages: ["en"] }],
             expectedOutputs: [{ type: "text", languages: ["en"] }],
           },
@@ -160,7 +172,9 @@ export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_d
     }
     const m = await late(model(onDevice ? "only_on_device" : mode));
     const t0 = performance.now();
-    const result = await late(m.generateContent(`Message: ${message.slice(0, 600)}\nJSON:`));
+    // (from v2 the model reads only what applies to this meal: not an allergy outgrown, someone not here, a denial)
+    const said = promptVersion() === "v1" ? message : applicable(message).replace(/\s+/g, " ").trim() || "(nothing else)";
+    const result = await late(m.generateContent(`Message: ${said.slice(0, 600)}\nJSON:`));
     const hint = parseHint(result.response.text());
     if (!hint) {
       lastError = "the model's answer wasn't the JSON asked for";

@@ -90,6 +90,30 @@ test.describe("hybrid avoid reader (browser)", () => {
     expect(prompts[0].opts.responseConstraint?.properties).toHaveProperty("allergens");
   });
 
+  test("instruction v2 (?prompt=v2): the device model gets it, and only the parts of the message that apply", async ({ page }) => {
+    await page.route(/googleapis\.com|google\.com\/recaptcha|gstatic\.com/, (route) => route.abort());
+    await page.addInitScript(() => {
+      const w = window as unknown as { LanguageModel: unknown; __created: unknown[]; __prompts: unknown[] };
+      w.__created = [];
+      w.__prompts = [];
+      w.LanguageModel = {
+        availability: async () => "available",
+        create: async (o: unknown) => (w.__created.push(o), { prompt: async (c: unknown) => (w.__prompts.push(c), '{"allergens":[],"diets":[],"meats":[],"alcohol":false}'), destroy() {} }),
+      };
+    });
+    await open(page, "/hybrid?prompt=v2");
+    await page.getByPlaceholder(/What can't you eat/).fill("my friend is vegan but she couldn't make it tonight, what's good?");
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+    await expect(page.getByTestId("hybrid-source")).toContainText("on this device");
+    const { created, prompts } = await page.evaluate(() => {
+      const w = window as unknown as { __created: unknown[]; __prompts: unknown[] };
+      return { created: JSON.stringify(w.__created), prompts: JSON.stringify(w.__prompts) };
+    });
+    expect(created).toContain("Most messages say nothing to avoid");
+    expect(prompts).toContain("what's good?");
+    expect(prompts).not.toContain("vegan");
+  });
+
   test("a reading outside the vocabulary, or one that says less, never loosens the answer", async ({ page }) => {
     await fakeGoogle(page, { allergens: ["shellfish", "nothing"], diets: ["keto"], meats: [], alcohol: false });
     await open(page, "/hybrid");

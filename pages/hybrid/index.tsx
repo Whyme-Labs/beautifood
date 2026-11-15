@@ -11,7 +11,7 @@ import { understand } from "../../src/server/ai/brain/understand";
 import { contextAt, DEMO_MENUS } from "../../src/server/ai/demoMenus";
 import { hintItems, type AvoidHint, type HintSource } from "../../src/shared/brain/avoidHint";
 import { mark, tally, type AvoidCase, type AvoidMark } from "../../src/shared/brain/avoidScore";
-import { cloudModel, cloudPause, warmReader, deviceModelStatus, prepareDevice, readAvoid, readerEnabled, readerError, type ReaderMode } from "../../src/ui/hybrid";
+import { cloudModel, promptVersion, cloudPause, warmReader, deviceModelStatus, prepareDevice, readAvoid, readerEnabled, readerError, type ReaderMode } from "../../src/ui/hybrid";
 
 const rm = (minor: number) => `RM${(minor / 100).toFixed(2)}`;
 const LUNCH = { weekday: 3, minutes: 12 * 60 + 30, date: "2026-10-21" };
@@ -176,13 +176,13 @@ const LANGS = ["en", "ms", "manglish", "zh"] as const;
 /** The a1 test, run here: each message read by the rules and by the model in the chosen mode, scored against its gold. */
 function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
   const [sets, setSets] = useState<Record<string, AvoidCase[]>>({});
-  const [which, setWhich] = useState<"a1" | "dev">("a1");
+  const [which, setWhich] = useState<"a1" | "dev" | "practice">("a1");
   const [mode, setMode] = useState<ReaderMode>("only_on_device");
   const [rows, setRows] = useState<{ c: AvoidCase; rules: string[]; model: string[] | null; source?: HintSource; ms?: number }[]>([]);
   const [running, setRunning] = useState(false);
   const [note, setNote] = useState("");
   useEffect(() => {
-    for (const name of ["a1", "dev"])
+    for (const name of ["a1", "dev", "practice"])
       fetch(`/hybrid/${name}.json`)
         .then((r) => (r.ok ? r.json() : null))
         .then((x) => Array.isArray(x) && setSets((s) => ({ ...s, [name]: x })))
@@ -193,7 +193,7 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
 
   // (the cloud's free tier allows few requests a minute and a day: calls are spaced, a short pause is waited
   // out, a long one stops the run, and what's done is kept here so the run picks up where it stopped)
-  const key = `bf-run:${which}:${mode}:${cloudModel()}`;
+  const key = `bf-run:${which}:${mode}:${cloudModel()}:${promptVersion()}`;
   const saved = (): Record<string, { model: string[] | null; source?: HintSource; ms?: number }> => {
     try {
       return JSON.parse(localStorage.getItem(key) ?? "{}");
@@ -275,10 +275,10 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
     );
   };
   const download = () => {
-    const blob = new Blob([JSON.stringify({ set: which, mode, model: cloudModel(), at: new Date().toISOString(), rows: rows.map((r) => ({ id: r.c.id, rules: r.rules, model: r.model, source: r.source, ms: r.ms })) })], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ set: which, mode, model: cloudModel(), prompt: promptVersion(), at: new Date().toISOString(), rows: rows.map((r) => ({ id: r.c.id, rules: r.rules, model: r.model, source: r.source, ms: r.ms })) })], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `${which}-${mode}.json`;
+    a.download = `${which}-${mode}-${promptVersion()}.json`;
     a.click();
   };
   const onDevice = read.filter((r) => r.source === "on_device").length;
@@ -290,13 +290,16 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
       <p className="muted" style={{ margin: 0 }}>
         {which === "a1" && sets.a1
           ? "Two authors who never saw this app or its prompt wrote these guest messages, a third checked every label, and the set was frozen before it was first scored. Run it here to see what the rules miss and what the model adds."
-          : "Our own examples, used while writing the prompt. The blind test is the one that counts."}
+          : which === "practice"
+            ? "Two practice sets written the same way as the blind test (more messages that name a food without avoiding it), used to work on the rules and the instruction. The blind test is the one that counts."
+            : "Our own examples, used while writing the prompt. The blind test is the one that counts."}
       </p>
       <div className="row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         {sets.a1 && sets.dev ? (
-          <select value={which} onChange={(e) => (setWhich(e.target.value as "a1" | "dev"), setRows([]))} aria-label="Which messages">
+          <select value={which} onChange={(e) => (setWhich(e.target.value as "a1" | "dev" | "practice"), setRows([]))} aria-label="Which messages">
             <option value="a1">The blind test (a1)</option>
             <option value="dev">Our own examples (dev)</option>
+            {sets.practice ? <option value="practice">Practice sets d1 + d2 ({sets.practice.length})</option> : null}
           </select>
         ) : null}
         <select value={mode} onChange={(e) => setMode(e.target.value as ReaderMode)} aria-label="Where the model runs">
@@ -317,7 +320,7 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
       {rows.length ? (
         <>
           <div className="hint">
-            {cloudModel()}: {read.length} of {rows.length} read by the model ({onDevice} on this device, {read.length - onDevice} in the cloud), {ms} ms each on average.
+            {cloudModel()}, instruction {promptVersion()}: {read.length} of {rows.length} read by the model ({onDevice} on this device, {read.length - onDevice} in the cloud), {ms} ms each on average.
           </div>
           <table className="table" data-testid="a1-table">
             <thead>
