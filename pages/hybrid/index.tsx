@@ -11,7 +11,7 @@ import { understand } from "../../src/server/ai/brain/understand";
 import { contextAt, DEMO_MENUS } from "../../src/server/ai/demoMenus";
 import { hintItems, type AvoidHint, type HintSource } from "../../src/shared/brain/avoidHint";
 import { mark, tally, type AvoidCase, type AvoidMark } from "../../src/shared/brain/avoidScore";
-import { deviceModelStatus, prepareDevice, readAvoid, readerEnabled, type ReaderMode } from "../../src/ui/hybrid";
+import { appCheckStatus, deviceModelStatus, prepareDevice, readAvoid, readerEnabled, readerError, type ReaderMode } from "../../src/ui/hybrid";
 
 const rm = (minor: number) => `RM${(minor / 100).toFixed(2)}`;
 const LUNCH = { weekday: 3, minutes: 12 * 60 + 30, date: "2026-10-21" };
@@ -40,7 +40,9 @@ export default function Hybrid() {
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [shown, setShown] = useState<null | { q: string; rules: ReturnType<typeof answerGuest>; hybrid: ReturnType<typeof answerGuest> | null; read: { hint: AvoidHint; source: HintSource; ms: number } | null }>(null);
+  const [cloud, setCloud] = useState("…");
   useEffect(() => void deviceModelStatus().then(setStatus), []);
+  useEffect(() => void appCheckStatus().then(setCloud), []);
   const enabled = readerEnabled();
 
   const ask = async (q: string) => {
@@ -78,7 +80,15 @@ export default function Hybrid() {
               </button>
             ) : null}
           </div>
-          {!enabled ? <div className="hint">The AI reader is switched off on this site until App Check is set up; the rules still answer.</div> : null}
+          {!enabled ? (
+            <div className="hint">The AI reader is switched off on this site until App Check is set up; the rules still answer.</div>
+          ) : (
+            <div className="row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center" }} data-testid="cloud-status">
+              <Cloud size={16} />
+              <b>In the cloud:</b>
+              <span>{cloud === "ok" ? "Firebase AI Logic is reachable (App Check passed)" : cloud === "…" ? "checking…" : `not reachable: ${cloud}`}</span>
+            </div>
+          )}
           <div className="hint">On-device needs desktop Chrome 139+ with chrome://flags/#prompt-api-for-gemini-nano-multimodal-input enabled. Phones and other browsers use the cloud model.</div>
         </section>
 
@@ -144,7 +154,7 @@ function Compare({ q, rules, hybrid, read, busy, items }: { q: string; rules: Re
               </span>
             </>
           ) : (
-            "not available here"
+            <>not available here{readerError() ? <span className="muted"> ({readerError()})</span> : null}</>
           )}
         </div>
         {added.length ? (

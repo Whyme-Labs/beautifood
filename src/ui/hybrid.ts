@@ -30,16 +30,19 @@ function debugToken(): string | boolean | undefined {
   }
 }
 
-let ready: Promise<typeof import("firebase/ai") & { app: import("firebase/app").FirebaseApp }> | null = null;
+let ready: Promise<typeof import("firebase/ai") & { app: import("firebase/app").FirebaseApp; check: import("firebase/app-check").AppCheck; getToken: typeof import("firebase/app-check").getToken }> | null = null;
+/** Why the reader last failed, for the /hybrid page's status (guests never see it). */
+let lastError = "";
+export const readerError = () => lastError;
 function firebase() {
   ready ??= (async () => {
-    const [{ getApps, initializeApp }, { initializeAppCheck, ReCaptchaEnterpriseProvider, ReCaptchaV3Provider }, ai] = await Promise.all([import("firebase/app"), import("firebase/app-check"), import("firebase/ai")]);
+    const [{ getApps, initializeApp }, { getToken, initializeAppCheck, ReCaptchaEnterpriseProvider, ReCaptchaV3Provider }, ai] = await Promise.all([import("firebase/app"), import("firebase/app-check"), import("firebase/ai")]);
     const app = getApps()[0] ?? initializeApp(FIREBASE_CONFIG);
     const debug = debugToken();
     if (debug !== undefined) (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN?: string | boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = debug;
     const key = RECAPTCHA_SITE_KEY || "debug";
-    initializeAppCheck(app, { provider: RECAPTCHA_PROVIDER === "enterprise" ? new ReCaptchaEnterpriseProvider(key) : new ReCaptchaV3Provider(key), isTokenAutoRefreshEnabled: true });
-    return { ...ai, app };
+    const check = initializeAppCheck(app, { provider: RECAPTCHA_PROVIDER === "enterprise" ? new ReCaptchaEnterpriseProvider(key) : new ReCaptchaV3Provider(key), isTokenAutoRefreshEnabled: true });
+    return { ...ai, app, check, getToken };
   })();
   return ready;
 }
@@ -100,9 +103,28 @@ export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_d
       new Promise<never>((_, no) => setTimeout(() => no(new Error("timeout")), timeoutMs)),
     ]);
     const hint = parseHint(result.response.text());
-    if (!hint) return null;
+    if (!hint) {
+      lastError = "the model's answer wasn't the JSON asked for";
+      return null;
+    }
+    lastError = "";
     return { hint, source: result.response.inferenceSource === "on_device" ? "on_device" : "in_cloud", ms: Math.round(performance.now() - t0) };
-  } catch {
+  } catch (e) {
+    lastError = errorText(e);
     return null;
+  }
+}
+
+const errorText = (e: unknown) => String((e as { message?: string })?.message ?? e).replace(/\s+/g, " ").slice(0, 240);
+
+/** Whether App Check gives this browser a token (what the cloud model needs): "ok", or why not. */
+export async function appCheckStatus(): Promise<string> {
+  if (!readerEnabled()) return "off";
+  try {
+    const { check, getToken } = await firebase();
+    await getToken(check, false);
+    return "ok";
+  } catch (e) {
+    return errorText(e);
   }
 }
