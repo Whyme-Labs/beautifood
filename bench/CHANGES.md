@@ -1898,8 +1898,8 @@ Full-answer benchmarks, every case against the run before the change (v1, heldou
 run): no case lost, no new unsafe answer, one v8 case gained. Unit tests: `test/unit/applies.test.ts`
 (my own phrasings, including what must still count: "I'm allergic to peanuts, my husband isn't coming").
 
-**On a1, scored once for these rules (totals only, `npx tsx bench/avoid/score-rules.ts`; the cloud
-reader's readings are those on file, not re-run):**
+**On a1, scored once, for the first version of this change (`7443f6c`; totals only,
+`npx tsx bench/avoid/score-rules.ts`; the cloud reader's readings are those on file, not re-run):**
 
 | | Missed (of 247) | False alarms (of 156) | Stating with extras |
 |---|---|---|---|
@@ -1914,3 +1914,26 @@ reader's readings are those on file, not re-run):**
   reader (20 false alarms alone). Its prompt can be worked on with d1/d2, never a1.
 - The on-device column is scored against the rules' readings frozen in `a1-cloud.json` (the rules as
   they were), so the pre-registered comparison of the two readers uses the same rules.
+
+### The same change, made safe (2026-11-15, after a review; not scored on a1)
+
+A review of `7443f6c` found that taking out "what doesn't apply" could take out a real allergy, the one
+thing the rules must never do (their reading is all a guest gets when the model can't answer): 11 of 14
+phrasings written to test it lost their allergy or diet, e.g. "does the laksa have prawns? just asking
+because I'm allergic", "my wife is allergic to prawns, can't make it too spicy", 小时候就对花生过敏，现在也是,
+"as a kid I was allergic to peanuts, now it's worse", "I'm not vegetarian but my wife is vegetarian". The
+3 more a1 misses above fit this. Now:
+
+- outgrown only on a positive word ("grew out", "now ... ok", "dah ok", 好了), never a bare "now", and
+  never with "still", "masih", 也是, "worse";
+- someone not here only when the clause names them or points back with he / she / dia / 他, never when
+  they're on the way ("not here yet, coming later"), and the clause before is taken out only if it is
+  about that person, not the guest;
+- curiosity never cancels when the guest states an allergy of their own; a hypothetical "like me",
+  "macam saya" is not one;
+- a denied diet stands for someone else in the message ("but my wife is").
+
+All 14 are now unit tests and read correctly. Dev: our 40 5/27 missed, 0/13 false alarms; d1 8/75, 0/88;
+d2 8/72, 0/88 (unchanged from the first version). Full-answer benchmarks: no case lost, no new unsafe
+answer. **This version is not scored on a1**: a1 was scored once for this change, above, and a second
+score would be tuning on it. Its effect on held-out messages needs a new blind set.

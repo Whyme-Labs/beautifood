@@ -1,6 +1,7 @@
 // The rules as they are now, on a1, totals only (never a case): alone, and with the cloud reader's
-// readings already on file (bench/avoid/results/a1-cloud.json). Run once per rules change that is
-// recorded in bench/CHANGES.md; it prints no message and no id.
+// readings already on file (bench/avoid/results/a1-cloud.json). Prints no message and no id. Not a
+// tuning loop: rules are changed on dev (d1, d2, our 40) only, and a1 is scored when they are final,
+// with the score recorded in bench/CHANGES.md whatever it is.
 import { readFileSync } from "node:fs";
 import { understand } from "../../src/server/ai/brain/understand";
 import { contextAt, DEMO_MENUS } from "../../src/server/ai/demoMenus";

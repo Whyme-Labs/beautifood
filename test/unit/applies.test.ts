@@ -39,6 +39,21 @@ describe("what doesn't apply to this meal", () => {
     ["炒饭不要加花生，我吃了会肿", "allergen:peanuts"],
     ["we don't drink, no alcohol please", "alcohol"],
     ["mak saya tak makan daging lembu", "meat:beef"],
+    // what must not be taken out: a present allergy beside curiosity, "can't make it" about spice, "still"
+    ["does the laksa have prawns? just asking because I'm allergic", "allergen:crustaceans"],
+    ["my wife is allergic to prawns, can't make it too spicy", "allergen:crustaceans"],
+    ["我儿子对花生过敏，辣度不在意", "allergen:peanuts"],
+    ["next time please don't put peanuts, I'm allergic", "allergen:peanuts"],
+    ["小时候就对花生过敏，现在也是", "allergen:peanuts"],
+    ["as a kid I was allergic to peanuts, now it's worse", "allergen:peanuts"],
+    ["kalau orang alah kacang macam saya, boleh makan apa?", "allergen:peanuts"],
+    ["I'm not vegetarian but my wife is vegetarian", "diet:vegetarian"],
+    ["saya bukan Muslim tapi suami saya Muslim", "diet:halal"],
+    ["my son was allergic to egg as a baby and still is, now 5 years old", "allergen:egg"],
+    ["dulu saya alah udang, sekarang pun masih alah", "allergen:crustaceans"],
+    ["I'm allergic to shellfish, my friend couldn't come so table for one", "allergen:crustaceans"],
+    ["my husband is vegetarian, he's not here yet, coming later", "diet:vegetarian"],
+    ["no peanuts, I'm allergic. not vegetarian though", "allergen:peanuts"],
   ])("still reads %j", (text, item) => expect(reads(text)).toContain(item));
 
   it("doesn't read a meat-named beef as vegetarian, or squid as fish", () => {
