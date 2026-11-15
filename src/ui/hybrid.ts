@@ -150,9 +150,15 @@ export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_d
   const left = () => Math.max(0, deadline - performance.now());
   const late = <T,>(p: Promise<T>) => Promise.race([p, new Promise<never>((_, no) => setTimeout(() => no(new Error("timeout")), left()))]);
   try {
-    const ready = await late(warmReader());
-    if (ready !== "ok") throw new Error(ready);
-    const m = await late(model(mode));
+    // App Check guards the cloud model only: when the device's model answers, a refused or unreachable App
+    // Check (a kiosk offline, a browser reCAPTCHA doubts) doesn't stop it
+    const onDevice = mode === "only_on_device" || (mode === "prefer_on_device" && (await deviceModelStatus()) === "available");
+    if (onDevice) await late(firebase());
+    else {
+      const ready = await late(warmReader());
+      if (ready !== "ok") throw new Error(ready);
+    }
+    const m = await late(model(onDevice ? "only_on_device" : mode));
     const t0 = performance.now();
     const result = await late(m.generateContent(`Message: ${message.slice(0, 600)}\nJSON:`));
     const hint = parseHint(result.response.text());

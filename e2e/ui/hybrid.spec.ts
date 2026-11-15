@@ -67,6 +67,29 @@ test.describe("hybrid avoid reader (browser)", () => {
     expect(sent).toHaveLength(0);
   });
 
+  test("on the device, the reading needs no App Check and no network to Google", async ({ page }) => {
+    // Google unreachable (App Check can't get a token), and Chrome's Prompt API stood in for: Gemini Nano
+    await page.route(/googleapis\.com|google\.com\/recaptcha|gstatic\.com/, (route) => route.abort());
+    await page.addInitScript((reading) => {
+      const w = window as unknown as { LanguageModel: unknown; __prompts: unknown[] };
+      w.__prompts = [];
+      w.LanguageModel = {
+        availability: async () => "available",
+        create: async () => ({ prompt: async (contents: unknown, opts: unknown) => (w.__prompts.push({ contents, opts }), JSON.stringify(reading)), destroy() {} }),
+      };
+    }, READING);
+    await open(page, "/hybrid");
+    await page.getByTestId("hybrid-example").first().click();
+    await expect(page.getByTestId("hybrid-source")).toContainText("on this device");
+    await expect(page.getByTestId("hybrid-added")).toContainText("fish, crustaceans, molluscs");
+    await expect(page.getByTestId("hybrid-answer-hybrid")).not.toContainText("Curry Laksa");
+    // asked with our schema as the device's response constraint
+    const prompts = await page.evaluate(() => (window as unknown as { __prompts: { contents: unknown; opts: { responseConstraint?: { properties?: object } } }[] }).__prompts);
+    expect(prompts).toHaveLength(1);
+    expect(JSON.stringify(prompts[0].contents)).toContain("no ocean stuff");
+    expect(prompts[0].opts.responseConstraint?.properties).toHaveProperty("allergens");
+  });
+
   test("a reading outside the vocabulary, or one that says less, never loosens the answer", async ({ page }) => {
     await fakeGoogle(page, { allergens: ["shellfish", "nothing"], diets: ["keto"], meats: [], alcohol: false });
     await open(page, "/hybrid");
