@@ -1937,3 +1937,32 @@ All 14 are now unit tests and read correctly. Dev: our 40 5/27 missed, 0/13 fals
 d2 8/72, 0/88 (unchanged from the first version). Full-answer benchmarks: no case lost, no new unsafe
 answer. **This version is not scored on a1**: a1 was scored once for this change, above, and a second
 score would be tuning on it. Its effect on held-out messages needs a new blind set.
+
+## a1 scored: the on-device reader, Gemini Nano (2026-11-15; scored once, totals only)
+
+Run by the owner in desktop Chrome on `/hybrid` ("On this device only"): all 403 read on the device,
+median 4.7 s (p90 6.1 s). Results: `bench/avoid/results/a1-device.json`; totals:
+`npx tsx bench/avoid/score-device.ts`. Both readers are scored on the **same rules**: the rules' readings
+frozen in the cloud run (the device file's own rules column is the rules after the false-alarm fix, and
+is not scored, so a1 isn't looked at twice for them).
+
+| | Missed (of 247) | False alarms (of 156) | Stating with extras |
+|---|---|---|---|
+| Rules alone | 53 (21.5%) | 38 (24.4%) | 64 |
+| Rules + cloud reader | 0 (0%) | 42 (26.9%) | 73 |
+| **Rules + on-device reader** | **2 (0.8%)** | **69 (44.2%)** | 127 |
+| Cloud reader alone | 0 | 20 (12.8%) | 27 |
+| On-device reader alone | 8 (3.2%) | 49 (31.4%) | 86 |
+
+Missed by language, rules + on-device: en 1/63, ms 0/59, Manglish 1/64, zh 0/61 (rules alone: 16, 12, 8, 17).
+
+Against the bar written before any code:
+1. rules + on-device misses at most half as many as rules alone: **met** (2 against 53).
+2. rules + on-device within 3 points of rules + cloud on missed: **met** (0.8% against 0.0%).
+3. false alarms of rules + either reader at most 5%: **not met**, for both: cloud 26.9%, device 44.2%.
+   Gemini Nano reads an avoidance into almost a third of the messages that state none.
+4. no language where rules + reader misses more than rules alone: **met**, for both.
+
+So on the device the reader catches nearly everything the rules miss, as well as the cloud does, and
+over-reads much more. In use that is the careful side (an extra dish kept off the answer, never a missed
+allergy), but it is the weakness to work on next: the prompt, on the development sets d1/d2 only.
