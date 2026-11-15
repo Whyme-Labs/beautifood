@@ -7,8 +7,8 @@ export const FIREBASE_CONFIG = {
   projectId: "beautifood-hybrid",
   storageBucket: "beautifood-hybrid.firebasestorage.app",
   messagingSenderId: "214333644919",
-  appId: "1:214333644919:web:fb3a2cc6ef9be7af69a672",
-  measurementId: "G-3ME639VLX0",
+  appId: "1:214333644919:web:c75426f6c7beaaf369a672",
+  measurementId: "G-4VBM83Y8EN",
 };
 
 /**
@@ -16,7 +16,7 @@ export const FIREBASE_CONFIG = {
  * Defense (reCAPTCHA Enterprise), registered for this web app in Firebase App Check. Empty: the reader
  * stays off.
  */
-export const RECAPTCHA_SITE_KEY = "6LcBhR8uAAAAAILVU37Kefhs7nsv_XmNteP3EdzU";
+export const RECAPTCHA_SITE_KEY = "6LczfSAuAAAAALwRntuvbdyiOVSBjxH-V7b3O70h";
 /** "enterprise" (Fraud Defense, what Firebase recommends) or "v3" (reCAPTCHA classic). */
 export const RECAPTCHA_PROVIDER: "enterprise" | "v3" = "enterprise";
 
