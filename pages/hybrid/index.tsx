@@ -11,7 +11,7 @@ import { understand } from "../../src/server/ai/brain/understand";
 import { contextAt, DEMO_MENUS } from "../../src/server/ai/demoMenus";
 import { hintItems, type AvoidHint, type HintSource } from "../../src/shared/brain/avoidHint";
 import { mark, tally, type AvoidCase, type AvoidMark } from "../../src/shared/brain/avoidScore";
-import { appCheckStatus, deviceModelStatus, prepareDevice, readAvoid, readerEnabled, readerError, type ReaderMode } from "../../src/ui/hybrid";
+import { warmReader, deviceModelStatus, prepareDevice, readAvoid, readerEnabled, readerError, type ReaderMode } from "../../src/ui/hybrid";
 
 const rm = (minor: number) => `RM${(minor / 100).toFixed(2)}`;
 const LUNCH = { weekday: 3, minutes: 12 * 60 + 30, date: "2026-10-21" };
@@ -42,7 +42,7 @@ export default function Hybrid() {
   const [shown, setShown] = useState<null | { q: string; rules: ReturnType<typeof answerGuest>; hybrid: ReturnType<typeof answerGuest> | null; read: { hint: AvoidHint; source: HintSource; ms: number } | null }>(null);
   const [cloud, setCloud] = useState("…");
   useEffect(() => void deviceModelStatus().then(setStatus), []);
-  useEffect(() => void appCheckStatus().then(setCloud), []);
+  useEffect(() => void warmReader().then(setCloud), []);
   const enabled = readerEnabled();
 
   const ask = async (q: string) => {
@@ -52,7 +52,7 @@ export default function Hybrid() {
     setDraft(text);
     const rules = answerGuest(ctx, [{ role: "user", content: text }]);
     setShown({ q: text, rules, hybrid: null, read: null });
-    const read = await readAvoid(text);
+    const read = await readAvoid(text, "prefer_on_device", 20000);
     const hybrid = read ? answerGuest(ctx, [{ role: "user", content: text, hint: read.hint }]) : null;
     setShown({ q: text, rules, hybrid, read });
     setBusy(false);

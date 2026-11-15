@@ -27,7 +27,8 @@ test.describe("hybrid avoid reader (browser)", () => {
     await page.route(/googleapis\.com|google\.com\/recaptcha|gstatic\.com/, (route) => route.abort());
     await open(page, "/hybrid");
     await page.getByTestId("hybrid-example").first().click();
-    await expect(page.getByTestId("hybrid-readings")).toContainText("Model read: not available here");
+    // (the page waits up to 20 s for the model before saying it isn't there)
+    await expect(page.getByTestId("hybrid-readings")).toContainText("Model read: not available here", { timeout: 30_000 });
     await expect(page.getByTestId("hybrid-answer-rules")).toContainText("Curry Laksa Set");
     await expect(page.getByTestId("hybrid-answer-hybrid")).toHaveCount(0);
   });

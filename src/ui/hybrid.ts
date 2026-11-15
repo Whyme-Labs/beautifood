@@ -8,7 +8,7 @@
 // same call goes to the cloud model.
 import type { GenerativeModel } from "firebase/ai";
 import { HINT_SCHEMA, HINT_SYSTEM, parseHint, type AvoidHint, type HintSource } from "../shared/brain/avoidHint";
-import { CLOUD_MODEL, FIREBASE_CONFIG, RECAPTCHA_PROVIDER, RECAPTCHA_SITE_KEY } from "./hybridConfig";
+import { CLOUD_MODEL, CLOUD_MODELS, FIREBASE_CONFIG, RECAPTCHA_PROVIDER, RECAPTCHA_SITE_KEY } from "./hybridConfig";
 
 export type ReaderMode = "prefer_on_device" | "only_on_device" | "only_in_cloud";
 export interface HintResult {
@@ -47,17 +47,28 @@ function firebase() {
   return ready;
 }
 
+/** The cloud model in use: the default, or one of CLOUD_MODELS named in the page's ?model= (for comparing them). */
+export function cloudModel(): string {
+  try {
+    const asked = new URLSearchParams(globalThis.location?.search ?? "").get("model");
+    return asked && asked in CLOUD_MODELS ? asked : CLOUD_MODEL;
+  } catch {
+    return CLOUD_MODEL;
+  }
+}
+
 const models = new Map<ReaderMode, Promise<GenerativeModel>>();
 function model(mode: ReaderMode): Promise<GenerativeModel> {
   let m = models.get(mode);
   if (!m) {
-    m = firebase().then(({ app, getAI, getGenerativeModel, GoogleAIBackend }) =>
+    m = firebase().then(({ app, getAI, getGenerativeModel, GoogleAIBackend, ThinkingLevel }) =>
       getGenerativeModel(getAI(app, { backend: new GoogleAIBackend() }), {
         mode,
         inCloudParams: {
-          model: CLOUD_MODEL,
+          model: cloudModel(),
           systemInstruction: HINT_SYSTEM,
-          generationConfig: { temperature: 0, responseMimeType: "application/json", responseJsonSchema: HINT_SCHEMA as unknown as Record<string, unknown> },
+          // (reading a few words into a fixed vocabulary needs no deliberation: with the model's default thinking a reading took ~10 s)
+          generationConfig: { temperature: 0, thinkingConfig: { thinkingLevel: ThinkingLevel[CLOUD_MODELS[cloudModel()] ?? "MINIMAL"] }, responseMimeType: "application/json", responseJsonSchema: HINT_SCHEMA as unknown as Record<string, unknown> },
         },
         onDeviceParams: {
           createOptions: {
@@ -95,6 +106,8 @@ export async function prepareDevice(onProgress?: (share: number) => void): Promi
 /** What `message` says the guest avoids, or null when the reader is off, fails or takes too long (the rules answer alone). */
 export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_device", timeoutMs = 8000): Promise<HintResult | null> {
   if (!readerEnabled() || !message.trim()) return null;
+  // (App Check's first token can take seconds: fetched ahead by warmReader, and not counted against the model)
+  await warmReader();
   const t0 = performance.now();
   try {
     const m = await model(mode);
@@ -116,6 +129,14 @@ export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_d
 }
 
 const errorText = (e: unknown) => String((e as { message?: string })?.message ?? e).replace(/\s+/g, " ").slice(0, 240);
+
+let warming: Promise<string> | null = null;
+/** Load Firebase and get App Check's first token ahead of the first question (call when a page that reads opens). */
+export function warmReader(): Promise<string> {
+  if (!readerEnabled()) return Promise.resolve("off");
+  warming ??= appCheckStatus();
+  return warming;
+}
 
 /** Whether App Check gives this browser a token (what the cloud model needs): "ok", or why not. */
 export async function appCheckStatus(): Promise<string> {

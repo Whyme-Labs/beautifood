@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { Cpu, Cloud, ShieldAlert, WifiOff } from "lucide-react";
 import { api } from "./api";
 import { useI18n } from "../i18n/react";
-import { prepareDevice, readAvoid, readerEnabled } from "./hybrid";
+import { prepareDevice, readAvoid, readerEnabled, warmReader } from "./hybrid";
 import type { AssistantContext } from "../server/ai/local";
 import type { BrainReply, GuestTurn } from "../server/ai/brain";
 import type { HintSource } from "../shared/brain/avoidHint";
@@ -29,6 +29,7 @@ export function KioskAssistant({ branch }: { branch: string }) {
   useEffect(() => {
     const load = () => void api<{ context: AssistantContext }>(`/api/public/branches/${branch}/assistant/context`).then((r) => setCtx(r.context)).catch(() => {});
     load();
+    void warmReader().catch(() => {});
     const every = setInterval(load, REFRESH_MS);
     const on = () => setOnline(true);
     const off = () => setOnline(false);

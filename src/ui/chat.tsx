@@ -1,11 +1,11 @@
 // The AI menu assistant chat panel (customer-facing). Answers come back in the guest's language.
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUp, Plus, ShieldAlert, Sparkles } from "lucide-react";
 import { api } from "./api";
 import { Money, errorText } from "./components";
 import { useI18n } from "../i18n/react";
 import { OrderCard, type OrderCardData } from "./orderCard";
-import { prepareDevice, readAvoid, readerEnabled } from "./hybrid";
+import { prepareDevice, readAvoid, readerEnabled, warmReader } from "./hybrid";
 import type { AvoidHint, HintSource } from "../shared/brain/avoidHint";
 
 interface Reply {
@@ -29,6 +29,8 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
   const { t, locale } = useI18n();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const deviceAsked = useRef(false);
+  // (App Check and Firebase ready before the first question, so the reader answers in time)
+  useEffect(() => void warmReader().catch(() => {}), []);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
