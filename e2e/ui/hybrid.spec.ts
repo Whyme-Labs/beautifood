@@ -55,6 +55,18 @@ test.describe("hybrid avoid reader (browser)", () => {
     expect(JSON.stringify(body.contents)).toContain("no ocean stuff");
   });
 
+  test("the blind test in the cloud shows the recorded run: nothing is sent to the shared free quota", async ({ page }) => {
+    const sent = await fakeGoogle(page);
+    await open(page, "/hybrid");
+    const test_ = page.getByTestId("a1-test");
+    await test_.getByLabel("Where the model runs").selectOption("only_in_cloud");
+    await test_.getByRole("button", { name: /Run the test/ }).click();
+    await expect(page.getByTestId("a1-note")).toContainText("recorded");
+    await expect(page.getByTestId("a1-table")).toContainText("Rules + model");
+    await expect(test_).toContainText("403 of 403 read by the model");
+    expect(sent).toHaveLength(0);
+  });
+
   test("a reading outside the vocabulary, or one that says less, never loosens the answer", async ({ page }) => {
     await fakeGoogle(page, { allergens: ["shellfish", "nothing"], diets: ["keto"], meats: [], alcohol: false });
     await open(page, "/hybrid");

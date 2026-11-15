@@ -9,7 +9,7 @@ A guest with a food allergy tells a restaurant what they can't eat in their own 
 **Judge in 60 seconds**
 1. Open **[app.beautifood.io/hybrid](https://app.beautifood.io/hybrid)** and tap the first example. You see what the rules read, what the model read (and whether *on this device* or *in the cloud*, with its time), and the answer with and without it.
 2. In desktop Chrome 139+ with `chrome://flags/#prompt-api-for-gemini-nano-multimodal-input` enabled, the page says "Gemini Nano is ready" (or offers to download it) and the same reading happens on your device.
-3. Below, **run the blind test**: guest messages in English, Malay, Manglish and Chinese, written by authors who never saw this app or its prompt, scored right there in your browser.
+3. Below, **the blind test**: 403 guest messages in English, Malay, Manglish and Chinese, written by authors who never saw this app or its prompt. *On this device only* runs it live on Gemini Nano and scores it in your browser; *In the cloud* shows our recorded cloud run (every visitor shares the cloud model's free daily quota, and one full run would use all of it).
 4. The kiosk: open [app.beautifood.io/r/beautifood-demo-kitchen~klcc/kiosk](https://app.beautifood.io/r/beautifood-demo-kitchen~klcc/kiosk), tap **Ask what you can eat**, then turn your network off and ask again.
 
 **Where Firebase AI Logic runs (imported and called):**
@@ -18,6 +18,20 @@ A guest with a food allergy tells a restaurant what they can't eat in their own 
 - [`src/server/ai/brain/hint.ts`](src/server/ai/brain/hint.ts): the reading added to the rules' (a union, never a replacement).
 - Used in the guest chat ([`src/ui/chat.tsx`](src/ui/chat.tsx)), the kiosk ([`src/ui/kioskAssistant.tsx`](src/ui/kioskAssistant.tsx)) and [`/hybrid`](pages/hybrid/index.tsx).
 - How it was measured, and the bar written before any code: [`bench/CHANGES.md`](bench/CHANGES.md) ("Hybrid avoidance reader").
+
+**What it measured.** The bar was written before any code ([`bench/CHANGES.md`](bench/CHANGES.md)); the blind test (a1) is scored once per system, by totals, and never read message by message.
+
+| On the blind test: 403 messages, 247 say what to avoid, 156 don't | Missed | False alarms |
+|---|---|---|
+| Menu rules alone | 53 (21.5%) | 38 (24.4%) |
+| Cloud reader alone (Gemini 3.5 Flash-Lite through Firebase AI Logic, median 0.87 s) | 0 | 20 (12.8%) |
+| **Rules + cloud reader** | **0**, in every language | 42 (26.9%) |
+
+- With the reader, nothing a guest said to avoid was missed, in English, Malay, Manglish or Chinese; the rules alone missed one in five.
+- **What failed:** we set false alarms (something to avoid read into a message that says none) at 5% at most. Rules + reader made 26.9%, mostly the rules' own. We then fixed the rules on two new development sets written the same way (false alarms there went from 19 and 17 of 88 to 0, with no new misses); one blind score of that fix: rules alone 13 false alarms, rules + reader 28 (17.9%). Still over the bar; most of what is left now comes from the cloud reader.
+- **On the device:** on our own 40 examples, Gemini Nano in desktop Chrome took the rules' misses from 5 of 27 to 0, with no false alarms, at about 3.3 s a reading, all on the device. Its blind-test run is next.
+
+**Built during #BuildHybridAI (from Nov 11, 2026).** Beautifood (queues, ordering, POS, a rules-based menu assistant) existed before. Built in the contest period: the hybrid reader on Firebase AI Logic with App Check ([`src/ui/hybrid.ts`](src/ui/hybrid.ts)), the vocabulary, schema and the union that only ever adds ([`avoidHint.ts`](src/shared/brain/avoidHint.ts), [`hint.ts`](src/server/ai/brain/hint.ts)), its use in the guest chat, the kiosk answering offline on the device ([`kioskAssistant.tsx`](src/ui/kioskAssistant.tsx), its public context endpoint), the [`/hybrid`](pages/hybrid/index.tsx) page with the in-browser test, the blind set and two development sets ([`bench/avoid`](bench/avoid)), the free-quota handling, and the rules' false-alarm fix ([`applies.ts`](src/server/ai/brain/applies.ts)). Every step is in the git log from `3397bd1` (the bar, written first).
 
 ## Features
 

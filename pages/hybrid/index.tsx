@@ -96,7 +96,7 @@ export default function Hybrid() {
           <h2 style={{ margin: 0 }}>Ask {menu.name}</h2>
           <div className="chips" style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
             {EXAMPLES.map((q) => (
-              <button key={q} className="chip" onClick={() => void ask(q)} disabled={busy} data-testid="hybrid-example">
+              <button key={q} className="chip" style={{ maxWidth: "100%", whiteSpace: "normal", textAlign: "left", height: "auto" }} onClick={() => void ask(q)} disabled={busy} data-testid="hybrid-example">
                 {q}
               </button>
             ))}
@@ -201,7 +201,19 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
       return {};
     }
   };
+  // The blind test isn't re-run in the cloud from here: every visitor shares the cloud model's free daily
+  // quota, and one run takes all of it. Its cloud run is the recorded one (bench/avoid/results/a1-cloud.json);
+  // on a device with Gemini Nano it runs live.
+  const recorded = async () => {
+    type Recorded = { at: string; model: string; rows: { id: string; rules: string[]; model: string[] | null; source?: HintSource; ms?: number }[] };
+    const r: Recorded | null = await fetch("/hybrid/a1-cloud.json").then((x) => (x.ok ? (x.json() as Promise<Recorded>) : null)).catch(() => null);
+    if (!r) return setNote("The recorded cloud run couldn't be loaded.");
+    const byId = new Map(cases.map((c) => [c.id, c]));
+    setRows(r.rows.filter((x) => byId.has(x.id)).map((x) => ({ c: byId.get(x.id)!, rules: x.rules, model: x.model, source: x.source, ms: x.ms })));
+    setNote(`The cloud run recorded on ${new Date(r.at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })} with ${r.model}: every visitor shares the cloud model's free daily quota, so the blind test isn't sent to the cloud again from here. The rules are as they were that day. Choose "On this device only" in desktop Chrome with Gemini Nano to run it live.`);
+  };
   const run = async () => {
+    if (which === "a1" && (mode === "only_in_cloud" || (mode === "prefer_on_device" && (await deviceModelStatus()) !== "available"))) return void (await recorded());
     setRunning(true);
     setNote("");
     const done = saved();
