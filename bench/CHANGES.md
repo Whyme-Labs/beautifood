@@ -1842,3 +1842,30 @@ on device only; all 40 read on the device, median 3.3 s, first 8 s while the mod
   4 Hydrogen: Google's own card for this job ("simple data extraction ... where latency and API cost are
   the primary constraints"), median ~0.9 s here against ~2 s for Hydrogen, and the most generous free
   tier (3.8 Flash allows 20 requests a day per project; the project stays on the free tier).
+
+## a1 scored: the cloud reader (2026-11-15; scored once, aggregates only)
+
+Gemini 3.5 Flash-Lite through Firebase AI Logic (in the cloud only, minimal thinking), run on the live
+`/hybrid` page; all 403 read by the model (the free daily quota ran out at 399; the last 4 ran after the
+reset), median 0.87 s. Results: `bench/avoid/results/a1-cloud.json`; totals: `npx tsx bench/avoid/score.ts
+bench/avoid/results/a1-cloud.json`. 247 messages state something to avoid, 156 don't.
+
+| | Missed (of 247) | False alarms (of 156) | Stating messages with extras |
+|---|---|---|---|
+| Rules alone | 53 (21.5%) | 38 (24.4%) | 64 |
+| Cloud reader alone | 0 (0%) | 20 (12.8%) | 27 |
+| **Rules + cloud reader** | **0 (0%)** | **42 (26.9%)** | 73 |
+
+Missed by language, rules alone → rules + cloud: en 16/63 → 0, ms 12/59 → 0, Manglish 8/64 → 0,
+zh 17/61 → 0.
+
+Against the bar:
+- (3) false alarms of rules + reader at most 5% of the non-stating messages: **not met** (26.9%). The
+  reader adds 4 false alarms to the rules' 38; most come from the rules themselves, which read an
+  allergen into 32 of their false-alarm items (a food named with no avoidance). The bar was set without
+  knowing the rules' own rate on such messages; it stands as written and is failed.
+- (4) no language where rules + reader misses more than rules alone: met (0 in every language).
+- (1) and (2) need the on-device column (Gemini Nano, run by the owner), still to come.
+
+What this changes, after scoring (nothing was changed before it): the rules' false alarms on
+non-stating messages are now a known weakness, to be fixed on dev and our own examples only, never a1.
