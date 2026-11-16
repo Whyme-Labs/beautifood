@@ -176,13 +176,13 @@ const LANGS = ["en", "ms", "manglish", "zh"] as const;
 /** The a1 test, run here: each message read by the rules and by the model in the chosen mode, scored against its gold. */
 function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
   const [sets, setSets] = useState<Record<string, AvoidCase[]>>({});
-  const [which, setWhich] = useState<"a1" | "dev" | "practice">("a1");
+  const [which, setWhich] = useState<"a1" | "a2" | "dev" | "practice">("a1");
   const [mode, setMode] = useState<ReaderMode>("only_on_device");
   const [rows, setRows] = useState<{ c: AvoidCase; rules: string[]; model: string[] | null; source?: HintSource; ms?: number }[]>([]);
   const [running, setRunning] = useState(false);
   const [note, setNote] = useState("");
   useEffect(() => {
-    for (const name of ["a1", "dev", "practice"])
+    for (const name of ["a1", "a2", "dev", "practice"])
       fetch(`/hybrid/${name}.json`)
         .then((r) => (r.ok ? r.json() : null))
         .then((x) => Array.isArray(x) && setSets((s) => ({ ...s, [name]: x })))
@@ -213,7 +213,10 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
     setNote(`The cloud run recorded on ${new Date(r.at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })} with ${r.model}: every visitor shares the cloud model's free daily quota, so the blind test isn't sent to the cloud again from here. The rules are as they were that day. Choose "On this device only" in desktop Chrome with Gemini Nano to run it live.`);
   };
   const run = async () => {
-    if (which === "a1" && (mode === "only_in_cloud" || (mode === "prefer_on_device" && (await deviceModelStatus()) !== "available"))) return void (await recorded());
+    const toCloud = mode === "only_in_cloud" || (mode === "prefer_on_device" && (await deviceModelStatus()) !== "available");
+    if (which === "a1" && toCloud) return void (await recorded());
+    // (a2 in the cloud would take the day's shared free quota: only when asked for in the address, ?cloud=1)
+    if (which === "a2" && toCloud && new URLSearchParams(location.search).get("cloud") !== "1") return void setNote("The second blind test runs on this device (desktop Chrome with Gemini Nano): in the cloud it would use the day's free quota every visitor shares.");
     setRunning(true);
     setNote("");
     const done = saved();
@@ -286,9 +289,9 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
 
   return (
     <section className="col" style={{ gap: 10 }} data-testid="a1-test">
-      <h2 style={{ margin: 0 }}>{sets[which] && which === "a1" ? `The test: ${cases.length} messages, written blind` : `Try it on ${cases.length} examples`}</h2>
+      <h2 style={{ margin: 0 }}>{sets[which] && (which === "a1" || which === "a2") ? `The ${which === "a2" ? "second " : ""}test: ${cases.length} messages, written blind` : `Try it on ${cases.length} examples`}</h2>
       <p className="muted" style={{ margin: 0 }}>
-        {which === "a1" && sets.a1
+        {(which === "a1" && sets.a1) || (which === "a2" && sets.a2)
           ? "Two authors who never saw this app or its prompt wrote these guest messages, a third checked every label, and the set was frozen before it was first scored. Run it here to see what the rules miss and what the model adds."
           : which === "practice"
             ? "Two practice sets written the same way as the blind test (more messages that name a food without avoiding it), used to work on the rules and the instruction. The blind test is the one that counts."
@@ -296,8 +299,9 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
       </p>
       <div className="row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         {sets.a1 && sets.dev ? (
-          <select value={which} onChange={(e) => (setWhich(e.target.value as "a1" | "dev" | "practice"), setRows([]))} aria-label="Which messages">
+          <select value={which} onChange={(e) => (setWhich(e.target.value as "a1" | "a2" | "dev" | "practice"), setRows([]))} aria-label="Which messages">
             <option value="a1">The blind test (a1)</option>
+            {sets.a2 ? <option value="a2">The second blind test (a2)</option> : null}
             <option value="dev">Our own examples (dev)</option>
             {sets.practice ? <option value="practice">Practice sets d1 + d2 ({sets.practice.length})</option> : null}
           </select>
