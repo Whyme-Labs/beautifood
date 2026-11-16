@@ -9,6 +9,7 @@
 import type { GenerativeModel } from "firebase/ai";
 import { HINT_PROMPT_DEFAULT, HINT_PROMPTS, HINT_SCHEMA, parseHint, type AvoidHint, type HintPromptVersion, type HintSource } from "../shared/brain/avoidHint";
 import { applicable } from "../server/ai/brain/applies";
+import { gateHint } from "../shared/brain/avoidGate";
 import { CLOUD_MODEL, CLOUD_MODELS, FIREBASE_CONFIG, RECAPTCHA_PROVIDER, RECAPTCHA_SITE_KEY } from "./hybridConfig";
 
 export type ReaderMode = "prefer_on_device" | "only_on_device" | "only_in_cloud";
@@ -175,12 +176,14 @@ export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_d
     // (from v2 the model reads only what applies to this meal: not an allergy outgrown, someone not here, a denial)
     const said = promptVersion() === "v1" ? message : applicable(message).replace(/\s+/g, " ").trim() || "(nothing else)";
     const result = await late(m.generateContent(`Message: ${said.slice(0, 600)}\nJSON:`));
-    const hint = parseHint(result.response.text());
-    if (!hint) {
+    const read = parseHint(result.response.text());
+    if (!read) {
       lastError = "the model's answer wasn't the JSON asked for";
       return null;
     }
     lastError = "";
+    // kept only when the message says something is avoided: a small model lists the foods a message names
+    const hint = gateHint(message, read);
     return { hint, source: result.response.inferenceSource === "on_device" ? "on_device" : "in_cloud", ms: Math.round(performance.now() - t0) };
   } catch (e) {
     lastError = errorText(e);

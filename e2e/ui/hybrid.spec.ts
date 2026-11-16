@@ -114,6 +114,17 @@ test.describe("hybrid avoid reader (browser)", () => {
     expect(prompts).not.toContain("vegan");
   });
 
+  test("a model reading the message doesn't back (a food only ordered or praised) is dropped", async ({ page }) => {
+    // the model "reads" seafood into a message that only orders a dish
+    await fakeGoogle(page);
+    await open(page, "/hybrid");
+    await page.getByPlaceholder(/What can't you eat/).fill("two plates of the chilli crab please, so good");
+    await page.getByRole("button", { name: "Ask", exact: true }).click();
+    await expect(page.getByTestId("hybrid-source")).toContainText("in the cloud");
+    await expect(page.getByTestId("hybrid-readings")).toContainText("Model read: nothing to avoid");
+    await expect(page.getByTestId("hybrid-added")).toHaveCount(0);
+  });
+
   test("a reading outside the vocabulary, or one that says less, never loosens the answer", async ({ page }) => {
     await fakeGoogle(page, { allergens: ["shellfish", "nothing"], diets: ["keto"], meats: [], alcohol: false });
     await open(page, "/hybrid");

@@ -1966,3 +1966,39 @@ Against the bar written before any code:
 So on the device the reader catches nearly everything the rules miss, as well as the cloud does, and
 over-reads much more. In use that is the careful side (an extra dish kept off the answer, never a missed
 allergy), but it is the weakness to work on next: the prompt, on the development sets d1/d2 only.
+
+## Gemini Nano's false alarms, fixed on the practice sets d1 + d2 (2026-11-16; not scored on a1)
+
+Owner: "fix the on-device false alarms using d1 and d2". Two runs by the owner on `/hybrid` ("Practice sets
+d1 + d2", on this device only; files in `bench/avoid/results/practice-device-v{1,2}.json`):
+
+| Instruction | Model alone: missed / false alarms | Rules + model: missed / false alarms | Median |
+|---|---|---|---|
+| v1 (as on a1) | 5/147, 58/176 | 0/147, 58/176 | 4.4 s |
+| v2 (stricter, more examples; reads only what applies) | 4/147, 55/176 | 0/147, 55/176 | 7.4 s |
+
+Rewording barely helps (58 to 55) and costs 3 s a reading. Read case by case (practice sets are for
+reading), the false alarms are Gemini Nano listing the foods a message names: "extra peanuts on the nasi
+lemak", "got beer or not?", "the butter prawn damn nice", 鸡饭要多一点辣椒酱, "allergic to cats" read as
+celery. So the fix is a check on its output, not more instruction: **the model's reading is kept only
+when the message says something is avoided** (`src/shared/brain/avoidGate.ts`): an allergy or a reaction,
+"can't" / "don't eat" (and "x mkn"), "no" with a meat, a diet or faith, a doctor; "no alcohol" only with
+"don't drink" / "no alcohol"; a diet only with its own word, and not one the guest denies; read from what
+applies to this meal (`applicable`), with allergies to what isn't food (cats, dust, pollen, a medicine,
+durian, strawberries) set aside. It can only take the model's additions away, never the rules' reading.
+
+On the same recorded runs (the check depends only on the message and the model's output, so it is
+measured exactly):
+
+| | Rules + model, v1: missed / false alarms | Rules + model, v2 |
+|---|---|---|
+| Without the check | 0/147, 58/176 | 0/147, 55/176 |
+| **With the check** | **0/147, 1/176** | 0/147, 1/176 |
+| Our own 40 (dev), v1 | 0/27, 0/13 → 0/27, 0/13 | |
+
+The remaining false alarm: "allergic to strawberries? my niece breaks out from them" read as tree nuts.
+Kept: instruction v1 (the faster), the check on both the device and the cloud reader. v2 stays
+selectable (`?prompt=v2`) for the record. Unit tests: `test/unit/avoidGate.test.ts` (my own phrasings,
+including what must be kept). The check's words were fitted on d1/d2, so these numbers are optimistic;
+**a1 is not re-scored** (it was scored once for these readers). An honest number for the checked readers
+needs a new blind set.
