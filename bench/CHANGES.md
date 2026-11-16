@@ -2002,3 +2002,23 @@ selectable (`?prompt=v2`) for the record. Unit tests: `test/unit/avoidGate.test.
 including what must be kept). The check's words were fitted on d1/d2, so these numbers are optimistic;
 **a1 is not re-scored** (it was scored once for these readers). An honest number for the checked readers
 needs a new blind set.
+
+## a2: a second blind avoidance set, for the checked readers (2026-11-16, before any of it is written)
+
+Owner: "yes" (to a new blind set for the reader with the check). a1 was scored once per reader, and the
+check (`avoidGate.ts`) and the rules' fix (`applies.ts`) were fitted on d1/d2, so their honest number
+needs messages nobody has seen.
+
+- **Written** like a1: two new authors (z9, z10) from the a1 brief, who read nothing else (not the engine,
+  the prompt, a1, d1 or d2); a blind reviewer; then frozen with its fingerprint here before any score.
+  About 400 messages, about 60% stating, 40% not, in English, Malay, Manglish and Chinese.
+- **Systems**, as deployed at `6c50179` (rules with `applies.ts`; reader instruction v1 with the check):
+  rules alone; rules + Gemini Nano on the device (the owner's Chrome, "On this device only"); Gemini
+  Nano alone; and, if a cloud run is made, rules + cloud reader. Each scored once, by totals only (by
+  language too); a2 is never read case by case.
+- **The bar (unchanged from a1):**
+  1. rules + on-device misses at most half as many stating messages as rules alone;
+  2. if a cloud run is made, rules + on-device within 3 points of rules + cloud on missed;
+  3. false alarms of rules + reader at most 5% of the non-stating messages;
+  4. no language where rules + reader misses more than rules alone.
+- Whatever the scores, they are recorded here; nothing is changed between freezing and scoring.
