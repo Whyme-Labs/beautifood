@@ -2022,3 +2022,20 @@ needs messages nobody has seen.
   3. false alarms of rules + reader at most 5% of the non-stating messages;
   4. no language where rules + reader misses more than rules alone.
 - Whatever the scores, they are recorded here; nothing is changed between freezing and scoring.
+
+## a2: frozen (2026-11-16, before any system is scored on it)
+
+- Written blind by z9 (206) and z10 (200) from the a1 brief; reviewed blind (`bench/avoid/REVIEW-a2.md`):
+  no gold changed; 20 near-duplicates of the other author deleted, 3 language labels fixed, 4 messages
+  reworded (one copied a brief example, one fast that read as halal, one dish swap, one unnatural).
+  **386 items**: 240 state something to avoid, 146 don't; en 102, ms 98, Manglish 96, zh 90.
+- Files: `bench/avoid/z9.json`, `bench/avoid/z10.json`; the page reads them together from
+  `public/hybrid/a2.json`. Fingerprint (sha256 of the items sorted by id, keys sorted, compact JSON, first
+  16): `d8ad951acfa563ec`.
+- Said plainly: both authors also wrote, in every language, versions of the brief's own hard "none"
+  examples (a question about prawns in a dish, "used to be vegetarian", an absent friend, "not allergic,
+  just asking"). The reviewer kept them; so does this entry. The practice sets d1/d2, on which the check
+  and the rules' fix were fitted, were written from the same brief and have such messages too, so a2 may
+  be a little easier for them than guests' own words would be.
+- Nobody working on the engine has read an a2 item. Systems as deployed at `6c50179` (nothing in the
+  rules or the reader changes before the scores are in).

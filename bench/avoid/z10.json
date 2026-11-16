@@ -477,18 +477,6 @@
   "kind": "none"
  },
  {
-  "id": "a2z10-035",
-  "lang": "en",
-  "text": "Make it mild please, the kids are sharing",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
   "id": "a2z10-036",
   "lang": "en",
   "text": "Any MSG in the soup? I try to steer clear of it",
@@ -504,18 +492,6 @@
   "id": "a2z10-037",
   "lang": "en",
   "text": "No allergies on our side, surprise us",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
-  "id": "a2z10-038",
-  "lang": "en",
-  "text": "I was vegan for two years but I eat everything now",
   "gold": {
    "allergens": [],
    "diets": [],
@@ -675,20 +651,6 @@
   "gold": {
    "allergens": [
     "crustaceans"
-   ],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "states"
- },
- {
-  "id": "a2z10-052",
-  "lang": "ms",
-  "text": "Anak saya tak boleh makan telur, nanti badan dia naik ruam",
-  "gold": {
-   "allergens": [
-    "egg"
    ],
    "diets": [],
    "meats": [],
@@ -967,7 +929,7 @@
  {
   "id": "a2z10-072",
   "lang": "ms",
-  "text": "x boleh mkn ketam, gatal2 satu badan",
+  "text": "ketam sy x leh, mkn sikit pun dh gatal2 satu badan",
   "gold": {
    "allergens": [
     "crustaceans"
@@ -1109,18 +1071,6 @@
   "kind": "none"
  },
  {
-  "id": "a2z10-082",
-  "lang": "ms",
-  "text": "Nak tambah telur mata satu",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
   "id": "a2z10-083",
   "lang": "ms",
   "text": "Laksa ni ada udang tak?",
@@ -1157,18 +1107,6 @@
   "kind": "none"
  },
  {
-  "id": "a2z10-086",
-  "lang": "ms",
-  "text": "Dulu saya vegetarian, sekarang dah makan semua",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
   "id": "a2z10-087",
   "lang": "ms",
   "text": "Kawan saya alah kacang tapi dia tak datang hari ni",
@@ -1196,18 +1134,6 @@
   "id": "a2z10-089",
   "lang": "ms",
   "text": "Air sirap limau satu, ais sikit",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
-  "id": "a2z10-090",
-  "lang": "ms",
-  "text": "Mi goreng tu tak payah letak telur",
   "gold": {
    "allergens": [],
    "diets": [],
@@ -1291,7 +1217,7 @@
  {
   "id": "a2z10-097",
   "lang": "ms",
-  "text": "Saya tengah puasa, nak bungkus untuk berbuka nanti",
+  "text": "Saya tengah buat puasa berselang untuk diet, nak bungkus dulu untuk makan lepas pukul 8 nanti",
   "gold": {
    "allergens": [],
    "diets": [],
@@ -1449,20 +1375,6 @@
   "kind": "states"
  },
  {
-  "id": "a2z10-109",
-  "lang": "manglish",
-  "text": "Got gluten free or not? I coeliac, cannot take wheat at all",
-  "gold": {
-   "allergens": [
-    "gluten"
-   ],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "states"
- },
- {
   "id": "a2z10-110",
   "lang": "manglish",
   "text": "My dad Hindu, no beef for him ok? The rest can",
@@ -1521,7 +1433,7 @@
  {
   "id": "a2z10-114",
   "lang": "manglish",
-  "text": "2 char siew rice tapau, and 1 chicken rice for my wife coz she don't eat duck",
+  "text": "2 roast duck rice tapau, and 1 chicken rice for my wife coz she don't eat duck",
   "gold": {
    "allergens": [],
    "diets": [],
@@ -1736,7 +1648,7 @@
  {
   "id": "a2z10-129",
   "lang": "manglish",
-  "text": "My wife and lupin cannot one, the bread confirm no lupin flour?",
+  "text": "My wife allergic to lupin one, the bread confirm no lupin flour ah?",
   "gold": {
    "allergens": [
     "lupin"
@@ -1834,18 +1746,6 @@
   "kind": "none"
  },
  {
-  "id": "a2z10-137",
-  "lang": "manglish",
-  "text": "Last time I vegetarian but now eat everything already",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
   "id": "a2z10-138",
   "lang": "manglish",
   "text": "My friend allergic seafood but she not coming today, so ok lah",
@@ -1861,18 +1761,6 @@
   "id": "a2z10-139",
   "lang": "manglish",
   "text": "Not allergic ah, just ask only, the cake got nut?",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
-  "id": "a2z10-140",
-  "lang": "manglish",
-  "text": "Mee goreng no need egg ah",
   "gold": {
    "allergens": [],
    "diets": [],
@@ -1931,7 +1819,7 @@
  },
  {
   "id": "a2z10-145",
-  "lang": "manglish",
+  "lang": "en",
   "text": "Can I pay with TnG?",
   "gold": {
    "allergens": [],
@@ -2086,36 +1974,6 @@
   "kind": "states"
  },
  {
-  "id": "a2z10-157",
-  "lang": "zh",
-  "text": "海鲜我碰不得，一吃就过敏",
-  "gold": {
-   "allergens": [
-    "crustaceans",
-    "molluscs",
-    "fish"
-   ],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "states"
- },
- {
-  "id": "a2z10-158",
-  "lang": "zh",
-  "text": "今天初一，我吃素",
-  "gold": {
-   "allergens": [],
-   "diets": [
-    "vegetarian"
-   ],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "states"
- },
- {
   "id": "a2z10-159",
   "lang": "zh",
   "text": "我滴酒不沾，甜品里面别放酒",
@@ -2124,20 +1982,6 @@
    "diets": [],
    "meats": [],
    "alcohol": true
-  },
-  "kind": "states"
- },
- {
-  "id": "a2z10-160",
-  "lang": "zh",
-  "text": "我是穆斯林，只吃清真食物",
-  "gold": {
-   "allergens": [],
-   "diets": [
-    "halal"
-   ],
-   "meats": [],
-   "alcohol": false
   },
   "kind": "states"
  },
@@ -2192,20 +2036,6 @@
     "molluscs"
    ],
    "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "states"
- },
- {
-  "id": "a2z10-165",
-  "lang": "zh",
-  "text": "我是纯素食者，不吃任何动物产品",
-  "gold": {
-   "allergens": [],
-   "diets": [
-    "vegan"
-   ],
    "meats": [],
    "alcohol": false
   },
@@ -2429,18 +2259,6 @@
   "kind": "states"
  },
  {
-  "id": "a2z10-181",
-  "lang": "zh",
-  "text": "你们这里招牌菜是什么？",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
   "id": "a2z10-182",
   "lang": "zh",
   "text": "叻沙里面有虾吗？",
@@ -2468,66 +2286,6 @@
   "id": "a2z10-184",
   "lang": "zh",
   "text": "不要葱",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
-  "id": "a2z10-185",
-  "lang": "zh",
-  "text": "我以前吃素，现在什么都吃",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
-  "id": "a2z10-186",
-  "lang": "zh",
-  "text": "我没有任何过敏，随便推荐",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
-  "id": "a2z10-187",
-  "lang": "zh",
-  "text": "我朋友对花生过敏，不过她今天没来",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
-  "id": "a2z10-188",
-  "lang": "zh",
-  "text": "加一个荷包蛋",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
-  "id": "a2z10-189",
-  "lang": "zh",
-  "text": "不要味精",
   "gold": {
    "allergens": [],
    "diets": [],
@@ -2624,18 +2382,6 @@
   "id": "a2z10-197",
   "lang": "zh",
   "text": "今天不是初一，我照常吃荤",
-  "gold": {
-   "allergens": [],
-   "diets": [],
-   "meats": [],
-   "alcohol": false
-  },
-  "kind": "none"
- },
- {
-  "id": "a2z10-198",
-  "lang": "zh",
-  "text": "椰浆饭的花生不要",
   "gold": {
    "allergens": [],
    "diets": [],
