@@ -125,6 +125,19 @@ test.describe("hybrid avoid reader (browser)", () => {
     await expect(page.getByTestId("hybrid-added")).toHaveCount(0);
   });
 
+  test("without Gemini Nano here, the second blind test on the device shows the recorded run", async ({ page }) => {
+    const sent = await fakeGoogle(page);
+    await open(page, "/hybrid");
+    const t = page.getByTestId("a1-test");
+    await t.getByLabel("Which messages").selectOption("a2");
+    await t.getByLabel("Where the model runs").selectOption("only_on_device");
+    await t.getByRole("button", { name: /Run the test/ }).click();
+    await expect(page.getByTestId("a1-note")).toContainText("recorded");
+    await expect(page.getByTestId("a1-note")).toContainText("Gemini Nano");
+    await expect(t).toContainText("on this device");
+    expect(sent).toHaveLength(0);
+  });
+
   test("a reading outside the vocabulary, or one that says less, never loosens the answer", async ({ page }) => {
     await fakeGoogle(page, { allergens: ["shellfish", "nothing"], diets: ["keto"], meats: [], alcohol: false });
     await open(page, "/hybrid");

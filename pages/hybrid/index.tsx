@@ -204,17 +204,25 @@ function A1Test({ items, enabled }: { items: unknown[]; enabled: boolean }) {
   // The blind test isn't re-run in the cloud from here: every visitor shares the cloud model's free daily
   // quota, and one run takes all of it. Its cloud run is the recorded one (bench/avoid/results/a1-cloud.json);
   // on a device with Gemini Nano it runs live.
-  const recorded = async () => {
+  // A recorded run: a1's in the cloud (every visitor shares the cloud's free daily quota), a2's on Gemini Nano
+  // (for browsers without an on-device model, such as phones)
+  const recorded = async (file: string, where: string) => {
     type Recorded = { at: string; model: string; rows: { id: string; rules: string[]; model: string[] | null; source?: HintSource; ms?: number }[] };
-    const r: Recorded | null = await fetch("/hybrid/a1-cloud.json").then((x) => (x.ok ? (x.json() as Promise<Recorded>) : null)).catch(() => null);
-    if (!r) return setNote("The recorded cloud run couldn't be loaded.");
+    const r: Recorded | null = await fetch(`/hybrid/${file}`).then((x) => (x.ok ? (x.json() as Promise<Recorded>) : null)).catch(() => null);
+    if (!r) return setNote("The recorded run couldn't be loaded.");
     const byId = new Map(cases.map((c) => [c.id, c]));
     setRows(r.rows.filter((x) => byId.has(x.id)).map((x) => ({ c: byId.get(x.id)!, rules: x.rules, model: x.model, source: x.source, ms: x.ms })));
-    setNote(`The cloud run recorded on ${new Date(r.at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })} with ${r.model}: every visitor shares the cloud model's free daily quota, so the blind test isn't sent to the cloud again from here. The rules are as they were that day. Choose "On this device only" in desktop Chrome with Gemini Nano to run it live.`);
+    const day = new Date(r.at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+    setNote(
+      where === "cloud"
+        ? `The cloud run recorded on ${day} with ${r.model}: every visitor shares the cloud model's free daily quota, so the blind test isn't sent to the cloud again from here. The rules are as they were that day. Choose "On this device only" in desktop Chrome with Gemini Nano to run it live.`
+        : `The run recorded on ${day} on Gemini Nano in desktop Chrome (this browser has no on-device model). In desktop Chrome with Gemini Nano, "On this device only" runs it live.`,
+    );
   };
   const run = async () => {
     const toCloud = mode === "only_in_cloud" || (mode === "prefer_on_device" && (await deviceModelStatus()) !== "available");
-    if (which === "a1" && toCloud) return void (await recorded());
+    if (which === "a1" && toCloud) return void (await recorded("a1-cloud.json", "cloud"));
+    if (which === "a2" && !toCloud && (await deviceModelStatus()) !== "available") return void (await recorded("a2-device.json", "device"));
     // (a2 in the cloud would take the day's shared free quota: only when asked for in the address, ?cloud=1)
     if (which === "a2" && toCloud && new URLSearchParams(location.search).get("cloud") !== "1") return void setNote("The second blind test runs on this device (desktop Chrome with Gemini Nano): in the cloud it would use the day's free quota every visitor shares.");
     setRunning(true);
