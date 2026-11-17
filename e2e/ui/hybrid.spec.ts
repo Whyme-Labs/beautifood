@@ -84,7 +84,10 @@ test.describe("hybrid avoid reader (browser)", () => {
     await expect(page.getByTestId("hybrid-added")).toContainText("fish, crustaceans, molluscs");
     await expect(page.getByTestId("hybrid-answer-hybrid")).not.toContainText("Curry Laksa");
     // asked with our schema as the device's response constraint
-    const prompts = await page.evaluate(() => (window as unknown as { __prompts: { contents: unknown; opts: { responseConstraint?: { properties?: object } } }[] }).__prompts);
+    const all = await page.evaluate(() => (window as unknown as { __prompts: { contents: unknown; opts: { responseConstraint?: { properties?: object } } }[] }).__prompts);
+    // the model was loaded as the page opened (one tiny warm-up reading), then read the guest's message once
+    expect(JSON.stringify(all[0].contents)).toContain("hello");
+    const prompts = all.filter((p) => JSON.stringify(p.contents).includes("ocean"));
     expect(prompts).toHaveLength(1);
     expect(JSON.stringify(prompts[0].contents)).toContain("no ocean stuff");
     expect(prompts[0].opts.responseConstraint?.properties).toHaveProperty("allergens");

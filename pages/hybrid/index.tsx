@@ -11,7 +11,7 @@ import { understand } from "../../src/server/ai/brain/understand";
 import { contextAt, DEMO_MENUS } from "../../src/server/ai/demoMenus";
 import { hintItems, type AvoidHint, type HintSource } from "../../src/shared/brain/avoidHint";
 import { mark, tally, type AvoidCase, type AvoidMark } from "../../src/shared/brain/avoidScore";
-import { cloudModel, promptVersion, cloudPause, warmReader, deviceModelStatus, prepareDevice, readAvoid, readerEnabled, readerError, type ReaderMode } from "../../src/ui/hybrid";
+import { cloudModel, promptVersion, cloudPause, warmReader, warmDevice, deviceModelStatus, prepareDevice, readAvoid, readerEnabled, readerError, type ReaderMode } from "../../src/ui/hybrid";
 
 const rm = (minor: number) => `RM${(minor / 100).toFixed(2)}`;
 const LUNCH = { weekday: 3, minutes: 12 * 60 + 30, date: "2026-10-21" };
@@ -41,7 +41,9 @@ export default function Hybrid() {
   const [busy, setBusy] = useState(false);
   const [shown, setShown] = useState<null | { q: string; rules: ReturnType<typeof answerGuest>; hybrid: ReturnType<typeof answerGuest> | null; read: { hint: AvoidHint; source: HintSource; ms: number } | null }>(null);
   const [cloud, setCloud] = useState("…");
-  useEffect(() => void deviceModelStatus().then(setStatus), []);
+  const [waited, setWaited] = useState(0);
+  // (Gemini Nano loaded as the page opens, so the first example doesn't wait for it)
+  useEffect(() => void deviceModelStatus().then((s) => (setStatus(s), s === "available" && void warmDevice())), []);
   useEffect(() => void warmReader().then(setCloud), []);
   const enabled = readerEnabled();
 
@@ -52,7 +54,12 @@ export default function Hybrid() {
     setDraft(text);
     const rules = answerGuest(ctx, [{ role: "user", content: text }]);
     setShown({ q: text, rules, hybrid: null, read: null });
-    const read = await readAvoid(text, "prefer_on_device", 20000);
+    setWaited(0);
+    const t0 = Date.now();
+    const tick = setInterval(() => setWaited(Math.round((Date.now() - t0) / 1000)), 1000);
+    // (this page shows the model at work, so on the device, where a reading can take 10 s or more, it waits
+    // longer than a guest's chat does, which answers by the rules after 5 s; the cloud model answers in about 1 s)
+    const read = await readAvoid(text, "prefer_on_device", status === "available" ? 45000 : 20000).finally(() => clearInterval(tick));
     const hybrid = read ? answerGuest(ctx, [{ role: "user", content: text, hint: read.hint }]) : null;
     setShown({ q: text, rules, hybrid, read });
     setBusy(false);
@@ -75,7 +82,7 @@ export default function Hybrid() {
             <b>On this device:</b>
             <span data-testid="device-status">{status === "none" ? "no Prompt API in this browser (cloud will answer)" : status === "available" ? "Gemini Nano is ready" : status === "unavailable" ? "Gemini Nano isn't available here (cloud will answer)" : `Gemini Nano is ${status}`}</span>
             {enabled && (status === "downloadable" || status === "downloading") ? (
-              <button className="btn" onClick={() => void prepareDevice((p) => setProgress(p)).then(() => deviceModelStatus().then(setStatus))}>
+              <button className="btn" onClick={() => void prepareDevice((p) => setProgress(p)).then(() => deviceModelStatus().then((s) => (setStatus(s), s === "available" && void warmDevice())))}>
                 Get it ready{progress !== null ? ` (${Math.round(progress * 100)}%)` : ""}
               </button>
             ) : null}
@@ -105,7 +112,7 @@ export default function Hybrid() {
             <input className="grow" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="What can't you eat? Ask in your own words" aria-label="Your message" />
             <button className="btn primary" disabled={busy || !draft.trim()}>Ask</button>
           </form>
-          {shown ? <Compare {...shown} busy={busy} items={ctx.items} /> : null}
+          {shown ? <Compare {...shown} busy={busy} waited={waited} items={ctx.items} /> : null}
         </section>
 
         <A1Test items={ctx.items} enabled={enabled} />
@@ -134,7 +141,7 @@ function Answer({ title, icon, r, testid }: { title: string; icon: React.ReactNo
   );
 }
 
-function Compare({ q, rules, hybrid, read, busy, items }: { q: string; rules: ReturnType<typeof answerGuest>; hybrid: ReturnType<typeof answerGuest> | null; read: { hint: AvoidHint; source: HintSource; ms: number } | null; busy: boolean; items: unknown[] }) {
+function Compare({ q, rules, hybrid, read, busy, waited, items }: { q: string; rules: ReturnType<typeof answerGuest>; hybrid: ReturnType<typeof answerGuest> | null; read: { hint: AvoidHint; source: HintSource; ms: number } | null; busy: boolean; waited: number; items: unknown[] }) {
   const byRules = rulesRead(items, q);
   const byModel = read ? hintItems(read.hint) : [];
   const added = byModel.filter((x) => !byRules.includes(x));
@@ -146,7 +153,7 @@ function Compare({ q, rules, hybrid, read, busy, items }: { q: string; rules: Re
         </div>
         <div>
           <b>Model read:</b>{" "}
-          {busy && !read ? "reading…" : read ? (
+          {busy && !read ? `reading… ${waited} s` : read ? (
             <>
               {byModel.length ? byModel.map(label).join(", ") : "nothing to avoid"}{" "}
               <span className="badge" data-testid="hybrid-source">

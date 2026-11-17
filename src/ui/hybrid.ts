@@ -146,6 +146,24 @@ export async function prepareDevice(onProgress?: (share: number) => void): Promi
   await m.initializeDeviceModel(onProgress);
 }
 
+let warmed: Promise<void> | null = null;
+/**
+ * Load Gemini Nano before the first question: one tiny reading in the background. The SDK keeps its last
+ * session, so Chrome keeps the model in memory and the guest's first reading doesn't pay for loading it.
+ * Nothing happens where the device has no model ready.
+ */
+export function warmDevice(): Promise<void> {
+  if (!readerEnabled()) return Promise.resolve();
+  warmed ??= (async () => {
+    if ((await deviceModelStatus()) !== "available") throw new Error("no device model");
+    const m = await model("only_on_device");
+    await m.generateContent("Message: hello\nJSON:");
+  })().catch(() => {
+    warmed = null;
+  });
+  return warmed;
+}
+
 /** What `message` says the guest avoids, or null when the reader is off, fails or takes too long (the rules answer alone). */
 export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_device", timeoutMs = 8000): Promise<HintResult | null> {
   if (!readerEnabled() || !message.trim()) return null;
@@ -166,7 +184,8 @@ export async function readAvoid(message: string, mode: ReaderMode = "prefer_on_d
     // App Check guards the cloud model only: when the device's model answers, a refused or unreachable App
     // Check (a kiosk offline, a browser reCAPTCHA doubts) doesn't stop it
     const onDevice = mode === "only_on_device" || (mode === "prefer_on_device" && (await deviceModelStatus()) === "available");
-    if (onDevice) await late(firebase());
+    // (a warm-up still loading the model is waited for, not raced with a second load)
+    if (onDevice) await late(Promise.all([firebase(), warmed ?? Promise.resolve()]));
     else {
       const ready = await late(warmReader());
       if (ready !== "ok") throw new Error(ready);

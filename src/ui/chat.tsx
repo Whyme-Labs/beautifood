@@ -5,7 +5,7 @@ import { api } from "./api";
 import { Money, errorText } from "./components";
 import { useI18n } from "../i18n/react";
 import { OrderCard, type OrderCardData } from "./orderCard";
-import { prepareDevice, readAvoid, readerEnabled, warmReader } from "./hybrid";
+import { prepareDevice, readAvoid, readerEnabled, warmDevice, warmReader } from "./hybrid";
 import type { AvoidHint, HintSource } from "../shared/brain/avoidHint";
 
 interface Reply {
@@ -30,7 +30,8 @@ export function AssistantChat({ branch, currency, onAdd, onAddLines }: { branch:
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const deviceAsked = useRef(false);
   // (App Check and Firebase ready before the first question, so the reader answers in time)
-  useEffect(() => void warmReader().catch(() => {}), []);
+  // (App Check for the cloud, and Gemini Nano loaded where the device has it, before the first question)
+  useEffect(() => void (warmReader().catch(() => {}), warmDevice()), []);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
