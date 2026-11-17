@@ -2039,3 +2039,37 @@ needs messages nobody has seen.
   be a little easier for them than guests' own words would be.
 - Nobody working on the engine has read an a2 item. Systems as deployed at `6c50179` (nothing in the
   rules or the reader changes before the scores are in).
+
+## a2 scored: rules + Gemini Nano with the check (2026-11-17; scored once, totals only)
+
+Run by the owner on `/hybrid` ("The second blind test (a2)", on this device only; instruction v1 with the
+check, rules with `applies.ts`, as deployed at `6c50179`): 385 of 386 read on the device (one gave no
+reading). Results: `bench/avoid/results/a2-device.json`; totals: `npx tsx bench/avoid/score-a2.ts
+bench/avoid/results/a2-device.json`. 240 messages state something to avoid, 146 don't.
+
+| | Missed (of 240) | False alarms (of 146) | Stating with extras |
+|---|---|---|---|
+| Rules alone | 63 (26.3%) | 8 (5.5%) | 12 |
+| Gemini Nano with the check, alone | 30 (12.5%) | 3 (2.1%) | 27 |
+| **Rules + Gemini Nano with the check** | **20 (8.3%)** | **8 (5.5%)** | 34 |
+
+Missed by language, rules alone → rules + reader: en 21 → 9 of 62, ms 18 → 5 of 60, Manglish 7 → 1 of 61,
+zh 17 → 5 of 57.
+
+Against the bar (pre-registered with a2):
+1. rules + on-device misses at most half as many as rules alone: **met** (20 against 63).
+2. within 3 points of the cloud: not measured (no cloud run of a2).
+3. false alarms at most 5% of the non-stating messages: **not met, by one message** (8 of 146 = 5.5%;
+   5% is 7.3). The reader adds none: the rules alone make the same 8.
+4. no language where rules + reader misses more than rules alone: **met**.
+
+What it says, read with a1 (different messages, so a direction, not a difference to the point):
+- The rules' false-alarm fix holds on blind messages: 5.5% here against 24.4% on a1 before it.
+- The check did what it was for: Gemini Nano adds no false alarm to the rules (a1, without it: 31 more).
+- It costs catches: rules + Gemini Nano miss 8.3% here, against 0.8% on a1 without the check. Some of
+  that is a2 being harder for the rules (26.3% missed against 21.5%); the rest is the check dropping
+  readings the message backed in words it doesn't know. Missed allergies are the costlier error, so the
+  check's word list is the next thing to work on, on the practice sets only.
+- Time: median 8.5 s a reading on this run (p90 22.5 s; 45 readings over 20 s, some over a minute while
+  the device was busy), against 4.7 s on a1 with the same instruction. The guest chat waits 5 s and the
+  kiosk 6 s before answering with the rules alone, so on a slow run most guests get the rules' answer.
