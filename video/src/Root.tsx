@@ -3,6 +3,7 @@ import { Composition, Still } from "remotion";
 import { Thumbnail } from "./thumbnail";
 import "./theme";
 import { Demo } from "./Demo";
+import { Hybrid, hybridFrames } from "./hybrid";
 import { Close, Feature, Hook, Languages, Problem, Proof, Title } from "./scenes";
 import { type FeatureDemoProps, FeatureDemo, featureFrames } from "./feature";
 import { Promo30, PROMO_BARS, Teaser15, TEASER_BARS } from "./promo";
@@ -60,6 +61,7 @@ export const RemotionRoot = () => (
         })}
       </Fragment>
     ))}
+    <Composition id="hybrid-en" component={Hybrid} durationInFrames={hybridFrames()} fps={30} width={1920} height={1080} />
     <Composition id="qloo-en" component={FeatureDemo} durationInFrames={featureFrames(QLOO.segments, "en")} fps={30} width={1920} height={1080} defaultProps={QLOO} />
     <Still id="Thumbnail-en" component={Thumbnail} width={1280} height={720} defaultProps={{ lang: "en" as const }} />
     <Still id="Thumbnail-zh" component={Thumbnail} width={1280} height={720} defaultProps={{ lang: "zh" as const }} />
