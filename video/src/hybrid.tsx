@@ -2,6 +2,7 @@
 // cloud model when it can't, both through Firebase AI Logic. Real footage and screenshots from the live app
 // (public/hybrid/): the owner's own on-device reading, the kiosk going offline, the blind tests.
 import type React from "react";
+import { Audio } from "@remotion/media";
 import { AbsoluteFill, Easing, Img, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Wordmark } from "./Mark";
 import { C, NUM, SANS } from "./theme";
@@ -15,10 +16,19 @@ const SCENES: { name: string; len: number; el: React.ReactNode }[] = [];
 
 export const hybridFrames = () => S(SCENES.reduce((n, s) => n + s.len, 0));
 
+/** The same soundtrack as the other Beautifood videos (public/audio, git-ignored), faded in and out. */
+const Music: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const v = interpolate(frame, [0, S(1), durationInFrames - S(3), durationInFrames - 1], [0, 0.6, 0.6, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  return <Audio src={staticFile("audio/bgm-demo.m4a")} volume={v} />;
+};
+
 export const Hybrid: React.FC = () => {
   let at = 0;
   return (
     <AbsoluteFill style={{ background: C.paper, fontFamily: SANS, color: C.ink }}>
+      <Music />
       {SCENES.map((s) => {
         const from = S(at);
         at += s.len;
